@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /creator-
+Disallow: /admin
+
+Sitemap: https://aqryo.com/sitemap.xml

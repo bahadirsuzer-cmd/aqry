@@ -1,0 +1,91 @@
+AQRYO CREATOR ACCOUNT EXTENSION — ENTEGRASYON
+
+MEVCUT creator-account.tsx DOSYASINI ŞİMDİ DEĞİŞTİRME.
+
+Mevcut account ekranında zaten:
+- CreatorNavigation
+- auth guard
+- display name
+- email / verification
+- username
+- avatar JPEG/PNG upload
+- bio
+- password update
+- sign out
+bulunuyor.
+
+Bu paket bunları tekrar yazmaz.
+
+==================================================
+YENİ PARÇALAR
+==================================================
+
+Service:
+src/services/creatorAccountPreferences.ts
+
+Components:
+src/components/account/CreatorNotificationPreferencesCard.tsx
+src/components/account/CreatorDataControlsCard.tsx
+src/components/account/CreatorPayoutPreparationCard.tsx
+
+SQL:
+creator_account_preferences.sql
+
+==================================================
+ENTEGRASYON
+==================================================
+
+Güncel src/routes/creator-account.tsx elde olduğunda:
+
+1. loadAccount içinde mevcut account/profile yüklemesini BOZMADAN
+   getCreatorAccountExtensionSnapshot() eklenir.
+
+2. Sayfa layout'una:
+   - Bildirimler
+   - Payout hesabı
+   - Veri ve hesap
+   kartları eklenir.
+
+3. Hesap silme:
+   auth.users client-side DELETE YAPILMAZ.
+   Sadece deletion request oluşur.
+
+4. Data export:
+   Şimdilik request timestamp oluşturur.
+   Backend export worker sonraki aşamada eklenecek.
+
+==================================================
+NEDEN HESABI HEMEN SİLMİYORUZ?
+==================================================
+
+Creator hesabında:
+- paid orders
+- creator earnings
+- pending payout
+- refunds
+- chargebacks
+- legal/financial retention
+olabilir.
+
+Bu yüzden "Hesabımı sil" =
+delete workflow request.
+
+==================================================
+PAYOUT
+==================================================
+
+Bu pakette:
+- IBAN hardcode YOK
+- banka hesabı tablosu YOK
+- KYC sahte olarak tamamlandı gösterilmiyor
+
+Payout provider mimarisi Paket 8'de kurulacak.
+
+==================================================
+SECURITY EMAIL
+==================================================
+
+UI tercihi olsa bile kritik güvenlik e-postalarının tamamen kapatılmasına
+izin verilip verilmeyeceği launch öncesi ayrıca kararlaştırılmalı.
+Production'da password/security transactional e-postalarını marketing
+preference'tan bağımsız tutmak daha doğru olabilir.

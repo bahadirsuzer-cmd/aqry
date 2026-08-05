@@ -1,0 +1,45 @@
+AQRYO PAYMENT UI — ENTEGRASYON NOTU
+
+Bu paket mevcut ödeme akışını değiştirmez.
+
+MEVCUT AKIŞ:
+Sipay callback
+→ sipay-payment-return Edge Function
+→ /experience/:experienceId?payment=<status>&orderId=<id>
+
+DOĞRU ENTEGRASYON:
+src/routes/experience.$experienceId.tsx güncel dosyası alınacak.
+Dosya görülmeden replacement yapılmayacak.
+
+1. readPaymentReturnState() ile payment + orderId okunacak.
+
+2. URL'deki payment=paid tek başına premium unlock için güvenilir kabul edilmeyecek.
+
+OFFER:
+- orderId mevcut olmalı.
+- getPaidOfferResult(orderId) server-side doğrulaması başarılı olmalı.
+- yalnızca doğrulanmış paid Offer ücretli içeriği açmalı.
+
+GIFT:
+- Gift ödeme dönüşünde Offer açılmamalı.
+- Gift teşekkür ekranı gösterilmeli.
+- purchase kind mevcut order/return akışından güvenilir biçimde belirlenmeli.
+- URL parametresinden "gift" kabul edilmemeli.
+
+FAILED / CANCELLED:
+- premium açılmaz.
+- aynı order için mevcut retry-safe ödeme servisi kullanılabilir.
+- yeni duplicate Offer order üretilmemeli.
+
+PENDING:
+- premium açılmaz.
+- yeni ödeme başlatmak yerine mevcut sipariş durumu yeniden kontrol edilmelidir.
+- şu an callback final olarak paid / failed / cancelled üretiyor; pending UI gelecekte async provider senaryoları için hazır tutuluyor.
+
+TEMİZLİK:
+İşlem UI tarafından güvenli biçimde işlendiğinde:
+clearPaymentReturnParams()
+çağrılarak payment ve orderId query parametreleri replaceState ile URL'den temizlenmeli.
+
+ÖNEMLİ:
+Bu paket create-order, start-sipay-payment, sipay-payment-return veya get-paid-offer-result Edge Function'larını değiştirmez.

@@ -1,0 +1,201 @@
+AQRYO PAYOUT / FINANCE LEDGER — ENTEGRASYON NOTU
+
+==================================================
+MEVCUT SİSTEM
+==================================================
+
+orders tablosu gerçek satış/payment kaydıdır.
+
+Mevcut creator-payments.tsx:
+- paid orders
+- Gift
+- Offer
+- pending/payment_started
+- gross amount
+- temporary creator share
+- temporary AQRYO share
+- recent orders
+gösterir.
+
+Payout aktifmiş gibi gösterilmez.
+
+BU DAVRANIŞ ŞİMDİ BOZULMAYACAK.
+
+==================================================
+YENİ AYRIM
+==================================================
+
+1. orders
+Participant'ın yaptığı ödeme/satış gerçeği.
+
+2. creator_finance_ledger
+Creator hak ediş muhasebesi.
+
+3. creator_payout_accounts
+Payout provider üzerinde doğrulanmış hesabın referansı.
+
+4. creator_payouts
+Gerçek payout talebi ve provider sonucu.
+
+==================================================
+NEDEN ORDER = BALANCE DEĞİL?
+==================================================
+
+Paid order:
+9 TL / 29 TL / 99 TL / ... brüt işlem olabilir.
+
+Ama creator'ın çekilebilir bakiyesi doğrudan:
+gross * current UI share
+değildir.
+
+Arada ileride olabilir:
+- provider fee
+- tax
+- refund
+- partial refund
+- chargeback
+- dispute
+- fraud hold
+- reserve
+- country rule
+- creator share snapshot
+
+Bu yüzden creator share order anında veya settlement anında
+IMMUTABLE SNAPSHOT olarak ledger'a yazılır.
+
+==================================================
+SHARE RATE
+==================================================
+
+Mevcut UI'daki 70% Creator / 30% AQRYO GEÇİCİDİR.
+
+Bu SQL 70/30 hardcode ETMEZ.
+
+Ledger'da:
+share_basis_points
+creator_share_minor
+platform_share_minor
+alanları vardır.
+
+Örnek:
+70% = 7000 basis points
+
+Ama final business rule onaylanmadan hiçbir trigger bunu otomatik yazmaz.
+
+==================================================
+PENDING -> AVAILABLE
+==================================================
+
+Doğru model:
+
+paid order
+↓
+earning_pending ledger entry
+↓
+hold/risk süresi
+↓
+earning_release / available
+↓
+creator payout request
+↓
+payout_debit
+↓
+provider processing
+↓
+paid
+
+Hold süresi henüz final değil:
+1 gün / 7 gün / 14 gün vb. hardcode edilmedi.
+
+==================================================
+REFUND / CHARGEBACK
+==================================================
+
+Refund order'ı silmez.
+
+Yeni negatif ledger hareketi oluşur:
+refund_debit
+
+Chargeback:
+chargeback_debit
+
+Geçmiş creator earning satırı değiştirilmez.
+Muhasebe append-only kalır.
+
+==================================================
+PAYOUT ACCOUNT
+==================================================
+
+Raw IBAN/card bilgisi DB'ye yazmak yerine:
+
+provider
+provider_account_ref
+country_code
+payout_currency
+verification_status
+
+tutulur.
+
+Gerçek hassas payout bilgisi provider vault/KYC tarafında tutulmalıdır.
+
+==================================================
+PAYOUT REQUEST SECURITY
+==================================================
+
+Bu pakette creator_payouts için INSERT RLS YOK.
+
+Yani frontend şu an kendi kendine payout oluşturamaz.
+
+Final request endpoint/RPC şu kontrolleri yapmalı:
+- auth creator
+- verified payout account
+- payout enabled
+- currency match
+- available balance >= request
+- minimum payout
+- no risk/fraud hold
+- KYC
+- no blocking dispute
+- idempotency
+
+Sonra atomik olarak:
+1. payout row oluştur
+2. available bakiyeden payout debit reserve et
+3. provider çağır
+4. provider sonucu güncelle
+
+==================================================
+CREATOR-PAYMENTS ENTEGRASYONU
+==================================================
+
+Güncel src/routes/creator-payments.tsx üzerinden yapılacak.
+
+Mevcut:
+- order/payment history
+- Gift/Offer kırılımı
+- gross / temporary share
+KORUNACAK.
+
+Altına veya uygun bölüme:
+- CreatorBalanceSummary
+- CreatorPayoutHistory
+- CreatorFinanceLedgerList
+eklenecek.
+
+Güncel dosya görülmeden full replacement YAPILMAYACAK.
+
+==================================================
+BACKFILL
+==================================================
+
+Eski paid order'ları finance ledger'a aktarmak için
+şu an script YOK.
+
+Çünkü önce final olarak karar vermeliyiz:
+- historical creator share hangi orandan hesaplanacak?
+- eski 19/29 TL Offer order'ları hangi sözleşme oranına tabi?
+- provider fee historical hesaplanacak mı?
+- payout hold başlangıcı paid_at mı?
+- refunded/disputed geçmiş order var mı?
+
+Bu kararlar verilmeden geçmiş finans hareketi uydurmayacağız.

@@ -1,0 +1,136 @@
+AQRYO ADMIN MVP — ENTEGRASYON
+
+==================================================
+DOSYALAR
+==================================================
+
+SQL:
+admin_mvp.sql
+
+Service:
+src/services/admin.ts
+
+Component:
+src/components/admin/AdminShell.tsx
+
+Route:
+src/routes/admin.tsx
+
+==================================================
+KURULUM SIRASI
+==================================================
+
+1. Önce Paket 4:
+   experience_reports.sql
+   uygulanmış olmalı.
+
+2. Önce Paket 8:
+   creator_finance_ledger.sql
+   uygulanmış olmalı.
+   Çünkü admin summary/list payout tablolarını referans alıyor.
+
+3. admin_mvp.sql çalıştır.
+
+4. Kendi AQRYO auth user UUID'ni bul.
+
+5. Supabase SQL Editor'da MANUEL:
+   insert into public.admin_users (user_id)
+   values ('GERCEK_AUTH_USER_UUID');
+
+Admin email'i frontend koda hardcode ETME.
+
+==================================================
+SECURITY
+==================================================
+
+Frontend:
+- service-role key içermez.
+- auth session ile RPC çağırır.
+
+Database:
+- her admin RPC önce is_aqryo_admin() kontrol eder.
+- admin_users client'tan insert/update/delete edilemez.
+
+Creator:
+- /admin route'u açabilir ama admin değilse veri alamaz ve erişim ekranı görür.
+- route gizlemek güvenlik değildir; asıl güvenlik DB RPC'dedir.
+
+==================================================
+MVP YETKİLER
+==================================================
+
+Admin görebilir:
+- creator sayısı/listesi
+- Experience sayısı/listesi
+- paid orders
+- brüt TRY
+- reportlar
+- payoutlar
+
+Admin değiştirebilir:
+- sadece report workflow status
+  new
+  reviewing
+  resolved
+  dismissed
+
+==================================================
+BİLEREK EKLENMEYEN TEHLİKELİ AKSİYONLAR
+==================================================
+
+Admin MVP şu an YAPAMAZ:
+- creator silmek
+- auth user silmek
+- order status elle paid yapmak
+- refund basmak
+- payout paid yapmak
+- finance balance değiştirmek
+- Experience silmek
+- report üzerinden otomatik ban
+- creator parasını elle değiştirmek
+
+Bu işlemler daha sonra ayrı:
+- validation
+- authorization
+- idempotency
+- audit log
+ile güvenli RPC olarak yapılmalı.
+
+==================================================
+AUDIT
+==================================================
+
+admin_audit_log tablosu hazır.
+
+Report update RPC'sine audit insert'i sonraki moderation paketinde eklenebilir.
+Şimdilik tablo altyapısı var.
+
+==================================================
+UI
+==================================================
+
+/admin tek operasyon ekranı.
+
+Tabs:
+- Genel
+- Reportlar
+- Experience
+- Siparişler
+- Payout
+- Creator'lar
+
+İlk MVP için ayrı 6 route açmak yerine tek ekran daha hızlı ve operasyoneldir.
+
+Scale olunca:
+- /admin/reports
+- /admin/orders
+- /admin/payouts
+gibi nested route'lara ayrılabilir.
+
+==================================================
+NOT
+==================================================
+
+admin_get_dashboard_summary şu an grossPaidMinor için TRY toplamı gösterir.
+Global currency geldiğinde farklı currency'leri tek toplamda birleştirme.
+Her currency ayrı gösterilmelidir.

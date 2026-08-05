@@ -1,0 +1,184 @@
+AQRYO PRODUCTION PACKAGE 13 — ENTEGRASYON
+
+==================================================
+FILES
+==================================================
+
+Frontend:
+.env.example
+src/utils/seo.ts
+src/utils/experienceSeo.ts
+
+Public assets:
+public/robots.txt
+public/sitemap.xml
+
+Docs:
+production_config_checklist.md
+launch_smoke_test.md
+
+==================================================
+ENV
+==================================================
+
+Do NOT overwrite existing .env blindly.
+
+Copy only missing public variable:
+
+VITE_PUBLIC_APP_URL=https://aqryo.com
+
+Existing:
+VITE_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY
+
+should keep current actual values.
+
+Never commit real .env secrets.
+
+==================================================
+SEO
+==================================================
+
+seo.ts is client-side metadata helper.
+
+Integration later:
+- homepage
+- public static pages
+- Experience route
+
+Experience route should call:
+applyExperienceSeo()
+
+ONLY after actual published Experience data loads.
+
+paused/draft/moderated:
+noIndex = true
+
+==================================================
+SOCIAL CRAWLERS
+==================================================
+
+Important:
+Many messaging/social crawlers do NOT execute full React JavaScript.
+
+Therefore client-side document meta updates may NOT create reliable:
+- WhatsApp previews
+- X cards
+- Telegram previews
+
+If tests fail, production solution should be:
+- server rendered metadata
+or
+- edge-generated share page
+or
+- prerender
+
+Do not assume React document.title is enough for social cards.
+
+==================================================
+ROBOTS / SITEMAP
+==================================================
+
+Place:
+public/robots.txt
+public/sitemap.xml
+
+The static sitemap contains public static routes only.
+
+Published Experiences should later be added dynamically.
+Do NOT manually list every future Experience forever.
+
+==================================================
+ROUTER / SPA HOSTING
+==================================================
+
+Hosting must rewrite unknown frontend routes to index.html.
+
+Otherwise direct:
+aqryo.com/creator-auth
+aqryo.com/experience/UUID
+
+may return hosting 404 after refresh.
+
+Exact config depends on deployment provider.
+Do not invent Netlify/Vercel/Cloudflare config until provider is chosen.
+
+==================================================
+SUPABASE AUTH
+==================================================
+
+Production intended URLs:
+
+Site URL:
+https://aqryo.com
+
+Redirects:
+https://aqryo.com/creator-auth
+https://aqryo.com/creator-studio
+https://aqryo.com/creator-reset-password
+
+Keep localhost during development if needed.
+
+==================================================
+GOOGLE
+==================================================
+
+Authorized JS Origin:
+https://aqryo.com
+
+Callback remains Supabase:
+https://hburwzezggdgxuissjej.supabase.co/auth/v1/callback
+
+Do NOT set Google callback to creator-studio.
+
+==================================================
+SMTP
+==================================================
+
+Provider is NOT chosen in this package.
+
+Do not invent SMTP credentials.
+
+Before launch:
+custom sender/domain should be configured and email deliverability tested.
+
+==================================================
+MONITORING
+==================================================
+
+No monitoring vendor hardcoded.
+
+Later possible:
+Sentry or equivalent.
+
+First define:
+- sanitized error events
+- correlation IDs
+- environment separation
+
+Then choose vendor.
+
+==================================================
+DEPLOYMENT PROVIDER
+==================================================
+
+No Vercel/Netlify/Cloudflare config generated because current real production
+hosting choice has not been confirmed.
+
+When provider is known, create only the exact config required by that provider.
+
+==================================================
+NEXT
+==================================================
+
+The implementation queue's architecture packages are now mostly prepared.
+
+Next phase should NOT keep generating speculative files forever.
+
+At computer:
+1. apply packages sequentially
+2. run TypeScript/build after each logical group
+3. fix real schema/import conflicts
+4. integrate only from current live files
+5. run regression tests
+6. then production config

@@ -1,0 +1,195 @@
+AQRYO ANALYTICS / EVENT TRACKING v2
+
+==================================================
+MEVCUT SİSTEM KORUNUR
+==================================================
+
+Mevcut:
+experience_events
+
+event_type:
+- view
+- start
+
+Mevcut:
+src/services/experienceEvents.ts
+
+Mevcut:
+src/services/experienceStats.ts
+
+Mevcut creator ekranları:
+- views
+- starts
+- completions
+
+Bunları kaldırma veya rename etme.
+
+==================================================
+YENİ EVENTLER
+==================================================
+
+Participant funnel:
+
+view
+start
+result_viewed
+offer_viewed
+offer_checkout_started
+offer_purchased
+gift_selected
+gift_checkout_started
+gift_purchased
+experience_shared
+
+==================================================
+NERELERDE TRACK EDİLECEK?
+==================================================
+
+src/routes/experience.$experienceId.tsx
+
+view:
+MEVCUT tracking korunacak.
+
+start:
+MEVCUT tracking korunacak.
+
+result_viewed:
+Result ekranı ilk kez gerçekten gösterildiğinde.
+
+offer_viewed:
+Result sonrası Offer kartı görünür olduğunda.
+Aynı render'da tekrar tekrar event atmamak için useRef gerekir.
+
+offer_checkout_started:
+create-order/start-payment akışı gerçekten başlatılırken.
+
+gift_selected:
+Gift türü seçildiğinde.
+Örn coffee/heart/crown/rocket.
+
+gift_checkout_started:
+Gift ödeme akışı gerçekten başlatılırken.
+
+experience_shared:
+Copy/X/WhatsApp/Telegram/share aksiyonunda.
+
+==================================================
+PURCHASE EVENT
+==================================================
+
+offer_purchased
+gift_purchased
+
+FRONTEND'DEN payment=paid görünce yazma.
+
+Doğru yer:
+sipay-payment-return / verified webhook / server payment confirmation.
+
+Order status gerçekten paid olduktan sonra:
+metadata.kind === gift
+→ gift_purchased
+
+metadata.kind === offer veya legacy no-kind
+→ offer_purchased
+
+order_id bağlanmalı.
+
+Bu event idempotent olmalı.
+Aynı payment callback tekrar gelirse ikinci purchase event oluşmamalı.
+
+Production entegrasyonunda:
+unique index veya payment-event idempotency key eklenmeli.
+
+==================================================
+SESSION
+==================================================
+
+Yeni service:
+src/services/experienceAnalytics.ts
+
+sessionStorage:
+aqryo-experience-session-id
+
+Participant identity:
+mevcut getParticipantKey()
+
+kullanılır.
+
+==================================================
+FUNNEL
+==================================================
+
+Creator için:
+get_my_experience_funnel(experienceId)
+
+döndürür:
+views
+starts
+completions
+result views
+offer views
+offer checkout
+offer purchases
+gift selections
+gift checkout
+gift purchases
+shares
+
+Rates:
+start / views
+completion / starts
+offer purchase / offer view
+gift purchase / result view
+share / completion
+
+==================================================
+MEASUREMENT WARNING
+==================================================
+
+Eski view/start tablosunda unique constraint:
+(experience_id, event_type, participant_id)
+
+varsa:
+aynı participant'ın repeat session view/start'ı tek sayılır.
+
+Yeni eventlerde de aynı unique constraint tüm event_type'lara uygulanırsa
+bir participant her event türünde en fazla bir kayıt oluşturur.
+
+Bu, "unique participants funnel" için uygundur.
+
+Ama ileride:
+- total sessions
+- repeat views
+- repeat gifts
+gibi metrikler istiyorsak unique model ayrıştırılmalıdır.
+
+Özellikle repeat Gift serbest olduğu için:
+gift_purchased eventini participant bazında unique tutmak YANLIŞ olabilir.
+
+Bu nedenle Paket 11 SQL uygulanmadan önce mevcut unique constraint'in adı
+ve kapsamı doğrulanmalı.
+
+Eğer global unique:
+(experience_id,event_type,participant_id)
+ise purchase events için ayrı server-side payment event tablosu veya order_id
+bazlı uniqueness daha doğru olacaktır.
+
+Bu nokta entegrasyon gününde güncel DB constraint üzerinden kontrol edilmeli.
+
+==================================================
+PRODUCT EVENTS
+==================================================
+
+creator_signed_up
+experience_published
+ai_generation_started
+ai_generation_completed
+
+gibi creator-side ürün eventlerini participant experience_events tablosuna
+karıştırma.
+
+Bunlar ileride ayrı:
+product_events
+tablosunda tutulmalı.
+
+MVP participant funnel için şart değildir.
