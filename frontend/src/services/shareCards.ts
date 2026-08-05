@@ -26,9 +26,6 @@ export interface ShareCardSource {
 }
 
 export interface ShareCardTheme {
-  label: string;
-  cta: string;
-  helper: string;
   accent: string;
   accentDark: string;
   background: string;
@@ -40,70 +37,48 @@ const THEMES: Record<
   ShareCardTheme
 > = {
   guess: {
-    label: "TAHMİN ET",
-    cta: "Şimdi tahmin et",
-    helper:
-      "Tahmin et. Cevabı AQRYO’da gör.",
     accent: "#ff7a00",
     accentDark: "#c84e00",
     background: "#080604",
     squareBackground: "#f5f0ff",
   },
+
   story: {
-    label: "STORY",
-    cta: "Hikâyeyi aç",
-    helper:
-      "Devamını AQRYO’da gör.",
     accent: "#8b5cf6",
     accentDark: "#5b21b6",
     background: "#090812",
     squareBackground: "#f3efff",
   },
+
   score: {
-    label: "TEST",
-    cta: "Teste başla",
-    helper:
-      "Testi çöz. Sonucunu AQRYO’da gör.",
     accent: "#22c55e",
     accentDark: "#15803d",
     background: "#06110a",
     squareBackground: "#effcf3",
   },
+
   spectrum: {
-    label: "NE KADAR X’SİN?",
-    cta: "Kendini ölç",
-    helper:
-      "Cevapla. Seviyeni AQRYO’da gör.",
     accent: "#ec4899",
     accentDark: "#be185d",
     background: "#12070d",
     squareBackground: "#fff0f7",
   },
+
   archetype: {
-    label: "HANGİ X’SİN?",
-    cta: "Eşleşmeni gör",
-    helper:
-      "Cevapla. Sana en yakın sonucu gör.",
     accent: "#3b82f6",
     accentDark: "#1d4ed8",
     background: "#06101f",
     squareBackground: "#eef5ff",
   },
+
   compatibility: {
-    label: "UYUM",
-    cta: "Uyumunu gör",
-    helper:
-      "Cevapla. Ne kadar yakın olduğunuzu gör.",
     accent: "#f43f5e",
     accentDark: "#be123c",
     background: "#14070a",
     squareBackground: "#fff0f2",
   },
+
   default: {
-    label: "AQRYO",
-    cta: "Şimdi başla",
-    helper:
-      "İçeriği aç. Sonucunu AQRYO’da gör.",
     accent: "#7c3aed",
     accentDark: "#5b21b6",
     background: "#09070f",
@@ -152,6 +127,50 @@ export function getShareTheme(
   return THEMES.default;
 }
 
+function getShareCopy(
+  source: ShareCardSource,
+) {
+  const label =
+    source.coverLabel?.trim() ||
+    (source.type === "story"
+      ? "HİKÂYE"
+      : source.type === "guess"
+        ? "TAHMİN"
+        : source.type === "compatibility"
+          ? "UYUM"
+          : source.type === "test"
+            ? "TEST"
+            : "AQRYO");
+
+  const cta =
+    source.type === "story"
+      ? "Hikâyeyi aç"
+      : source.type === "guess"
+        ? "Tahmin et"
+        : source.type === "compatibility"
+          ? "Uyumunu gör"
+          : source.type === "test"
+            ? "Sonucunu gör"
+            : "Başla";
+
+  const helper =
+    source.type === "story"
+      ? "Devamını AQRYO’da gör."
+      : source.type === "guess"
+        ? "Tahmin et. Cevabı AQRYO’da gör."
+        : source.type === "compatibility"
+          ? "Cevapla. Ne kadar uyumlu olduğunuzu gör."
+          : source.type === "test"
+            ? "Cevapla. Sana en yakın sonucu gör."
+            : "İçeriği aç. Sonucunu AQRYO’da gör.";
+
+  return {
+    label,
+    cta,
+    helper,
+  };
+}
+
 function roundedRect(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -168,6 +187,7 @@ function roundedRect(
 
   ctx.beginPath();
   ctx.moveTo(x + r, y);
+
   ctx.arcTo(
     x + width,
     y,
@@ -175,6 +195,7 @@ function roundedRect(
     y + height,
     r,
   );
+
   ctx.arcTo(
     x + width,
     y + height,
@@ -182,6 +203,7 @@ function roundedRect(
     y + height,
     r,
   );
+
   ctx.arcTo(
     x,
     y + height,
@@ -189,6 +211,7 @@ function roundedRect(
     y,
     r,
   );
+
   ctx.arcTo(
     x,
     y,
@@ -196,6 +219,7 @@ function roundedRect(
     y,
     r,
   );
+
   ctx.closePath();
 }
 
@@ -246,6 +270,7 @@ function wrapText(
     i += 1
   ) {
     const word = words[i];
+
     const candidate =
       current
         ? `${current} ${word}`
@@ -344,12 +369,14 @@ async function loadImage(
       (resolve, reject) => {
         image.onload = () =>
           resolve();
+
         image.onerror = () =>
           reject(
             new Error(
               "Görsel okunamadı.",
             ),
           );
+
         image.src =
           objectUrl;
       },
@@ -423,8 +450,10 @@ function drawBrand(
   size: number,
 ) {
   ctx.fillStyle = color;
+
   ctx.font =
     `900 ${size}px Inter, Arial, sans-serif`;
+
   ctx.fillText(
     "AQRYO.",
     x,
@@ -438,11 +467,18 @@ function drawSquare(
   image: HTMLImageElement | null,
   theme: ShareCardTheme,
 ) {
+  const {
+    label,
+    cta,
+    helper,
+  } = getShareCopy(source);
+
   const width = 1080;
   const height = 1080;
 
   ctx.fillStyle =
     theme.squareBackground;
+
   ctx.fillRect(
     0,
     0,
@@ -462,6 +498,7 @@ function drawSquare(
     0,
     "rgba(255,255,255,0.94)",
   );
+
   topGradient.addColorStop(
     1,
     "rgba(255,255,255,0.32)",
@@ -479,15 +516,18 @@ function drawSquare(
 
   ctx.fillStyle =
     theme.accentDark;
+
   ctx.font =
     "800 22px Inter, Arial, sans-serif";
+
   ctx.textAlign =
     "center";
+
   ctx.letterSpacing =
     "7px";
 
   ctx.fillText(
-    `AQRYO ${theme.label}`,
+    label,
     width / 2,
     62,
   );
@@ -518,6 +558,7 @@ function drawSquare(
 
   ctx.fillStyle =
     "#170a35";
+
   ctx.textAlign =
     "center";
 
@@ -581,6 +622,7 @@ function drawSquare(
       0,
       theme.accent,
     );
+
     fallback.addColorStop(
       1,
       theme.accentDark,
@@ -600,6 +642,7 @@ function drawSquare(
   ctx.restore();
 
   ctx.lineWidth = 8;
+
   ctx.strokeStyle =
     "rgba(255,255,255,0.96)";
 
@@ -611,17 +654,20 @@ function drawSquare(
     imageHeight,
     44,
   );
+
   ctx.stroke();
 
   ctx.fillStyle =
     "#24183d";
+
   ctx.textAlign =
     "center";
+
   ctx.font =
     "500 33px Inter, Arial, sans-serif";
 
   ctx.fillText(
-    theme.helper,
+    helper,
     width / 2,
     870,
   );
@@ -660,11 +706,12 @@ function drawSquare(
 
   ctx.fillStyle =
     "#ffffff";
+
   ctx.font =
     "900 38px Inter, Arial, sans-serif";
 
   ctx.fillText(
-    `${theme.cta}  →`,
+    `${cta}  →`,
     width / 2,
     970,
   );
@@ -684,6 +731,12 @@ function drawStory(
   image: HTMLImageElement | null,
   theme: ShareCardTheme,
 ) {
+  const {
+    label,
+    cta,
+    helper,
+  } = getShareCopy(source);
+
   const width = 1080;
   const height = 1920;
 
@@ -805,7 +858,7 @@ function drawStory(
     "center";
 
   ctx.fillText(
-    theme.label,
+    label,
     240,
     135,
   );
@@ -868,11 +921,12 @@ function drawStory(
 
   ctx.fillStyle =
     "rgba(255,255,255,0.84)";
+
   ctx.font =
     "500 34px Inter, Arial, sans-serif";
 
   ctx.fillText(
-    theme.helper,
+    helper,
     82,
     helperY,
   );
@@ -915,13 +969,15 @@ function drawStory(
 
   ctx.fillStyle =
     "#ffffff";
+
   ctx.font =
     "900 46px Inter, Arial, sans-serif";
+
   ctx.textAlign =
     "center";
 
   ctx.fillText(
-    `${theme.cta}  →`,
+    `${cta}  →`,
     width / 2,
     buttonY + 76,
   );
@@ -1056,6 +1112,7 @@ export async function downloadShareCard(
     );
 
   link.href = href;
+
   link.download =
     `aqryo-${sanitizeFileName(
       source.title,
@@ -1072,7 +1129,6 @@ export async function downloadShareCard(
     href,
   );
 }
-
 
 export async function createShareCardBlob(
   source: ShareCardSource,
