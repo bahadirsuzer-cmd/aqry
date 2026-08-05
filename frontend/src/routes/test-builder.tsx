@@ -741,36 +741,28 @@ function TestBuilderPage() {
       offerDescription.trim().length > 0);
 
   const canPublish = useMemo(
-    () =>
-      title.trim().length > 0 &&
-      description.trim().length >
-        0 &&
-      questions.length >= 2 &&
-      questionsAreValid &&
-      (
-        testMode === "score"
-          ? allAnswersSelected &&
-            answersLocked
-          : testMode === "spectrum"
-            ? true
-            : Boolean(sourceBlueprint)
-      ) &&
-      resultsAreValid &&
-      offerIsValid,
-    [
-      title,
-      description,
-      questions.length,
-      questionsAreValid,
-      allAnswersSelected,
-      answersLocked,
-      testMode,
-      sourceBlueprint,
-      resultsAreValid,
-      offerIsValid,
-    ],
-  );
-
+  () =>
+    title.trim().length > 0 &&
+    description.trim().length > 0 &&
+    questions.length >= 2 &&
+    questionsAreValid &&
+    (testMode === "score"
+      ? allAnswersSelected && answersLocked
+      : true) &&
+    resultsAreValid &&
+    offerIsValid,
+  [
+    title,
+    description,
+    questions.length,
+    questionsAreValid,
+    allAnswersSelected,
+    answersLocked,
+    testMode,
+    resultsAreValid,
+    offerIsValid,
+  ],
+);
   function invalidateAnswerKey() {
     setAnswersLocked(false);
   }
