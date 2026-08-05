@@ -123,25 +123,7 @@ export async function ensureExperienceShareAssets(
 export function getPublicShareUrl(
   experienceId: string,
 ) {
-  const supabaseUrl =
-    import.meta.env
-      .VITE_SUPABASE_URL as
-      | string
-      | undefined;
-
-  if (!supabaseUrl) {
-    throw new Error(
-      "VITE_SUPABASE_URL bulunamadı.",
-    );
-  }
-
-  const base =
-    supabaseUrl.replace(
-      /\/+$/,
-      "",
-    );
-
-  return `${base}/functions/v1/experience-share?id=${encodeURIComponent(
+  return `https://www.aqryo.com/share/${encodeURIComponent(
     experienceId,
   )}`;
 }
