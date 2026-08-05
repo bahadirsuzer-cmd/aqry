@@ -23,9 +23,7 @@ export const Route = createFileRoute(
 
     const { data: assets } =
       await supabase
-        .from(
-          "experience_share_assets",
-        )
+        .from("experience_share_assets")
         .select("square_url")
         .eq(
           "experience_id",
@@ -55,8 +53,7 @@ export const Route = createFileRoute(
           },
           {
             name: "description",
-            content:
-              "AQRYO Experience",
+            content: "AQRYO Experience",
           },
         ],
       };
@@ -85,8 +82,7 @@ export const Route = createFileRoute(
         content: title,
       },
       {
-        property:
-          "og:description",
+        property: "og:description",
         content: description,
       },
       {
@@ -99,16 +95,14 @@ export const Route = createFileRoute(
       },
       {
         name: "twitter:card",
-        content:
-          "summary_large_image",
+        content: "summary_large_image",
       },
       {
         name: "twitter:title",
         content: title,
       },
       {
-        name:
-          "twitter:description",
+        name: "twitter:description",
         content: description,
       },
     ];
@@ -118,6 +112,26 @@ export const Route = createFileRoute(
         {
           property: "og:image",
           content: imageUrl,
+        },
+        {
+          property: "og:image:secure_url",
+          content: imageUrl,
+        },
+        {
+          property: "og:image:type",
+          content: "image/png",
+        },
+        {
+          property: "og:image:width",
+          content: "1080",
+        },
+        {
+          property: "og:image:height",
+          content: "1080",
+        },
+        {
+          property: "og:image:alt",
+          content: title,
         },
         {
           name: "twitter:image",
