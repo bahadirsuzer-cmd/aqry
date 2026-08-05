@@ -43,6 +43,7 @@ import { Route as CreatorExperiencesExperienceIdRouteImport } from './routes/cre
 import { Route as CreatorCreatorIdRouteImport } from './routes/creator.$creatorId'
 import { Route as ExperienceExperienceIdRouteImport } from './routes/experience.$experienceId'
 import { Route as PublishSuccessExperienceIdRouteImport } from './routes/publish-success.$experienceId'
+import { Route as ShareImageExperienceIdRouteImport } from './routes/share-image.$experienceId'
 import { Route as ShareExperienceIdRouteImport } from './routes/share.$experienceId'
 import { Route as TestSlugRouteImport } from './routes/test/$slug'
 import { Route as TestSlugIndexRouteImport } from './routes/test.$slug.index'
@@ -222,6 +223,11 @@ const PublishSuccessExperienceIdRoute =
     path: '/publish-success/$experienceId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ShareImageExperienceIdRoute = ShareImageExperienceIdRouteImport.update({
+  id: '/share-image/$experienceId',
+  path: '/share-image/$experienceId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShareExperienceIdRoute = ShareExperienceIdRouteImport.update({
   id: '/share/$experienceId',
   path: '/share/$experienceId',
@@ -288,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/creator/$creatorId': typeof CreatorCreatorIdRoute
   '/experience/$experienceId': typeof ExperienceExperienceIdRoute
   '/publish-success/$experienceId': typeof PublishSuccessExperienceIdRoute
+  '/share-image/$experienceId': typeof ShareImageExperienceIdRoute
   '/share/$experienceId': typeof ShareExperienceIdRoute
   '/test/$slug': typeof TestSlugRouteWithChildren
   '/test/$slug/quiz': typeof TestSlugQuizRoute
@@ -330,6 +337,7 @@ export interface FileRoutesByTo {
   '/creator/$creatorId': typeof CreatorCreatorIdRoute
   '/experience/$experienceId': typeof ExperienceExperienceIdRoute
   '/publish-success/$experienceId': typeof PublishSuccessExperienceIdRoute
+  '/share-image/$experienceId': typeof ShareImageExperienceIdRoute
   '/share/$experienceId': typeof ShareExperienceIdRoute
   '/test/$slug/quiz': typeof TestSlugQuizRoute
   '/test/$slug/result': typeof TestSlugResultRoute
@@ -372,6 +380,7 @@ export interface FileRoutesById {
   '/creator/$creatorId': typeof CreatorCreatorIdRoute
   '/experience/$experienceId': typeof ExperienceExperienceIdRoute
   '/publish-success/$experienceId': typeof PublishSuccessExperienceIdRoute
+  '/share-image/$experienceId': typeof ShareImageExperienceIdRoute
   '/share/$experienceId': typeof ShareExperienceIdRoute
   '/test/$slug': typeof TestSlugRouteWithChildren
   '/test/$slug/quiz': typeof TestSlugQuizRoute
@@ -416,6 +425,7 @@ export interface FileRouteTypes {
     | '/creator/$creatorId'
     | '/experience/$experienceId'
     | '/publish-success/$experienceId'
+    | '/share-image/$experienceId'
     | '/share/$experienceId'
     | '/test/$slug'
     | '/test/$slug/quiz'
@@ -458,6 +468,7 @@ export interface FileRouteTypes {
     | '/creator/$creatorId'
     | '/experience/$experienceId'
     | '/publish-success/$experienceId'
+    | '/share-image/$experienceId'
     | '/share/$experienceId'
     | '/test/$slug/quiz'
     | '/test/$slug/result'
@@ -499,6 +510,7 @@ export interface FileRouteTypes {
     | '/creator/$creatorId'
     | '/experience/$experienceId'
     | '/publish-success/$experienceId'
+    | '/share-image/$experienceId'
     | '/share/$experienceId'
     | '/test/$slug'
     | '/test/$slug/quiz'
@@ -542,6 +554,7 @@ export interface RootRouteChildren {
   CreatorCreatorIdRoute: typeof CreatorCreatorIdRoute
   ExperienceExperienceIdRoute: typeof ExperienceExperienceIdRoute
   PublishSuccessExperienceIdRoute: typeof PublishSuccessExperienceIdRoute
+  ShareImageExperienceIdRoute: typeof ShareImageExperienceIdRoute
   ShareExperienceIdRoute: typeof ShareExperienceIdRoute
   TestSlugRoute: typeof TestSlugRouteWithChildren
   TestSlugPlayRoute: typeof TestSlugPlayRoute
@@ -787,6 +800,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublishSuccessExperienceIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/share-image/$experienceId': {
+      id: '/share-image/$experienceId'
+      path: '/share-image/$experienceId'
+      fullPath: '/share-image/$experienceId'
+      preLoaderRoute: typeof ShareImageExperienceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/share/$experienceId': {
       id: '/share/$experienceId'
       path: '/share/$experienceId'
@@ -883,6 +903,7 @@ const rootRouteChildren: RootRouteChildren = {
   CreatorCreatorIdRoute: CreatorCreatorIdRoute,
   ExperienceExperienceIdRoute: ExperienceExperienceIdRoute,
   PublishSuccessExperienceIdRoute: PublishSuccessExperienceIdRoute,
+  ShareImageExperienceIdRoute: ShareImageExperienceIdRoute,
   ShareExperienceIdRoute: ShareExperienceIdRoute,
   TestSlugRoute: TestSlugRouteWithChildren,
   TestSlugPlayRoute: TestSlugPlayRoute,
