@@ -13,7 +13,7 @@ export function PublicNavigation() {
     useState(false);
 
   return (
-    <header className="relative z-50 border-b border-black/[0.04] bg-white/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-[100] isolate border-b border-black/[0.04] bg-white/95 backdrop-blur-xl">
       <div className="mx-auto flex h-[76px] w-full max-w-[1440px] items-center justify-between px-5 sm:px-7 lg:px-10">
         <Link
           to="/"
@@ -58,7 +58,7 @@ export function PublicNavigation() {
       </div>
 
       {mobileOpen ? (
-        <div className="absolute inset-x-0 top-full border-b border-border bg-white px-5 py-4 shadow-[0_18px_45px_rgba(32,18,54,0.08)] lg:hidden">
+        <div className="absolute inset-x-0 top-full z-[110] border-b border-border bg-white px-5 py-4 shadow-[0_18px_45px_rgba(32,18,54,0.08)] lg:hidden">
           <nav className="mx-auto flex max-w-[720px] flex-col">
             {navItems.map((item) => (
               <a

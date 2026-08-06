@@ -13,7 +13,7 @@ const shareCards = [
       "from-[#1FAF5A] via-[#169c50] to-[#0d5f31]",
     pill: "WhatsApp",
     className:
-      "left-0 top-14 z-20 rotate-[-14deg] sm:left-2 lg:left-0 lg:top-20",
+      "left-0 top-14 z-[1] rotate-[-14deg] sm:left-2 lg:left-0 lg:top-20",
   },
   {
     id: "instagram",
@@ -28,7 +28,7 @@ const shareCards = [
       "from-[#ff7a18] via-[#ff3d77] to-[#7c3aed]",
     pill: "Instagram",
     className:
-      "left-20 top-0 z-40 rotate-[-4deg] sm:left-24 lg:left-28 lg:top-0",
+      "left-20 top-0 z-[3] rotate-[-4deg] sm:left-24 lg:left-28 lg:top-0",
   },
   {
     id: "x",
@@ -43,7 +43,7 @@ const shareCards = [
       "from-[#111827] via-[#1f2937] to-[#374151]",
     pill: "X",
     className:
-      "left-40 top-20 z-30 rotate-[8deg] sm:left-52 lg:left-[20rem] lg:top-24",
+      "left-40 top-20 z-[2] rotate-[8deg] sm:left-52 lg:left-[20rem] lg:top-24",
   },
   {
     id: "facebook",
@@ -58,7 +58,7 @@ const shareCards = [
       "from-[#1877F2] via-[#2563eb] to-[#1e3a8a]",
     pill: "Facebook",
     className:
-      "left-56 top-6 z-50 rotate-[15deg] sm:left-80 lg:left-[31rem] lg:top-10",
+      "left-56 top-6 z-[4] rotate-[15deg] sm:left-80 lg:left-[31rem] lg:top-10",
   },
 ];
 
@@ -72,9 +72,9 @@ export function HomeHero({
   authChecked = true,
 }: HomeHeroProps) {
   return (
-    <section className="border-b border-border/60 bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.10),_transparent_42%),linear-gradient(to_bottom,_#ffffff,_#fcfbff)]">
+    <section className="relative z-0 isolate overflow-hidden border-b border-border/60 bg-[radial-gradient(circle_at_top,_rgba(124,58,237,0.10),_transparent_42%),linear-gradient(to_bottom,_#ffffff,_#fcfbff)]">
       <div className="mx-auto grid w-full max-w-[1440px] gap-10 px-5 pb-14 pt-8 sm:px-7 sm:pb-16 sm:pt-10 lg:grid-cols-[minmax(0,1.02fr)_minmax(520px,0.98fr)] lg:items-center lg:gap-8 lg:px-10 lg:pb-20 lg:pt-12">
-        <div className="max-w-[760px]">
+        <div className="relative z-[2] max-w-[760px]">
           <div className="inline-flex rounded-full border border-primary/10 bg-primary/[0.05] px-4 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-primary sm:text-xs">
             Test · Hikâye · Bulmaca · Deneyim
           </div>
@@ -110,21 +110,21 @@ export function HomeHero({
             </a>
 
             {authChecked ? (
-  <Link
-    to={
-      isCreator
-        ? "/creator-studio"
-        : "/creator-auth"
-    }
-    className="inline-flex h-14 items-center justify-center rounded-full border border-border bg-white px-7 text-sm font-black text-[#140f26] transition hover:border-primary/30 hover:text-primary"
-  >
-    {isCreator
-      ? "Creator Studio’ya dön"
-      : "Creator olarak başla"}
-  </Link>
-) : (
-  <div className="h-14 w-[190px] rounded-full border border-border bg-white" />
-)}
+              <Link
+                to={
+                  isCreator
+                    ? "/creator-studio"
+                    : "/creator-auth"
+                }
+                className="inline-flex h-14 items-center justify-center rounded-full border border-border bg-white px-7 text-sm font-black text-[#140f26] transition hover:border-primary/30 hover:text-primary"
+              >
+                {isCreator
+                  ? "Creator Studio’ya dön"
+                  : "Creator olarak başla"}
+              </Link>
+            ) : (
+              <div className="h-14 w-[190px] rounded-full border border-border bg-white" />
+            )}
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -137,6 +137,7 @@ export function HomeHero({
                 <p className="text-[13px] font-black text-[#140f26]">
                   Kod yazmadan oluştur
                 </p>
+
                 <p className="text-[11px] text-muted-foreground">
                   Dakikalar içinde hazırla
                 </p>
@@ -152,6 +153,7 @@ export function HomeHero({
                 <p className="text-[13px] font-black text-[#140f26]">
                   Kendi mecranda paylaş
                 </p>
+
                 <p className="text-[11px] text-muted-foreground">
                   WhatsApp, X, Instagram,
                   Facebook
@@ -168,6 +170,7 @@ export function HomeHero({
                 <p className="text-[13px] font-black text-[#140f26]">
                   Hediye ve tekliflerle kazan
                 </p>
+
                 <p className="text-[11px] text-muted-foreground">
                   Etkileşimi gelire çevir
                 </p>
@@ -176,7 +179,7 @@ export function HomeHero({
           </div>
         </div>
 
-        <div className="relative">
+        <div className="relative z-[1]">
           <div className="mb-4 text-center lg:mb-6">
             <p className="text-[12px] font-black uppercase tracking-[0.14em] text-primary">
               AQRYO’da oluştur
@@ -188,8 +191,8 @@ export function HomeHero({
             </p>
           </div>
 
-          <div className="relative mx-auto h-[350px] w-[330px] sm:h-[390px] sm:w-[470px] lg:h-[500px] lg:w-[650px]">
-            <div className="absolute inset-0 rounded-[40px] bg-[radial-gradient(circle_at_center,_rgba(124,58,237,0.12),_transparent_62%)] blur-2xl" />
+          <div className="relative z-0 mx-auto h-[350px] w-[330px] sm:h-[390px] sm:w-[470px] lg:h-[500px] lg:w-[650px]">
+            <div className="absolute inset-0 z-0 rounded-[40px] bg-[radial-gradient(circle_at_center,_rgba(124,58,237,0.12),_transparent_62%)] blur-2xl" />
 
             {shareCards.map((card) => (
               <article
