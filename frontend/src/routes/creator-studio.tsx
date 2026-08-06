@@ -685,6 +685,180 @@ type CoreResultCardConfig = {
   available: boolean;
 };
 
+
+type InspirationVisualType =
+  | "love"
+  | "fan"
+  | "mind"
+  | "story"
+  | "spot"
+  | "movie"
+  | "code";
+
+function InspirationCardVisual({
+  type,
+  featured = false,
+}: {
+  type: InspirationVisualType;
+  featured?: boolean;
+}) {
+  const frameClass = featured
+    ? "h-[220px] w-full rounded-[28px]"
+    : "h-[150px] w-full rounded-[22px]";
+
+  if (type === "love") {
+    return (
+      <div
+        className={`${frameClass} relative overflow-hidden border border-rose-200 bg-gradient-to-br from-rose-100 via-fuchsia-50 to-pink-100`}
+      >
+        <div className="absolute -left-10 top-5 h-32 w-32 rounded-full bg-rose-200/60 blur-2xl" />
+        <div className="absolute right-2 top-2 h-28 w-28 rounded-full bg-fuchsia-200/60 blur-2xl" />
+        <div className="absolute left-6 top-6 rounded-full border border-white/80 bg-white/85 px-3 py-1 text-[12px] font-black uppercase tracking-[0.1em] text-rose-600">
+          Uyum testi
+        </div>
+
+        <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-6">
+          <div>
+            <p className="text-[14px] font-bold text-rose-600">
+              İki kişi · tek sonuç
+            </p>
+            <p className="mt-1 text-[30px] font-black leading-none tracking-[-0.05em] text-rose-950">
+              Aşk Metre
+            </p>
+          </div>
+
+          <svg
+            viewBox="0 0 180 140"
+            className="h-[120px] w-[160px] shrink-0"
+            fill="none"
+            aria-hidden="true"
+          >
+            <circle cx="55" cy="62" r="33" fill="#fecdd3" />
+            <circle cx="125" cy="62" r="33" fill="#e9d5ff" />
+            <circle cx="55" cy="51" r="13" fill="#fb7185" />
+            <path d="M30 105C35 82 44 74 55 74C66 74 75 82 80 105" fill="#f43f5e" />
+            <circle cx="125" cy="51" r="13" fill="#a855f7" />
+            <path d="M100 105C105 82 114 74 125 74C136 74 145 82 150 105" fill="#9333ea" />
+            <path
+              d="M90 118C70 104 58 92 58 74C58 63 66 55 77 55C84 55 89 58 90 64C91 58 96 55 103 55C114 55 122 63 122 74C122 92 110 104 90 118Z"
+              fill="#e11d48"
+            />
+          </svg>
+        </div>
+      </div>
+    );
+  }
+
+  if (type === "fan") {
+    return (
+      <div className={`${frameClass} relative overflow-hidden border border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50`}>
+        <svg viewBox="0 0 320 160" className="h-full w-full" fill="none" aria-hidden="true">
+          <rect x="0" y="0" width="320" height="160" rx="22" fill="url(#fan-bg)" />
+          <defs>
+            <linearGradient id="fan-bg" x1="0" y1="0" x2="320" y2="160" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#fffbeb" />
+              <stop offset="1" stopColor="#fff7ed" />
+            </linearGradient>
+          </defs>
+          <path d="M128 30H192V50C192 72 174 90 152 90H168C146 90 128 72 128 50V30Z" fill="#f59e0b" />
+          <path d="M142 90H178L172 114H148L142 90Z" fill="#d97706" />
+          <rect x="151" y="112" width="18" height="18" rx="5" fill="#92400e" />
+          <rect x="137" y="128" width="46" height="8" rx="4" fill="#78350f" />
+          <path d="M118 42H128V54C128 67 118 77 105 77H95V58C95 49 102 42 111 42H118Z" fill="#fbbf24" />
+          <path d="M192 42H202C211 42 218 49 218 58V77H208C195 77 192 67 192 54V42Z" fill="#fbbf24" />
+          <circle cx="248" cy="45" r="18" fill="#fde68a" />
+          <path d="M248 34V56M237 45H259" stroke="#d97706" strokeWidth="5" strokeLinecap="round" />
+          <rect x="34" y="118" width="252" height="10" rx="5" fill="#fde68a" />
+          <rect x="34" y="118" width="196" height="10" rx="5" fill="#f59e0b" />
+        </svg>
+      </div>
+    );
+  }
+
+  if (type === "mind") {
+    return (
+      <div className={`${frameClass} relative overflow-hidden border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50`}>
+        <svg viewBox="0 0 320 160" className="h-full w-full" fill="none" aria-hidden="true">
+          <circle cx="160" cy="79" r="49" fill="#ede9fe" />
+          <path d="M135 96V60C135 43 146 32 160 32C174 32 185 43 185 60V96H175V121H145V96H135Z" fill="#7c3aed" />
+          <circle cx="149" cy="63" r="6" fill="#c4b5fd" />
+          <circle cx="173" cy="56" r="6" fill="#c4b5fd" />
+          <circle cx="171" cy="80" r="6" fill="#f0abfc" />
+          <circle cx="151" cy="86" r="6" fill="#f0abfc" />
+          <path d="M149 63L173 56L171 80L151 86L149 63Z" stroke="#f5d0fe" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="70" cy="42" r="12" fill="#ddd6fe" />
+          <circle cx="250" cy="112" r="16" fill="#f5d0fe" />
+        </svg>
+      </div>
+    );
+  }
+
+  if (type === "story") {
+    return (
+      <div className={`${frameClass} relative overflow-hidden border border-sky-200 bg-gradient-to-br from-sky-50 via-white to-indigo-50`}>
+        <svg viewBox="0 0 320 160" className="h-full w-full" fill="none" aria-hidden="true">
+          <rect x="58" y="35" width="90" height="88" rx="18" fill="#dbeafe" stroke="#93c5fd" strokeWidth="3" transform="rotate(-7 58 35)" />
+          <rect x="116" y="25" width="90" height="98" rx="18" fill="#e0e7ff" stroke="#a5b4fc" strokeWidth="3" transform="rotate(5 116 25)" />
+          <rect x="172" y="40" width="90" height="84" rx="18" fill="white" stroke="#bae6fd" strokeWidth="3" />
+          <rect x="189" y="58" width="56" height="8" rx="4" fill="#7dd3fc" />
+          <rect x="189" y="75" width="44" height="7" rx="3.5" fill="#c7d2fe" />
+          <rect x="189" y="91" width="51" height="7" rx="3.5" fill="#c7d2fe" />
+          <circle cx="95" cy="77" r="18" fill="#38bdf8" />
+          <path d="M89 68L105 77L89 86V68Z" fill="white" />
+        </svg>
+      </div>
+    );
+  }
+
+  if (type === "spot") {
+    return (
+      <div className={`${frameClass} relative overflow-hidden border border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-teal-50`}>
+        <svg viewBox="0 0 320 160" className="h-full w-full" fill="none" aria-hidden="true">
+          <rect x="44" y="30" width="170" height="100" rx="20" fill="white" stroke="#a7f3d0" strokeWidth="3" />
+          <circle cx="82" cy="62" r="16" fill="#6ee7b7" />
+          <rect x="118" y="48" width="64" height="28" rx="10" fill="#d1fae5" />
+          <path d="M69 111L101 83L130 103L153 81L194 118H69V111Z" fill="#99f6e4" />
+          <circle cx="221" cy="92" r="29" stroke="#059669" strokeWidth="8" />
+          <path d="M242 113L272 143" stroke="#059669" strokeWidth="8" strokeLinecap="round" />
+          <circle cx="184" cy="54" r="8" fill="#fb7185" />
+        </svg>
+      </div>
+    );
+  }
+
+  if (type === "movie") {
+    return (
+      <div className={`${frameClass} relative overflow-hidden border border-fuchsia-200 bg-gradient-to-br from-fuchsia-50 via-white to-pink-50`}>
+        <svg viewBox="0 0 320 160" className="h-full w-full" fill="none" aria-hidden="true">
+          <rect x="55" y="37" width="210" height="92" rx="20" fill="white" stroke="#f0abfc" strokeWidth="3" />
+          <path d="M55 58H265" stroke="#f5d0fe" strokeWidth="18" />
+          <path d="M72 40L90 58M112 40L130 58M152 40L170 58M192 40L210 58M232 40L250 58" stroke="#c026d3" strokeWidth="7" strokeLinecap="round" />
+          <circle cx="160" cy="94" r="27" fill="#d946ef" />
+          <path d="M151 80L174 94L151 108V80Z" fill="white" />
+          <circle cx="241" cy="106" r="14" fill="#fce7f3" />
+          <path d="M236 106L240 110L247 102" stroke="#db2777" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${frameClass} relative overflow-hidden border border-cyan-200 bg-gradient-to-br from-cyan-50 via-white to-blue-50`}>
+      <svg viewBox="0 0 320 160" className="h-full w-full" fill="none" aria-hidden="true">
+        <rect x="48" y="29" width="108" height="108" rx="22" fill="white" stroke="#a5f3fc" strokeWidth="3" />
+        {[0,1,2,3,4,5,6,7,8].map((i) => {
+          const x = 66 + (i % 3) * 28;
+          const y = 47 + Math.floor(i / 3) * 28;
+          return <rect key={i} x={x} y={y} width="16" height="16" rx="4" fill={i % 2 === 0 ? "#67e8f9" : "#cffafe"} />;
+        })}
+        <rect x="191" y="66" width="66" height="56" rx="14" fill="#0891b2" />
+        <path d="M205 66V52C205 41 213 33 224 33C235 33 243 41 243 52V66" stroke="#0891b2" strokeWidth="8" strokeLinecap="round" />
+        <circle cx="224" cy="91" r="8" fill="white" />
+      </svg>
+    </div>
+  );
+}
+
 function CreatorStudioPage() {
   const [loading, setLoading] =
     useState(true);
@@ -1018,6 +1192,7 @@ function CreatorStudioPage() {
       action: () =>
         startFreshBuilder("compatibility"),
       featured: true,
+      visual: "love" as InspirationVisualType,
     },
     {
       label: "SEVİYE",
@@ -1025,6 +1200,7 @@ function CreatorStudioPage() {
       description:
         "Tutku, davranış ve bağlılık sorularıyla takipçinin fanatiklik seviyesini göster.",
       action: startSpectrumBuilder,
+      visual: "fan" as InspirationVisualType,
     },
     {
       label: "KİŞİLİK",
@@ -1033,6 +1209,7 @@ function CreatorStudioPage() {
       description:
         "Cevaplardan merak uyandıran kişilik sonuçları üret.",
       action: startArchetypeBuilder,
+      visual: "mind" as InspirationVisualType,
     },
     {
       label: "HİKÂYE",
@@ -1041,6 +1218,7 @@ function CreatorStudioPage() {
       description:
         "Merak duygusuyla kullanıcıyı sonuna kadar taşı.",
       action: startStoryBuilder,
+      visual: "story" as InspirationVisualType,
     },
     {
       label: "BULMACA",
@@ -1048,6 +1226,7 @@ function CreatorStudioPage() {
       description:
         "Hızlı çözülen, paylaşılabilir görsel içerikler üret.",
       action: startGuessBuilder,
+      visual: "spot" as InspirationVisualType,
     },
     {
       label: "ÖNERİ",
@@ -1055,6 +1234,15 @@ function CreatorStudioPage() {
       description:
         "Cevaplara göre kişisel bir sonuç veya öneri göster.",
       action: startArchetypeBuilder,
+      visual: "movie" as InspirationVisualType,
+    },
+    {
+      label: "ŞİFRE",
+      title: "Şifreyi çöz",
+      description:
+        "Kod, ipucu ve mantık adımlarıyla çözülen bulmacalar üret.",
+      action: startGuessBuilder,
+      visual: "code" as InspirationVisualType,
     },
   ];
 
@@ -1323,44 +1511,7 @@ function CreatorStudioPage() {
             </section>
 
             {manualExpanded ? (
-              <section
-                id="manual-create"
-                className="mt-10 scroll-mt-36"
-              >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                  <div>
-                    <p className="text-[12px] font-black uppercase tracking-[0.15em] text-primary">
-                      Manuel oluştur · sınırsız
-                    </p>
-
-                    <h2 className="mt-2 text-[32px] font-black tracking-[-0.05em]">
-                      Nasıl bir içerik oluşturacaksın?
-                    </h2>
-                  </div>
-
-                  <p className="max-w-[560px] text-[14px] font-medium leading-6 text-muted-foreground sm:text-right">
-                    Yapını seç, içeriğini adım adım hazırla ve yayınla. Manuel üretimde günlük sınır yok.
-                  </p>
-                </div>
-
-                <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {manualCards.map(
-                    ({ key, ...card }, index) => (
-                      <CoreResultCard
-                        key={key}
-                        {...card}
-                        prominent={
-                          index === 1 ||
-                          index === 4
-                        }
-                      />
-                    ),
-                  )}
-                </div>
-              </section>
-            ) : null}
-
-            <section className="mt-12">
+              <section className="mt-12">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="text-[12px] font-black uppercase tracking-[0.15em] text-primary">
@@ -1389,44 +1540,67 @@ function CreatorStudioPage() {
                       }`}
                     >
                       {example.featured ? (
-                        <span className="absolute -right-9 top-5 rotate-45 bg-red-600 px-12 py-2 text-[11px] font-black tracking-[0.12em] text-white shadow-sm">
+                        <span className="absolute -right-9 top-5 z-20 rotate-45 bg-red-600 px-12 py-2 text-[11px] font-black tracking-[0.12em] text-white shadow-sm">
                           ÖZEL
                         </span>
                       ) : null}
 
-                      <p className={`text-[12px] font-black uppercase tracking-[0.12em] ${
-                        example.featured
-                          ? "text-rose-600"
-                          : "text-primary"
-                      }`}>
-                        {example.label}
-                      </p>
-                      <h3
-                        className={`mt-3 font-black leading-tight tracking-[-0.035em] ${
+                      <div
+                        className={
                           example.featured
-                            ? "text-[26px] text-rose-950 sm:text-[30px]"
-                            : "text-[20px]"
-                        }`}
+                            ? "grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center"
+                            : ""
+                        }
                       >
-                        {example.title}
-                      </h3>
-                      <p className="mt-2 text-[13px] font-medium leading-6 text-muted-foreground">
-                        {example.description}
-                      </p>
-                      <span
-                        className={`mt-5 inline-flex text-[13px] font-black ${
-                          example.featured
-                            ? "text-rose-600"
-                            : "text-primary"
-                        }`}
-                      >
-                        Bunun gibi oluştur →
-                      </span>
+                        <div>
+                          <p
+                            className={`text-[12px] font-black uppercase tracking-[0.12em] ${
+                              example.featured
+                                ? "text-rose-600"
+                                : "text-primary"
+                            }`}
+                          >
+                            {example.label}
+                          </p>
+
+                          <h3
+                            className={`mt-3 font-black leading-tight tracking-[-0.035em] ${
+                              example.featured
+                                ? "text-[30px] text-rose-950 sm:text-[36px]"
+                                : "text-[20px]"
+                            }`}
+                          >
+                            {example.title}
+                          </h3>
+
+                          <p className="mt-2 text-[13px] font-medium leading-6 text-muted-foreground">
+                            {example.description}
+                          </p>
+
+                          <span
+                            className={`mt-5 inline-flex text-[13px] font-black ${
+                              example.featured
+                                ? "text-rose-600"
+                                : "text-primary"
+                            }`}
+                          >
+                            Bunun gibi oluştur →
+                          </span>
+                        </div>
+
+                        <div className={example.featured ? "min-w-0" : "mt-5"}>
+                          <InspirationCardVisual
+                            type={example.visual}
+                            featured={Boolean(example.featured)}
+                          />
+                        </div>
+                      </div>
                     </button>
                   ),
                 )}
               </div>
             </section>
+            ) : null}
           </>
         )}
       </div>
