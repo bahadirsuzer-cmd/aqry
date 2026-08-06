@@ -44,8 +44,9 @@ export function ImageUploader({
       null,
     );
 
-  const [zoom, setZoom] =
-    useState(1);
+  // 10–300%. 100% = görselin tamamı 16:9 alana sığar.
+  const [zoomPercent, setZoomPercent] =
+    useState(100);
 
   const [positionX, setPositionX] =
     useState(50);
@@ -71,7 +72,7 @@ export function ImageUploader({
     }
 
     setEditor(null);
-    setZoom(1);
+    setZoomPercent(100);
     setPositionX(50);
     setPositionY(50);
 
@@ -121,13 +122,12 @@ export function ImageUploader({
       previewUrl,
     });
 
-    setZoom(1);
+    setZoomPercent(100);
     setPositionX(50);
     setPositionY(50);
   }
 
-  async function createCroppedFile(
-    file: File,
+  async function createAdjustedFile(
     previewUrl: string,
   ) {
     const image =
@@ -150,7 +150,9 @@ export function ImageUploader({
       );
     }
 
-    const baseScale = Math.max(
+    // 100% = görselin tamamını kadraja sığdır.
+    // Böylece yatay/dikey görseller kesilmeden başlayabilir.
+    const fitScale = Math.min(
       OUTPUT_WIDTH /
         image.naturalWidth,
       OUTPUT_HEIGHT /
@@ -158,7 +160,8 @@ export function ImageUploader({
     );
 
     const scale =
-      baseScale * zoom;
+      fitScale *
+      (zoomPercent / 100);
 
     const renderedWidth =
       image.naturalWidth * scale;
@@ -166,28 +169,34 @@ export function ImageUploader({
     const renderedHeight =
       image.naturalHeight * scale;
 
-    const overflowX =
-      Math.max(
-        0,
-        renderedWidth -
-          OUTPUT_WIDTH,
-      );
+    const centeredX =
+      (OUTPUT_WIDTH -
+        renderedWidth) /
+      2;
 
-    const overflowY =
-      Math.max(
-        0,
-        renderedHeight -
-          OUTPUT_HEIGHT,
-      );
+    const centeredY =
+      (OUTPUT_HEIGHT -
+        renderedHeight) /
+      2;
+
+    // Konum slider'ları, görseli kadrajın yarısı kadar
+    // sağa-sola / yukarı-aşağı taşıyabilir.
+    const shiftX =
+      ((positionX - 50) / 50) *
+      (OUTPUT_WIDTH / 2);
+
+    const shiftY =
+      ((positionY - 50) / 50) *
+      (OUTPUT_HEIGHT / 2);
 
     const drawX =
-      -overflowX *
-      (positionX / 100);
+      centeredX + shiftX;
 
     const drawY =
-      -overflowY *
-      (positionY / 100);
+      centeredY + shiftY;
 
+    // Çıktıyı şeffaf PNG yapıyoruz.
+    // Görsel küçültülürse boş alanlarda builder'ın kapak rengi görünür.
     context.clearRect(
       0,
       0,
@@ -203,29 +212,19 @@ export function ImageUploader({
       renderedHeight,
     );
 
-    const outputType =
-      file.type === "image/png"
-        ? "image/png"
-        : "image/jpeg";
-
     const blob =
       await canvasToBlob(
         canvas,
-        outputType,
+        "image/png",
       );
-
-    const extension =
-      outputType === "image/png"
-        ? "png"
-        : "jpg";
 
     return new File(
       [
         blob,
       ],
-      `aqryo-cover-${crypto.randomUUID()}.${extension}`,
+      `aqryo-cover-${crypto.randomUUID()}.png`,
       {
-        type: outputType,
+        type: "image/png",
       },
     );
   }
@@ -248,16 +247,15 @@ export function ImageUploader({
         );
       }
 
-      const croppedFile =
-        await createCroppedFile(
-          editor.file,
+      const adjustedFile =
+        await createAdjustedFile(
           editor.previewUrl,
         );
 
       const uploaded =
         await uploadExperienceImage(
           creator.id,
-          croppedFile,
+          adjustedFile,
         );
 
       onChange(
@@ -282,6 +280,9 @@ export function ImageUploader({
     resetEditor();
     setError(null);
   }
+
+  const previewScale =
+    zoomPercent / 100;
 
   return (
     <div>
@@ -325,9 +326,9 @@ export function ImageUploader({
                 </p>
 
                 <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
-                  Yakınlaştır ve görselin
-                  görünmesini istediğin
-                  alanı belirle.
+                  Görseli küçült,
+                  büyüt ve kadraj
+                  içindeki yerini belirle.
                 </p>
               </div>
 
@@ -343,11 +344,13 @@ export function ImageUploader({
                 src={editor.previewUrl}
                 alt="Düzenlenen görsel önizlemesi"
                 draggable={false}
-                className="absolute inset-0 h-full w-full select-none object-cover"
+                className="absolute left-1/2 top-1/2 max-h-none max-w-none select-none object-contain"
                 style={{
-                  objectPosition: `${positionX}% ${positionY}%`,
-                  transform: `scale(${zoom})`,
-                  transformOrigin: `${positionX}% ${positionY}%`,
+                  width: "100%",
+                  height: "100%",
+                  transform: `translate(-50%, -50%) translate(${(positionX - 50) * 1}%, ${(positionY - 50) * 1}%) scale(${previewScale})`,
+                  transformOrigin:
+                    "center center",
                 }}
               />
 
@@ -362,25 +365,22 @@ export function ImageUploader({
               <label>
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-[12px] font-bold text-foreground">
-                    Yakınlaştır
+                    Görsel boyutu
                   </span>
 
                   <span className="text-[12px] font-black text-primary">
-                    {Math.round(
-                      zoom * 100,
-                    )}
-                    %
+                    {zoomPercent}%
                   </span>
                 </div>
 
                 <input
                   type="range"
-                  min="1"
-                  max="2.5"
-                  step="0.01"
-                  value={zoom}
+                  min="10"
+                  max="300"
+                  step="1"
+                  value={zoomPercent}
                   onChange={(event) =>
-                    setZoom(
+                    setZoomPercent(
                       Number(
                         event.target
                           .value,
@@ -492,14 +492,15 @@ export function ImageUploader({
             <img
               src={value}
               alt="Yüklenen görsel önizlemesi"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-contain"
             />
           </div>
 
           <div className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-[12px] leading-5 text-muted-foreground">
               Görsel hazır. Yeni bir
-              görsel yükleyip konumunu
+              görsel yükleyip boyutunu
+              ve konumunu yeniden
               ayarlayabilirsin.
             </p>
 
@@ -568,7 +569,6 @@ function loadImage(
 function canvasToBlob(
   canvas: HTMLCanvasElement,
   type: string,
-  quality = 0.92,
 ) {
   return new Promise<Blob>(
     (resolve, reject) => {
@@ -586,7 +586,6 @@ function canvasToBlob(
           resolve(blob);
         },
         type,
-        quality,
       );
     },
   );
