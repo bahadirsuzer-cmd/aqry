@@ -12,9 +12,9 @@ import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { ImageUploader } from "@/components/creator/ImageUploader";
 
 export const Route = createFileRoute(
-  "/test-builder",
+  "/recommendation-builder",
 )({
-  component: TestBuilderPage,
+  component: RecommendationBuilderPage,
 });
 
 type BuilderPanel =
@@ -48,7 +48,7 @@ type ResultDefinition = {
 
 const MAX_OFFER_PRICE = 499;
 const BUILDER_STORAGE_KEY =
-  "aqry-test-builder";
+  "aqry-recommendation-builder";
 
 const initialQuestions: Question[] = [
   {
@@ -78,14 +78,14 @@ const QUESTION_EXAMPLES: Record<
   string[]
 > = {
   score: [
-    "Örn. Türkiye'nin başkenti hangisidir?",
-    "Örn. Bu film hangi yılda vizyona girdi?",
-    "Örn. Hangisi doğru bilgidir?",
+    "Örn. Hangi tür seni daha çok içine çeker?",
+    "Örn. Bir içerikte en çok ne ararsın?",
+    "Örn. Ne kadar zaman ayırmak istersin?",
   ],
   profile: [
-    "Örn. Boş bir günün olsa hangisini seçersin?",
-    "Örn. Bir karar verirken seni en çok ne etkiler?",
-    "Örn. Tatilde hangi ortam sana daha çok uyar?",
+    "Örn. Bu akşam nasıl bir ruh hâlindesin?",
+    "Örn. Tempo olarak hangisini tercih edersin?",
+    "Örn. Seni en çok hangi özellik etkiler?",
   ],
 };
 
@@ -94,56 +94,45 @@ const TOPIC_IDEAS: Record<
   string[]
 > = {
   score: [
-    "Genel kültür",
-    "Spor",
-    "Sinema & dizi",
-    "Müzik",
-    "Tarih",
-    "Teknoloji",
+    "Film",
+    "Dizi",
+    "Kitap",
+    "Ürün",
+    "Kurs",
+    "Mekân",
   ],
   profile: [
-    "Karakter",
-    "Film önerisi",
-    "İlişki tarzı",
-    "Sosyallik",
-    "Tatil tipi",
-    "Çalışma stili",
+    "Film / dizi",
+    "Ürün",
+    "Eğitim / kurs",
+    "Şehir / tatil",
+    "Restoran / mekân",
+    "Kitap / müzik",
   ],
 };
 
-const initialResults: ResultDefinition[] =
-  [
-    {
-      id: "expert",
-      range: "%80–100",
-      title: "Kusursuz",
-      description:
-        "Harika sonuç. Soruların büyük bölümünü doğru cevapladın.",
-    },
-    {
-      id: "strong",
-      range: "%60–79",
-      title: "Çok iyi",
-      description:
-        "Güçlü bir skor. Birkaç soruda daha dikkatli olsan kusursuza çok yakınsın.",
-    },
-    {
-      id: "casual",
-      range: "%40–59",
-      title: "İyi başlangıç",
-      description:
-        "İyi gidiyorsun. Birkaç doğru cevap daha skorunu hızla yükseltir.",
-    },
-    {
-      id: "rookie",
-      range: "%0–39",
-      title: "Bir tur daha?",
-      description:
-        "Bu tur biraz zorladı. Tekrar denersen skorunu yükseltebilirsin.",
-    },
-  ];
+const initialResults: ResultDefinition[] = [
+  {
+    id: "recommendation_1",
+    range: "",
+    title: "",
+    description: "",
+  },
+  {
+    id: "recommendation_2",
+    range: "",
+    title: "",
+    description: "",
+  },
+  {
+    id: "recommendation_3",
+    range: "",
+    title: "",
+    description: "",
+  },
+];
 
-function TestBuilderPage() {
+function RecommendationBuilderPage() {
   const [activePanel, setActivePanel] =
     useState<BuilderPanel>("content");
 
@@ -191,7 +180,7 @@ function TestBuilderPage() {
   ] = useState("");
 
   const [coverLabel, setCoverLabel] =
-    useState("Test");
+    useState("Öneri");
 
   const [results, setResults] =
     useState<ResultDefinition[]>(
@@ -201,18 +190,18 @@ function TestBuilderPage() {
   const [
     offerEnabled,
     setOfferEnabled,
-  ] = useState(true);
+  ] = useState(false);
 
   const [offerTitle, setOfferTitle] =
     useState(
-      "Detaylı performans raporunu gör",
+      "Alternatif önerileri de gör",
     );
 
   const [
     offerDescription,
     setOfferDescription,
   ] = useState(
-    "Hangi konularda güçlü olduğunu ve hangi başlıklarda zorlandığını ayrıntılı gör.",
+    "Sana uyan diğer seçenekleri ve nedenlerini de gör.",
   );
 
   const [offerPrice, setOfferPrice] =
@@ -303,12 +292,7 @@ function TestBuilderPage() {
         );
       }
 
-      if (
-        saved.testMode === "score" ||
-        saved.testMode === "profile"
-      ) {
-        setTestMode(saved.testMode);
-      }
+      setTestMode("profile");
 
       if (
         saved.profileAssignments &&
@@ -1457,59 +1441,18 @@ function ContentEditor({
   return (
     <section>
       <SectionHeader
-        eyebrow="İçerik"
-        title="Testini oluştur"
-        description="Önce testin nasıl sonuçlanacağını seç; sonra kapağı, soruları ve seçenekleri düzenle."
+        eyebrow="Öneri"
+        title="Öneri içeriğini oluştur"
+        description="Önce ne önereceğini belirle. Sonra tercih sorularını ve kullanıcıya göstereceğin önerileri hazırla."
       />
 
-      <div className="mt-5 rounded-[22px] border border-border bg-white p-5">
+      <div className="mt-5 rounded-[22px] border border-cyan-200 bg-cyan-50/50 p-5">
         <p className="text-sm font-black">
-          Sonuç mantığı
+          Nasıl çalışır?
         </p>
-
-        <p className="mt-1 text-[10px] leading-4 text-muted-foreground">
-          AQRY seçtiğin yapıya göre sonucu hesaplar. Teknik puanlama ayrıntılarını creator görmez.
+        <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+          Kullanıcı birkaç tercih sorusunu cevaplar. AQRYO cevaplarına en çok uyan seçeneği önerir ve neden uygun olduğunu sonuçta gösterir.
         </p>
-
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <button
-            type="button"
-            onClick={() =>
-              changeTestMode("score")
-            }
-            className={`rounded-[18px] border p-4 text-left transition ${
-              testMode === "score"
-                ? "border-primary bg-primary/[0.04]"
-                : "border-border bg-background hover:border-primary/30"
-            }`}
-          >
-            <p className="text-[11px] font-black">
-              Doğru cevaplara göre skor
-            </p>
-            <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
-              Bilgi testleri ve doğru/yanlış puanlanan quizler.
-            </p>
-          </button>
-
-          <button
-            type="button"
-            onClick={() =>
-              changeTestMode("profile")
-            }
-            className={`rounded-[18px] border p-4 text-left transition ${
-              testMode === "profile"
-                ? "border-primary bg-primary/[0.04]"
-                : "border-border bg-background hover:border-primary/30"
-            }`}
-          >
-            <p className="text-[11px] font-black">
-              Cevaplara göre kişisel sonuç
-            </p>
-            <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
-              Kişilik, karakter, yaşam tarzı ve “hangi X’sin?” testleri.
-            </p>
-          </button>
-        </div>
       </div>
 
       <div className="mt-4 grid gap-4">
@@ -1548,7 +1491,7 @@ function ContentEditor({
               <div className="relative z-10 flex h-full flex-col justify-between p-4 text-white">
                 <span className="w-fit rounded-full bg-white/15 px-3 py-1 text-[8px] font-bold uppercase tracking-[0.12em] backdrop-blur-md">
                   {coverLabel ||
-                    "Test"}
+                    "Öneri"}
                 </span>
 
                 <div>
@@ -1665,11 +1608,11 @@ function ContentEditor({
 
         <div className="rounded-[22px] border border-primary/15 bg-primary/[0.025] p-5">
           <p className="text-sm font-black">
-            Konu fikri lazım mı?
+            Ne önerebilirsin?
           </p>
 
           <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
-            Bunlar sadece fikir vermek için. İstediğin konuda içerik oluşturabilirsin.
+            Bir kategori seçmek zorunda değilsin. Kullanıcıya sonunda somut bir seçenek önerebildiğin her konuda kullanabilirsin.
           </p>
 
           <div className="mt-3 flex flex-wrap gap-2">
@@ -1710,9 +1653,7 @@ function ContentEditor({
                   )
                 }
                 placeholder={
-                  testMode === "score"
-                    ? "Örn. 10 soruda ne kadar tarih biliyorsun?"
-                    : "Örn. Hangi film karakterisin?"
+                  "Örn. Bu akşam hangi filmi izlemelisin?"
                 }
                 className="mt-2 h-11 w-full rounded-[15px] border border-border bg-background px-4 text-sm font-bold outline-none focus:border-primary"
               />
@@ -1738,9 +1679,7 @@ function ContentEditor({
                   )
                 }
                 placeholder={
-                  testMode === "score"
-                    ? "Kullanıcıya testin ne hakkında olduğunu ve sonunda ne göreceğini kısaca anlat."
-                    : "Cevaplara göre nasıl bir kişisel sonuç veya öneri çıkacağını kısaca anlat."
+                  "Kullanıcının birkaç tercihini öğren ve sonunda ona en uygun seçeneği öner."
                 }
                 className="mt-2 w-full resize-none rounded-[15px] border border-border bg-background px-4 py-3 text-xs leading-5 outline-none focus:border-primary"
               />
@@ -2085,14 +2024,14 @@ function ProfileMappingEditor({
       <SectionHeader
         eyebrow="Sonuç eşleştirme"
         title="Her cevap neye işaret ediyor?"
-        description="Creator karmaşık sinyal puanlarıyla uğraşmaz. Her seçeneği en yakın sonuç profiliyle eşleştir; AQRY sonucu bu yapıdan hesaplar."
+        description="Her cevap seçeneğinin hangi öneriye yaklaştırdığını seç. Kullanıcı bu teknik eşleştirmeyi görmez."
       />
 
       <div className="mt-5 rounded-[18px] border border-primary/15 bg-primary/[0.04] p-4">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-[10px] font-black">Eşleştirme durumu</p>
-            <p className="mt-1 text-[9px] text-muted-foreground">Tüm seçeneklerin bir sonuç profiline bağlanması gerekiyor.</p>
+            <p className="mt-1 text-[9px] text-muted-foreground">Her cevap seçeneğini en uygun öneriye bağla.</p>
           </div>
           <span className="rounded-full bg-white px-3 py-1 text-[9px] font-black text-primary shadow-sm">
             {assignedCount}/{totalOptionCount}
@@ -2162,12 +2101,12 @@ function ResultEditor({
         title={
           testMode === "score"
             ? "Skora göre sonucu belirle"
-            : "Sonuç profillerini düzenle"
+            : "Önerileri düzenle"
         }
         description={
           testMode === "score"
             ? "Katılımcı ödeme yapmadan skorunu ve tamamlanmış sonucunu görür."
-            : "Katılımcının cevaplarının en çok yaklaştığı profil ücretsiz ve tamamlanmış sonuç olarak gösterilir."
+            : "Katılımcının cevaplarına en çok uyan öneri ücretsiz ve tamamlanmış sonuç olarak gösterilir."
         }
       />
 
@@ -2181,7 +2120,7 @@ function ResultEditor({
               <p className="text-[9px] font-bold text-primary">
                 {testMode === "score"
                   ? result.range
-                  : "Sonuç profili"}
+                  : "Öneri"}
               </p>
 
               <input
@@ -2458,7 +2397,7 @@ function LivePreview({
           <div className="relative z-10 flex h-full flex-col justify-between p-5 text-white">
             <span className="text-[8px] font-black uppercase tracking-[0.12em]">
               {coverLabel ||
-                "Test"}
+                "Öneri"}
             </span>
 
             <span className="text-3xl">

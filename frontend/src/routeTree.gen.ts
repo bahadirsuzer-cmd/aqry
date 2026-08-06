@@ -14,6 +14,7 @@ import { Route as UsernameRouteImport } from './routes/$username'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as AiCreditsRouteImport } from './routes/ai-credits'
+import { Route as CipherBuilderRouteImport } from './routes/cipher-builder'
 import { Route as CommunityGuidelinesRouteImport } from './routes/community-guidelines'
 import { Route as CompatibilityBuilderRouteImport } from './routes/compatibility-builder'
 import { Route as CompatibilityPreviewRouteImport } from './routes/compatibility-preview'
@@ -35,6 +36,7 @@ import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as PaymentTermsRouteImport } from './routes/payment-terms'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RecommendationBuilderRouteImport } from './routes/recommendation-builder'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StoryBuilderRouteImport } from './routes/story-builder'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -74,6 +76,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
 const AiCreditsRoute = AiCreditsRouteImport.update({
   id: '/ai-credits',
   path: '/ai-credits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CipherBuilderRoute = CipherBuilderRouteImport.update({
+  id: '/cipher-builder',
+  path: '/cipher-builder',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommunityGuidelinesRoute = CommunityGuidelinesRouteImport.update({
@@ -181,6 +188,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecommendationBuilderRoute = RecommendationBuilderRouteImport.update({
+  id: '/recommendation-builder',
+  path: '/recommendation-builder',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -265,6 +277,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/admin-login': typeof AdminLoginRoute
   '/ai-credits': typeof AiCreditsRoute
+  '/cipher-builder': typeof CipherBuilderRoute
   '/community-guidelines': typeof CommunityGuidelinesRoute
   '/compatibility-builder': typeof CompatibilityBuilderRoute
   '/compatibility-preview': typeof CompatibilityPreviewRoute
@@ -286,6 +299,7 @@ export interface FileRoutesByFullPath {
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/recommendation-builder': typeof RecommendationBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story-builder': typeof StoryBuilderRoute
   '/terms': typeof TermsRoute
@@ -308,6 +322,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/admin-login': typeof AdminLoginRoute
   '/ai-credits': typeof AiCreditsRoute
+  '/cipher-builder': typeof CipherBuilderRoute
   '/community-guidelines': typeof CommunityGuidelinesRoute
   '/compatibility-builder': typeof CompatibilityBuilderRoute
   '/compatibility-preview': typeof CompatibilityPreviewRoute
@@ -329,6 +344,7 @@ export interface FileRoutesByTo {
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/recommendation-builder': typeof RecommendationBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story-builder': typeof StoryBuilderRoute
   '/terms': typeof TermsRoute
@@ -351,6 +367,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/admin-login': typeof AdminLoginRoute
   '/ai-credits': typeof AiCreditsRoute
+  '/cipher-builder': typeof CipherBuilderRoute
   '/community-guidelines': typeof CommunityGuidelinesRoute
   '/compatibility-builder': typeof CompatibilityBuilderRoute
   '/compatibility-preview': typeof CompatibilityPreviewRoute
@@ -372,6 +389,7 @@ export interface FileRoutesById {
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/recommendation-builder': typeof RecommendationBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story-builder': typeof StoryBuilderRoute
   '/terms': typeof TermsRoute
@@ -396,6 +414,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-login'
     | '/ai-credits'
+    | '/cipher-builder'
     | '/community-guidelines'
     | '/compatibility-builder'
     | '/compatibility-preview'
@@ -417,6 +436,7 @@ export interface FileRouteTypes {
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
+    | '/recommendation-builder'
     | '/sitemap.xml'
     | '/story-builder'
     | '/terms'
@@ -439,6 +459,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-login'
     | '/ai-credits'
+    | '/cipher-builder'
     | '/community-guidelines'
     | '/compatibility-builder'
     | '/compatibility-preview'
@@ -460,6 +481,7 @@ export interface FileRouteTypes {
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
+    | '/recommendation-builder'
     | '/sitemap.xml'
     | '/story-builder'
     | '/terms'
@@ -481,6 +503,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin-login'
     | '/ai-credits'
+    | '/cipher-builder'
     | '/community-guidelines'
     | '/compatibility-builder'
     | '/compatibility-preview'
@@ -502,6 +525,7 @@ export interface FileRouteTypes {
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
+    | '/recommendation-builder'
     | '/sitemap.xml'
     | '/story-builder'
     | '/terms'
@@ -525,6 +549,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AiCreditsRoute: typeof AiCreditsRoute
+  CipherBuilderRoute: typeof CipherBuilderRoute
   CommunityGuidelinesRoute: typeof CommunityGuidelinesRoute
   CompatibilityBuilderRoute: typeof CompatibilityBuilderRoute
   CompatibilityPreviewRoute: typeof CompatibilityPreviewRoute
@@ -546,6 +571,7 @@ export interface RootRouteChildren {
   PaymentTermsRoute: typeof PaymentTermsRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  RecommendationBuilderRoute: typeof RecommendationBuilderRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StoryBuilderRoute: typeof StoryBuilderRoute
   TermsRoute: typeof TermsRoute
@@ -595,6 +621,13 @@ declare module '@tanstack/react-router' {
       path: '/ai-credits'
       fullPath: '/ai-credits'
       preLoaderRoute: typeof AiCreditsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cipher-builder': {
+      id: '/cipher-builder'
+      path: '/cipher-builder'
+      fullPath: '/cipher-builder'
+      preLoaderRoute: typeof CipherBuilderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/community-guidelines': {
@@ -744,6 +777,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recommendation-builder': {
+      id: '/recommendation-builder'
+      path: '/recommendation-builder'
+      fullPath: '/recommendation-builder'
+      preLoaderRoute: typeof RecommendationBuilderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -874,6 +914,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AdminLoginRoute: AdminLoginRoute,
   AiCreditsRoute: AiCreditsRoute,
+  CipherBuilderRoute: CipherBuilderRoute,
   CommunityGuidelinesRoute: CommunityGuidelinesRoute,
   CompatibilityBuilderRoute: CompatibilityBuilderRoute,
   CompatibilityPreviewRoute: CompatibilityPreviewRoute,
@@ -895,6 +936,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentTermsRoute: PaymentTermsRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  RecommendationBuilderRoute: RecommendationBuilderRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StoryBuilderRoute: StoryBuilderRoute,
   TermsRoute: TermsRoute,

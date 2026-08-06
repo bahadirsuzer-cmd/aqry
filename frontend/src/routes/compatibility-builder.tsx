@@ -28,63 +28,38 @@ type ResultDefinition = {
 };
 
 const STANDARD_OFFER_PRICE = 9;
-const BUILDER_STORAGE_KEY = "aqry-compatibility-builder";
+const BUILDER_STORAGE_KEY = "aqry-compatibility-builder-v2";
 const initialQuestions: Question[] = [
   {
     id: 1,
-    text: "Bir ilişkide sana en çok ne güven verir?",
-    options: [
-      "Açık iletişim",
-      "Tutarlı davranış",
-      "Sadakat",
-      "İlgi görmek",
-    ],
+    text: "",
+    options: ["", "", "", ""],
   },
   {
     id: 2,
-    text: "Bir tartışma çıktığında nasıl davranırsın?",
-    options: [
-      "Hemen konuşurum",
-      "Biraz sakinleşirim",
-      "Karşı tarafı dinlerim",
-      "Konuyu kapatırım",
-    ],
+    text: "",
+    options: ["", "", "", ""],
   },
   {
     id: 3,
-    text: "İdeal ilişki temposu senin için hangisi?",
-    options: [
-      "Yavaş ve güvenli",
-      "Hızlı ve tutkulu",
-      "Doğal akışında",
-      "Önce arkadaşlık",
-    ],
+    text: "",
+    options: ["", "", "", ""],
   },
-  {
-    id: 4,
-    text: "Partnerinle ne sıklıkta iletişim kurmak istersin?",
-    options: [
-      "Gün boyunca",
-      "Günde birkaç kez",
-      "Akşamları",
-      "İhtiyaç oldukça",
-    ],
-  },
-  {
-    id: 5,
-    text: "Aşkta seni en çok ne etkiler?",
-    options: ["Zekâ", "Özgüven", "Nezaket", "Mizah"],
-  },
-  {
-    id: 6,
-    text: "Uzun vadeli bir ilişkide en önemli şey nedir?",
-    options: [
-      "Sadakat",
-      "Arkadaşlık",
-      "Tutku",
-      "Ortak hedefler",
-    ],
-  },
+];
+
+const QUESTION_EXAMPLES = [
+  "Örn. Bir ilişkide sana en çok ne güven verir?",
+  "Örn. Bir tartışma çıktığında nasıl davranırsın?",
+  "Örn. Birlikte geçirilen ideal bir gün senin için nasıl olur?",
+];
+
+const TOPIC_IDEAS = [
+  "Aşk & ilişki",
+  "Arkadaşlık",
+  "Zevkler",
+  "İletişim",
+  "Günlük alışkanlıklar",
+  "Gelecek beklentileri",
 ];
 
 const initialResults: ResultDefinition[] = [
@@ -122,13 +97,9 @@ function CompatibilityBuilderPage() {
   const [activePanel, setActivePanel] =
     useState<BuilderPanel>("content");
 
-  const [title, setTitle] = useState(
-    "Benimle ne kadar uyumlusun?",
-  );
+  const [title, setTitle] = useState("");
 
-  const [description, setDescription] = useState(
-    "Soruları cevapla, cevaplarımız karşılaştırılsın ve benimle ne kadar uyumlu olduğunu öğren.",
-  );
+  const [description, setDescription] = useState("");
 
   const [questions, setQuestions] =
     useState<Question[]>(initialQuestions);
@@ -469,13 +440,8 @@ useEffect(() => {
       ...currentQuestions,
       {
         id: nextId,
-        text: "Yeni içeriğini buraya yaz",
-        options: [
-          "Birinci seçenek",
-          "İkinci seçenek",
-          "Üçüncü seçenek",
-          "Dördüncü seçenek",
-        ],
+        text: "",
+        options: ["", "", "", ""],
       },
     ]);
 
@@ -1278,9 +1244,30 @@ function ContentEditor({
                 value={coverImageUrl}
                 onChange={setCoverImageUrl}
                 label="Kapak görseli"
-                helperText="JPG veya PNG yükle. Görseli istediğin zaman değiştirebilir veya kaldırabilirsin."
+                helperText="JPG veya PNG yükle. Görseli 10%–300% arasında boyutlandırabilir, yatay ve dikey konumunu ayarlayabilirsin."
               />
             </div>
+          </div>
+        </div>
+
+        <div className="rounded-[22px] border border-primary/15 bg-primary/[0.025] p-5">
+          <p className="text-sm font-black">
+            Konu fikri lazım mı?
+          </p>
+
+          <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+            Aşk Metre sadece romantik ilişki için değil. İki kişinin cevaplarını karşılaştırmak istediğin her konuda kullanabilirsin.
+          </p>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {TOPIC_IDEAS.map((topic) => (
+              <span
+                key={topic}
+                className="rounded-full border border-primary/15 bg-white px-3 py-2 text-[11px] font-bold text-foreground"
+              >
+                {topic}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -1302,6 +1289,7 @@ function ContentEditor({
                 onChange={(event) =>
                   setTitle(event.target.value)
                 }
+                placeholder="Örn. Benimle ne kadar uyumlusun?"
                 className="mt-2 h-11 w-full rounded-[15px] border border-border bg-background px-4 text-sm font-bold outline-none focus:border-primary"
               />
             </label>
@@ -1318,6 +1306,7 @@ function ContentEditor({
                 onChange={(event) =>
                   setDescription(event.target.value)
                 }
+                placeholder="İki kişinin aynı sorulara verdiği cevapların karşılaştırılacağını ve sonunda bir uyum sonucu göreceğini kısaca anlat."
                 className="mt-2 w-full resize-none rounded-[15px] border border-border bg-background px-4 py-3 text-xs leading-5 outline-none focus:border-primary"
               />
             </label>
@@ -1365,6 +1354,12 @@ function ContentEditor({
                         event.target.value,
                       )
                     }
+                    placeholder={
+                      QUESTION_EXAMPLES[
+                        questionIndex %
+                          QUESTION_EXAMPLES.length
+                      ]
+                    }
                     className="h-9 min-w-0 flex-1 rounded-[12px] border border-border bg-white px-3 text-[11px] font-bold outline-none focus:border-primary"
                   />
 
@@ -1403,7 +1398,10 @@ function ContentEditor({
                               event.target.value,
                             )
                           }
-                          className="min-w-0 flex-1 bg-transparent text-[10px] font-semibold outline-none"
+                          placeholder={`Cevap ${String.fromCharCode(
+                            65 + optionIndex,
+                          )}`}
+                          className="min-w-0 flex-1 bg-transparent text-[11px] font-semibold outline-none placeholder:text-muted-foreground/55"
                         />
                       </label>
                     ),

@@ -646,6 +646,10 @@ function startFreshBuilder(
     );
 
     window.sessionStorage.removeItem(
+      "aqry-compatibility-builder-v2",
+    );
+
+    window.sessionStorage.removeItem(
       "aqry-generated-blueprint",
     );
 
@@ -961,6 +965,28 @@ function CreatorStudioPage() {
     window.location.href = "/test-builder";
   }
 
+  function startRecommendationBuilder() {
+    window.sessionStorage.removeItem(
+      "aqry-recommendation-builder",
+    );
+    window.sessionStorage.removeItem(
+      "aqry-generated-blueprint",
+    );
+    window.location.href =
+      "/recommendation-builder";
+  }
+
+  function startCipherBuilder() {
+    window.sessionStorage.removeItem(
+      "aqry-cipher-builder",
+    );
+    window.sessionStorage.removeItem(
+      "aqry-generated-blueprint",
+    );
+    window.location.href =
+      "/cipher-builder";
+  }
+
   function startGuessBuilder() {
     window.sessionStorage.removeItem(
       "aqry-guess-builder",
@@ -1226,16 +1252,16 @@ function CreatorStudioPage() {
       label: "ÖNERİ",
       title: "Hangi film tam sana göre?",
       description:
-        "Cevaplara göre kişisel bir sonuç veya öneri göster.",
-      action: startArchetypeBuilder,
+        "Tercihleri öğren ve kullanıcıya en uygun filmi, ürünü, kursu veya seçeneği öner.",
+      action: startRecommendationBuilder,
       visual: "movie" as InspirationVisualType,
     },
     {
       label: "ŞİFRE",
       title: "Şifreyi çöz",
       description:
-        "Kod, ipucu ve mantık adımlarıyla çözülen bulmacalar üret.",
-      action: startGuessBuilder,
+        "Sayı, harf, sembol ve görsel ipuçlarını birleştirerek çözülen kısa şifreler oluştur.",
+      action: startCipherBuilder,
       visual: "code" as InspirationVisualType,
     },
   ];
