@@ -1051,6 +1051,10 @@ function CreatorStudioPage() {
         return;
       }
 
+      if (!cancelled) {
+        setLoading(false);
+      }
+
       const {
         count,
         error: experienceCountError,
@@ -1077,7 +1081,6 @@ function CreatorStudioPage() {
           !experienceCountError &&
             (count ?? 0) === 0,
         );
-        setLoading(false);
       }
     }
 
@@ -1510,8 +1513,7 @@ function CreatorStudioPage() {
               </div>
             </section>
 
-            {manualExpanded ? (
-              <section className="mt-12">
+            <section className="mt-12">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="text-[12px] font-black uppercase tracking-[0.15em] text-primary">
@@ -1600,7 +1602,6 @@ function CreatorStudioPage() {
                 )}
               </div>
             </section>
-            ) : null}
           </>
         )}
       </div>
