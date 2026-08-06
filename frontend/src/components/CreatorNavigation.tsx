@@ -4,7 +4,9 @@ import {
 } from "@tanstack/react-router";
 
 interface CreatorNavigationProps {
-  onSignOut: () => void | Promise<void>;
+  onSignOut: () =>
+    | void
+    | Promise<void>;
 }
 
 const navigationItems = [
@@ -49,20 +51,26 @@ const navigationItems = [
 export function CreatorNavigation({
   onSignOut,
 }: CreatorNavigationProps) {
-  const pathname = useRouterState({
-    select: (state) =>
-      state.location.pathname,
-  });
+  const pathname =
+    useRouterState({
+      select: (state) =>
+        state.location.pathname,
+    });
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-[100] isolate border-b border-border bg-white/95 backdrop-blur-xl">
       <div className="mx-auto max-w-[1320px] px-3 sm:px-6 lg:px-8">
         <div className="flex h-[72px] items-center justify-between gap-3">
           <Link
             to="/"
-            className="shrink-0 text-[27px] font-black tracking-[-0.065em] text-primary sm:text-[30px]"
+            aria-label="AQRYO ana sayfa"
+            className="flex shrink-0 items-center"
           >
-            AQRYO.
+            <img
+              src="/aqryo-logo.png"
+              alt="AQRYO"
+              className="h-[34px] w-auto object-contain sm:h-[38px]"
+            />
           </Link>
 
           <nav className="hidden min-w-0 flex-1 items-center gap-1 sm:flex">
@@ -123,7 +131,9 @@ export function CreatorNavigation({
                         : "bg-background text-muted-foreground"
                     }`}
                   >
-                    {item.mobileLabel}
+                    {
+                      item.mobileLabel
+                    }
                   </Link>
                 );
               },
