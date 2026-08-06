@@ -12,13 +12,13 @@ export function AiCreditsIntro() {
             </div>
 
             <div>
-              <h2 className="text-[21px] font-black leading-tight tracking-[-0.035em] sm:text-[25px]">
+              <h2 className="text-[23px] font-black leading-tight tracking-[-0.035em] sm:text-[27px]">
                 AI kredileriyle
                 <br />
                 fikirden yayına, çok hızlı!
               </h2>
 
-              <p className="mt-2 max-w-sm text-[12px] leading-5 text-muted-foreground">
+              <p className="mt-2 max-w-sm text-[15px] leading-6 text-muted-foreground">
                 Fikir bul, taslak oluştur, sorularını yazdır.
                 AI kredileriyle üretim süresini kısalt.
               </p>
@@ -42,11 +42,11 @@ export function AiCreditsIntro() {
                   {icon}
                 </div>
 
-                <p className="mt-3 text-[11px] font-black">
+                <p className="mt-3 text-[14px] font-black">
                   {title}
                 </p>
 
-                <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
+                <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
                   {text}
                 </p>
               </div>
@@ -58,15 +58,15 @@ export function AiCreditsIntro() {
               🎁
             </div>
 
-            <p className="mt-2 text-[10px] font-bold text-muted-foreground">
+            <p className="mt-2 text-[13px] font-bold text-muted-foreground">
               Yeni creator’lara
             </p>
 
-            <p className="mt-1 text-[22px] font-black tracking-[-0.04em] text-primary">
+            <p className="mt-1 text-[24px] font-black tracking-[-0.04em] text-primary">
               AI kredisi
             </p>
 
-            <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
+            <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
               Başlangıçta kullanman için.
             </p>
           </div>

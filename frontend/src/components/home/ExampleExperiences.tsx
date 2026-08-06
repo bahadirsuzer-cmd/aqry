@@ -168,28 +168,28 @@ export function ExampleExperiences() {
     >
       <div className="flex items-end justify-between gap-6">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.12em] text-primary">
+          <p className="text-[12px] font-black uppercase tracking-[0.12em] text-primary">
             Gerçek ürün deneyimi
           </p>
 
-          <h2 className="mt-2 text-[28px] font-black tracking-[-0.045em] sm:text-[34px]">
+          <h2 className="mt-2 text-[30px] font-black tracking-[-0.045em] sm:text-[36px]">
             Popüler deneyimleri keşfet
           </h2>
 
-          <p className="mt-1 text-[12px] text-muted-foreground">
+          <p className="mt-2 max-w-[720px] text-[15px] leading-6 text-muted-foreground">
             Testlerden hikayelere, bulmacalardan kişilik deneyimlerine.
           </p>
         </div>
 
         <a
           href="#examples"
-          className="hidden shrink-0 text-[11px] font-black text-primary sm:block"
+          className="hidden shrink-0 text-[13px] font-black text-primary sm:block"
         >
           Tüm deneyimleri gör →
         </a>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {cards.map((item) =>
           item.kind === "live" ? (
             <Link

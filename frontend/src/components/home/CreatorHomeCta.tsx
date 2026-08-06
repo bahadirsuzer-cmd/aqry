@@ -17,13 +17,13 @@ export function CreatorHomeCta({
             </div>
 
             <div>
-              <h2 className="text-[24px] font-black tracking-[-0.04em]">
+              <h2 className="text-[26px] font-black tracking-[-0.04em]">
                 {isCreator
                   ? "Üretmeye devam et."
                   : "Creator mısın?"}
               </h2>
 
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-2 text-[15px] leading-6 text-muted-foreground">
                 {isCreator
                   ? "Yeni bir deneyim oluştur ve kitlenle paylaş."
                   : "Kendi kitleni etkile, gelirini artır."}
@@ -58,11 +58,11 @@ export function CreatorHomeCta({
                     {icon}
                   </div>
 
-                  <p className="mt-1 text-[10px] font-black">
+                  <p className="mt-2 text-[14px] font-black">
                     {title}
                   </p>
 
-                  <p className="mt-1 text-[9px] text-muted-foreground">
+                  <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
                     {text}
                   </p>
                 </div>
@@ -76,7 +76,7 @@ export function CreatorHomeCta({
                 ? "/creator-studio"
                 : "/creator-auth"
             }
-            className="inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-purple-500 px-7 text-[12px] font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.20)]"
+            className="inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-purple-500 px-7 text-[14px] font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.20)]"
           >
             {isCreator
               ? "Studio’ya dön"

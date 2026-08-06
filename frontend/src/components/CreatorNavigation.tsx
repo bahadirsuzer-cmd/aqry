@@ -57,10 +57,10 @@ export function CreatorNavigation({
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur-xl">
       <div className="mx-auto max-w-[1320px] px-3 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between gap-3">
+        <div className="flex h-[72px] items-center justify-between gap-3">
           <Link
             to="/"
-            className="shrink-0 text-[25px] font-black tracking-[-0.065em] text-primary sm:text-[27px]"
+            className="shrink-0 text-[27px] font-black tracking-[-0.065em] text-primary sm:text-[30px]"
           >
             AQRYO.
           </Link>
@@ -75,7 +75,7 @@ export function CreatorNavigation({
                   <Link
                     key={item.label}
                     to={item.to}
-                    className={`flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-[10px] font-bold transition ${
+                    className={`flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-[13px] font-bold transition ${
                       active
                         ? "bg-primary text-white"
                         : "text-muted-foreground hover:bg-background hover:text-primary"
@@ -92,21 +92,21 @@ export function CreatorNavigation({
             <button
               type="button"
               onClick={onSignOut}
-              className="hidden h-10 items-center justify-center rounded-full border border-border bg-white px-4 text-[10px] font-bold text-muted-foreground transition hover:border-primary hover:text-primary sm:flex"
+              className="hidden h-10 items-center justify-center rounded-full border border-border bg-white px-4 text-[13px] font-bold text-muted-foreground transition hover:border-primary hover:text-primary sm:flex"
             >
               Çıkış yap
             </button>
 
             <Link
               to="/creator-studio"
-              className="flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-black px-4 text-[9px] font-bold text-white transition hover:bg-primary sm:px-5 sm:text-[10px]"
+              className="flex h-11 items-center justify-center whitespace-nowrap rounded-full bg-black px-4 text-[12px] font-bold text-white transition hover:bg-primary sm:px-5 sm:text-[13px]"
             >
               Yeni Experience
             </Link>
           </div>
         </div>
 
-        <nav className="grid grid-cols-7 gap-1 border-t border-border py-2 sm:hidden">
+        <nav className="grid grid-cols-7 gap-1 border-t border-border py-2.5 sm:hidden">
           {navigationItems.map(
             (item) => {
               const active =
@@ -116,7 +116,7 @@ export function CreatorNavigation({
                 <Link
                   key={item.label}
                   to={item.to}
-                  className={`flex h-9 min-w-0 items-center justify-center rounded-[10px] px-1 text-center text-[8px] font-bold transition ${
+                  className={`flex h-10 min-w-0 items-center justify-center rounded-[10px] px-1 text-center text-[10px] font-bold transition ${
                     active
                       ? "bg-primary text-white"
                       : "text-muted-foreground"
@@ -133,7 +133,7 @@ export function CreatorNavigation({
           <button
             type="button"
             onClick={onSignOut}
-            className="flex h-9 min-w-0 items-center justify-center rounded-[10px] px-1 text-[8px] font-bold text-muted-foreground transition hover:bg-background hover:text-primary"
+            className="flex h-10 min-w-0 items-center justify-center rounded-[10px] px-1 text-[10px] font-bold text-muted-foreground transition hover:bg-background hover:text-primary"
           >
             Çıkış
           </button>
