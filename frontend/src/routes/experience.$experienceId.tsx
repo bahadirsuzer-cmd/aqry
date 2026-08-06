@@ -410,7 +410,7 @@ function PublishedExperiencePage() {
 
         if (profileError) {
           console.error(
-            "Creator profili yÃ¼klenemedi:",
+            "Creator profili yüklenemedi:",
             profileError,
           );
         } else if (profileData) {
@@ -490,10 +490,10 @@ function PublishedExperiencePage() {
                 [],
               successTitle:
                 content.guess.successTitle ??
-                "Bildin! ğŸ‰",
+                "Bildin! 🎉",
               successDescription:
                 content.guess.successDescription ??
-                "DoÄŸru cevabÄ± buldun.",
+                "Doğru cevabı buldun.",
               retryEnabled:
                 content.guess.retryEnabled ??
                 true,
@@ -507,13 +507,13 @@ function PublishedExperiencePage() {
                 "Sonuna geldin.",
               resultDescription:
                 content.story.resultDescription ??
-                "Ä°Ã§eriÄŸi tamamladÄ±n.",
+                "İçeriği tamamladın.",
             }
           : null,
       });
     } catch (error) {
       console.error(
-        "YayÄ±nlanmÄ±ÅŸ Experience yÃ¼klenemedi:",
+        "Yayınlanmış Experience yüklenemedi:",
         error,
       );
 
@@ -653,7 +653,7 @@ useEffect(() => {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#faf8fb]">
         <p className="text-xs font-bold text-muted-foreground">
-          AQRYO yÃ¼kleniyor...
+          AQRYO yükleniyor...
         </p>
       </div>
     );
@@ -690,13 +690,13 @@ useEffect(() => {
           result:
             experience.results[0] ?? {
               id: "completed",
-              range: "%100â€“100",
+              range: "%100–100",
               title:
                 experience.story?.resultTitle ??
                 "Sonuna geldin.",
               description:
                 experience.story?.resultDescription ??
-                "Ä°Ã§eriÄŸi tamamladÄ±n.",
+                "İçeriği tamamladın.",
             },
         }
       : experience.type === "guess"
@@ -705,13 +705,13 @@ useEffect(() => {
             result:
               experience.results[0] ?? {
                 id: "correct",
-                range: "%100â€“100",
+                range: "%100–100",
                 title:
                   experience.guess?.successTitle ??
-                  "Bildin! ğŸ‰",
+                  "Bildin! 🎉",
                 description:
                   experience.guess?.successDescription ??
-                  "DoÄŸru cevabÄ± buldun.",
+                  "Doğru cevabı buldun.",
               },
           }
         : experience.type === "test" &&
@@ -833,7 +833,7 @@ useEffect(() => {
 
     if (!isCorrect) {
       setGuessError(
-        "Bu cevap doÄŸru deÄŸil. Bir kez daha dene.",
+        "Bu cevap doğru değil. Bir kez daha dene.",
       );
       return;
     }
@@ -897,10 +897,10 @@ useEffect(() => {
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#111119] px-6 text-center text-white">
           <div>
             <p className="text-[15px] font-black">
-              Bu iÃ§erik korumalÄ±dÄ±r.
+              Bu içerik korumalıdır.
             </p>
             <p className="mt-2 text-[11px] text-white/55">
-              Experienceâ€™a geri dÃ¶ndÃ¼ÄŸÃ¼nde iÃ§erik yeniden gÃ¶rÃ¼necek.
+              Experience’a geri döndüğünde içerik yeniden görünecek.
             </p>
           </div>
         </div>
@@ -939,7 +939,7 @@ useEffect(() => {
                 </p>
 
                 <span className="text-[12px] text-primary">
-                  â—†
+                  ◆
                 </span>
               </div>
 
@@ -1123,7 +1123,7 @@ useEffect(() => {
               }
               className="text-[9px] font-bold text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground"
             >
-              Ä°Ã§eriÄŸi bildir
+              İçeriği bildir
             </button>
           </div>
         </div>
@@ -1177,7 +1177,7 @@ function ExperienceFeedbackCard({
 
       if (error) {
         console.error(
-          "Experience deÄŸerlendirme Ã¶zeti yÃ¼klenemedi:",
+          "Experience değerlendirme özeti yüklenemedi:",
           error,
         );
         return;
@@ -1254,16 +1254,16 @@ function ExperienceFeedbackCard({
       setShowReasons(false);
       setMessage(
         verdict === "appropriate"
-          ? "TeÅŸekkÃ¼rler. DeÄŸerlendirmen kaydedildi."
-          : "TeÅŸekkÃ¼rler. Bildirimin incelemeye alÄ±ndÄ±.",
+          ? "Teşekkürler. Değerlendirmen kaydedildi."
+          : "Teşekkürler. Bildirimin incelemeye alındı.",
       );
     } catch (error) {
       console.error(
-        "Experience deÄŸerlendirmesi kaydedilemedi:",
+        "Experience değerlendirmesi kaydedilemedi:",
         error,
       );
       setMessage(
-        "DeÄŸerlendirme ÅŸu anda kaydedilemedi.",
+        "Değerlendirme şu anda kaydedilemedi.",
       );
     } finally {
       setSubmitting(false);
@@ -1278,7 +1278,7 @@ function ExperienceFeedbackCard({
     return (
       <div className="mt-3 rounded-[22px] border border-emerald-100 bg-emerald-50 px-5 py-4 text-center shadow-[0_14px_40px_rgba(35,16,55,0.06)]">
         <p className="text-[10px] font-black text-emerald-800">
-          TeÅŸekkÃ¼rler. DeÄŸerlendirmen alÄ±ndÄ±.
+          Teşekkürler. Değerlendirmen alındı.
         </p>
       </div>
     );
@@ -1292,7 +1292,7 @@ function ExperienceFeedbackCard({
           onClick={() => setShowReasons(true)}
           className="text-[9px] font-bold text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground"
         >
-          Ä°Ã§eriÄŸi bildir
+          İçeriği bildir
         </button>
       </div>
     );
@@ -1300,11 +1300,11 @@ function ExperienceFeedbackCard({
 
   const reasons = [
     ["harassment", "Taciz veya tehdit"],
-    ["sexual", "Uygunsuz cinsel iÃ§erik"],
-    ["fraud", "DolandÄ±rÄ±cÄ±lÄ±k / yanÄ±ltÄ±cÄ± iÃ§erik"],
-    ["hate", "Nefret veya hedef gÃ¶sterme"],
-    ["violence", "Åiddet / zarar"],
-    ["other", "DiÄŸer ciddi sorun"],
+    ["sexual", "Uygunsuz cinsel içerik"],
+    ["fraud", "Dolandırıcılık / yanıltıcı içerik"],
+    ["hate", "Nefret veya hedef gösterme"],
+    ["violence", "Şiddet / zarar"],
+    ["other", "Diğer ciddi sorun"],
   ] as const;
 
   if (showReasons) {
@@ -1314,7 +1314,7 @@ function ExperienceFeedbackCard({
           Sorun nedir?
         </p>
         <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
-          Bu alan iÃ§erik kalitesini deÄŸil, ciddi uygunsuzluklarÄ± bildirmek iÃ§indir.
+          Bu alan içerik kalitesini değil, ciddi uygunsuzlukları bildirmek içindir.
         </p>
 
         <div className="mt-4 grid gap-2">
@@ -1341,7 +1341,7 @@ function ExperienceFeedbackCard({
           onClick={() => setShowReasons(false)}
           className="mt-3 text-[9px] font-bold text-muted-foreground"
         >
-          VazgeÃ§
+          Vazgeç
         </button>
 
         {message ? (
@@ -1358,10 +1358,10 @@ function ExperienceFeedbackCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] font-black">
-            Bu iÃ§eriÄŸi deÄŸerlendiren ilk 50 kiÅŸi arasÄ±ndasÄ±n.
+            Bu içeriği değerlendiren ilk 50 kişi arasındasın.
           </p>
           <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
-            GÃ¶rÃ¼ÅŸÃ¼n bizim iÃ§in Ã¶nemli. Sence bu iÃ§erik toplum normlarÄ±na uygun mu?
+            Görüşün bizim için önemli. Sence bu içerik toplum normlarına uygun mu?
           </p>
         </div>
         <span className="shrink-0 rounded-full bg-primary/[0.08] px-2.5 py-1 text-[8px] font-black text-primary">
@@ -1386,7 +1386,7 @@ function ExperienceFeedbackCard({
           onClick={() => setShowReasons(true)}
           className="flex h-11 items-center justify-center rounded-full bg-black text-[9px] font-black text-white transition hover:bg-red-600 disabled:opacity-40"
         >
-          Uygun deÄŸil
+          Uygun değil
         </button>
       </div>
 
@@ -1465,15 +1465,15 @@ function EntryScreen({
           <div className="relative z-10 flex h-full flex-col justify-end p-7 text-white">
             <span className="text-5xl">
               {experience.type === "test"
-                ? "âœ¦"
+                ? "✦"
                 : experience.type === "guess"
                   ? "?"
                   : experience.type === "story"
-                    ? "â–¤"
-                    : "â™¥"}
+                    ? "▤"
+                    : "♥"}
             </span>
 
-            <p className="mt-4 text-[10px] font-black uppercase tracking-[0.15em] text-white/85">
+            <p className="mt-4 text-[13px] font-black uppercase tracking-[0.15em] text-white/90">
               {experience.type === "test"
                 ? "AQRYO Test"
                 : experience.type === "guess"
@@ -1486,11 +1486,11 @@ function EntryScreen({
         </div>
 
         <div className="p-6 sm:p-7">
-          <h1 className="text-[32px] font-black leading-[0.98] tracking-[-0.055em] sm:text-[35px]">
+          <h1 className="text-[32px] font-black leading-[1.02] tracking-[-0.055em] sm:text-[35px]">
             {experience.title}
           </h1>
 
-          <p className="mt-4 text-[12px] leading-5 text-muted-foreground">
+          <p className="mt-4 text-[16px] leading-7 text-muted-foreground">
             {experience.description}
           </p>
 
@@ -1498,17 +1498,17 @@ function EntryScreen({
             {experience.type === "story" ? (
               <>
                 <EntryMetric
-                  icon="â–¤"
+                  icon="▤"
                   label={`${experience.story?.items.length ?? 0} ekran`}
                 />
                 <EntryMetric
-                  icon="â†•"
-                  label="Ä°Ã§erik akÄ±ÅŸÄ±"
+                  icon="↕"
+                  label="İçerik akışı"
                   bordered
                 />
                 <EntryMetric
-                  icon="â™¢"
-                  label="Ãœcretsiz sonuÃ§"
+                  icon="♢"
+                  label="Ücretsiz sonuç"
                   bordered
                 />
               </>
@@ -1519,32 +1519,32 @@ function EntryScreen({
                   label="1 tahmin"
                 />
                 <EntryMetric
-                  icon="âœ"
+                  icon="✎"
                   label="Serbest cevap"
                   bordered
                 />
                 <EntryMetric
-                  icon="â™¢"
-                  label="Ãœcretsiz sonuÃ§"
+                  icon="♢"
+                  label="Ücretsiz sonuç"
                   bordered
                 />
               </>
             ) : (
               <>
                 <EntryMetric
-                  icon="â˜·"
+                  icon="☷"
                   label={`${experience.questions.length} soru`}
                 />
 
                 <EntryMetric
-                  icon="â—·"
+                  icon="◷"
                   label={`~${estimatedMinutes} dakika`}
                   bordered
                 />
 
                 <EntryMetric
-                  icon="â™¢"
-                  label="Ãœcretsiz"
+                  icon="♢"
+                  label="Ücretsiz"
                   bordered
                 />
               </>
@@ -1554,14 +1554,14 @@ function EntryScreen({
           <button
             type="button"
             onClick={onStart}
-            className="mt-5 flex h-12 w-full items-center justify-center rounded-full bg-black text-[11px] font-black text-white transition hover:bg-primary"
+            className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-black text-[16px] font-black text-white transition hover:bg-primary"
           >
-            BaÅŸla â†’
+            Başla →
           </button>
         </div>
       </article>
 
-      <div className="mx-auto mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-3 text-[8px] font-semibold text-muted-foreground">
+      <div className="mx-auto mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 px-3 text-[11px] font-semibold text-muted-foreground">
         <button
           type="button"
           onClick={() =>
@@ -1569,21 +1569,20 @@ function EntryScreen({
           }
           className="transition hover:text-foreground"
         >
-          â—‡ AQRYO ile oluÅŸturuldu
+          ◇ AQRYO ile oluşturuldu
         </button>
 
-        <span>Â·</span>
+        <span>·</span>
 
-        <span>NasÄ±l Ã§alÄ±ÅŸÄ±r?</span>
+        <span>Nasıl çalışır?</span>
 
-        <span>Â·</span>
+        <span>·</span>
 
         <span>Gizlilik</span>
       </div>
     </>
   );
 }
-
 
 function StoryContentScreen({
   experience,
@@ -1709,7 +1708,7 @@ function StoryContentScreen({
             }}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white text-[14px] font-black"
           >
-            â†
+            ←
           </button>
 
           <div className="min-w-0 text-center">
@@ -1757,14 +1756,14 @@ function StoryContentScreen({
           <div className="pointer-events-none mt-4 flex items-center justify-between">
             <p className="text-[9px] font-bold text-muted-foreground">
               {isLast
-                ? "Sonucu gÃ¶rmek iÃ§in dokun"
-                : "Devam etmek iÃ§in dokun"}
+                ? "Sonucu görmek için dokun"
+                : "Devam etmek için dokun"}
             </p>
 
             <span className="text-[13px] font-black">
               {isLast
-                ? "SonuÃ§ â†’"
-                : "â†’"}
+                ? "Sonuç →"
+                : "→"}
             </span>
           </div>
         </div>
@@ -1794,11 +1793,11 @@ function StoryResultScreen({
   return (
     <article className="rounded-[30px] border border-border bg-white p-6 text-center shadow-[0_24px_70px_rgba(35,16,55,0.12)] sm:p-7">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-teal-50 text-[26px] text-teal-700">
-        âœ“
+        ✓
       </div>
 
       <p className="mt-5 text-[10px] font-black uppercase tracking-[0.14em] text-teal-600">
-        TamamlandÄ±
+        Tamamlandı
       </p>
 
       <h2 className="mt-3 text-[31px] font-black leading-[1] tracking-[-0.05em]">
@@ -1814,7 +1813,7 @@ function StoryResultScreen({
         onClick={onGift}
         className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-[10px] font-black text-white"
       >
-        Creatorâ€™a hediye gÃ¶nder ğŸ
+        Creator’a hediye gönder 🎁
       </button>
 
       {experience.offer.enabled ? (
@@ -1824,8 +1823,8 @@ function StoryResultScreen({
           className="mt-2.5 flex h-12 w-full items-center justify-center rounded-full bg-black text-[10px] font-black text-white transition hover:bg-primary"
         >
           {experience.offer.title ||
-            "DevamÄ±nÄ± gÃ¶r"}{" "}
-          â†’
+            "Devamını gör"}{" "}
+          →
         </button>
       ) : null}
 
@@ -1834,7 +1833,7 @@ function StoryResultScreen({
         onClick={onRestart}
         className="mt-3 flex h-11 w-full items-center justify-center rounded-full border border-border bg-white text-[10px] font-black"
       >
-        BaÅŸtan gÃ¶r
+        Baştan gör
       </button>
     </article>
   );
@@ -1910,7 +1909,7 @@ function GuessAnswerScreen({
               onSubmit();
             }
           }}
-          placeholder="CevabÄ±nÄ± yaz..."
+          placeholder="Cevabını yaz..."
           className={`mt-6 h-14 w-full rounded-[18px] border bg-background px-5 text-[14px] font-bold outline-none transition ${
             error
               ? "border-red-300 focus:border-red-400"
@@ -1932,7 +1931,7 @@ function GuessAnswerScreen({
             onClick={onBack}
             className="flex h-12 items-center justify-center rounded-full border border-border bg-white px-5 text-[10px] font-black"
           >
-            â† Geri
+            ← Geri
           </button>
 
           <button
@@ -1941,7 +1940,7 @@ function GuessAnswerScreen({
             onClick={onSubmit}
             className="flex h-12 flex-1 items-center justify-center rounded-full bg-black px-6 text-[10px] font-black text-white transition enabled:hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-20"
           >
-            CevabÄ±mÄ± kontrol et â†’
+            Cevabımı kontrol et →
           </button>
         </div>
       </div>
@@ -1970,11 +1969,11 @@ function GuessResultScreen({
   return (
     <article className="rounded-[30px] border border-border bg-white p-6 text-center shadow-[0_24px_70px_rgba(35,16,55,0.12)] sm:p-7">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-[28px]">
-        âœ“
+        ✓
       </div>
 
       <p className="mt-5 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-600">
-        DoÄŸru cevap
+        Doğru cevap
       </p>
 
       <h2 className="mt-3 text-[31px] font-black leading-[1] tracking-[-0.05em]">
@@ -1990,7 +1989,7 @@ function GuessResultScreen({
         onClick={onGift}
         className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-[10px] font-black text-white"
       >
-        Creatorâ€™a hediye gÃ¶nder ğŸ
+        Creator’a hediye gönder 🎁
       </button>
 
       {experience.offer.enabled ? (
@@ -2000,8 +1999,8 @@ function GuessResultScreen({
           className="mt-2.5 flex h-12 w-full items-center justify-center rounded-full bg-black text-[10px] font-black text-white transition hover:bg-primary"
         >
           {experience.offer.title ||
-            "DevamÄ±nÄ± gÃ¶r"}{" "}
-          â†’
+            "Devamını gör"}{" "}
+          →
         </button>
       ) : null}
 
@@ -2027,17 +2026,17 @@ function EntryMetric({
 }) {
   return (
     <div
-      className={`flex min-w-0 items-center justify-center gap-2 px-2 py-4 ${
+      className={`flex min-w-0 flex-col items-center justify-center gap-2 px-2 py-4 text-center sm:flex-row ${
         bordered
           ? "border-l border-border"
           : ""
       }`}
     >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/[0.08] text-[14px] font-black text-primary">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/[0.08] text-[16px] font-black text-primary">
         {icon}
       </span>
 
-      <span className="truncate text-[9px] font-black sm:text-[10px]">
+      <span className="whitespace-normal text-[12px] font-black leading-4 sm:text-[13px]">
         {label}
       </span>
     </div>
@@ -2067,12 +2066,12 @@ function QuestionScreen({
 }) {
   return (
     <article className="rounded-[30px] border border-border bg-white p-5 shadow-[0_24px_70px_rgba(35,16,55,0.12)] sm:p-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2">
         <span className="text-[14px] font-black text-primary">
           {questionIndex + 1}/{questionCount}
         </span>
 
-        <span className="max-w-[250px] truncate text-right text-[13px] font-bold text-muted-foreground">
+        <span className="w-full whitespace-normal break-words text-left text-[15px] font-bold leading-5 text-muted-foreground">
           {experienceTitle}
         </span>
       </div>
@@ -2086,11 +2085,11 @@ function QuestionScreen({
         />
       </div>
 
-      <h2 className="mt-7 text-[23px] font-black leading-[1.08] tracking-[-0.045em]">
+      <h2 className="mt-7 text-[24px] font-black leading-[1.08] tracking-[-0.045em]">
         {question.text}
       </h2>
 
-      <div className="mt-6 grid gap-2.5">
+      <div className="mt-6 grid gap-3">
         {question.options.map((option, optionIndex) => {
           const isSelected =
             selectedAnswer === optionIndex;
@@ -2102,14 +2101,14 @@ function QuestionScreen({
               onClick={() =>
                 onSelectAnswer(optionIndex)
               }
-              className={`flex min-h-14 items-center gap-3 rounded-[16px] border px-4 py-3.5 text-left text-[16px] font-bold leading-[1.35] transition ${
+              className={`flex min-h-[64px] items-center gap-3 rounded-[16px] border px-4 py-4 text-left text-[17px] font-bold leading-[1.35] transition ${
                 isSelected
                   ? "border-primary bg-primary text-white shadow-[0_10px_25px_rgba(124,58,237,0.18)]"
                   : "border-border bg-background text-foreground hover:border-primary/35"
               }`}
             >
               <span
-                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-black ${
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[12px] font-black ${
                   isSelected
                     ? "bg-white/20 text-white"
                     : "bg-white text-muted-foreground"
@@ -2118,29 +2117,30 @@ function QuestionScreen({
                 {String.fromCharCode(65 + optionIndex)}
               </span>
 
-              <span>{option}</span>
+              <span className="min-w-0">
+                {option}
+              </span>
             </button>
           );
         })}
       </div>
 
-      <div className="mt-7 flex items-center justify-between">
+      <div className="mt-7 flex items-center justify-between gap-4">
         <button
           type="button"
           onClick={onPrevious}
-          className="inline-flex h-11 items-center justify-center rounded-full border border-border bg-white px-5 text-[11px] font-bold"
+          className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-border bg-white px-5 text-[12px] font-bold"
         >
-          â† Ã–nceki soru
+          ← Önceki soru
         </button>
 
-        <span className="max-w-[180px] text-right text-[10px] font-semibold leading-4 text-muted-foreground">
-          Bir cevap seÃ§tiÄŸinde otomatik ilerler.
+        <span className="text-right text-[10px] font-semibold leading-4 text-muted-foreground">
+          Bir cevap seçtiğinde otomatik ilerler.
         </span>
       </div>
     </article>
   );
 }
-
 
 function calculateBlueprintTestOutcome(
   experience: PublishedExperience,
@@ -2216,11 +2216,11 @@ function calculateBlueprintTestOutcome(
       range: "",
       title:
         calculated.result?.title ??
-        "Sonucun hazÄ±r",
+        "Sonucun hazır",
       description:
         calculated.result
           ?.description ??
-        "CevaplarÄ±na gÃ¶re sonucun hesaplandÄ±.",
+        "Cevaplarına göre sonucun hesaplandı.",
     },
   };
 }
@@ -2276,21 +2276,21 @@ function ResultScreen({
 
   const shareText =
     isArchetypeTest
-      ? `Bu teste gÃ¶re ben â€œ${displayResultTitle}â€ Ã§Ä±ktÄ±m. Sen ne Ã§Ä±kacaksÄ±n?`
+      ? `Bu teste göre ben “${displayResultTitle}” çıktım. Sen ne çıkacaksın?`
       : isSpectrumTest
-        ? `â€œ${experienceTitle}â€ sonucum %${score} Ã§Ä±ktÄ±. Seninki kaÃ§? ğŸ‘€`
+        ? `“${experienceTitle}” sonucum %${score} çıktı. Seninki kaç? 👀`
         : experienceType === "compatibility"
-          ? `Uyum sonucum %${score} Ã§Ä±ktÄ± ğŸ‘€ Sen benimle kaÃ§ yaparsÄ±n?`
-          : `â€œ${experienceTitle}â€ testinde %${score} yaptÄ±m. Beni geÃ§ebilir misin? ğŸ‘€`;
+          ? `Uyum sonucum %${score} çıktı 👀 Sen benimle kaç yaparsın?`
+          : `“${experienceTitle}” testinde %${score} yaptım. Beni geçebilir misin? 👀`;
 
   function copyResultLink() {
     navigator.clipboard
       .writeText(window.location.href)
       .then(() => {
-        window.alert("Deneyim baÄŸlantÄ±sÄ± kopyalandÄ±.");
+        window.alert("Deneyim bağlantısı kopyalandı.");
       })
       .catch(() => {
-        window.alert("BaÄŸlantÄ± kopyalanamadÄ±.");
+        window.alert("Bağlantı kopyalanamadı.");
       });
   }
 
@@ -2303,7 +2303,7 @@ function ResultScreen({
           url: window.location.href,
         })
         .catch(() => {
-          // KullanÄ±cÄ± paylaÅŸÄ±m ekranÄ±nÄ± kapatÄ±rsa iÅŸlem yapÄ±lmaz.
+          // Kullanıcı paylaşım ekranını kapatırsa işlem yapılmaz.
         });
 
       return;
@@ -2328,7 +2328,7 @@ function ResultScreen({
   }
   return (
     <article className="overflow-hidden rounded-[30px] border border-border bg-white pb-3 shadow-[0_24px_70px_rgba(35,16,55,0.13)]">     <div className="bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 p-7 text-white">
-        <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/70">
+        <p className="text-[12px] font-bold uppercase tracking-[0.15em] text-white/75">
           {experienceType === "compatibility"
             ? "Uyum sonucun"
             : isArchetypeTest
@@ -2346,36 +2346,36 @@ function ResultScreen({
               </p>
             )}
 
-            <h2 className={`text-[22px] font-black tracking-[-0.04em] ${
+            <h2 className={`text-[27px] font-black leading-[1.05] tracking-[-0.04em] ${
               isArchetypeTest ? "" : "mt-3"
             }`}>
               {displayResultTitle}
             </h2>
           </div>
 
-          <span className="text-5xl">â™¥</span>
+          <span className="text-5xl">♥</span>
         </div>
 
-        <p className="mt-5 text-[15px] leading-6 text-white/90">
+        <p className="mt-5 text-[16px] leading-7 text-white/90">
           {displayResultDescription}
         </p>
       </div>
 
-      <div className="mt-4 rounded-[18px] border border-border bg-background p-4">
+      <div className="mt-4 rounded-[18px] border border-border bg-background p-5">
   <div className="flex items-start justify-between gap-4">
     <div>
-      <p className="text-[10px] font-black">
-        Sonucunu paylaÅŸ
+      <p className="text-[14px] font-black">
+        Sonucunu paylaş
       </p>
 
-      <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
+      <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
         {experienceType === "compatibility"
-          ? "ArkadaÅŸlarÄ±nÄ± teste davet et ve sonuÃ§larÄ±nÄ±zÄ± karÅŸÄ±laÅŸtÄ±rÄ±n."
-          : "Sonucunu paylaÅŸ ve arkadaÅŸlarÄ±nÄ± bu Experienceâ€™a davet et."}
+          ? "Arkadaşlarını teste davet et ve sonuçlarınızı karşılaştırın."
+          : "Sonucunu paylaş ve arkadaşlarını bu Experience’a davet et."}
       </p>
     </div>
 
-    <span className="text-xl">â†—</span>
+    <span className="text-xl">↗</span>
   </div>
 
   <div className="mt-3 rounded-[13px] border border-border bg-white px-3 py-3">
@@ -2388,53 +2388,53 @@ function ResultScreen({
     <button
       type="button"
       onClick={shareResult}
-      className="flex h-10 items-center justify-center rounded-full bg-primary px-3 text-[9px] font-bold text-white"
+      className="flex h-11 items-center justify-center rounded-full bg-primary px-3 text-[13px] font-bold text-white"
     >
-      Sonucumu paylaÅŸ
+      Sonucumu paylaş
     </button>
 
     <button
       type="button"
       onClick={shareOnX}
-      className="flex h-10 items-center justify-center rounded-full bg-black px-3 text-[9px] font-bold text-white"
+      className="flex h-11 items-center justify-center rounded-full bg-black px-3 text-[13px] font-bold text-white"
     >
-      Xâ€™te paylaÅŸ
+      X’te paylaş
     </button>
   </div>
 
   <button
     type="button"
     onClick={copyResultLink}
-    className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border bg-white text-[8px] font-bold text-muted-foreground"
+    className="mt-2 flex h-10 w-full items-center justify-center rounded-full border border-border bg-white text-[12px] font-bold text-muted-foreground"
   >
-    BaÄŸlantÄ±yÄ± kopyala
+    Bağlantıyı kopyala
   </button>
 </div>
 
         <button
           type="button"
           onClick={onGift}
-          className="mx-auto mt-5 flex h-12 w-[92%] items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 text-center text-[10px] font-black text-white shadow-[0_12px_28px_rgba(124,58,237,0.22)] transition hover:opacity-95"
+          className="mx-auto mt-5 flex h-12 w-[92%] items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 text-center text-[14px] font-black text-white shadow-[0_12px_28px_rgba(124,58,237,0.22)] transition hover:opacity-95"
         >
-          Creatorâ€™a hediye gÃ¶nder ğŸ
+          Creator’a hediye gönder 🎁
         </button>
 
         {offerEnabled && (
           <button
             type="button"
             onClick={onOffer}
-            className="mx-auto mt-2.5 flex h-11 w-[92%] items-center justify-center rounded-full bg-black px-5 text-center text-[10px] font-bold text-white transition hover:bg-primary"
+            className="mx-auto mt-2.5 flex h-11 w-[92%] items-center justify-center rounded-full bg-black px-5 text-center text-[14px] font-bold text-white transition hover:bg-primary"
           >
-            {offerTitle || "Ekstra iÃ§eriÄŸi gÃ¶r"} â†’
+            {offerTitle || "Ekstra içeriği gör"} →
           </button>
         )}
 
         <button
           type="button"
           onClick={onRestart}
-         className="mx-auto mt-3 flex h-9 w-[72%] items-center justify-center rounded-full border border-border bg-white text-[9px] font-bold text-muted-foreground transition hover:bg-muted"
+         className="mx-auto mt-3 flex h-10 w-[72%] items-center justify-center rounded-full border border-border bg-white text-[12px] font-bold text-muted-foreground transition hover:bg-muted"
           >
-          BaÅŸtan Ã§Ã¶z
+          Baştan çöz
         </button>
       </article>
   );
@@ -2467,7 +2467,7 @@ function PaidStoryContinuation({
     return (
       <article className="rounded-[30px] border border-border bg-white p-6">
         <p className="text-[9px] font-black uppercase tracking-[0.1em] text-primary">
-          Ã–deme doÄŸrulandÄ±
+          Ödeme doğrulandı
         </p>
 
         <h2 className="mt-3 text-[24px] font-black">
@@ -2483,7 +2483,7 @@ function PaidStoryContinuation({
           onClick={onBack}
           className="mt-5 h-11 w-full rounded-full border border-border text-[9px] font-black"
         >
-          Sonucuma dÃ¶n
+          Sonucuma dön
         </button>
       </article>
     );
@@ -2549,12 +2549,12 @@ function PaidStoryContinuation({
             }}
             className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-[14px] font-black"
           >
-            â†
+            ←
           </button>
 
           <div className="text-center">
             <p className="text-[9px] font-black uppercase tracking-[0.1em] text-amber-700">
-              Ãœcretli devam
+              Ücretli devam
             </p>
 
             <p className="mt-1 text-[9px] font-bold text-muted-foreground">
@@ -2564,7 +2564,7 @@ function PaidStoryContinuation({
           </div>
 
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-50 text-[10px] font-black text-amber-700">
-            â‚º
+            ₺
           </span>
         </div>
 
@@ -2597,8 +2597,8 @@ function PaidStoryContinuation({
           <div className="mt-4 flex items-center justify-between">
             <p className="text-[9px] font-bold text-muted-foreground">
               {isLast
-                ? "Ãœcretli devamÄ±n sonu"
-                : "Devam etmek iÃ§in dokun"}
+                ? "Ücretli devamın sonu"
+                : "Devam etmek için dokun"}
             </p>
 
             {isLast ? (
@@ -2610,11 +2610,11 @@ function PaidStoryContinuation({
                 }}
                 className="text-[9px] font-black"
               >
-                Sonuca dÃ¶n
+                Sonuca dön
               </button>
             ) : (
               <span className="text-[13px] font-black">
-                â†’
+                →
               </span>
             )}
           </div>
@@ -2631,20 +2631,20 @@ const GIFT_OPTIONS: Array<{
   label: string;
   price: number;
 }> = [
-  { key: "coffee", emoji: "â˜•", label: "Kahve", price: 29 },
-  { key: "heart", emoji: "ğŸ’œ", label: "Kalp", price: 99 },
-  { key: "crown", emoji: "ğŸ‘‘", label: "TaÃ§", price: 249 },
-  { key: "rocket", emoji: "ğŸš€", label: "Roket", price: 999 },
+  { key: "coffee", emoji: "☕", label: "Kahve", price: 29 },
+  { key: "heart", emoji: "💜", label: "Kalp", price: 99 },
+  { key: "crown", emoji: "👑", label: "Taç", price: 249 },
+  { key: "rocket", emoji: "🚀", label: "Roket", price: 999 },
 ];
 
 const GIFT_MESSAGES: Array<{
   key: GiftMessageKey;
   label: string;
 }> = [
-  { key: "liked", label: "Ä°Ã§eriÄŸini sevdim." },
+  { key: "liked", label: "İçeriğini sevdim." },
   { key: "support", label: "Destekliyorum." },
   { key: "notice", label: "Beni fark et." },
-  { key: "more", label: "DevamÄ±nÄ± bekliyorum." },
+  { key: "more", label: "Devamını bekliyorum." },
 ];
 
 const CONTACT_OPTIONS: Array<{
@@ -2705,7 +2705,7 @@ function GiftScreen({
       !contactValue.trim()
     ) {
       setError(
-        "Ä°letiÅŸim kanalÄ±nÄ± seÃ§tiysen bilgini de yazmalÄ±sÄ±n.",
+        "İletişim kanalını seçtiysen bilgini de yazmalısın.",
       );
       return;
     }
@@ -2741,7 +2741,7 @@ function GiftScreen({
 
       if (!paymentUrl) {
         throw new Error(
-          "Ã–deme baÄŸlantÄ±sÄ± alÄ±namadÄ±.",
+          "Ödeme bağlantısı alınamadı.",
         );
       }
 
@@ -2751,10 +2751,10 @@ function GiftScreen({
       const message =
         giftError instanceof Error
           ? giftError.message
-          : "Hediye Ã¶demesi baÅŸlatÄ±lamadÄ±.";
+          : "Hediye ödemesi başlatılamadı.";
 
       console.error(
-        "Hediye baÅŸlatÄ±lamadÄ±:",
+        "Hediye başlatılamadı:",
         giftError,
       );
       setError(message);
@@ -2768,24 +2768,24 @@ function GiftScreen({
     return (
       <article className="rounded-[30px] border border-violet-100 bg-white p-7 text-center shadow-[0_24px_70px_rgba(35,16,55,0.12)]">
         <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-violet-50 text-[38px]">
-          ğŸ
+          🎁
         </div>
 
         <p className="mt-5 text-[9px] font-black uppercase tracking-[0.14em] text-violet-600">
-          Hediye gÃ¶nderildi
+          Hediye gönderildi
         </p>
 
         <h2 className="mt-3 text-[28px] font-black tracking-[-0.05em]">
-          TeÅŸekkÃ¼rler.
+          Teşekkürler.
         </h2>
 
         <p className="mx-auto mt-4 max-w-[390px] text-[12px] leading-6 text-muted-foreground">
-          Hediyen {creatorName}â€™a ulaÅŸtÄ±. Ä°letiÅŸim bilgisi bÄ±raktÄ±ysan creator bunu gÃ¶rebilir; cevap verme zorunluluÄŸu yoktur.
+          Hediyen {creatorName}’a ulaştı. İletişim bilgisi bıraktıysan creator bunu görebilir; cevap verme zorunluluğu yoktur.
         </p>
 
         {orderId ? (
           <p className="mt-3 text-[8px] font-bold text-muted-foreground/70">
-            Ä°ÅŸlem: {orderId.slice(0, 8)}
+            İşlem: {orderId.slice(0, 8)}
           </p>
         ) : null}
 
@@ -2794,7 +2794,7 @@ function GiftScreen({
           onClick={onBack}
           className="mt-6 h-11 w-full rounded-full bg-black text-[10px] font-black text-white"
         >
-          Sonucuma dÃ¶n
+          Sonucuma dön
         </button>
       </article>
     );
@@ -2807,20 +2807,20 @@ function GiftScreen({
         onClick={onBack}
         className="text-[9px] font-black text-muted-foreground"
       >
-        â† Sonuca dÃ¶n
+        ← Sonuca dön
       </button>
 
       <div className="mt-5 text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-violet-50 text-[30px]">
-          ğŸ
+          🎁
         </div>
 
         <h2 className="mt-4 text-[27px] font-black tracking-[-0.05em]">
-          {creatorName}â€™a hediye gÃ¶nder
+          {creatorName}’a hediye gönder
         </h2>
 
         <p className="mx-auto mt-3 max-w-[390px] text-[11px] leading-5 text-muted-foreground">
-          Ä°Ã§eriÄŸi sevdiysen kÃ¼Ã§Ã¼k bir hediye bÄ±rak. Hediye destek ve fark edilme sinyalidir; cevap veya iletiÅŸim garantisi vermez.
+          İçeriği sevdiysen küçük bir hediye bırak. Hediye destek ve fark edilme sinyalidir; cevap veya iletişim garantisi vermez.
         </p>
       </div>
 
@@ -2858,7 +2858,7 @@ function GiftScreen({
 
       <div className="mt-6">
         <p className="text-[9px] font-black uppercase tracking-[0.1em]">
-          MesajÄ±n
+          Mesajın
         </p>
 
         <div className="mt-2 grid grid-cols-2 gap-2">
@@ -2886,7 +2886,7 @@ function GiftScreen({
 
       <div className="mt-6">
         <p className="text-[9px] font-black uppercase tracking-[0.1em]">
-          Seni nasÄ±l gÃ¶rsÃ¼n?
+          Seni nasıl görsün?
         </p>
 
         <div className="mt-2 flex flex-wrap gap-2">
@@ -2938,7 +2938,7 @@ function GiftScreen({
         ) : null}
 
         <p className="mt-2 text-[8px] leading-4 text-muted-foreground">
-          Ä°letiÅŸim bilgisi isteÄŸe baÄŸlÄ±dÄ±r. Creatorâ€™Ä±n sana ulaÅŸacaÄŸÄ±na dair sÃ¶z verilmez.
+          İletişim bilgisi isteğe bağlıdır. Creator’ın sana ulaşacağına dair söz verilmez.
         </p>
       </div>
 
@@ -2946,7 +2946,7 @@ function GiftScreen({
       paymentResult === "cancelled" ? (
         <div className="mt-4 rounded-[15px] border border-amber-100 bg-amber-50 px-4 py-3">
           <p className="text-[9px] font-bold text-amber-800">
-            Ã–deme tamamlanmadÄ±. Ä°stersen tekrar deneyebilirsin.
+            Ödeme tamamlanmadı. İstersen tekrar deneyebilirsin.
           </p>
         </div>
       ) : null}
@@ -2968,8 +2968,8 @@ function GiftScreen({
         className="mt-6 flex h-13 min-h-[52px] w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 text-[11px] font-black text-white transition disabled:opacity-50"
       >
         {loading
-          ? "Ã–deme hazÄ±rlanÄ±yor..."
-          : `${selectedGift.emoji} ${selectedGift.label} gÃ¶nder Â· ${selectedGift.price} TL`}
+          ? "Ödeme hazırlanıyor..."
+          : `${selectedGift.emoji} ${selectedGift.label} gönder · ${selectedGift.price} TL`}
       </button>
     </article>
   );
@@ -3042,7 +3042,7 @@ function OfferScreen({
         setExistingPaidChecking(false);
       } catch (error) {
         console.error(
-          "Ã–nceki satÄ±n alma kontrol edilemedi:",
+          "Önceki satın alma kontrol edilemedi:",
           error,
         );
 
@@ -3083,7 +3083,7 @@ function OfferScreen({
     if (!orderId) {
       setPaidOfferResult(null);
       setPaidOfferError(
-        "Ã–deme tamamlandÄ± ancak sipariÅŸ bilgisi bulunamadÄ±.",
+        "Ödeme tamamlandı ancak sipariş bilgisi bulunamadı.",
       );
       setPaidOfferLoading(false);
       return;
@@ -3098,7 +3098,7 @@ function OfferScreen({
         setPaidOfferResult(null);
 if (!orderId) {
   throw new Error(
-    "Ã–deme sipariÅŸ bilgisi bulunamadÄ±.",
+    "Ödeme sipariş bilgisi bulunamadı.",
   );
 }
         const result =
@@ -3117,10 +3117,10 @@ if (!orderId) {
         const message =
           error instanceof Error
             ? error.message
-            : "Ãœcretli sonuÃ§ doÄŸrulanamadÄ±.";
+            : "Ücretli sonuç doğrulanamadı.";
 
         console.error(
-          "Ãœcretli sonuÃ§ doÄŸrulanamadÄ±:",
+          "Ücretli sonuç doğrulanamadı:",
           error,
         );
 
@@ -3172,7 +3172,7 @@ const paymentUrl =
 
 if (!paymentUrl) {
   throw new Error(
-    "Ã–deme baÄŸlantÄ±sÄ± alÄ±namadÄ±.",
+    "Ödeme bağlantısı alınamadı.",
   );
 }
 
@@ -3182,10 +3182,10 @@ window.location.href =
       const message =
         error instanceof Error
           ? error.message
-          : "SipariÅŸ oluÅŸturulamadÄ±.";
+          : "Sipariş oluşturulamadı.";
 
       console.error(
-        "SipariÅŸ oluÅŸturulamadÄ±:",
+        "Sipariş oluşturulamadı:",
         error,
       );
 
@@ -3203,15 +3203,15 @@ window.location.href =
         <article className="overflow-hidden rounded-[30px] border border-border bg-white shadow-[0_24px_70px_rgba(35,16,55,0.13)]">
           <div className="p-7 text-center">
             <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-primary">
-              Ã–deme doÄŸrulanÄ±yor
+              Ödeme doğrulanıyor
             </p>
 
             <h2 className="mt-4 text-[24px] font-black tracking-[-0.04em]">
-              SatÄ±n aldÄ±ÄŸÄ±n iÃ§erik hazÄ±rlanÄ±yor
+              Satın aldığın içerik hazırlanıyor
             </h2>
 
             <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
-              SipariÅŸ ve katÄ±lÄ±mcÄ± bilgilerin sunucuda doÄŸrulanÄ±yor.
+              Sipariş ve katılımcı bilgilerin sunucuda doğrulanıyor.
             </p>
           </div>
         </article>
@@ -3223,16 +3223,16 @@ window.location.href =
         <article className="overflow-hidden rounded-[30px] border border-border bg-white shadow-[0_24px_70px_rgba(35,16,55,0.13)]">
           <div className="p-7">
             <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-red-500">
-              Premium eriÅŸim doÄŸrulanamadÄ±
+              Premium erişim doğrulanamadı
             </p>
 
             <h2 className="mt-4 text-[25px] font-black tracking-[-0.04em]">
-              SatÄ±n aldÄ±ÄŸÄ±n iÃ§erik aÃ§Ä±lamadÄ±
+              Satın aldığın içerik açılamadı
             </h2>
 
             <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
               {paidOfferError ??
-                "SatÄ±n alma bilgisi doÄŸrulanamadÄ±."}
+                "Satın alma bilgisi doğrulanamadı."}
             </p>
 
             <button
@@ -3240,7 +3240,7 @@ window.location.href =
               onClick={onBack}
               className="mt-5 flex h-11 w-full items-center justify-center rounded-full border border-border bg-white text-[9px] font-bold text-muted-foreground"
             >
-              Ãœcretsiz sonucuma dÃ¶n
+              Ücretsiz sonucuma dön
             </button>
           </div>
         </article>
@@ -3255,18 +3255,18 @@ window.location.href =
       <article className="overflow-hidden rounded-[30px] border border-emerald-200 bg-white shadow-[0_24px_70px_rgba(35,16,55,0.13)]">
         <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-500 p-7 text-white">
           <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/75">
-            Ã–deme doÄŸrulandÄ±
+            Ödeme doğrulandı
           </p>
 
           <div className="mt-8">
-            <span className="text-5xl">âœ“</span>
+            <span className="text-5xl">✓</span>
 
             <h2 className="mt-5 text-[28px] font-black leading-[1] tracking-[-0.05em]">
-              DetaylÄ± uyum haritan
+              Detaylı uyum haritan
             </h2>
 
             <p className="mt-4 text-[12px] leading-5 text-white/85">
-              %{paidOfferResult.score} uyum sonucunun hangi cevaplardan oluÅŸtuÄŸunu ÅŸimdi gÃ¶rebilirsin.
+              %{paidOfferResult.score} uyum sonucunun hangi cevaplardan oluştuğunu şimdi görebilirsin.
             </p>
           </div>
         </div>
@@ -3276,10 +3276,10 @@ window.location.href =
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-[10px] font-black text-emerald-950">
-                  Uyumlu olduÄŸunuz konular
+                  Uyumlu olduğunuz konular
                 </p>
                 <p className="mt-1 text-[9px] leading-4 text-emerald-800">
-                  AynÄ± seÃ§eneÄŸi verdiÄŸiniz {paidOfferResult.matchingAnswers.length} soru
+                  Aynı seçeneği verdiğiniz {paidOfferResult.matchingAnswers.length} soru
                 </p>
               </div>
 
@@ -3292,7 +3292,7 @@ window.location.href =
               {paidOfferResult.matchingAnswers.length === 0 ? (
                 <div className="rounded-[15px] border border-emerald-200 bg-white p-3">
                   <p className="text-[10px] leading-5 text-emerald-900">
-                    Bu sonuÃ§ta tamamen aynÄ± cevap verdiÄŸiniz bir soru yok.
+                    Bu sonuçta tamamen aynı cevap verdiğiniz bir soru yok.
                   </p>
                 </div>
               ) : (
@@ -3307,7 +3307,7 @@ window.location.href =
                       </p>
 
                       <p className="mt-2 text-[9px] font-semibold leading-4 text-emerald-700">
-                        Ortak cevabÄ±nÄ±z: {item.answer}
+                        Ortak cevabınız: {item.answer}
                       </p>
                     </div>
                   ),
@@ -3320,10 +3320,10 @@ window.location.href =
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-[10px] font-black text-rose-950">
-                  FarklÄ± dÃ¼ÅŸÃ¼ndÃ¼ÄŸÃ¼nÃ¼z konular
+                  Farklı düşündüğünüz konular
                 </p>
                 <p className="mt-1 text-[9px] leading-4 text-rose-800">
-                  FarklÄ± seÃ§enek verdiÄŸiniz {paidOfferResult.differentAnswers.length} soru
+                  Farklı seçenek verdiğiniz {paidOfferResult.differentAnswers.length} soru
                 </p>
               </div>
 
@@ -3336,7 +3336,7 @@ window.location.href =
               {paidOfferResult.differentAnswers.length === 0 ? (
                 <div className="rounded-[15px] border border-rose-200 bg-white p-3">
                   <p className="text-[10px] leading-5 text-rose-900">
-                    TÃ¼m karÅŸÄ±laÅŸtÄ±rÄ±labilir sorularda aynÄ± cevabÄ± verdiniz.
+                    Tüm karşılaştırılabilir sorularda aynı cevabı verdiniz.
                   </p>
                 </div>
               ) : (
@@ -3353,7 +3353,7 @@ window.location.href =
                       <div className="mt-3 grid gap-2 sm:grid-cols-2">
                         <div className="rounded-[12px] bg-background p-3">
                           <p className="text-[7px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                            Senin cevabÄ±n
+                            Senin cevabın
                           </p>
                           <p className="mt-1 text-[9px] font-bold leading-4">
                             {item.participantAnswer}
@@ -3362,7 +3362,7 @@ window.location.href =
 
                         <div className="rounded-[12px] bg-background p-3">
                           <p className="text-[7px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                            Creatorâ€™Ä±n cevabÄ±
+                            Creator’ın cevabı
                           </p>
                           <p className="mt-1 text-[9px] font-bold leading-4">
                             {item.creatorAnswer}
@@ -3381,7 +3381,7 @@ window.location.href =
             onClick={onBack}
             className="flex h-11 w-full items-center justify-center rounded-full border border-border bg-white text-[9px] font-bold text-muted-foreground"
           >
-            Ãœcretsiz sonucuma dÃ¶n
+            Ücretsiz sonucuma dön
           </button>
         </div>
       </article>
@@ -3400,15 +3400,15 @@ window.location.href =
             </p>
 
             <div className="mt-7">
-              <span className="text-5xl">âœ¦</span>
+              <span className="text-5xl">✦</span>
 
               <h2 className="mt-5 text-[28px] font-black leading-[1] tracking-[-0.05em]">
                 {paidOfferResult.resultTitle ||
-                  "DetaylÄ± performansÄ±n"}
+                  "Detaylı performansın"}
               </h2>
 
               <p className="mt-4 text-[12px] leading-5 text-white/85">
-                %{paidOfferResult.score} skorunun hangi sorulardan oluÅŸtuÄŸunu ÅŸimdi gÃ¶rebilirsin.
+                %{paidOfferResult.score} skorunun hangi sorulardan oluştuğunu şimdi görebilirsin.
               </p>
             </div>
           </div>
@@ -3429,7 +3429,7 @@ window.location.href =
                   {paidOfferResult.correctCount}
                 </p>
                 <p className="mt-1 text-[8px] font-bold text-emerald-700">
-                  DoÄŸru
+                  Doğru
                 </p>
               </div>
 
@@ -3438,20 +3438,20 @@ window.location.href =
                   {paidOfferResult.incorrectCount}
                 </p>
                 <p className="mt-1 text-[8px] font-bold text-rose-700">
-                  YanlÄ±ÅŸ
+                  Yanlış
                 </p>
               </div>
             </div>
 
             <section className="rounded-[20px] border border-emerald-200 bg-emerald-50 p-4">
               <p className="text-[10px] font-black text-emerald-950">
-                DoÄŸru cevapladÄ±klarÄ±n
+                Doğru cevapladıkların
               </p>
 
               <div className="mt-3 space-y-2">
                 {paidOfferResult.correctAnswers.length === 0 ? (
                   <p className="rounded-[14px] bg-white p-3 text-[9px] text-emerald-900">
-                    Bu testte doÄŸru cevap bulunmuyor.
+                    Bu testte doğru cevap bulunmuyor.
                   </p>
                 ) : (
                   paidOfferResult.correctAnswers.map(
@@ -3465,7 +3465,7 @@ window.location.href =
                         </p>
 
                         <p className="mt-2 text-[9px] font-semibold text-emerald-700">
-                          DoÄŸru cevabÄ±n: {item.participantAnswer}
+                          Doğru cevabın: {item.participantAnswer}
                         </p>
                       </div>
                     ),
@@ -3476,13 +3476,13 @@ window.location.href =
 
             <section className="rounded-[20px] border border-rose-200 bg-rose-50 p-4">
               <p className="text-[10px] font-black text-rose-950">
-                GeliÅŸtirebileceÄŸin sorular
+                Geliştirebileceğin sorular
               </p>
 
               <div className="mt-3 space-y-2">
                 {paidOfferResult.incorrectAnswers.length === 0 ? (
                   <p className="rounded-[14px] bg-white p-3 text-[9px] text-emerald-900">
-                    TÃ¼m sorularÄ± doÄŸru cevapladÄ±n.
+                    Tüm soruları doğru cevapladın.
                   </p>
                 ) : (
                   paidOfferResult.incorrectAnswers.map(
@@ -3498,7 +3498,7 @@ window.location.href =
                         <div className="mt-3 grid gap-2 sm:grid-cols-2">
                           <div className="rounded-[12px] bg-background p-3">
                             <p className="text-[7px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                              Senin cevabÄ±n
+                              Senin cevabın
                             </p>
                             <p className="mt-1 text-[9px] font-bold">
                               {item.participantAnswer}
@@ -3507,7 +3507,7 @@ window.location.href =
 
                           <div className="rounded-[12px] bg-background p-3">
                             <p className="text-[7px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                              DoÄŸru cevap
+                              Doğru cevap
                             </p>
                             <p className="mt-1 text-[9px] font-bold text-emerald-700">
                               {item.correctAnswer}
@@ -3526,7 +3526,7 @@ window.location.href =
               onClick={onBack}
               className="flex h-11 w-full items-center justify-center rounded-full border border-border bg-white text-[9px] font-bold text-muted-foreground"
             >
-              Ãœcretsiz sonucuma dÃ¶n
+              Ücretsiz sonucuma dön
             </button>
           </div>
         </article>
@@ -3544,19 +3544,19 @@ window.location.href =
         <article className="overflow-hidden rounded-[30px] border border-border bg-white shadow-[0_24px_70px_rgba(35,16,55,0.13)]">
           <div className="bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-500 p-7 text-white">
             <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/75">
-              KiÅŸisel premium harita
+              Kişisel premium harita
             </p>
 
             <div className="mt-7">
-              <span className="text-5xl">â†•</span>
+              <span className="text-5xl">↕</span>
 
               <h2 className="mt-5 text-[28px] font-black leading-[1] tracking-[-0.05em]">
                 {paidOfferResult.offerTitle ||
-                  "KiÅŸisel Haritan"}
+                  "Kişisel Haritan"}
               </h2>
 
               <p className="mt-4 text-[12px] leading-5 text-white/85">
-                Genel seviyen %{paidOfferResult.score}. AÅŸaÄŸÄ±daki bÃ¶lÃ¼m cevaplarÄ±nÄ± tekrar etmez; hangi durumlarda yÃ¼kseldiÄŸini ve cevaplarÄ±nÄ±n birlikte oluÅŸturduÄŸu Ã¶rÃ¼ntÃ¼yÃ¼ gÃ¶sterir.
+                Genel seviyen %{paidOfferResult.score}. Aşağıdaki bölüm cevaplarını tekrar etmez; hangi durumlarda yükseldiğini ve cevaplarının birlikte oluşturduğu örüntüyü gösterir.
               </p>
             </div>
           </div>
@@ -3565,42 +3565,42 @@ window.location.href =
             {insights.strongestTrigger && (
               <section className="rounded-[20px] border border-border bg-background p-4">
                 <p className="text-[8px] font-bold uppercase tracking-[0.13em] text-primary">
-                  En gÃ¼Ã§lÃ¼ tetikleyicin
+                  En güçlü tetikleyicin
                 </p>
                 <p className="mt-2 text-[12px] font-black leading-5">
                   {insights.strongestTrigger.question}
                 </p>
                 <p className="mt-2 text-[10px] leading-5 text-muted-foreground">
-                  Bu senaryoda verdiÄŸin tepki, kiÅŸisel haritandaki en yÃ¼ksek yoÄŸunluklu alanlardan biri.
+                  Bu senaryoda verdiğin tepki, kişisel haritandaki en yüksek yoğunluklu alanlardan biri.
                 </p>
                 <span className="mt-3 inline-flex rounded-full bg-white px-3 py-1.5 text-[9px] font-black text-primary">
-                  YoÄŸunluk %{insights.strongestTrigger.intensity}
+                  Yoğunluk %{insights.strongestTrigger.intensity}
                 </span>
               </section>
             )}
 
             <section className="rounded-[20px] border border-border bg-background p-4">
               <p className="text-[8px] font-bold uppercase tracking-[0.13em] text-primary">
-                Tepki biÃ§imin
+                Tepki biçimin
               </p>
               <p className="mt-2 text-[11px] font-semibold leading-5">
                 {insights.reactionPattern}
               </p>
               <p className="mt-3 text-[9px] text-muted-foreground">
-                {insights.highIntensityCount} yÃ¼ksek yoÄŸunluklu Â· {insights.lowIntensityCount} dÃ¼ÅŸÃ¼k yoÄŸunluklu cevap
+                {insights.highIntensityCount} yüksek yoğunluklu · {insights.lowIntensityCount} düşük yoğunluklu cevap
               </p>
             </section>
 
             {insights.calmestArea && (
               <section className="rounded-[20px] border border-border bg-background p-4">
                 <p className="text-[8px] font-bold uppercase tracking-[0.13em] text-emerald-700">
-                  En sakin olduÄŸun alan
+                  En sakin olduğun alan
                 </p>
                 <p className="mt-2 text-[12px] font-black leading-5">
                   {insights.calmestArea.question}
                 </p>
                 <p className="mt-2 text-[10px] leading-5 text-muted-foreground">
-                  Burada daha kontrollÃ¼ kalÄ±yorsun. Bu alan, genel skorunun her durumda aynÄ± tepkiyi vermediÄŸini gÃ¶steriyor.
+                  Burada daha kontrollü kalıyorsun. Bu alan, genel skorunun her durumda aynı tepkiyi vermediğini gösteriyor.
                 </p>
               </section>
             )}
@@ -3608,7 +3608,7 @@ window.location.href =
             {insights.redZone.length > 0 && (
               <section className="rounded-[20px] border border-border bg-background p-4">
                 <p className="text-[8px] font-bold uppercase tracking-[0.13em] text-rose-600">
-                  KÄ±rmÄ±zÄ± bÃ¶lgen
+                  Kırmızı bölgen
                 </p>
                 <div className="mt-3 space-y-2">
                   {insights.redZone.map(
@@ -3627,7 +3627,7 @@ window.location.href =
 
             <section className="rounded-[20px] border border-primary/20 bg-primary/5 p-4">
               <p className="text-[8px] font-bold uppercase tracking-[0.13em] text-primary">
-                SÃ¼rpriz iÃ§gÃ¶rÃ¼
+                Sürpriz içgörü
               </p>
               <p className="mt-2 text-[11px] font-semibold leading-5">
                 {insights.surpriseInsight}
@@ -3639,7 +3639,7 @@ window.location.href =
               onClick={onBack}
               className="flex h-11 w-full items-center justify-center rounded-full border border-border bg-white text-[9px] font-bold text-muted-foreground"
             >
-              Ãœcretsiz sonucuma dÃ¶n
+              Ücretsiz sonucuma dön
             </button>
           </div>
         </article>
@@ -3666,12 +3666,12 @@ window.location.href =
         <article className="overflow-hidden rounded-[30px] border border-border bg-white shadow-[0_24px_70px_rgba(35,16,55,0.13)]">
           <div className="bg-black p-7 text-white">
             <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/60">
-              Ã–deme doÄŸrulandÄ±
+              Ödeme doğrulandı
             </p>
 
             <h2 className="mt-5 text-[28px] font-black leading-[1] tracking-[-0.05em]">
               {paidOfferResult.offerTitle ||
-                "Ä°Ã§eriÄŸin aÃ§Ä±ldÄ±"}
+                "İçeriğin açıldı"}
             </h2>
           </div>
 
@@ -3679,7 +3679,7 @@ window.location.href =
             <p className="whitespace-pre-wrap text-[13px] font-semibold leading-6">
               {paidOfferResult.premiumDescription ||
                 paidOfferResult.offerDescription ||
-                "Ã–deme baÅŸarÄ±yla tamamlandÄ±."}
+                "Ödeme başarıyla tamamlandı."}
             </p>
 
             <button
@@ -3687,7 +3687,7 @@ window.location.href =
               onClick={onBack}
               className="mt-4 h-11 w-full rounded-full border border-border text-[9px] font-black"
             >
-              Ãœcretsiz sonucuma dÃ¶n
+              Ücretsiz sonucuma dön
             </button>
           </div>
         </article>
@@ -3700,12 +3700,12 @@ window.location.href =
           <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/75">
             {paidOfferResult.kind ===
             "test_archetype"
-              ? "Premium eÅŸleÅŸme analizi"
+              ? "Premium eşleşme analizi"
               : "Premium profil analizi"}
           </p>
 
           <div className="mt-7">
-            <span className="text-5xl">â—†</span>
+            <span className="text-5xl">◆</span>
 
             <h2 className="mt-5 text-[28px] font-black leading-[1] tracking-[-0.05em]">
               {paidOfferResult.resultTitle}
@@ -3713,7 +3713,7 @@ window.location.href =
 
             {paidOfferResult.winningProfile && (
               <p className="mt-4 text-[12px] leading-5 text-white/85">
-                CevaplarÄ±nÄ±n %{paidOfferResult.winningProfile.percentage} kadarÄ± en gÃ¼Ã§lÃ¼ olarak â€œ{paidOfferResult.winningProfile.title}â€ profiline iÅŸaret ediyor.
+                Cevaplarının %{paidOfferResult.winningProfile.percentage} kadarı en güçlü olarak “{paidOfferResult.winningProfile.title}” profiline işaret ediyor.
               </p>
             )}
           </div>
@@ -3722,7 +3722,7 @@ window.location.href =
         <div className="space-y-4 p-6">
           <section className="rounded-[20px] border border-border bg-background p-4">
             <p className="text-[10px] font-black">
-              Profil daÄŸÄ±lÄ±mÄ±n
+              Profil dağılımın
             </p>
 
             <div className="mt-4 space-y-3">
@@ -3764,7 +3764,7 @@ window.location.href =
 
           <section className="rounded-[20px] border border-border bg-white p-4">
             <p className="text-[10px] font-black">
-              CevaplarÄ±nÄ±n iÅŸaret ettiÄŸi profiller
+              Cevaplarının işaret ettiği profiller
             </p>
 
             <div className="mt-3 space-y-2">
@@ -3779,13 +3779,13 @@ window.location.href =
                     </p>
 
                     <p className="mt-2 text-[9px] font-semibold text-muted-foreground">
-                      Senin cevabÄ±n: {item.answer}
+                      Senin cevabın: {item.answer}
                     </p>
 
                     <p className="mt-1 text-[9px] font-bold text-primary">
                       {item.profileTitle
-                        ? `Ä°ÅŸaret ettiÄŸi profil: ${item.profileTitle}`
-                        : "Bu cevap sonuÃ§ daÄŸÄ±lÄ±mÄ±na katkÄ± saÄŸladÄ±."}
+                        ? `İşaret ettiği profil: ${item.profileTitle}`
+                        : "Bu cevap sonuç dağılımına katkı sağladı."}
                     </p>
                   </div>
                 ),
@@ -3798,7 +3798,7 @@ window.location.href =
             onClick={onBack}
             className="flex h-11 w-full items-center justify-center rounded-full border border-border bg-white text-[9px] font-bold text-muted-foreground"
           >
-            Ãœcretsiz sonucuma dÃ¶n
+            Ücretsiz sonucuma dön
           </button>
         </div>
       </article>
@@ -3813,7 +3813,7 @@ window.location.href =
       <article className="overflow-hidden rounded-[30px] border border-border bg-white shadow-[0_24px_70px_rgba(35,16,55,0.13)]">
         <div className="p-7">
           <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-red-500">
-            Ã–deme tamamlanmadÄ±
+            Ödeme tamamlanmadı
           </p>
 
           <h2 className="mt-4 text-[25px] font-black tracking-[-0.04em]">
@@ -3821,7 +3821,7 @@ window.location.href =
           </h2>
 
           <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
-            Ä°ÅŸlem baÅŸarÄ±sÄ±z oldu veya Ã¶deme ekranÄ± kapatÄ±ldÄ±.
+            İşlem başarısız oldu veya ödeme ekranı kapatıldı.
           </p>
 
           <button
@@ -3831,8 +3831,8 @@ window.location.href =
             className="mt-5 flex h-12 w-full items-center justify-center rounded-full bg-black text-[10px] font-bold text-white transition enabled:hover:bg-primary disabled:cursor-wait disabled:bg-black/40"
           >
             {orderLoading
-              ? "SipariÅŸ hazÄ±rlanÄ±yor..."
-              : "Ã–demeyi tekrar dene"}
+              ? "Sipariş hazırlanıyor..."
+              : "Ödemeyi tekrar dene"}
           </button>
 
           <button
@@ -3840,7 +3840,7 @@ window.location.href =
             onClick={onBack}
             className="mt-2 flex h-11 w-full items-center justify-center rounded-full border border-border bg-white text-[9px] font-bold text-muted-foreground"
           >
-            Ãœcretsiz sonucuma dÃ¶n
+            Ücretsiz sonucuma dön
           </button>
         </div>
       </article>
@@ -3855,7 +3855,7 @@ window.location.href =
         </p>
 
         <div className="mt-10">
-          <span className="text-5xl">âœ¦</span>
+          <span className="text-5xl">✦</span>
 
           <h2 className="mt-5 text-[28px] font-black leading-[1] tracking-[-0.05em]">
             {offer.title}
@@ -3871,7 +3871,7 @@ window.location.href =
         <div className="flex items-center justify-between rounded-[18px] border border-border bg-background p-4">
           <div>
             <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-              Teklif fiyatÄ±
+              Teklif fiyatı
             </p>
 
             <p className="mt-1 text-[22px] font-black">
@@ -3891,8 +3891,8 @@ window.location.href =
           className="mt-4 flex h-12 w-full items-center justify-center rounded-full bg-black text-[10px] font-bold text-white transition enabled:hover:bg-primary disabled:cursor-wait disabled:bg-black/40"
         >
           {orderLoading
-            ? "SipariÅŸ hazÄ±rlanÄ±yor..."
-            : `9 TL ile aÃ§`}
+            ? "Sipariş hazırlanıyor..."
+            : `9 TL ile aç`}
         </button>
 
         <button
@@ -3900,7 +3900,7 @@ window.location.href =
           onClick={onBack}
           className="mt-2 flex h-11 w-full items-center justify-center rounded-full border border-border bg-white text-[9px] font-bold text-muted-foreground"
         >
-          Ãœcretsiz sonucuma dÃ¶n
+          Ücretsiz sonucuma dön
         </button>
       </div>
     </article>
@@ -4057,10 +4057,10 @@ function findScoreResult(
   if (results.length === 0) {
     return {
       id: "result",
-      range: "%0â€“100",
-      title: "Sonucun hazÄ±r",
+      range: "%0–100",
+      title: "Sonucun hazır",
       description:
-        "Experience tamamlandÄ±.",
+        "Experience tamamlandı.",
     };
   }
 
@@ -4164,3 +4164,4 @@ function getCoverClass(style: CoverStyle) {
 
   return "from-fuchsia-500 via-pink-500 to-rose-500";
 }
+// AQRYO readability pass
