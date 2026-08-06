@@ -1,7 +1,7 @@
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
 import { savePublishedExperience } from "@/services/experiences";
-import { uploadExperienceImage } from "@/services/media";
+import { ImageUploader } from "@/components/creator/ImageUploader";
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -51,7 +51,6 @@ const DEFAULT_STATE: GuessBuilderState = {
 function GuessBuilderPage() {
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [creatorId, setCreatorId] = useState<string | null>(null);
   const [state, setState] = useState<GuessBuilderState>(DEFAULT_STATE);
 
@@ -174,29 +173,6 @@ function GuessBuilderPage() {
     if (activeIndex <= 0) return;
     setActiveStep(BUILDER_STEPS[activeIndex - 1]);
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  async function handleImageUpload(file: File) {
-    if (!creatorId || uploadingImage) return;
-    if (!["image/jpeg", "image/png"].includes(file.type)) {
-      window.alert("Yalnızca JPG ve PNG görseller yükleyebilirsin.");
-      return;
-    }
-    if (file.size > 8 * 1024 * 1024) {
-      window.alert("Görsel en fazla 8 MB olabilir.");
-      return;
-    }
-
-    try {
-      setUploadingImage(true);
-      const uploaded = await uploadExperienceImage(creatorId, file);
-      setState((current) => ({ ...current, imageUrl: uploaded.publicUrl }));
-    } catch (error) {
-      console.error(error);
-      window.alert(error instanceof Error ? error.message : "Görsel yüklenemedi.");
-    } finally {
-      setUploadingImage(false);
-    }
   }
 
   function updateAnswer(index: number, value: string) {
@@ -368,8 +344,6 @@ function GuessBuilderPage() {
             <ContentStep
               state={state}
               setState={setState}
-              uploadingImage={uploadingImage}
-              onUpload={handleImageUpload}
             />
           ) : null}
 
@@ -456,13 +430,9 @@ function GuessBuilderPage() {
 function ContentStep({
   state,
   setState,
-  uploadingImage,
-  onUpload,
 }: {
   state: GuessBuilderState;
   setState: React.Dispatch<React.SetStateAction<GuessBuilderState>>;
-  uploadingImage: boolean;
-  onUpload: (file: File) => Promise<void>;
 }) {
   return (
     <BuilderCard
@@ -487,29 +457,18 @@ function ContentStep({
         className={textareaClass}
       />
 
-      <FieldLabel className="mt-5">Görsel</FieldLabel>
-      <div className="mt-2 rounded-[18px] border border-dashed border-border bg-background p-4">
-        {state.imageUrl ? (
-          <img
-            src={state.imageUrl}
-            alt=""
-            className="mb-3 max-h-[320px] w-full rounded-[14px] object-contain"
-          />
-        ) : null}
-        <label className="inline-flex h-10 cursor-pointer items-center justify-center rounded-full border border-border bg-white px-4 text-[9px] font-bold">
-          {uploadingImage ? "Yükleniyor..." : state.imageUrl ? "Görseli değiştir" : "JPG / PNG yükle"}
-          <input
-            type="file"
-            accept="image/jpeg,image/png"
-            disabled={uploadingImage}
-            className="hidden"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) void onUpload(file);
-              event.target.value = "";
-            }}
-          />
-        </label>
+      <div className="mt-5">
+        <ImageUploader
+          value={state.imageUrl}
+          onChange={(value) =>
+            setState((current) => ({
+              ...current,
+              imageUrl: value,
+            }))
+          }
+          label="Görsel"
+          helperText="JPG veya PNG yükle. Görseli 10%–300% arasında boyutlandırabilir, yatay ve dikey konumunu ayarlayabilirsin."
+        />
       </div>
 
       <FieldLabel className="mt-5">Soru / ipucu</FieldLabel>

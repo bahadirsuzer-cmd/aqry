@@ -8,8 +8,8 @@ import {
   Link,
 } from "@tanstack/react-router";
 import { savePublishedExperience } from "@/services/experiences";
-import type { ExperienceBlueprint } from "@/types/experienceBlueprint";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
+import { ImageUploader } from "@/components/creator/ImageUploader";
 
 export const Route = createFileRoute(
   "/test-builder",
@@ -21,13 +21,11 @@ type BuilderPanel =
   | "content"
   | "answers"
   | "result"
-  | "offer"
-  | "preview";
+  | "offer";
 
 type TestMode =
   | "score"
-  | "spectrum"
-  | "archetype";
+  | "profile";
 
 type CoverStyle =
   | "pink"
@@ -48,11 +46,9 @@ type ResultDefinition = {
   description: string;
 };
 
-const STANDARD_OFFER_PRICE = 9;
+const MAX_OFFER_PRICE = 499;
 const BUILDER_STORAGE_KEY =
   "aqry-test-builder";
-const GENERATED_BLUEPRINT_STORAGE_KEY =
-  "aqry-generated-blueprint";
 
 const initialQuestions: Question[] = [
   {
@@ -156,173 +152,22 @@ const initialResults: ResultDefinition[] =
     },
   ];
 
-
-function parseResultRange(
-  range: string,
-) {
-  const numbers =
-    range.match(/\d+/g)?.map(
-      Number,
-    ) ?? [];
-
-  if (numbers.length >= 2) {
-    return {
-      minScore: Math.max(
-        0,
-        Math.min(
-          100,
-          numbers[0],
-        ),
-      ),
-      maxScore: Math.max(
-        0,
-        Math.min(
-          100,
-          numbers[1],
-        ),
-      ),
-    };
-  }
-
-  return {
-    minScore: 0,
-    maxScore: 100,
-  };
-}
-
-function buildManualSpectrumBlueprint({
-  title,
-  description,
-  questions,
-  results,
-  offerEnabled,
-  offerTitle,
-  offerDescription,
-  offerPrice,
-}: {
-  title: string;
-  description: string;
-  questions: Question[];
-  results: ResultDefinition[];
-  offerEnabled: boolean;
-  offerTitle: string;
-  offerDescription: string;
-  offerPrice: number;
-}): ExperienceBlueprint {
-  const spectrumKey =
-    "spectrum_value";
-
-  return {
-    version: 1,
-    type: "test",
-    title,
-    description,
-    tone: "fun",
-    questions:
-      questions.map(
-        (question) => ({
-          id: `q${question.id}`,
-          text: question.text,
-          options:
-            question.options.map(
-              (
-                option,
-                optionIndex,
-              ) => {
-                const denominator =
-                  Math.max(
-                    1,
-                    question.options
-                      .length - 1,
-                  );
-
-                const weight =
-                  optionIndex /
-                  denominator;
-
-                return {
-                  id: `q${question.id}_${optionIndex}`,
-                  text: option,
-                  signals: [
-                    {
-                      key:
-                        spectrumKey,
-                      weight,
-                    },
-                  ],
-                  meaning:
-                    `Bu cevap ölçülen özelliğe ${Math.round(
-                      weight * 100,
-                    )}% düzeyinde işaret eder.`,
-                };
-              },
-            ),
-        }),
-      ),
-    resultModel: {
-      mode: "spectrum",
-      profiles:
-        results.map(
-          (result) => {
-            const {
-              minScore,
-              maxScore,
-            } =
-              parseResultRange(
-                result.range,
-              );
-
-            return {
-              id: result.id,
-              title:
-                result.title,
-              description:
-                result.description,
-              minScore,
-              maxScore,
-            };
-          },
-        ),
-    },
-    offer: {
-      enabled:
-        offerEnabled,
-      title: offerTitle,
-      description:
-        offerDescription,
-      suggestedPrice:
-        offerPrice,
-    },
-    test: {
-      strategy:
-        "spectrum",
-      spectrumKey,
-    },
-  };
-}
-
-
 function TestBuilderPage() {
   const [activePanel, setActivePanel] =
     useState<BuilderPanel>("content");
 
-  const [guide, setGuide] = useState<
-    "answers" | "result" | "offer" | null
-  >(null);
-
-  const [maxVisitedStep, setMaxVisitedStep] = useState(0);
-
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewScreen, setPreviewScreen] = useState<
-    "entry" | "questions" | "result"
-  >("entry");
-  const [previewQuestionIndex, setPreviewQuestionIndex] = useState(0);
-  const [previewAnswers, setPreviewAnswers] = useState<Record<number, number>>({});
-  const [previewTested, setPreviewTested] = useState(false);
-
   const [testMode, setTestMode] =
     useState<TestMode>("score");
 
+  const [
+    profileAssignments,
+    setProfileAssignments,
+  ] = useState<
+    Record<
+      number,
+      Record<number, string>
+    >
+  >({});
 
   const [title, setTitle] = useState(
     "Ne kadar biliyorsun?",
@@ -383,8 +228,8 @@ function TestBuilderPage() {
     "Hangi konularda güçlü olduğunu ve hangi başlıklarda zorlandığını ayrıntılı gör.",
   );
 
-  const offerPrice =
-    STANDARD_OFFER_PRICE;
+  const [offerPrice, setOfferPrice] =
+    useState(19);
 
   const [
     builderLoaded,
@@ -396,53 +241,7 @@ function TestBuilderPage() {
     setSourceExperienceId,
   ] = useState<string | null>(null);
 
-  const [
-    sourceBlueprint,
-    setSourceBlueprint,
-  ] = useState<ExperienceBlueprint | null>(
-    null,
-  );
-
   useEffect(() => {
-    const generatedBlueprintRaw =
-      window.sessionStorage.getItem(
-        GENERATED_BLUEPRINT_STORAGE_KEY,
-      );
-
-    if (generatedBlueprintRaw) {
-      try {
-        const generatedBlueprint =
-          JSON.parse(
-            generatedBlueprintRaw,
-          ) as ExperienceBlueprint;
-
-        if (
-          generatedBlueprint.type ===
-          "test"
-        ) {
-          setSourceBlueprint(
-            generatedBlueprint,
-          );
-
-          const strategy =
-            generatedBlueprint.test
-              ?.strategy;
-
-          if (
-            strategy === "score" ||
-            strategy === "spectrum" ||
-            strategy === "archetype"
-          ) {
-            setTestMode(strategy);
-          }
-        }
-      } catch {
-        window.sessionStorage.removeItem(
-          GENERATED_BLUEPRINT_STORAGE_KEY,
-        );
-      }
-    }
-
     const stored =
       window.sessionStorage.getItem(
         BUILDER_STORAGE_KEY,
@@ -464,7 +263,11 @@ function TestBuilderPage() {
           number,
           number
         >;
-        testMode?: TestMode | "profile";
+        testMode?: TestMode;
+        profileAssignments?: Record<
+          number,
+          Record<number, string>
+        >;
         answersLocked?: boolean;
         coverStyle?: CoverStyle;
         coverImageUrl?: string;
@@ -473,8 +276,8 @@ function TestBuilderPage() {
         offerEnabled?: boolean;
         offerTitle?: string;
         offerDescription?: string;
+        offerPrice?: number;
         sourceExperienceId?: string | null;
-        sourceBlueprint?: ExperienceBlueprint | null;
       };
 
       if (
@@ -515,21 +318,20 @@ function TestBuilderPage() {
 
       if (
         saved.testMode === "score" ||
-        saved.testMode ===
-          "spectrum" ||
-        saved.testMode ===
-          "archetype"
-      ) {
-        setTestMode(saved.testMode);
-      } else if (
         saved.testMode === "profile"
       ) {
-        // Legacy profile builder state:
-        // profile tests were closest to
-        // today's archetype strategy.
-        setTestMode("archetype");
+        setTestMode(saved.testMode);
       }
 
+      if (
+        saved.profileAssignments &&
+        typeof saved.profileAssignments ===
+          "object"
+      ) {
+        setProfileAssignments(
+          saved.profileAssignments,
+        );
+      }
 
       if (
         typeof saved.answersLocked ===
@@ -604,22 +406,24 @@ function TestBuilderPage() {
       }
 
       if (
+        typeof saved.offerPrice ===
+          "number" &&
+        saved.offerPrice >= 1 &&
+        saved.offerPrice <=
+          MAX_OFFER_PRICE
+      ) {
+        setOfferPrice(
+          saved.offerPrice,
+        );
+      }
+
+      if (
         typeof saved.sourceExperienceId ===
           "string" &&
         saved.sourceExperienceId
       ) {
         setSourceExperienceId(
           saved.sourceExperienceId,
-        );
-      }
-
-      if (
-        saved.sourceBlueprint &&
-        typeof saved.sourceBlueprint ===
-          "object"
-      ) {
-        setSourceBlueprint(
-          saved.sourceBlueprint,
         );
       }
     } catch {
@@ -667,6 +471,7 @@ function TestBuilderPage() {
         questions,
         correctAnswers,
         testMode,
+        profileAssignments,
         answersLocked,
         coverStyle,
         coverImageUrl,
@@ -677,7 +482,6 @@ function TestBuilderPage() {
         offerDescription,
         offerPrice,
         sourceExperienceId,
-        sourceBlueprint,
       }),
     );
   }, [
@@ -687,6 +491,7 @@ function TestBuilderPage() {
     questions,
     correctAnswers,
     testMode,
+    profileAssignments,
     answersLocked,
     coverStyle,
     coverImageUrl,
@@ -697,7 +502,6 @@ function TestBuilderPage() {
     offerDescription,
     offerPrice,
     sourceExperienceId,
-    sourceBlueprint,
   ]);
 
   const answeredCount =
@@ -713,6 +517,33 @@ function TestBuilderPage() {
     answeredCount ===
       questions.length;
 
+  const profileAssignmentCount =
+    questions.reduce(
+      (total, question) =>
+        total +
+        question.options.filter(
+          (_, optionIndex) =>
+            Boolean(
+              profileAssignments[
+                question.id
+              ]?.[optionIndex],
+            ),
+        ).length,
+      0,
+    );
+
+  const totalOptionCount =
+    questions.reduce(
+      (total, question) =>
+        total +
+        question.options.length,
+      0,
+    );
+
+  const allProfileAssignmentsSelected =
+    totalOptionCount > 0 &&
+    profileAssignmentCount ===
+      totalOptionCount;
 
   const questionsAreValid =
     questions.every(
@@ -738,31 +569,41 @@ function TestBuilderPage() {
   const offerIsValid =
     !offerEnabled ||
     (offerTitle.trim().length > 0 &&
-      offerDescription.trim().length > 0);
+      offerDescription
+        .trim().length > 0 &&
+      offerPrice >= 1 &&
+      offerPrice <=
+        MAX_OFFER_PRICE);
 
   const canPublish = useMemo(
-  () =>
-    title.trim().length > 0 &&
-    description.trim().length > 0 &&
-    questions.length >= 2 &&
-    questionsAreValid &&
-    (testMode === "score"
-      ? allAnswersSelected && answersLocked
-      : true) &&
-    resultsAreValid &&
-    offerIsValid,
-  [
-    title,
-    description,
-    questions.length,
-    questionsAreValid,
-    allAnswersSelected,
-    answersLocked,
-    testMode,
-    resultsAreValid,
-    offerIsValid,
-  ],
-);
+    () =>
+      title.trim().length > 0 &&
+      description.trim().length >
+        0 &&
+      questions.length >= 2 &&
+      questionsAreValid &&
+      (
+        testMode === "score"
+          ? allAnswersSelected &&
+            answersLocked
+          : allProfileAssignmentsSelected
+      ) &&
+      resultsAreValid &&
+      offerIsValid,
+    [
+      title,
+      description,
+      questions.length,
+      questionsAreValid,
+      allAnswersSelected,
+      allProfileAssignmentsSelected,
+      answersLocked,
+      testMode,
+      resultsAreValid,
+      offerIsValid,
+    ],
+  );
+
   function invalidateAnswerKey() {
     setAnswersLocked(false);
   }
@@ -835,6 +676,15 @@ function TestBuilderPage() {
       },
     );
 
+    setProfileAssignments(
+      (currentAssignments) => {
+        const next = {
+          ...currentAssignments,
+        };
+        delete next[questionId];
+        return next;
+      },
+    );
 
     invalidateAnswerKey();
   }
@@ -908,6 +758,15 @@ function TestBuilderPage() {
       },
     );
 
+    setProfileAssignments(
+      (currentAssignments) => {
+        const next = {
+          ...currentAssignments,
+        };
+        delete next[questionId];
+        return next;
+      },
+    );
 
     invalidateAnswerKey();
   }
@@ -925,6 +784,25 @@ function TestBuilderPage() {
         ...currentAnswers,
         [questionId]:
           optionIndex,
+      }),
+    );
+  }
+
+  function assignProfileToOption(
+    questionId: number,
+    optionIndex: number,
+    profileId: string,
+  ) {
+    setProfileAssignments(
+      (currentAssignments) => ({
+        ...currentAssignments,
+        [questionId]: {
+          ...currentAssignments[
+            questionId
+          ],
+          [optionIndex]:
+            profileId,
+        },
       }),
     );
   }
@@ -950,249 +828,25 @@ function TestBuilderPage() {
     );
   }
 
-
-  const builderSteps: BuilderPanel[] =
-    testMode === "score"
-      ? ["content", "answers", "result", "offer", "preview"]
-      : ["content", "result", "offer", "preview"];
-
-  const activeStepIndex = Math.max(
-    0,
-    builderSteps.indexOf(activePanel),
-  );
-
-  function openStep(step: BuilderPanel) {
-    const index = builderSteps.indexOf(step);
-    if (index >= 0 && index <= maxVisitedStep) {
-      setActivePanel(step);
-    }
-  }
-
-  function showNextStep(step: BuilderPanel) {
-    const index = builderSteps.indexOf(step);
-    if (index >= 0) {
-      setMaxVisitedStep((current) => Math.max(current, index));
-      setActivePanel(step);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }
-
-  function goBackInBuilder() {
-    const previous = builderSteps[activeStepIndex - 1];
-    if (previous) {
-      setActivePanel(previous);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }
-
-  function goNextInBuilder() {
-    if (activePanel === "content") {
-      if (
-        title.trim().length === 0 ||
-        description.trim().length === 0 ||
-        questions.length < 2 ||
-        !questionsAreValid
-      ) {
-        window.alert("Önce başlık, açıklama ve tüm soruları tamamla.");
-        return;
-      }
-
-      if (testMode === "score") {
-        setGuide("answers");
-        return;
-      }
-
-      setGuide("result");
-      return;
-    }
-
-    if (activePanel === "answers") {
-      if (!allAnswersSelected || !answersLocked) {
-        window.alert("Tüm doğru cevapları seç ve cevap anahtarını kilitle.");
-        return;
-      }
-      setGuide("result");
-      return;
-    }
-
-    if (activePanel === "result") {
-      if (!resultsAreValid) {
-        window.alert("Tüm sonuç başlıklarını ve açıklamalarını tamamla.");
-        return;
-      }
-      setGuide("offer");
-      return;
-    }
-
-    if (activePanel === "offer") {
-      if (!offerIsValid) {
-        window.alert("Teklif açıksa başlık ve açıklamayı tamamla.");
-        return;
-      }
-      showNextStep("preview");
-    }
-  }
-
-  function confirmGuide() {
-    const next = guide;
-    setGuide(null);
-    if (next) {
-      showNextStep(next);
-    }
-  }
-
-  function findResultForScore(score: number) {
-    return (
-      results.find((result) => {
-        const { minScore, maxScore } =
-          parseResultRange(result.range);
-        return score >= minScore && score <= maxScore;
-      }) ?? results[0]
-    );
-  }
-
-  function calculatePreviewOutcome(
-    answers: Record<number, number>,
+  function updateOfferPrice(
+    value: number,
   ) {
-    if (testMode === "score") {
-      const correctCount = questions.filter(
-        (question) =>
-          answers[question.id] ===
-          correctAnswers[question.id],
-      ).length;
-
-      const score =
-        questions.length > 0
-          ? Math.round(
-              (correctCount / questions.length) * 100,
-            )
-          : 0;
-
-      return {
-        score,
-        result: findResultForScore(score),
-      };
-    }
-
-    if (testMode === "spectrum") {
-      let total = 0;
-      let count = 0;
-
-      questions.forEach((question, questionIndex) => {
-        const optionIndex = answers[question.id];
-        if (typeof optionIndex !== "number") return;
-
-        let weight: number | null = null;
-        const sourceQuestion = sourceBlueprint?.questions?.[questionIndex];
-        const spectrumKey = sourceBlueprint?.test?.spectrumKey;
-
-        if (sourceQuestion && spectrumKey) {
-          const sourceOption = sourceQuestion.options?.[optionIndex];
-          const signal = sourceOption?.signals?.find(
-            (item) => item.key === spectrumKey,
-          );
-          if (typeof signal?.weight === "number") {
-            weight = Math.max(0, Math.min(1, signal.weight));
-          }
-        }
-
-        if (weight === null) {
-          const denominator = Math.max(1, question.options.length - 1);
-          weight = optionIndex / denominator;
-        }
-
-        total += weight;
-        count += 1;
-      });
-
-      const score =
-        count > 0 ? Math.round((total / count) * 100) : 0;
-
-      return {
-        score,
-        result: findResultForScore(score),
-      };
-    }
-
-    const profileKeys =
-      sourceBlueprint?.test?.archetypeSignalKeys ?? {};
-    const totals: Record<string, number> = {};
-
-    sourceBlueprint?.questions?.forEach(
-      (question, questionIndex) => {
-        const builderQuestion = questions[questionIndex];
-        if (!builderQuestion) return;
-        const optionIndex = answers[builderQuestion.id];
-        if (typeof optionIndex !== "number") return;
-
-        const option = question.options?.[optionIndex];
-        option?.signals?.forEach((signal) => {
-          if (typeof signal.weight !== "number") return;
-          totals[signal.key] =
-            (totals[signal.key] ?? 0) + signal.weight;
-        });
-      },
-    );
-
-    const profiles = sourceBlueprint?.resultModel?.profiles ?? [];
-    let winningProfileId = profiles[0]?.id ?? results[0]?.id ?? "";
-    let winningScore = -1;
-
-    profiles.forEach((profile) => {
-      const signalKey = profileKeys[profile.id] ?? profile.id;
-      const value = totals[signalKey] ?? 0;
-      if (value > winningScore) {
-        winningScore = value;
-        winningProfileId = profile.id;
-      }
-    });
-
-    const result =
-      results.find((item) => item.id === winningProfileId) ??
-      results[0];
-
-    return {
-      score: 100,
-      result,
-    };
-  }
-
-  function startSelfPreview() {
-    setPreviewAnswers({});
-    setPreviewQuestionIndex(0);
-    setPreviewScreen("entry");
-    setPreviewOpen(true);
-  }
-
-  function choosePreviewAnswer(optionIndex: number) {
-    const question = questions[previewQuestionIndex];
-    if (!question) return;
-
-    const nextAnswers = {
-      ...previewAnswers,
-      [question.id]: optionIndex,
-    };
-    setPreviewAnswers(nextAnswers);
-
-    const isLast =
-      previewQuestionIndex === questions.length - 1;
-
-    window.setTimeout(() => {
-      if (isLast) {
-        setPreviewScreen("result");
-        setPreviewTested(true);
-        return;
-      }
-      setPreviewQuestionIndex((current) => current + 1);
-    }, 240);
-  }
-
-  function previousPreviewQuestion() {
-    if (previewQuestionIndex === 0) {
-      setPreviewScreen("entry");
+    if (
+      !Number.isFinite(value)
+    ) {
+      setOfferPrice(1);
       return;
     }
-    setPreviewQuestionIndex((current) => current - 1);
+
+    setOfferPrice(
+      Math.min(
+        MAX_OFFER_PRICE,
+        Math.max(
+          1,
+          Math.round(value),
+        ),
+      ),
+    );
   }
 
   async function handlePublish() {
@@ -1213,110 +867,6 @@ function TestBuilderPage() {
       sourceExperienceId ??
       crypto.randomUUID();
 
-    const canonicalBlueprint:
-      ExperienceBlueprint | undefined =
-      sourceBlueprint
-        ? {
-            ...sourceBlueprint,
-            title,
-            description,
-            questions:
-              sourceBlueprint.questions.map(
-                (question, questionIndex) => {
-                  const builderQuestion =
-                    questions[
-                      questionIndex
-                    ];
-
-                  if (
-                    !builderQuestion
-                  ) {
-                    return question;
-                  }
-
-                  return {
-                    ...question,
-                    text:
-                      builderQuestion.text,
-                    options:
-                      question.options.map(
-                        (
-                          option,
-                          optionIndex,
-                        ) => ({
-                          ...option,
-                          text:
-                            builderQuestion
-                              .options[
-                              optionIndex
-                            ] ??
-                            option.text,
-                        }),
-                      ),
-                  };
-                },
-              ),
-            resultModel: {
-              ...sourceBlueprint.resultModel,
-              profiles:
-                sourceBlueprint.resultModel.profiles.map(
-                  (
-                    profile,
-                    profileIndex,
-                  ) => {
-                    const builderResult =
-                      results[
-                        profileIndex
-                      ];
-
-                    if (
-                      !builderResult
-                    ) {
-                      return profile;
-                    }
-
-                    return {
-                      ...profile,
-                      title:
-                        builderResult.title,
-                      description:
-                        builderResult.description,
-                    };
-                  },
-                ),
-            },
-            offer: {
-              ...(sourceBlueprint.offer ?? {
-                enabled:
-                  offerEnabled,
-                title: offerTitle,
-                description:
-                  offerDescription,
-                suggestedPrice:
-                  offerPrice,
-              }),
-              enabled:
-                offerEnabled,
-              title: offerTitle,
-              description:
-                offerDescription,
-              suggestedPrice:
-                offerPrice,
-            },
-          }
-        : testMode === "spectrum"
-          ? buildManualSpectrumBlueprint({
-              title,
-              description,
-              questions,
-              results,
-              offerEnabled,
-              offerTitle,
-              offerDescription,
-              offerPrice,
-            })
-          : undefined;
-
     const publishedExperience = {
       id: experienceId,
       creatorId: creator.id,
@@ -1326,8 +876,6 @@ function TestBuilderPage() {
         new Date().toISOString(),
       title,
       description,
-      blueprint:
-        canonicalBlueprint,
       testMode,
       resultModel: {
         mode: testMode,
@@ -1347,7 +895,10 @@ function TestBuilderPage() {
           ? correctAnswers
           : {},
 
-      profileAssignments: {},
+      profileAssignments:
+        testMode === "profile"
+          ? profileAssignments
+          : {},
 
       results,
       offer: {
@@ -1368,10 +919,6 @@ function TestBuilderPage() {
         BUILDER_STORAGE_KEY,
       );
 
-      window.sessionStorage.removeItem(
-        GENERATED_BLUEPRINT_STORAGE_KEY,
-      );
-
       window.location.href =
         `/publish-success/${experienceId}`;
     } catch (error) {
@@ -1390,7 +937,9 @@ function TestBuilderPage() {
       <CreatorNavigation
         onSignOut={async () => {
           await signOutCreator();
-          window.location.href = "/creator-auth";
+
+          window.location.href =
+            "/creator-auth";
         }}
       />
 
@@ -1399,395 +948,357 @@ function TestBuilderPage() {
           <div className="min-w-0">
             <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-primary">
               {sourceExperienceId
-                ? "Yeni sürüm oluşturuluyor"
+                ? "Testi düzenliyorsun"
                 : testMode === "score"
                   ? "Bilgi testi"
-                  : testMode === "spectrum"
-                    ? "Seviye testi"
-                    : "Karakter / tip testi"}
+                  : "Kişilik / profil testi"}
             </p>
-            <p className="truncate text-[11px] font-bold">{title}</p>
+
+            <p className="truncate text-[11px] font-bold">
+              {title}
+            </p>
           </div>
 
-          <Link
-            to="/creator-studio"
-            className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-white px-4 text-[9px] font-bold text-muted-foreground transition hover:border-primary hover:text-primary"
-          >
-            Studio’ya dön
-          </Link>
+          <div className="flex shrink-0 items-center gap-2">
+            <Link
+              to="/creator-studio"
+              className="hidden h-9 items-center justify-center rounded-full border border-border bg-white px-4 text-[9px] font-bold text-muted-foreground transition hover:border-primary hover:text-primary sm:inline-flex"
+            >
+              Studio’ya dön
+            </Link>
+
+            <button
+              type="button"
+              disabled
+              className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-white px-4 text-[9px] font-bold text-muted-foreground opacity-40"
+            >
+              Ön izle
+            </button>
+
+            <button
+              type="button"
+              disabled={!canPublish}
+              onClick={() => {
+                void handlePublish();
+              }}
+              className="inline-flex h-9 items-center justify-center rounded-full bg-black px-5 text-[9px] font-bold text-white transition enabled:hover:bg-primary disabled:cursor-not-allowed disabled:bg-black/15 disabled:text-muted-foreground"
+            >
+              {sourceExperienceId
+                ? "Güncelle"
+                : "Yayınla"}
+            </button>
+          </div>
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1500px] lg:grid-cols-[210px_minmax(0,1fr)_330px]">
-        <aside className="sticky top-[58px] z-20 border-b border-border bg-[#faf8fb]/95 px-3 py-3 backdrop-blur-xl lg:h-[calc(100vh-58px)] lg:self-start lg:border-b-0 lg:border-r lg:bg-white/60 lg:py-5">
-          <p className="mb-3 hidden px-3 text-[8px] font-black uppercase tracking-[0.16em] text-muted-foreground lg:block">
-            Oluşturma akışı
-          </p>
+      <div className="mx-auto grid max-w-[1500px] lg:grid-cols-[190px_minmax(0,1fr)_330px]">
+        <aside className="sticky top-[58px] z-40 border-b border-border bg-[#faf8fb]/95 px-3 py-3 backdrop-blur-xl lg:h-[calc(100vh-58px)] lg:self-start lg:overflow-y-auto lg:border-b-0 lg:border-r lg:bg-white/60 lg:py-5">
           <nav className="grid grid-cols-4 gap-1.5 lg:grid-cols-1">
-            {builderSteps.map((step, index) => (
-              <BuilderTab
-                key={step}
-                active={activePanel === step}
-                label={
-                  step === "content"
-                    ? "İçerik"
-                    : step === "answers"
-                      ? "Cevaplar"
-                      : step === "result"
-                        ? "Sonuç"
-                        : step === "offer"
-                          ? "Kazanç"
-                          : "Önizleme"
-                }
-                icon={String(index + 1)}
-                completed={index < activeStepIndex}
-                disabled={index > maxVisitedStep}
-                onClick={() => openStep(step)}
-              />
-            ))}
+            <BuilderTab
+              active={
+                activePanel ===
+                "content"
+              }
+              label="İçerik"
+              icon="✎"
+              onClick={() =>
+                setActivePanel(
+                  "content",
+                )
+              }
+            />
+
+            <BuilderTab
+              active={
+                activePanel ===
+                "answers"
+              }
+              label={
+                testMode === "score"
+                  ? "Cevap anahtarı"
+                  : "Sonuç eşleştirme"
+              }
+              icon={
+                testMode === "score"
+                  ? "✓"
+                  : "↗"
+              }
+              status={
+                testMode === "score"
+                  ? answersLocked
+                    ? "Kilitli"
+                    : `${answeredCount}/${questions.length}`
+                  : `${profileAssignmentCount}/${totalOptionCount}`
+              }
+              completed={
+                testMode === "score"
+                  ? answersLocked
+                  : allProfileAssignmentsSelected
+              }
+              onClick={() =>
+                setActivePanel(
+                  "answers",
+                )
+              }
+            />
+
+            <BuilderTab
+              active={
+                activePanel ===
+                "result"
+              }
+              label="Sonuç"
+              icon="%"
+              onClick={() =>
+                setActivePanel(
+                  "result",
+                )
+              }
+            />
+
+            <BuilderTab
+              active={
+                activePanel ===
+                "offer"
+              }
+              label="Teklif"
+              icon="₺"
+              status={
+                offerEnabled
+                  ? "Açık"
+                  : "Kapalı"
+              }
+              onClick={() =>
+                setActivePanel(
+                  "offer",
+                )
+              }
+            />
           </nav>
 
           <div className="mt-5 hidden rounded-[18px] border border-border bg-white p-4 lg:block">
-            <p className="text-[10px] font-black">{activeStepIndex + 1}/{builderSteps.length}</p>
-            <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
-              AQRYO seni sırayla ilerletir. Tamamladığın adıma istediğin zaman geri dönebilirsin.
+            <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-primary">
+              Yayınlama durumu
             </p>
+
+            <div className="mt-3 space-y-2">
+              <StatusRow
+                completed={
+                  title.trim().length >
+                    0 &&
+                  description
+                    .trim().length > 0
+                }
+                label="Başlık ve açıklama"
+              />
+
+              <StatusRow
+                completed={
+                  questions.length >=
+                    2 &&
+                  questionsAreValid
+                }
+                label={`${questions.length} soru`}
+              />
+
+              <StatusRow
+                completed={
+                  testMode === "score"
+                    ? answersLocked
+                    : allProfileAssignmentsSelected
+                }
+                label={
+                  testMode === "score"
+                    ? answersLocked
+                      ? "Cevap anahtarı kilitli"
+                      : `Cevap anahtarı ${answeredCount}/${questions.length}`
+                    : `Sonuç eşleştirme ${profileAssignmentCount}/${totalOptionCount}`
+                }
+              />
+
+              <StatusRow
+                completed={
+                  resultsAreValid
+                }
+                label="Sonuç ayarları"
+              />
+
+              <StatusRow
+                completed={
+                  offerIsValid
+                }
+                label="Teklif ayarları"
+              />
+            </div>
           </div>
         </aside>
 
-        <main className="min-w-0 px-4 py-5 pb-28 sm:px-6 lg:px-8">
-          {activePanel === "content" && (
+        <main className="min-w-0 px-4 py-5 sm:px-6 lg:px-8">
+          {activePanel ===
+            "content" && (
             <ContentEditor
               testMode={testMode}
-              changeTestMode={changeTestMode}
+              changeTestMode={
+                changeTestMode
+              }
               title={title}
-              description={description}
-              questions={questions}
-              coverStyle={coverStyle}
-              coverImageUrl={coverImageUrl}
-              coverLabel={coverLabel}
-              setTitle={setTitle}
-              setDescription={setDescription}
-              setCoverStyle={setCoverStyle}
-              setCoverImageUrl={setCoverImageUrl}
-              setCoverLabel={setCoverLabel}
-              updateQuestionText={updateQuestionText}
-              updateOption={updateOption}
-              addQuestion={addQuestion}
-              removeQuestion={removeQuestion}
+              description={
+                description
+              }
+              questions={
+                questions
+              }
+              coverStyle={
+                coverStyle
+              }
+              coverImageUrl={
+                coverImageUrl
+              }
+              coverLabel={
+                coverLabel
+              }
+              setTitle={
+                setTitle
+              }
+              setDescription={
+                setDescription
+              }
+              setCoverStyle={
+                setCoverStyle
+              }
+              setCoverImageUrl={
+                setCoverImageUrl
+              }
+              setCoverLabel={
+                setCoverLabel
+              }
+              updateQuestionText={
+                updateQuestionText
+              }
+              updateOption={
+                updateOption
+              }
+              addQuestion={
+                addQuestion
+              }
+              removeQuestion={
+                removeQuestion
+              }
             />
           )}
 
-          {activePanel === "answers" && testMode === "score" && (
-            <AnswerKeyEditor
-              questions={questions}
-              correctAnswers={correctAnswers}
-              answeredCount={answeredCount}
-              answersLocked={answersLocked}
-              selectCorrectAnswer={selectCorrectAnswer}
-              lockAnswers={() => setAnswersLocked(true)}
-              unlockAnswers={() => setAnswersLocked(false)}
-            />
-          )}
+          {activePanel ===
+            "answers" &&
+            (testMode === "score" ? (
+              <AnswerKeyEditor
+                questions={
+                  questions
+                }
+                correctAnswers={
+                  correctAnswers
+                }
+                answeredCount={
+                  answeredCount
+                }
+                answersLocked={
+                  answersLocked
+                }
+                selectCorrectAnswer={
+                  selectCorrectAnswer
+                }
+                lockAnswers={() =>
+                  setAnswersLocked(
+                    true,
+                  )
+                }
+                unlockAnswers={() =>
+                  setAnswersLocked(
+                    false,
+                  )
+                }
+              />
+            ) : (
+              <ProfileMappingEditor
+                questions={
+                  questions
+                }
+                results={results}
+                profileAssignments={
+                  profileAssignments
+                }
+                assignedCount={
+                  profileAssignmentCount
+                }
+                totalOptionCount={
+                  totalOptionCount
+                }
+                assignProfileToOption={
+                  assignProfileToOption
+                }
+              />
+            ))}
 
-          {activePanel === "result" && (
+          {activePanel ===
+            "result" && (
             <ResultEditor
               testMode={testMode}
               results={results}
-              updateResult={updateResult}
+              updateResult={
+                updateResult
+              }
             />
           )}
 
-          {activePanel === "offer" && (
+          {activePanel ===
+            "offer" && (
             <OfferEditor
-              enabled={offerEnabled}
-              title={offerTitle}
-              description={offerDescription}
+              enabled={
+                offerEnabled
+              }
+              title={
+                offerTitle
+              }
+              description={
+                offerDescription
+              }
               price={offerPrice}
-              setEnabled={setOfferEnabled}
-              setTitle={setOfferTitle}
-              setDescription={setOfferDescription}
+              setEnabled={
+                setOfferEnabled
+              }
+              setTitle={
+                setOfferTitle
+              }
+              setDescription={
+                setOfferDescription
+              }
+              setPrice={
+                updateOfferPrice
+              }
             />
           )}
-
-          {activePanel === "preview" && (
-            <section>
-              <SectionHeader
-                eyebrow="Son kontrol"
-                title="Yayınlamadan önce bir kez gözden geçir"
-                description="Başlık, soru sayısı, sonuç ve varsa teklif hazır. Bir sorun görürsen önceki adımlara dön; hazırsan yayınla."
-              />
-              <div className="mt-5 lg:hidden">
-                <LivePreview
-                  title={title}
-                  description={description}
-                  questionCount={questions.length}
-                  coverStyle={coverStyle}
-                  coverImageUrl={coverImageUrl}
-                  coverLabel={coverLabel}
-                />
-              </div>
-              <div className="mt-5 rounded-[22px] border border-border bg-white p-5">
-                <p className="text-sm font-black">Önce kendin dene</p>
-                <p className="mt-2 text-[10px] leading-5 text-muted-foreground">
-                  Katılımcının göreceği akışı baştan sona çöz. Sonucun ve geçişlerin içine siniyorsa yayınla.
-                </p>
-
-                <button
-                  type="button"
-                  onClick={startSelfPreview}
-                  className="mt-4 flex h-11 w-full items-center justify-center rounded-full bg-primary px-5 text-[10px] font-black text-white"
-                >
-                  Experience'ı dene →
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPreviewTested(true)}
-                  className="mt-2 flex h-10 w-full items-center justify-center rounded-full border border-border bg-white px-5 text-[9px] font-bold text-muted-foreground"
-                >
-                  Şimdilik atla
-                </button>
-
-                <p className="mt-4 text-[9px] leading-4 text-muted-foreground">
-                  {questions.length} soru · {results.length} sonuç · {offerEnabled ? `${offerPrice} TL teklif` : "ek teklif yok"}
-                </p>
-              </div>
-            </section>
-          )}
-
-          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-white/95 px-4 py-3 backdrop-blur-xl lg:left-[210px] lg:right-[330px]">
-            <div className="mx-auto flex max-w-[860px] items-center justify-between gap-3">
-              <button
-                type="button"
-                disabled={activeStepIndex === 0}
-                onClick={goBackInBuilder}
-                className="h-11 rounded-full border border-border bg-white px-5 text-[10px] font-black disabled:opacity-30"
-              >
-                ← Geri
-              </button>
-
-              {activePanel === "preview" ? (
-                <button
-                  type="button"
-                  disabled={!canPublish || !previewTested}
-                  onClick={() => void handlePublish()}
-                  className="h-11 flex-1 rounded-full bg-black px-6 text-[10px] font-black text-white transition enabled:hover:bg-primary disabled:bg-black/15 disabled:text-muted-foreground"
-                >
-                  {sourceExperienceId ? "Yeni sürümü yayınla" : "Yayınla"}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={goNextInBuilder}
-                  className="h-11 flex-1 rounded-full bg-black px-6 text-[10px] font-black text-white transition hover:bg-primary"
-                >
-                  Sonraki →
-                </button>
-              )}
-            </div>
-          </div>
         </main>
 
         <aside className="hidden border-l border-border bg-white/60 p-5 lg:block">
           <LivePreview
             title={title}
-            description={description}
-            questionCount={questions.length}
-            coverStyle={coverStyle}
-            coverImageUrl={coverImageUrl}
-            coverLabel={coverLabel}
+            description={
+              description
+            }
+            questionCount={
+              questions.length
+            }
+            coverStyle={
+              coverStyle
+            }
+            coverImageUrl={
+              coverImageUrl
+            }
+            coverLabel={
+              coverLabel
+            }
           />
         </aside>
       </div>
-
-      {guide && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-[430px] rounded-[28px] bg-white p-6 shadow-2xl">
-            <p className="text-[9px] font-black uppercase tracking-[0.15em] text-primary">
-              {guide === "answers" ? "Cevap mantığı" : guide === "result" ? "Ücretsiz sonuç" : "Kazanç"}
-            </p>
-            <h2 className="mt-2 text-[22px] font-black tracking-[-0.04em]">
-              {guide === "answers"
-                ? "Şimdi doğru cevapları belirle"
-                : guide === "result"
-                  ? "Katılımcının göreceği sonucu hazırla"
-                  : "Bu içerikten ekstra gelir elde etmek ister misin?"}
-            </h2>
-            <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
-              {guide === "answers"
-                ? "AQRYO sonucu bu seçimlerden hesaplayacak. Her sorunun doğru cevabını seç ve bitince cevap anahtarını kilitle."
-                : guide === "result"
-                  ? "Sonuç ücretsiz ve tamamlanmış olmalı. Katılımcı Experience’ı bitirdiğinde burada gerçek karşılığını alır."
-                  : "Doğal bir ekstra değer varsa Offer ekle. Yoksa teklifi kapatıp doğrudan devam et."}
-            </p>
-            <button
-              type="button"
-              onClick={confirmGuide}
-              className="mt-6 h-12 w-full rounded-full bg-black text-[10px] font-black text-white transition hover:bg-primary"
-            >
-              Tamam, devam et →
-            </button>
-          </div>
-        </div>
-      )}
-      {previewOpen && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/70 px-4 py-6 backdrop-blur-sm">
-          <div className="mx-auto w-full max-w-[520px]">
-            <div className="mb-3 flex items-center justify-between text-white">
-              <p className="text-[10px] font-black uppercase tracking-[0.14em]">
-                Kendi Experience'ını deniyorsun
-              </p>
-              <button
-                type="button"
-                onClick={() => setPreviewOpen(false)}
-                className="h-9 rounded-full bg-white/10 px-4 text-[9px] font-bold"
-              >
-                Kapat
-              </button>
-            </div>
-
-            {previewScreen === "entry" && (
-              <article className="overflow-hidden rounded-[30px] border border-white/10 bg-white shadow-2xl">
-                <div className={`relative h-56 bg-gradient-to-br ${getCoverClass(coverStyle)}`}>
-                  {coverImageUrl.trim() && (
-                    <img
-                      src={coverImageUrl}
-                      alt=""
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-black/15" />
-                  <div className="relative z-10 flex h-full flex-col justify-between p-6 text-white">
-                    <span className="text-[9px] font-black uppercase tracking-[0.14em]">
-                      {coverLabel || "Test"}
-                    </span>
-                    <span className="text-5xl">✦</span>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h2 className="text-[28px] font-black leading-[1] tracking-[-0.05em]">
-                    {title}
-                  </h2>
-                  <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
-                    {description}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setPreviewScreen("questions")}
-                    className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-black text-[10px] font-black text-white"
-                  >
-                    Başla →
-                  </button>
-                </div>
-              </article>
-            )}
-
-            {previewScreen === "questions" && questions[previewQuestionIndex] && (
-              <article className="rounded-[30px] border border-white/10 bg-white p-5 shadow-2xl sm:p-6">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-bold text-primary">
-                    {previewQuestionIndex + 1}/{questions.length}
-                  </span>
-                  <span className="max-w-[220px] truncate text-right text-[8px] font-semibold text-muted-foreground">
-                    {title}
-                  </span>
-                </div>
-
-                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-primary transition-all duration-300"
-                    style={{
-                      width: `${((previewQuestionIndex + 1) / questions.length) * 100}%`,
-                    }}
-                  />
-                </div>
-
-                <h2 className="mt-7 text-[23px] font-black leading-[1.08] tracking-[-0.045em]">
-                  {questions[previewQuestionIndex].text}
-                </h2>
-
-                <div className="mt-6 grid gap-2.5">
-                  {questions[previewQuestionIndex].options.map((option, optionIndex) => {
-                    const question = questions[previewQuestionIndex];
-                    const selected = previewAnswers[question.id] === optionIndex;
-                    return (
-                      <button
-                        key={`${question.id}-${optionIndex}`}
-                        type="button"
-                        onClick={() => choosePreviewAnswer(optionIndex)}
-                        className={`flex min-h-12 items-center gap-3 rounded-[16px] border px-4 py-3 text-left text-[11px] font-bold transition ${
-                          selected
-                            ? "border-primary bg-primary text-white"
-                            : "border-border bg-background hover:border-primary/35"
-                        }`}
-                      >
-                        <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[8px] font-black ${selected ? "bg-white/20 text-white" : "bg-white text-muted-foreground"}`}>
-                          {String.fromCharCode(65 + optionIndex)}
-                        </span>
-                        <span>{option}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={previousPreviewQuestion}
-                  className="mt-7 inline-flex h-10 items-center justify-center rounded-full border border-border bg-white px-5 text-[9px] font-bold"
-                >
-                  ← Önceki soru
-                </button>
-              </article>
-            )}
-
-            {previewScreen === "result" && (() => {
-              const outcome = calculatePreviewOutcome(previewAnswers);
-              return (
-                <article className="overflow-hidden rounded-[30px] border border-white/10 bg-white shadow-2xl">
-                  <div className="bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-500 p-7 text-white">
-                    <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/75">
-                      Ücretsiz sonuç
-                    </p>
-                    {testMode !== "archetype" && (
-                      <p className="mt-6 text-5xl font-black">%{outcome.score}</p>
-                    )}
-                    <h2 className="mt-4 text-[28px] font-black leading-[1] tracking-[-0.05em]">
-                      {outcome.result?.title || "Sonucun hazır"}
-                    </h2>
-                    <p className="mt-4 text-[12px] leading-5 text-white/85">
-                      {outcome.result?.description || "Sonuç açıklaması"}
-                    </p>
-                  </div>
-
-                  <div className="p-6">
-                    {offerEnabled && (
-                      <div className="rounded-[18px] border border-border bg-background p-4">
-                        <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-primary">
-                          Ücretli teklif
-                        </p>
-                        <p className="mt-2 text-[12px] font-black">{offerTitle}</p>
-                        <p className="mt-2 text-[9px] leading-4 text-muted-foreground">
-                          {offerDescription}
-                        </p>
-                        <p className="mt-3 text-[12px] font-black text-primary">{offerPrice} TL</p>
-                      </div>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => setPreviewOpen(false)}
-                      className="mt-5 flex h-11 w-full items-center justify-center rounded-full bg-black text-[10px] font-black text-white"
-                    >
-                      Tamam, yayına dön
-                    </button>
-                  </div>
-                </article>
-              );
-            })()}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -1798,7 +1309,6 @@ function BuilderTab({
   label,
   status,
   completed = false,
-  disabled = false,
   onClick,
 }: {
   active: boolean;
@@ -1806,20 +1316,16 @@ function BuilderTab({
   label: string;
   status?: string;
   completed?: boolean;
-  disabled?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
-      disabled={disabled}
       onClick={onClick}
       className={`flex min-w-0 items-center justify-center gap-2 rounded-[13px] px-2 py-2.5 text-[9px] font-bold transition lg:justify-start lg:px-3 ${
         active
           ? "bg-primary text-white shadow-[0_8px_20px_rgba(124,58,237,0.16)]"
-          : disabled
-            ? "border border-border bg-white text-muted-foreground opacity-40"
-            : "border border-border bg-white text-muted-foreground hover:border-primary/30 hover:text-foreground"
+          : "border border-border bg-white text-muted-foreground hover:border-primary/30 hover:text-foreground"
       }`}
     >
       <span className="text-xs">
@@ -1844,6 +1350,38 @@ function BuilderTab({
         </span>
       )}
     </button>
+  );
+}
+
+function StatusRow({
+  completed,
+  label,
+}: {
+  completed: boolean;
+  label: string;
+}) {
+  return (
+    <div className="flex items-center gap-2 text-[9px]">
+      <span
+        className={`flex h-4 w-4 items-center justify-center rounded-full text-[7px] font-black ${
+          completed
+            ? "bg-emerald-500 text-white"
+            : "bg-muted text-muted-foreground"
+        }`}
+      >
+        {completed ? "✓" : "•"}
+      </span>
+
+      <span
+        className={
+          completed
+            ? "font-semibold text-foreground"
+            : "text-muted-foreground"
+        }
+      >
+        {label}
+      </span>
+    </div>
   );
 }
 
@@ -1951,7 +1489,7 @@ function ContentEditor({
           AQRY seçtiğin yapıya göre sonucu hesaplar. Teknik puanlama ayrıntılarını creator görmez.
         </p>
 
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <button
             type="button"
             onClick={() =>
@@ -1964,63 +1502,29 @@ function ContentEditor({
             }`}
           >
             <p className="text-[11px] font-black">
-              Bilgi / skor
+              Doğru cevaplara göre skor
             </p>
             <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
-              Doğru ve yanlış cevapları olan bilgi testleri.
-            </p>
-            <p className="mt-2 text-[8px] font-bold text-primary">
-              “10 soruda ne kadar biliyorsun?”
+              Bilgi testleri ve doğru/yanlış puanlanan quizler.
             </p>
           </button>
 
           <button
             type="button"
             onClick={() =>
-              changeTestMode(
-                "spectrum",
-              )
+              changeTestMode("profile")
             }
             className={`rounded-[18px] border p-4 text-left transition ${
-              testMode ===
-              "spectrum"
+              testMode === "profile"
                 ? "border-primary bg-primary/[0.04]"
                 : "border-border bg-background hover:border-primary/30"
             }`}
           >
             <p className="text-[11px] font-black">
-              Ne kadar X’sin?
+              Cevaplara göre kişisel sonuç
             </p>
             <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
-              Tek bir özelliğin sende ne kadar güçlü olduğunu ölçer.
-            </p>
-            <p className="mt-2 text-[8px] font-bold text-primary">
-              “Ne kadar ghostlayan birisin?”
-            </p>
-          </button>
-
-          <button
-            type="button"
-            onClick={() =>
-              changeTestMode(
-                "archetype",
-              )
-            }
-            className={`rounded-[18px] border p-4 text-left transition ${
-              testMode ===
-              "archetype"
-                ? "border-primary bg-primary/[0.04]"
-                : "border-border bg-background hover:border-primary/30"
-            }`}
-          >
-            <p className="text-[11px] font-black">
-              Hangi X’sin?
-            </p>
-            <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
-              Cevaplarından sana en yakın karakteri, tipi veya rolü bulur.
-            </p>
-            <p className="mt-2 text-[8px] font-bold text-primary">
-              “Hangi karaktere daha yakınsın?”
+              Kişilik, karakter, yaşam tarzı ve “hangi X’sin?” testleri.
             </p>
           </button>
         </div>
@@ -2167,28 +1671,12 @@ function ContentEditor({
                 />
               </label>
 
-              <label>
-                <span className="text-[10px] font-bold">
-                  Görsel adresi
-                </span>
-
-                <input
-                  type="url"
-                  value={
-                    coverImageUrl
-                  }
-                  placeholder="https://..."
-                  onChange={(
-                    event,
-                  ) =>
-                    setCoverImageUrl(
-                      event.target
-                        .value,
-                    )
-                  }
-                  className="mt-2 h-10 w-full rounded-[14px] border border-border bg-background px-4 text-[10px] outline-none focus:border-primary"
-                />
-              </label>
+              <ImageUploader
+                value={coverImageUrl}
+                onChange={setCoverImageUrl}
+                label="Kapak görseli"
+                helperText="JPG veya PNG yükle. Görseli 10%–300% arasında boyutlandırabilir, yatay ve dikey konumunu ayarlayabilirsin."
+              />
             </div>
           </div>
         </div>
@@ -2255,9 +1743,7 @@ function ContentEditor({
               <p className="mt-1 text-[10px] leading-4 text-muted-foreground">
                 {testMode === "score"
                   ? "Her soru için seçenekleri düzenle. Doğru cevabı sonraki sekmede işaretle."
-                  : testMode === "spectrum"
-                    ? "Sorular aynı özelliğin farklı seviyelerini ölçer. Seçenekleri en düşükten en yükseğe sırala; AQRY puanlamayı otomatik kurar."
-                    : "Sorular farklı karakter ve davranış sinyalleri taşır. AQRY bunları arka planda birlikte değerlendirir."}
+                  : "Her seçeneğin bir anlamı var. Sonraki sekmede seçenekleri sonuç profilleriyle eşleştir."}
               </p>
             </div>
 
@@ -2543,6 +2029,87 @@ function AnswerKeyEditor({
   );
 }
 
+function ProfileMappingEditor({
+  questions,
+  results,
+  profileAssignments,
+  assignedCount,
+  totalOptionCount,
+  assignProfileToOption,
+}: {
+  questions: Question[];
+  results: ResultDefinition[];
+  profileAssignments: Record<
+    number,
+    Record<number, string>
+  >;
+  assignedCount: number;
+  totalOptionCount: number;
+  assignProfileToOption: (
+    questionId: number,
+    optionIndex: number,
+    profileId: string,
+  ) => void;
+}) {
+  return (
+    <section className="pb-24">
+      <SectionHeader
+        eyebrow="Sonuç eşleştirme"
+        title="Her cevap neye işaret ediyor?"
+        description="Creator karmaşık sinyal puanlarıyla uğraşmaz. Her seçeneği en yakın sonuç profiliyle eşleştir; AQRY sonucu bu yapıdan hesaplar."
+      />
+
+      <div className="mt-5 rounded-[18px] border border-primary/15 bg-primary/[0.04] p-4">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-black">Eşleştirme durumu</p>
+            <p className="mt-1 text-[9px] text-muted-foreground">Tüm seçeneklerin bir sonuç profiline bağlanması gerekiyor.</p>
+          </div>
+          <span className="rounded-full bg-white px-3 py-1 text-[9px] font-black text-primary shadow-sm">
+            {assignedCount}/{totalOptionCount}
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3">
+        {questions.map((question, questionIndex) => (
+          <article key={question.id} className="rounded-[20px] border border-border bg-white p-4">
+            <div className="flex items-start gap-3">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-[9px] font-black text-white">
+                {questionIndex + 1}
+              </span>
+              <p className="pt-1 text-[11px] font-black leading-4">{question.text}</p>
+            </div>
+
+            <div className="mt-4 grid gap-2">
+              {question.options.map((option, optionIndex) => (
+                <div key={`${question.id}-${optionIndex}`} className="grid gap-2 rounded-[14px] border border-border bg-background p-3 sm:grid-cols-[minmax(0,1fr)_220px] sm:items-center">
+                  <p className="text-[10px] font-bold">
+                    {String.fromCharCode(65 + optionIndex)}. {option}
+                  </p>
+                  <select
+                    value={profileAssignments[question.id]?.[optionIndex] ?? ""}
+                    onChange={(event) =>
+                      assignProfileToOption(question.id, optionIndex, event.target.value)
+                    }
+                    className="h-9 rounded-[12px] border border-border bg-white px-3 text-[9px] font-bold outline-none focus:border-primary"
+                  >
+                    <option value="">Sonuç seç</option>
+                    {results.map((result) => (
+                      <option key={result.id} value={result.id}>
+                        {result.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 function ResultEditor({
   testMode,
@@ -2566,18 +2133,12 @@ function ResultEditor({
         title={
           testMode === "score"
             ? "Skora göre sonucu belirle"
-            : testMode ===
-                "spectrum"
-              ? "Seviyelere göre sonucu düzenle"
-              : "Karakter sonuçlarını düzenle"
+            : "Sonuç profillerini düzenle"
         }
         description={
           testMode === "score"
             ? "Katılımcı ödeme yapmadan skorunu ve tamamlanmış sonucunu görür."
-            : testMode ===
-                "spectrum"
-              ? "AQRYO cevaplardan bir seviye hesaplar. Burada farklı aralıklarda kullanıcıya gösterilecek sonuçları düzenlersin."
-              : "AQRYO cevapların taşıdığı sinyalleri birlikte değerlendirir ve kullanıcıya en yakın karakter veya tipi ücretsiz sonuç olarak gösterir."
+            : "Katılımcının cevaplarının en çok yaklaştığı profil ücretsiz ve tamamlanmış sonuç olarak gösterilir."
         }
       />
 
@@ -2589,11 +2150,9 @@ function ResultEditor({
               className="rounded-[18px] border border-border bg-white p-4"
             >
               <p className="text-[9px] font-bold text-primary">
-                {testMode === "score" ||
-                testMode ===
-                  "spectrum"
+                {testMode === "score"
                   ? result.range
-                  : "Karakter / tip"}
+                  : "Sonuç profili"}
               </p>
 
               <input
@@ -2645,6 +2204,7 @@ function OfferEditor({
   setEnabled,
   setTitle,
   setDescription,
+  setPrice,
 }: {
   enabled: boolean;
   title: string;
@@ -2659,7 +2219,14 @@ function OfferEditor({
   setDescription: (
     value: string,
   ) => void;
+  setPrice: (
+    value: number,
+  ) => void;
 }) {
+  const presetPrices = [
+    9, 19, 29, 49, 99, 199,
+  ];
+
   return (
     <section>
       <SectionHeader
@@ -2747,20 +2314,67 @@ function OfferEditor({
               />
             </label>
 
-            <div className="rounded-[16px] border border-primary/15 bg-primary/[0.04] px-4 py-3">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-black">
-                    AQRYO standart Offer fiyatı
-                  </p>
-                  <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
-                    Fiyat tüm standart Offer’larda otomatik belirlenir.
-                  </p>
-                </div>
+            <div>
+              <p className="text-[10px] font-bold">
+                Fiyat
+              </p>
 
-                <span className="shrink-0 text-[18px] font-black text-primary">
-                  {price} TL
-                </span>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {presetPrices.map(
+                  (
+                    priceOption,
+                  ) => (
+                    <button
+                      key={
+                        priceOption
+                      }
+                      type="button"
+                      onClick={() =>
+                        setPrice(
+                          priceOption,
+                        )
+                      }
+                      className={`rounded-full border px-4 py-2 text-[9px] font-bold transition ${
+                        price ===
+                        priceOption
+                          ? "border-primary bg-primary text-white"
+                          : "border-border bg-background text-muted-foreground"
+                      }`}
+                    >
+                      {
+                        priceOption
+                      }{" "}
+                      TL
+                    </button>
+                  ),
+                )}
+
+                <label className="flex h-9 items-center rounded-full border border-border bg-background px-3">
+                  <input
+                    type="number"
+                    min={1}
+                    max={
+                      MAX_OFFER_PRICE
+                    }
+                    value={price}
+                    onChange={(
+                      event,
+                    ) =>
+                      setPrice(
+                        Number(
+                          event
+                            .target
+                            .value,
+                        ),
+                      )
+                    }
+                    className="w-16 bg-transparent text-[9px] font-bold outline-none"
+                  />
+
+                  <span className="text-[9px] font-bold text-muted-foreground">
+                    TL
+                  </span>
+                </label>
               </div>
             </div>
           </div>
