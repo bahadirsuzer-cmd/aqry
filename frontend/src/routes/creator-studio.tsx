@@ -38,7 +38,7 @@ const templates: StudioTemplate[] = [
   {
     key: "tests",
     title: "Testler",
-    example: "Ne kadar Fenerbahçelisin?",
+    example: "Ne kadar fanatiksin?",
     description:
       "Sorular sor, puanla ve kullanıcıya tamamlanmış bir sonuç göster.",
     icon: "✦",
@@ -1011,12 +1011,11 @@ function CreatorStudioPage() {
 
   const inspirationExamples = [
     {
-      label: "TEST",
-      title: "Ne kadar Fenerbahçelisin?",
+      label: "SEVİYE",
+      title: "Ne kadar fanatiksin?",
       description:
-        "Bilgi sorularıyla takipçilerini oyuna dahil et.",
-      action: () =>
-        startFreshBuilder("test"),
+        "Tutku, davranış ve bağlılık sorularıyla takipçinin fanatiklik seviyesini göster.",
+      action: startSpectrumBuilder,
     },
     {
       label: "KİŞİLİK",
@@ -1344,18 +1343,18 @@ function CreatorStudioPage() {
                 </div>
 
                 <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                 {manualCards.map(
-  ({ key, ...card }, index) => (
-    <CoreResultCard
-      key={key}
-      {...card}
-      prominent={
-        index === 1 ||
-        index === 4
-      }
-    />
-  ),
-)}
+                  {manualCards.map(
+                    ({ key, ...card }, index) => (
+                      <CoreResultCard
+                        key={key}
+                        {...card}
+                        prominent={
+                          index === 1 ||
+                          index === 4
+                        }
+                      />
+                    ),
+                  )}
                 </div>
               </section>
             ) : null}
