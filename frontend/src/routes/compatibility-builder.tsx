@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { savePublishedExperience } from "@/services/experiences";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
+import { ImageUploader } from "@/components/creator/ImageUploader";
 export const Route = createFileRoute("/compatibility-builder")({
   component: CompatibilityBuilderPage,
 });
@@ -1273,21 +1274,12 @@ function ContentEditor({
                 />
               </label>
 
-              <label>
-                <span className="text-[10px] font-bold">
-                  Görsel adresi
-                </span>
-
-                <input
-                  type="url"
-                  value={coverImageUrl}
-                  placeholder="https://..."
-                  onChange={(event) =>
-                    setCoverImageUrl(event.target.value)
-                  }
-                  className="mt-2 h-10 w-full rounded-[14px] border border-border bg-background px-4 text-[10px] outline-none focus:border-primary"
-                />
-              </label>
+              <ImageUploader
+                value={coverImageUrl}
+                onChange={setCoverImageUrl}
+                label="Kapak görseli"
+                helperText="JPG veya PNG yükle. Görseli istediğin zaman değiştirebilir veya kaldırabilirsin."
+              />
             </div>
           </div>
         </div>
