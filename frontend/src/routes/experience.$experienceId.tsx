@@ -2068,11 +2068,11 @@ function QuestionScreen({
   return (
     <article className="rounded-[30px] border border-border bg-white p-5 shadow-[0_24px_70px_rgba(35,16,55,0.12)] sm:p-6">
       <div className="flex items-center justify-between">
-        <span className="text-[9px] font-bold text-primary">
+        <span className="text-[14px] font-black text-primary">
           {questionIndex + 1}/{questionCount}
         </span>
 
-        <span className="max-w-[220px] truncate text-right text-[8px] font-semibold text-muted-foreground">
+        <span className="max-w-[250px] truncate text-right text-[13px] font-bold text-muted-foreground">
           {experienceTitle}
         </span>
       </div>
@@ -2102,14 +2102,14 @@ function QuestionScreen({
               onClick={() =>
                 onSelectAnswer(optionIndex)
               }
-              className={`flex min-h-12 items-center gap-3 rounded-[16px] border px-4 py-3 text-left text-[11px] font-bold transition ${
+              className={`flex min-h-14 items-center gap-3 rounded-[16px] border px-4 py-3.5 text-left text-[16px] font-bold leading-[1.35] transition ${
                 isSelected
                   ? "border-primary bg-primary text-white shadow-[0_10px_25px_rgba(124,58,237,0.18)]"
                   : "border-border bg-background text-foreground hover:border-primary/35"
               }`}
             >
               <span
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[8px] font-black ${
+                className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-black ${
                   isSelected
                     ? "bg-white/20 text-white"
                     : "bg-white text-muted-foreground"
@@ -2128,12 +2128,12 @@ function QuestionScreen({
         <button
           type="button"
           onClick={onPrevious}
-          className="inline-flex h-11 items-center justify-center rounded-full border border-border bg-white px-5 text-[9px] font-bold"
+          className="inline-flex h-11 items-center justify-center rounded-full border border-border bg-white px-5 text-[11px] font-bold"
         >
           ← Önceki soru
         </button>
 
-        <span className="text-[8px] font-semibold text-muted-foreground">
+        <span className="max-w-[180px] text-right text-[10px] font-semibold leading-4 text-muted-foreground">
           Bir cevap seçtiğinde otomatik ilerler.
         </span>
       </div>
