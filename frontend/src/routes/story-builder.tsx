@@ -119,6 +119,23 @@ const DEFAULT_STATE: StoryBuilderState = {
   offerPrice: STANDARD_OFFER_PRICE,
 };
 
+const STORY_TOPIC_IDEAS = [
+  "Şaşırtıcı bir anı",
+  "İlişki hikâyesi",
+  "Gizem / ters köşe",
+  "Mini rehber",
+  "Liste / maddeler",
+  "Öncesi / sonrası",
+  "İtiraf / gerçek olay",
+  "Devamı merak edilen hikâye",
+];
+
+const STORY_TEXT_EXAMPLES = [
+  "Örn. Dün başıma öyle bir şey geldi ki hâlâ etkisindeyim...",
+  "Örn. Her şey normal başladı ama sonra tek bir mesaj bütün günü değiştirdi...",
+  "Örn. Bu konuda öğrendiğim 3 şeyi kısa kısa anlatacağım...",
+];
+
 function StoryBuilderPage() {
   const [loading, setLoading] =
     useState(true);
@@ -1107,8 +1124,10 @@ function StoryBuilderPage() {
       );
     }
 
+    // 100% = görselin tamamı kare alana sığar.
+    // 10%–300% aralığında küçültme ve büyütme yapılabilir.
     const baseScale =
-      Math.max(
+      Math.min(
         outputSize /
           image.naturalWidth,
         outputSize /
@@ -1127,35 +1146,21 @@ function StoryBuilderPage() {
       image.naturalHeight *
       scale;
 
-    const maxShiftX =
-      Math.max(
-        0,
-        (width -
-          outputSize) /
-          2,
-      );
-
-    const maxShiftY =
-      Math.max(
-        0,
-        (height -
-          outputSize) /
-          2,
-      );
-
     const x =
       (outputSize -
         width) /
         2 +
       cropDraft.offsetX *
-        maxShiftX;
+        outputSize *
+        0.18;
 
     const y =
       (outputSize -
         height) /
         2 +
       cropDraft.offsetY *
-        maxShiftY;
+        outputSize *
+        0.18;
 
     context.fillStyle =
       "#ffffff";
@@ -1321,8 +1326,27 @@ function StoryBuilderPage() {
                   value={state.description}
                   onChange={(event) => setState((current) => ({ ...current, description: event.target.value }))}
                   className="mt-2 w-full resize-none rounded-[16px] border border-border bg-background px-4 py-3 text-[13px] font-semibold leading-6 outline-none focus:border-teal-300"
-                  placeholder="Kullanıcının neden devam etmesi gerektiğini anlat."
+                  placeholder="İçeriğin ne hakkında olduğunu ve neden devam etmeye değer olduğunu kısaca anlat."
                 />
+
+                <div className="mt-5 rounded-[18px] border border-teal-100 bg-teal-50/40 p-4">
+                  <p className="text-[13px] font-black">
+                    Konu fikri lazım mı?
+                  </p>
+                  <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+                    Story sadece hikâye değil. Metin ve görsellerle ilerleyen her türlü kısa içerik akışını oluşturabilirsin.
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {STORY_TOPIC_IDEAS.map((topic) => (
+                      <span
+                        key={topic}
+                        className="rounded-full border border-teal-100 bg-white px-3 py-2 text-[11px] font-bold text-foreground"
+                      >
+                        {topic}
+                      </span>
+                    ))}
+                  </div>
+                </div>
 
                 <FieldLabel className="mt-5">Kapak görseli</FieldLabel>
                 <label className="mt-2 flex min-h-[88px] cursor-pointer items-center justify-between gap-4 rounded-[18px] border border-dashed border-teal-200 bg-teal-50/40 p-4">
@@ -1363,7 +1387,11 @@ function StoryBuilderPage() {
                           value={item.text}
                           onChange={(event) => updateTextItem(item.id, event.target.value)}
                           className="mt-3 w-full resize-y rounded-[14px] border border-border bg-white px-4 py-3 text-[13px] font-semibold leading-6 outline-none focus:border-teal-300"
-                          placeholder="Bu ekranda gösterilecek metni yaz..."
+                          placeholder={
+                            STORY_TEXT_EXAMPLES[
+                              index % STORY_TEXT_EXAMPLES.length
+                            ]
+                          }
                         />
                       ) : (
                         <div className="mt-3">
@@ -1432,7 +1460,7 @@ function StoryBuilderPage() {
                           <div className="flex items-center gap-1"><SmallButton disabled={index === 0} onClick={() => moveItem(item.id, -1, true)}>↑</SmallButton><SmallButton disabled={index === state.premiumItems.length - 1} onClick={() => moveItem(item.id, 1, true)}>↓</SmallButton><SmallButton disabled={state.premiumItems.length === 1} onClick={() => removeItem(item.id, true)}>×</SmallButton></div>
                         </div>
                         {item.type === "text" ? (
-                          <textarea rows={4} value={item.text} onChange={(event) => updateTextItem(item.id, event.target.value, true)} className="mt-3 w-full resize-y rounded-[14px] border border-border bg-white px-4 py-3 text-[13px] font-semibold leading-6 outline-none" placeholder="Ödeme sonrası gösterilecek metin..." />
+                          <textarea rows={4} value={item.text} onChange={(event) => updateTextItem(item.id, event.target.value, true)} className="mt-3 w-full resize-y rounded-[14px] border border-border bg-white px-4 py-3 text-[13px] font-semibold leading-6 outline-none" placeholder="Örn. Burada sadece ödeme sonrası görülecek devam metnini yaz..." />
                         ) : (
                           <div className="mt-3">
                             {item.imageUrl ? <div className="flex min-h-[180px] items-center justify-center rounded-[16px] border border-amber-200 bg-white p-3"><img src={item.imageUrl} alt="" className="max-h-[360px] max-w-full object-contain" /></div> : null}
@@ -1517,14 +1545,134 @@ function StoryBuilderPage() {
       ) : null}
 
       {cropDraft ? (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4">
-          <div className="w-full max-w-[620px] rounded-[28px] bg-white p-5 shadow-2xl">
-            <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-black uppercase tracking-[0.12em] text-teal-600">Görsel kadrajı</p><h2 className="mt-2 text-[22px] font-black tracking-[-0.04em]">Kırp veya orijinali kullan</h2></div><button type="button" onClick={closeCrop} className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-sm font-black">×</button></div>
-            <div className="mt-5 flex aspect-square items-center justify-center overflow-hidden rounded-[22px] bg-[#ededf0]"><img src={cropDraft.previewUrl} alt="" className="h-full w-full object-cover" style={{ transform: `translate(${cropDraft.offsetX * 18}%, ${cropDraft.offsetY * 18}%) scale(${cropDraft.zoom})` }} /></div>
-            <div className="mt-5 grid gap-4">
-              <label><div className="flex items-center justify-between text-[10px] font-black"><span>Yakınlaştır</span><span>{cropDraft.zoom.toFixed(1)}×</span></div><input type="range" min="1" max="2.5" step="0.1" value={cropDraft.zoom} onChange={(event) => setCropDraft((current) => current ? { ...current, zoom: Number(event.target.value) } : null)} className="mt-2 w-full" /></label>
-              <div className="grid gap-3 sm:grid-cols-2"><label><p className="text-[10px] font-black">Sağa / sola</p><input type="range" min="-1" max="1" step="0.05" value={cropDraft.offsetX} onChange={(event) => setCropDraft((current) => current ? { ...current, offsetX: Number(event.target.value) } : null)} className="mt-2 w-full" /></label><label><p className="text-[10px] font-black">Yukarı / aşağı</p><input type="range" min="-1" max="1" step="0.05" value={cropDraft.offsetY} onChange={(event) => setCropDraft((current) => current ? { ...current, offsetY: Number(event.target.value) } : null)} className="mt-2 w-full" /></label></div>
-              <div className="grid gap-2 sm:grid-cols-2"><button type="button" onClick={() => void useOriginalCropFile()} className="h-11 rounded-full border border-border bg-white text-[10px] font-black">Kırpmadan kullan</button><button type="button" onClick={() => void cropAndUpload()} className="h-11 rounded-full bg-black text-[10px] font-black text-white">Kırp ve kaydet</button></div>
+        <div className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/70 px-4 py-4 sm:py-6">
+          <div className="my-auto w-full max-w-[620px] overflow-hidden rounded-[28px] bg-white shadow-2xl">
+            <div className="max-h-[calc(100vh-2rem)] overflow-y-auto p-5 sm:max-h-[calc(100vh-3rem)]">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-teal-600">
+                    Görsel kadrajı
+                  </p>
+                  <h2 className="mt-2 text-[22px] font-black tracking-[-0.04em]">
+                    Görseli ayarla
+                  </h2>
+                  <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
+                    Görseli %10–%300 arasında küçültüp büyütebilir, sağa-sola ve yukarı-aşağı taşıyabilirsin.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={closeCrop}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-sm font-black"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="mx-auto mt-5 flex aspect-square w-full max-w-[460px] items-center justify-center overflow-hidden rounded-[22px] bg-[#ededf0]">
+                <img
+                  src={cropDraft.previewUrl}
+                  alt=""
+                  className="h-full w-full object-contain"
+                  style={{
+                    transform: `translate(${cropDraft.offsetX * 18}%, ${cropDraft.offsetY * 18}%) scale(${cropDraft.zoom})`,
+                    transformOrigin: "center center",
+                  }}
+                />
+              </div>
+
+              <div className="mt-5 grid gap-4">
+                <label>
+                  <div className="flex items-center justify-between text-[11px] font-black">
+                    <span>Görsel boyutu</span>
+                    <span>{Math.round(cropDraft.zoom * 100)}%</span>
+                  </div>
+
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="3"
+                    step="0.1"
+                    value={cropDraft.zoom}
+                    onChange={(event) =>
+                      setCropDraft((current) =>
+                        current
+                          ? {
+                              ...current,
+                              zoom: Number(event.target.value),
+                            }
+                          : null,
+                      )
+                    }
+                    className="mt-2 w-full"
+                  />
+                </label>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label>
+                    <p className="text-[11px] font-black">Sağa / sola</p>
+                    <input
+                      type="range"
+                      min="-1"
+                      max="1"
+                      step="0.05"
+                      value={cropDraft.offsetX}
+                      onChange={(event) =>
+                        setCropDraft((current) =>
+                          current
+                            ? {
+                                ...current,
+                                offsetX: Number(event.target.value),
+                              }
+                            : null,
+                        )
+                      }
+                      className="mt-2 w-full"
+                    />
+                  </label>
+
+                  <label>
+                    <p className="text-[11px] font-black">Yukarı / aşağı</p>
+                    <input
+                      type="range"
+                      min="-1"
+                      max="1"
+                      step="0.05"
+                      value={cropDraft.offsetY}
+                      onChange={(event) =>
+                        setCropDraft((current) =>
+                          current
+                            ? {
+                                ...current,
+                                offsetY: Number(event.target.value),
+                              }
+                            : null,
+                        )
+                      }
+                      className="mt-2 w-full"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="sticky bottom-0 z-10 -mx-5 mt-5 grid gap-2 border-t border-border bg-white px-5 pb-1 pt-4 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => void useOriginalCropFile()}
+                  className="h-11 rounded-full border border-border bg-white text-[11px] font-black"
+                >
+                  Orijinali kullan
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => void cropAndUpload()}
+                  className="h-11 rounded-full bg-black text-[11px] font-black text-white"
+                >
+                  Ayarı kaydet
+                </button>
+              </div>
             </div>
           </div>
         </div>

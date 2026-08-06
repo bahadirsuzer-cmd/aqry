@@ -34,10 +34,10 @@ const BUILDER_STEPS: BuilderStep[] = ["content", "answer", "result", "offer", "p
 
 const DEFAULT_STATE: GuessBuilderState = {
   sourceExperienceId: null,
-  title: "Bu nedir?",
-  description: "Görsele bak, cevabını yaz ve doğru bilip bilmediğini hemen öğren.",
+  title: "",
+  description: "",
   imageUrl: "",
-  prompt: "Sence bu nedir?",
+  prompt: "",
   acceptedAnswers: ["", "", ""],
   successTitle: "Bildin! 🎉",
   successDescription: "Doğru cevabı buldun.",
@@ -47,6 +47,17 @@ const DEFAULT_STATE: GuessBuilderState = {
   offerDescription: "Cevabın arkasındaki ilginç detayı keşfet.",
   offerPrice: STANDARD_OFFER_PRICE,
 };
+
+const GUESS_TOPIC_IDEAS = [
+  "Yakın plan nesne",
+  "Logo / marka",
+  "Yemek",
+  "Mekân",
+  "Ünlü silüeti",
+  "Emoji ile tahmin",
+  "Şifre / sembol",
+  "Eski fotoğraf",
+];
 
 function GuessBuilderPage() {
   const [loading, setLoading] = useState(true);
@@ -440,11 +451,33 @@ function ContentStep({
       title="Merak uyandıracak tahmini hazırla"
       description="Başlık, görsel veya ipucu ve katılımcıya soracağın tek soruyu düzenle."
     >
+      <div className="mb-5 rounded-[18px] border border-primary/15 bg-primary/[0.025] p-4">
+        <p className="text-[13px] font-black">
+          Konu fikri lazım mı?
+        </p>
+
+        <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+          Görsel, ipucu veya sembol üzerinden kullanıcıya tahmin ettirebileceğin birkaç fikir.
+        </p>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          {GUESS_TOPIC_IDEAS.map((topic) => (
+            <span
+              key={topic}
+              className="rounded-full border border-primary/15 bg-white px-3 py-2 text-[11px] font-bold text-foreground"
+            >
+              {topic}
+            </span>
+          ))}
+        </div>
+      </div>
+
       <FieldLabel>Başlık</FieldLabel>
       <input
         value={state.title}
         onChange={(event) => setState((current) => ({ ...current, title: event.target.value }))}
         className={inputClass}
+        placeholder="Örn. Bu nedir?"
       />
 
       <FieldLabel className="mt-5">Kısa açıklama</FieldLabel>
@@ -455,6 +488,7 @@ function ContentStep({
           setState((current) => ({ ...current, description: event.target.value }))
         }
         className={textareaClass}
+        placeholder="Örn. Görsele dikkatlice bak. Cevabını yaz ve doğru bilip bilmediğini hemen öğren."
       />
 
       <div className="mt-5">
@@ -476,7 +510,7 @@ function ContentStep({
         value={state.prompt}
         onChange={(event) => setState((current) => ({ ...current, prompt: event.target.value }))}
         className={inputClass}
-        placeholder="Sence bu nedir?"
+        placeholder="Örn. Sence bu nedir?"
       />
     </BuilderCard>
   );

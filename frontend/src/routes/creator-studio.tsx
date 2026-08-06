@@ -891,11 +891,6 @@ function CreatorStudioPage() {
     setCreationMode,
   ] = useState<"ai" | "text">("ai");
 
-  const [
-    manualExpanded,
-    setManualExpanded,
-  ] = useState(false);
-
   const dailyFreeContentLimit = 3;
   const generatedToday = aiCredits
     ? Math.min(
@@ -924,16 +919,12 @@ function CreatorStudioPage() {
   }
 
   function openManualCreate() {
-    setManualExpanded(true);
-
-    window.setTimeout(() => {
-      document
-        .getElementById("manual-create")
-        ?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-    }, 0);
+    document
+      .getElementById("manual-create")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
   }
 
   function startSpectrumBuilder() {
@@ -1513,7 +1504,7 @@ function CreatorStudioPage() {
               </div>
             </section>
 
-            <section className="mt-12">
+            <section id="manual-create" className="mt-12 scroll-mt-36">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="text-[12px] font-black uppercase tracking-[0.15em] text-primary">

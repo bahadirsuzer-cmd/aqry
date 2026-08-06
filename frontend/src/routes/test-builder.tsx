@@ -53,71 +53,62 @@ const BUILDER_STORAGE_KEY =
 const initialQuestions: Question[] = [
   {
     id: 1,
-    text: "Kulübün kuruluş yılı hangisidir?",
-    options: [
-      "1905",
-      "1907",
-      "1910",
-      "1923",
-    ],
+    text: "",
+    options: ["", "", "", ""],
   },
   {
     id: 2,
-    text: "Bir derbi günü seni en iyi hangisi anlatır?",
-    options: [
-      "Maç saatini beklerim",
-      "Sabah formayı giyerim",
-      "Tüm gün takım konuşurum",
-      "Sonucu sonradan öğrenirim",
-    ],
+    text: "",
+    options: ["", "", "", ""],
   },
   {
     id: 3,
-    text: "Takımın geriye düştüğünde ne yaparsın?",
-    options: [
-      "Umudumu korurum",
-      "Sinirlenirim ama izlerim",
-      "Taktik konuşmaya başlarım",
-      "Maçı kapatırım",
-    ],
-  },
-  {
-    id: 4,
-    text: "Stadyum atmosferinde en sevdiğin şey nedir?",
-    options: [
-      "Tribün sesi",
-      "Gol anı",
-      "Koreografi",
-      "Maç öncesi heyecan",
-    ],
-  },
-  {
-    id: 5,
-    text: "Takımını ne sıklıkta takip edersin?",
-    options: [
-      "Her gün",
-      "Maç günleri",
-      "Önemli maçlarda",
-      "Arada sırada",
-    ],
-  },
-  {
-    id: 6,
-    text: "Bir futbol sohbetinde seni en çok ne heyecanlandırır?",
-    options: [
-      "Tarih",
-      "Taktik",
-      "Transfer",
-      "Rekabet",
-    ],
+    text: "",
+    options: ["", "", "", ""],
   },
 ];
 
 const initialCorrectAnswers: Record<
   number,
   number
+> = {};
+
+const QUESTION_EXAMPLES: Record<
+  TestMode,
+  string[]
 > = {
-  1: 1,
+  score: [
+    "Örn. Türkiye'nin başkenti hangisidir?",
+    "Örn. Bu film hangi yılda vizyona girdi?",
+    "Örn. Hangisi doğru bilgidir?",
+  ],
+  profile: [
+    "Örn. Boş bir günün olsa hangisini seçersin?",
+    "Örn. Bir karar verirken seni en çok ne etkiler?",
+    "Örn. Tatilde hangi ortam sana daha çok uyar?",
+  ],
+};
+
+const TOPIC_IDEAS: Record<
+  TestMode,
+  string[]
+> = {
+  score: [
+    "Genel kültür",
+    "Spor",
+    "Sinema & dizi",
+    "Müzik",
+    "Tarih",
+    "Teknoloji",
+  ],
+  profile: [
+    "Karakter",
+    "Film önerisi",
+    "İlişki tarzı",
+    "Sosyallik",
+    "Tatil tipi",
+    "Çalışma stili",
+  ],
 };
 
 const initialResults: ResultDefinition[] =
@@ -169,14 +160,10 @@ function TestBuilderPage() {
     >
   >({});
 
-  const [title, setTitle] = useState(
-    "Ne kadar biliyorsun?",
-  );
+  const [title, setTitle] = useState("");
 
   const [description, setDescription] =
-    useState(
-      "Soruları cevapla, skorunu hemen ve ücretsiz gör.",
-    );
+    useState("");
 
   const [questions, setQuestions] =
     useState<Question[]>(
@@ -705,13 +692,8 @@ function TestBuilderPage() {
         ...currentQuestions,
         {
           id: nextId,
-          text: "Yeni sorunu buraya yaz",
-          options: [
-            "Birinci seçenek",
-            "İkinci seçenek",
-            "Üçüncü seçenek",
-            "Dördüncü seçenek",
-          ],
+          text: "",
+          options: ["", "", "", ""],
         },
       ],
     );
@@ -1681,6 +1663,29 @@ function ContentEditor({
           </div>
         </div>
 
+        <div className="rounded-[22px] border border-primary/15 bg-primary/[0.025] p-5">
+          <p className="text-sm font-black">
+            Konu fikri lazım mı?
+          </p>
+
+          <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
+            Bunlar sadece fikir vermek için. İstediğin konuda içerik oluşturabilirsin.
+          </p>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {TOPIC_IDEAS[testMode].map(
+              (topic) => (
+                <span
+                  key={topic}
+                  className="rounded-full border border-primary/15 bg-white px-3 py-2 text-[11px] font-bold text-foreground"
+                >
+                  {topic}
+                </span>
+              ),
+            )}
+          </div>
+        </div>
+
         <div className="rounded-[22px] border border-border bg-white p-5">
           <p className="text-sm font-black">
             Genel bilgiler
@@ -1704,6 +1709,11 @@ function ContentEditor({
                       .value,
                   )
                 }
+                placeholder={
+                  testMode === "score"
+                    ? "Örn. 10 soruda ne kadar tarih biliyorsun?"
+                    : "Örn. Hangi film karakterisin?"
+                }
                 className="mt-2 h-11 w-full rounded-[15px] border border-border bg-background px-4 text-sm font-bold outline-none focus:border-primary"
               />
             </label>
@@ -1726,6 +1736,11 @@ function ContentEditor({
                     event.target
                       .value,
                   )
+                }
+                placeholder={
+                  testMode === "score"
+                    ? "Kullanıcıya testin ne hakkında olduğunu ve sonunda ne göreceğini kısaca anlat."
+                    : "Cevaplara göre nasıl bir kişisel sonuç veya öneri çıkacağını kısaca anlat."
                 }
                 className="mt-2 w-full resize-none rounded-[15px] border border-border bg-background px-4 py-3 text-xs leading-5 outline-none focus:border-primary"
               />
@@ -1791,6 +1806,16 @@ function ContentEditor({
                             .value,
                         )
                       }
+                      placeholder={
+                        QUESTION_EXAMPLES[
+                          testMode
+                        ][
+                          questionIndex %
+                            QUESTION_EXAMPLES[
+                              testMode
+                            ].length
+                        ]
+                      }
                       className="h-9 min-w-0 flex-1 rounded-[12px] border border-border bg-white px-3 text-[11px] font-bold outline-none focus:border-primary"
                     />
 
@@ -1844,7 +1869,11 @@ function ContentEditor({
                                   .value,
                               )
                             }
-                            className="min-w-0 flex-1 bg-transparent text-[10px] font-semibold outline-none"
+                            placeholder={`Cevap ${String.fromCharCode(
+                              65 +
+                                optionIndex,
+                            )}`}
+                            className="min-w-0 flex-1 bg-transparent text-[11px] font-semibold outline-none placeholder:text-muted-foreground/55"
                           />
                         </label>
                       ),
