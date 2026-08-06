@@ -856,7 +856,7 @@ function CreatorStudioPage() {
       setAiError(
         error instanceof Error
           ? error.message
-          : "AI isteği tamamlanamadı.",
+          : "Yapay Zeka isteği tamamlanamadı.",
       );
     } finally {
       setAiLoading(false);
@@ -1011,6 +1011,15 @@ function CreatorStudioPage() {
 
   const inspirationExamples = [
     {
+      label: "ÖZEL",
+      title: "Aşk Metre",
+      description:
+        "İki kişinin cevaplarını karşılaştır. Uyum oranını göster, paylaşılabilir ve merak uyandıran bir sonuç üret.",
+      action: () =>
+        startFreshBuilder("compatibility"),
+      featured: true,
+    },
+    {
       label: "SEVİYE",
       title: "Ne kadar fanatiksin?",
       description:
@@ -1024,15 +1033,6 @@ function CreatorStudioPage() {
       description:
         "Cevaplardan merak uyandıran kişilik sonuçları üret.",
       action: startArchetypeBuilder,
-    },
-    {
-      label: "UYUMLULUK",
-      title:
-        "Partnerinle ne kadar uyumlusun?",
-      description:
-        "İki tarafın cevaplarını karşılaştıran içerikler hazırla.",
-      action: () =>
-        startFreshBuilder("compatibility"),
     },
     {
       label: "HİKÂYE",
@@ -1087,17 +1087,17 @@ function CreatorStudioPage() {
 
                   <div>
                     <p className="text-[16px] font-black text-foreground">
-                      Bugün {remainingToday} ücretsiz AI içerik hakkın var
+                      Her gün 3 Yapay Zeka üretimi ücretsiz
                     </p>
                     <p className="mt-1 text-[13px] font-medium leading-5 text-muted-foreground">
-                      Her gün 3 ücretsiz AI içerik hakkın yenilenir. Manuel üretim her zaman sınırsızdır.
+                      Günde 3 içeriğini Yapay Zeka ile ücretsiz oluştur. Manuel üretim her zaman sınırsızdır.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex shrink-0 items-center gap-3">
                   <span className="rounded-full border border-primary/15 bg-white px-4 py-2 text-[12px] font-black text-primary">
-                    Günde 10 içerik paketi
+                    Daha fazla Yapay Zeka üret
                   </span>
                   <button
                     type="button"
@@ -1106,7 +1106,7 @@ function CreatorStudioPage() {
                     }
                     className="inline-flex h-11 items-center justify-center rounded-full bg-black px-5 text-[13px] font-black text-white transition hover:bg-primary"
                   >
-                    Daha fazla üret →
+                    Planları gör →
                   </button>
                 </div>
               </div>
@@ -1126,7 +1126,7 @@ function CreatorStudioPage() {
                 </h1>
 
                 <p className="mt-5 max-w-[800px] text-[16px] font-medium leading-7 text-muted-foreground">
-                  AI (Yapay Zeka) ile saniyeler içinde oluştur, hazır metnini içeriğe dönüştür veya manuel olarak sınırsız üret.
+                  Yapay Zeka ile saniyeler içinde oluştur, hazır metnini içeriğe dönüştür veya manuel olarak sınırsız üret.
                 </p>
 
                 {isFirstExperience ? (
@@ -1148,18 +1148,18 @@ function CreatorStudioPage() {
                         ✦
                       </span>
                       <span className="rounded-full bg-white/10 px-3 py-1.5 text-[12px] font-black text-white/90">
-                        Bugün {remainingToday} hak
+                        Bugün {remainingToday} ücretsiz üretim kaldı
                       </span>
                     </div>
 
                     <h2 className="mt-6 text-[24px] font-black tracking-[-0.04em]">
-                      AI ile oluştur
+                      Yapay Zeka ile oluştur
                     </h2>
                     <p className="mt-2 text-[14px] font-medium leading-6 text-white/75">
                       Fikrini yaz. Soruları, yapıyı ve sonucu AQRYO hazırlasın.
                     </p>
                     <span className="mt-6 inline-flex text-[13px] font-black">
-                      AI ile başla →
+                      Yapay Zeka ile başla →
                     </span>
                   </button>
 
@@ -1188,14 +1188,15 @@ function CreatorStudioPage() {
                   <button
                     type="button"
                     onClick={openManualCreate}
-                    className="group rounded-[24px] border border-border bg-white p-6 text-left transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_16px_40px_rgba(22,12,34,0.06)]"
+                    className="group relative overflow-hidden rounded-[24px] border border-border bg-white p-6 text-left transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_16px_40px_rgba(22,12,34,0.06)]"
                   >
+                    <span className="absolute -right-10 top-5 rotate-45 bg-red-600 px-12 py-2 text-[11px] font-black tracking-[0.12em] text-white shadow-sm">
+                      SINIRSIZ
+                    </span>
+
                     <div className="flex items-start justify-between gap-4">
                       <span className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-black/[0.05] text-[22px]">
                         ✎
-                      </span>
-                      <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[12px] font-black text-emerald-700">
-                        Sınırsız
                       </span>
                     </div>
 
@@ -1221,7 +1222,7 @@ function CreatorStudioPage() {
                 <div className="p-6 sm:p-8">
                   <p className="text-[12px] font-black uppercase tracking-[0.13em] text-primary">
                     {creationMode === "ai"
-                      ? "AI ile oluştur"
+                      ? "Yapay Zeka ile oluştur"
                       : "Metinden oluştur"}
                   </p>
 
@@ -1258,10 +1259,10 @@ function CreatorStudioPage() {
                     <div className="mt-3 flex flex-col gap-4 border-t border-border/70 pt-4 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="text-[13px] font-bold text-foreground/80">
-                          Bugün {remainingToday} ücretsiz AI içerik hakkın kaldı.
+                          Bugün {remainingToday} ücretsiz Yapay Zeka üretimin kaldı.
                         </p>
                         <p className="mt-1 text-[12px] font-medium text-muted-foreground">
-                          Hakların her gün yenilenir. Manuel içerik üretimi sınırsızdır.
+                          Her gün 3 Yapay Zeka üretimi ücretsizdir. Manuel içerik üretimi sınırsızdır.
                         </p>
                       </div>
 
@@ -1280,7 +1281,7 @@ function CreatorStudioPage() {
                         {aiLoading
                           ? "AQRYO hazırlıyor..."
                           : creationMode === "ai"
-                            ? "AI ile oluştur ✦"
+                            ? "Yapay Zeka ile oluştur ✦"
                             : "İçeriğe dönüştür →"}
                       </button>
                     </div>
@@ -1381,18 +1382,44 @@ function CreatorStudioPage() {
                       key={example.title}
                       type="button"
                       onClick={example.action}
-                      className="group rounded-[24px] border border-border bg-white p-5 text-left shadow-[0_10px_30px_rgba(22,12,34,0.035)] transition hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-[0_16px_40px_rgba(22,12,34,0.06)]"
+                      className={`group rounded-[24px] border p-5 text-left shadow-[0_10px_30px_rgba(22,12,34,0.035)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(22,12,34,0.06)] ${
+                        example.featured
+                          ? "relative overflow-hidden border-rose-200 bg-gradient-to-r from-rose-50 via-fuchsia-50 to-violet-50 sm:col-span-2 lg:col-span-3"
+                          : "border-border bg-white hover:border-primary/25"
+                      }`}
                     >
-                      <p className="text-[12px] font-black uppercase tracking-[0.12em] text-primary">
+                      {example.featured ? (
+                        <span className="absolute -right-9 top-5 rotate-45 bg-red-600 px-12 py-2 text-[11px] font-black tracking-[0.12em] text-white shadow-sm">
+                          ÖZEL
+                        </span>
+                      ) : null}
+
+                      <p className={`text-[12px] font-black uppercase tracking-[0.12em] ${
+                        example.featured
+                          ? "text-rose-600"
+                          : "text-primary"
+                      }`}>
                         {example.label}
                       </p>
-                      <h3 className="mt-3 text-[20px] font-black leading-tight tracking-[-0.035em]">
+                      <h3
+                        className={`mt-3 font-black leading-tight tracking-[-0.035em] ${
+                          example.featured
+                            ? "text-[26px] text-rose-950 sm:text-[30px]"
+                            : "text-[20px]"
+                        }`}
+                      >
                         {example.title}
                       </h3>
                       <p className="mt-2 text-[13px] font-medium leading-6 text-muted-foreground">
                         {example.description}
                       </p>
-                      <span className="mt-5 inline-flex text-[13px] font-black text-primary">
+                      <span
+                        className={`mt-5 inline-flex text-[13px] font-black ${
+                          example.featured
+                            ? "text-rose-600"
+                            : "text-primary"
+                        }`}
+                      >
                         Bunun gibi oluştur →
                       </span>
                     </button>
