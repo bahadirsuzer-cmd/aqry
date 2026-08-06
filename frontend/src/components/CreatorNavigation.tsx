@@ -106,38 +106,38 @@ export function CreatorNavigation({
           </div>
         </div>
 
-        <nav className="grid grid-cols-7 gap-1 border-t border-border py-2.5 sm:hidden">
-          {navigationItems.map(
-            (item) => {
-              const active =
-                pathname === item.to;
+        <div className="border-t border-border sm:hidden">
+          <nav className="-mx-3 flex items-center gap-2 overflow-x-auto px-3 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {navigationItems.map(
+              (item) => {
+                const active =
+                  pathname === item.to;
 
-              return (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  className={`flex h-10 min-w-0 items-center justify-center rounded-[10px] px-1 text-center text-[10px] font-bold transition ${
-                    active
-                      ? "bg-primary text-white"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  <span className="truncate">
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    className={`flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-[12px] font-bold transition ${
+                      active
+                        ? "bg-primary text-white"
+                        : "bg-background text-muted-foreground"
+                    }`}
+                  >
                     {item.mobileLabel}
-                  </span>
-                </Link>
-              );
-            },
-          )}
+                  </Link>
+                );
+              },
+            )}
 
-          <button
-            type="button"
-            onClick={onSignOut}
-            className="flex h-10 min-w-0 items-center justify-center rounded-[10px] px-1 text-[10px] font-bold text-muted-foreground transition hover:bg-background hover:text-primary"
-          >
-            Çıkış
-          </button>
-        </nav>
+            <button
+              type="button"
+              onClick={onSignOut}
+              className="flex h-10 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-background px-4 text-[12px] font-bold text-muted-foreground transition hover:bg-primary/10 hover:text-primary"
+            >
+              Çıkış
+            </button>
+          </nav>
+        </div>
       </div>
     </header>
   );
