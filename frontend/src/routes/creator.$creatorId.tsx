@@ -5,12 +5,23 @@ import {
 } from "@tanstack/react-router";
 import { supabase } from "@/services/supabase";
 import { getCurrentCreator } from "@/services/auth";
+import { CreatorAvatar } from "@/components/creator/CreatorAvatar";
+import type {
+  CreatorAvatarBackground,
+  CreatorAvatarStyle,
+} from "@/services/creatorAvatar";
 
 type CreatorProfile = {
   id: string;
   display_name: string;
   username: string | null;
   avatar_url: string | null;
+  avatar_style: CreatorAvatarStyle | null;
+  avatar_bg: CreatorAvatarBackground | null;
+  avatar_zoom: number | null;
+  avatar_x: number | null;
+  avatar_y: number | null;
+  avatar_frame: boolean | null;
   bio: string | null;
 };
 
@@ -75,6 +86,12 @@ function PublicCreatorPage() {
                 display_name,
                 username,
                 avatar_url,
+                avatar_style,
+                avatar_bg,
+                avatar_zoom,
+                avatar_x,
+                avatar_y,
+                avatar_frame,
                 bio
               `,
             )
@@ -306,19 +323,19 @@ function PublicCreatorPage() {
           <div className="relative mx-auto w-fit">
             <div className="absolute inset-0 scale-[1.18] rounded-full bg-gradient-to-br from-violet-500/15 via-fuchsia-500/10 to-pink-500/15 blur-xl" />
 
-            <div className="relative mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-[5px] border-white bg-primary/[0.08] text-[24px] font-black text-primary shadow-[0_18px_50px_rgba(35,16,55,0.16)]">
-              {creator.avatar_url ? (
-                <img
-                  src={creator.avatar_url}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                getCreatorInitials(
-                  creator.display_name,
-                )
-              )}
-            </div>
+            <CreatorAvatar
+              avatarUrl={creator.avatar_url}
+              displayName={creator.display_name}
+              username={creator.username}
+              avatarStyle={creator.avatar_style}
+              avatarBg={creator.avatar_bg}
+              avatarZoom={creator.avatar_zoom}
+              avatarX={creator.avatar_x}
+              avatarY={creator.avatar_y}
+              avatarFrame={creator.avatar_frame}
+              size={112}
+              className="border-[5px] border-white shadow-[0_18px_50px_rgba(35,16,55,0.16)]"
+            />
 
             <span className="absolute bottom-1 right-1 flex h-7 w-7 items-center justify-center rounded-full border-4 border-white bg-primary text-[9px] font-black text-white shadow-sm">
               ◆

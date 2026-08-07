@@ -1,4 +1,9 @@
 import { CreatorNavigation } from "@/components/CreatorNavigation";
+import { CreatorAvatar } from "@/components/creator/CreatorAvatar";
+import type {
+  CreatorAvatarBackground,
+  CreatorAvatarStyle,
+} from "@/services/creatorAvatar";
 import {
   getCurrentCreator,
   signOutCreator,
@@ -18,6 +23,12 @@ type FollowedCreator = {
   display_name: string;
   username: string | null;
   avatar_url: string | null;
+  avatar_style: CreatorAvatarStyle | null;
+  avatar_bg: CreatorAvatarBackground | null;
+  avatar_zoom: number | null;
+  avatar_x: number | null;
+  avatar_y: number | null;
+  avatar_frame: boolean | null;
   bio: string | null;
   followed_at: string;
 };
@@ -226,21 +237,18 @@ function CreatorFollowingPage() {
                       : ""
                   }`}
                 >
-                  {creator.avatar_url ? (
-                    <img
-                      src={
-                        creator.avatar_url
-                      }
-                      alt=""
-                      className="h-16 w-16 shrink-0 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-fuchsia-100 text-[19px] font-black text-primary">
-                      {getInitials(
-                        creator.display_name,
-                      )}
-                    </div>
-                  )}
+                  <CreatorAvatar
+                    avatarUrl={creator.avatar_url}
+                    displayName={creator.display_name}
+                    username={creator.username}
+                    avatarStyle={creator.avatar_style}
+                    avatarBg={creator.avatar_bg}
+                    avatarZoom={creator.avatar_zoom}
+                    avatarX={creator.avatar_x}
+                    avatarY={creator.avatar_y}
+                    avatarFrame={creator.avatar_frame}
+                    size={64}
+                  />
 
                   <div className="min-w-0 flex-1">
                     <h2 className="truncate text-[17px] font-black tracking-[-0.02em]">
@@ -306,6 +314,33 @@ function CreatorFollowingPage() {
   );
 }
 
+
+function formatDate(
+  value: string | null,
+) {
+  if (!value) {
+    return "Yakın zamanda";
+  }
+
+  const date = new Date(value);
+
+  if (
+    Number.isNaN(date.getTime())
+  ) {
+    return "Yakın zamanda";
+  }
+
+  return new Intl.DateTimeFormat(
+    "tr-TR",
+    {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    },
+  ).format(date);
+}
+
+
 function HeartIcon() {
   return (
     <svg
@@ -318,47 +353,4 @@ function HeartIcon() {
       <path d="M20.5 5.5c-2-2-5.2-2-7.2 0L12 6.8l-1.3-1.3c-2-2-5.2-2-7.2 0s-2 5.2 0 7.2L12 21l8.5-8.3c2-2 2-5.2 0-7.2Z" />
     </svg>
   );
-}
-
-function getInitials(
-  displayName: string,
-) {
-  const words = displayName
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  if (words.length === 0) {
-    return "AQ";
-  }
-
-  return words
-    .slice(0, 2)
-    .map((word) =>
-      word.charAt(0).toUpperCase(),
-    )
-    .join("");
-}
-
-function formatDate(
-  value: string,
-) {
-  const date = new Date(value);
-
-  if (
-    Number.isNaN(
-      date.getTime(),
-    )
-  ) {
-    return "—";
-  }
-
-  return new Intl.DateTimeFormat(
-    "tr-TR",
-    {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    },
-  ).format(date);
 }

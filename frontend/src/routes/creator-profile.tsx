@@ -1,4 +1,5 @@
 import { CreatorNavigation } from "@/components/CreatorNavigation";
+import { AvatarCustomizer } from "@/components/creator/AvatarCustomizer";
 import {
   useEffect,
   useState,
@@ -11,6 +12,11 @@ import {
   updateCreatorDisplayName,
 } from "@/services/auth";
 import { supabase } from "@/services/supabase";
+import {
+  defaultCreatorAvatarSettings,
+  saveCurrentCreatorAvatarSettings,
+  type CreatorAvatarSettings,
+} from "@/services/creatorAvatar";
 
 interface CreatorAccount {
   displayName: string;
@@ -25,48 +31,6 @@ interface CreatorPublicProfile {
   bio: string;
 }
 
-const AVATAR_PRESETS = [
-  {
-    id: "violet",
-    label: "Mor",
-    src: "/avatars/avatar-violet.svg",
-  },
-  {
-    id: "blue",
-    label: "Mavi",
-    src: "/avatars/avatar-blue.svg",
-  },
-  {
-    id: "green",
-    label: "Yeşil",
-    src: "/avatars/avatar-green.svg",
-  },
-  {
-    id: "orange",
-    label: "Turuncu",
-    src: "/avatars/avatar-orange.svg",
-  },
-  {
-    id: "pink",
-    label: "Pembe",
-    src: "/avatars/avatar-pink.svg",
-  },
-  {
-    id: "navy",
-    label: "Lacivert",
-    src: "/avatars/avatar-navy.svg",
-  },
-  {
-    id: "mint",
-    label: "Mint",
-    src: "/avatars/avatar-mint.svg",
-  },
-  {
-    id: "sun",
-    label: "Sarı",
-    src: "/avatars/avatar-sun.svg",
-  },
-] as const;
 
 export const Route = createFileRoute(
   "/creator-profile",
@@ -95,13 +59,25 @@ function CreatorProfilePage() {
     useState("");
 
   const [
-    avatarUploading,
-    setAvatarUploading,
+    avatarSettings,
+    setAvatarSettings,
+  ] = useState<CreatorAvatarSettings>(
+    defaultCreatorAvatarSettings,
+  );
+
+  const [
+    avatarSettingsSaving,
+    setAvatarSettingsSaving,
   ] = useState(false);
 
   const [
-    avatarError,
-    setAvatarError,
+    avatarSettingsError,
+    setAvatarSettingsError,
+  ] = useState<string | null>(null);
+
+  const [
+    avatarSettingsSuccess,
+    setAvatarSettingsSuccess,
   ] = useState<string | null>(null);
 
   const [bio, setBio] =
@@ -176,6 +152,12 @@ function CreatorProfilePage() {
             `
               username,
               avatar_url,
+              avatar_style,
+              avatar_bg,
+              avatar_zoom,
+              avatar_x,
+              avatar_y,
+              avatar_frame,
               bio
             `,
           )
@@ -234,6 +216,35 @@ function CreatorProfilePage() {
           setAvatarUrl(
             loadedPublicProfile.avatarUrl,
           );
+
+          setAvatarSettings({
+            avatarUrl:
+              loadedPublicProfile.avatarUrl,
+            avatarStyle:
+              (profileData?.avatar_style ??
+                "classic") as CreatorAvatarSettings["avatarStyle"],
+            avatarBg:
+              (profileData?.avatar_bg ??
+                "violet") as CreatorAvatarSettings["avatarBg"],
+            avatarZoom:
+              Number(
+                profileData?.avatar_zoom ??
+                  1,
+              ),
+            avatarX:
+              Number(
+                profileData?.avatar_x ??
+                  50,
+              ),
+            avatarY:
+              Number(
+                profileData?.avatar_y ??
+                  50,
+              ),
+            avatarFrame:
+              profileData?.avatar_frame ??
+              true,
+          });
 
           setBio(
             loadedPublicProfile.bio,
@@ -354,249 +365,43 @@ function CreatorProfilePage() {
     }
   }
 
-  async function handleAvatarUpload(
-    file: File,
-  ) {
-    if (avatarUploading) {
-      return;
-    }
-
-    if (
-      file.type !== "image/jpeg" &&
-      file.type !== "image/png"
-    ) {
-      setAvatarError(
-        "Yalnızca JPEG veya PNG yükleyebilirsin.",
-      );
-      return;
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      setAvatarError(
-        "Profil fotoğrafı en fazla 5 MB olabilir.",
-      );
-      return;
-    }
-
-    const creator =
-      await getCurrentCreator();
-
-    if (!creator) {
-      window.location.href =
-        "/creator-auth";
+  async function handleAvatarSettingsSave() {
+    if (avatarSettingsSaving) {
       return;
     }
 
     try {
-      setAvatarUploading(true);
-      setAvatarError(null);
-      setPublicProfileError(null);
-      setPublicProfileSuccess(null);
+      setAvatarSettingsSaving(true);
+      setAvatarSettingsError(null);
+      setAvatarSettingsSuccess(null);
 
-      const avatarPath =
-        `${creator.id}/avatar`;
+      await saveCurrentCreatorAvatarSettings(
+        avatarSettings,
+      );
 
-      const { error: uploadError } =
-        await supabase.storage
-          .from("creator-avatars")
-          .upload(
-            avatarPath,
-            file,
-            {
-              upsert: true,
-              contentType: file.type,
-              cacheControl: "3600",
-            },
-          );
-
-      if (uploadError) {
-        throw new Error(
-          uploadError.message,
-        );
-      }
-
-      const { data: publicUrlData } =
-        supabase.storage
-          .from("creator-avatars")
-          .getPublicUrl(avatarPath);
-
-      const publicAvatarUrl =
-        `${publicUrlData.publicUrl}?v=${Date.now()}`;
-
-      const { error: profileError } =
-        await supabase
-          .from("creator_profiles")
-          .update({
-            avatar_url:
-              publicAvatarUrl,
-            updated_at:
-              new Date().toISOString(),
-          })
-          .eq("id", creator.id);
-
-      if (profileError) {
-        throw new Error(
-          profileError.message,
-        );
-      }
-
-      setAvatarUrl(publicAvatarUrl);
+      setAvatarUrl(
+        avatarSettings.avatarUrl,
+      );
 
       setPublicProfile(
         (currentProfile) => ({
           ...currentProfile,
           avatarUrl:
-            publicAvatarUrl,
+            avatarSettings.avatarUrl,
         }),
       );
 
-      setPublicProfileSuccess(
-        "Profil fotoğrafı güncellendi.",
+      setAvatarSettingsSuccess(
+        "Avatar ayarların kaydedildi.",
       );
     } catch (error) {
-      const message =
+      setAvatarSettingsError(
         error instanceof Error
           ? error.message
-          : "Profil fotoğrafı yüklenemedi.";
-
-      setAvatarError(message);
-    } finally {
-      setAvatarUploading(false);
-    }
-  }
-
-  async function handleAvatarPresetSelect(
-    presetUrl: string,
-  ) {
-    if (avatarUploading) {
-      return;
-    }
-
-    const creator =
-      await getCurrentCreator();
-
-    if (!creator) {
-      window.location.href =
-        "/creator-auth";
-      return;
-    }
-
-    try {
-      setAvatarUploading(true);
-      setAvatarError(null);
-      setPublicProfileError(null);
-      setPublicProfileSuccess(null);
-
-      const { error } =
-        await supabase
-          .from("creator_profiles")
-          .update({
-            avatar_url: presetUrl,
-            updated_at:
-              new Date().toISOString(),
-          })
-          .eq("id", creator.id);
-
-      if (error) {
-        throw new Error(
-          error.message,
-        );
-      }
-
-      setAvatarUrl(presetUrl);
-
-      setPublicProfile(
-        (currentProfile) => ({
-          ...currentProfile,
-          avatarUrl: presetUrl,
-        }),
-      );
-
-      setPublicProfileSuccess(
-        "Hazır avatar seçildi.",
-      );
-    } catch (error) {
-      setAvatarError(
-        error instanceof Error
-          ? error.message
-          : "Hazır avatar seçilemedi.",
+          : "Avatar ayarları kaydedilemedi.",
       );
     } finally {
-      setAvatarUploading(false);
-    }
-  }
-
-  async function handleAvatarRemove() {
-    if (avatarUploading) {
-      return;
-    }
-
-    const creator =
-      await getCurrentCreator();
-
-    if (!creator) {
-      window.location.href =
-        "/creator-auth";
-      return;
-    }
-
-    try {
-      setAvatarUploading(true);
-      setAvatarError(null);
-      setPublicProfileError(null);
-      setPublicProfileSuccess(null);
-
-      const avatarPath =
-        `${creator.id}/avatar`;
-
-      const { error: removeError } =
-        await supabase.storage
-          .from("creator-avatars")
-          .remove([avatarPath]);
-
-      if (removeError) {
-        throw new Error(
-          removeError.message,
-        );
-      }
-
-      const { error: profileError } =
-        await supabase
-          .from("creator_profiles")
-          .update({
-            avatar_url: null,
-            updated_at:
-              new Date().toISOString(),
-          })
-          .eq("id", creator.id);
-
-      if (profileError) {
-        throw new Error(
-          profileError.message,
-        );
-      }
-
-      setAvatarUrl("");
-
-      setPublicProfile(
-        (currentProfile) => ({
-          ...currentProfile,
-          avatarUrl: "",
-        }),
-      );
-
-      setPublicProfileSuccess(
-        "Profil fotoğrafı kaldırıldı.",
-      );
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Profil fotoğrafı kaldırılamadı.";
-
-      setAvatarError(message);
-    } finally {
-      setAvatarUploading(false);
+      setAvatarSettingsSaving(false);
     }
   }
 
@@ -695,7 +500,7 @@ function CreatorProfilePage() {
 
       const updatedProfile = {
         username: normalizedUsername,
-        avatarUrl: normalizedAvatarUrl,
+        avatarUrl: avatarUrl,
         bio: normalizedBio,
       };
 
@@ -727,8 +532,6 @@ function CreatorProfilePage() {
   const publicProfileChanged =
     username.trim() !==
       publicProfile.username ||
-    avatarUrl.trim() !==
-      publicProfile.avatarUrl ||
     bio.trim() !==
       publicProfile.bio;
 
@@ -781,9 +584,9 @@ function CreatorProfilePage() {
 
                 <div className="mt-4 flex items-center gap-4">
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[17px] bg-foreground text-sm font-black text-background">
-                    {avatarUrl.trim() ? (
+                    {avatarSettings.avatarUrl.trim() ? (
                       <img
-                        src={avatarUrl.trim()}
+                        src={avatarSettings.avatarUrl.trim()}
                         alt=""
                         className="h-full w-full object-cover"
                       />
@@ -938,139 +741,6 @@ function CreatorProfilePage() {
                     </div>
 
                     <div>
-                      <p className="text-[7px] font-black uppercase tracking-[0.07em] text-muted-foreground">
-                        Profil fotoğrafı
-                      </p>
-
-                      <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-                        <label
-                          htmlFor="creator-avatar-file"
-                          className={`flex h-10 flex-1 cursor-pointer items-center justify-center rounded-[12px] border border-border bg-white px-4 text-[9px] font-black transition hover:border-primary hover:text-primary ${
-                            avatarUploading
-                              ? "pointer-events-none opacity-50"
-                              : ""
-                          }`}
-                        >
-                          {avatarUploading
-                            ? "Yükleniyor..."
-                            : avatarUrl
-                              ? "Fotoğrafı değiştir"
-                              : "Fotoğraf seç"}
-
-                          <input
-                            id="creator-avatar-file"
-                            type="file"
-                            accept="image/jpeg,image/png"
-                            disabled={
-                              avatarUploading
-                            }
-                            onChange={(event) => {
-                              const file =
-                                event.target
-                                  .files?.[0];
-
-                              if (file) {
-                                void handleAvatarUpload(
-                                  file,
-                                );
-                              }
-
-                              event.currentTarget.value =
-                                "";
-                            }}
-                            className="hidden"
-                          />
-                        </label>
-
-                        {avatarUrl && (
-                          <button
-                            type="button"
-                            disabled={
-                              avatarUploading
-                            }
-                            onClick={() => {
-                              void handleAvatarRemove();
-                            }}
-                            className="flex h-10 items-center justify-center rounded-[12px] border border-red-200 bg-red-50 px-4 text-[9px] font-black text-red-600 transition hover:border-red-300 disabled:cursor-wait disabled:opacity-50"
-                          >
-                            Kaldır
-                          </button>
-                        )}
-                      </div>
-
-                      <p className="mt-1.5 text-[8px] text-muted-foreground">
-                        JPEG veya PNG · en fazla 5 MB
-                      </p>
-
-                      <div className="mt-4">
-                        <div className="flex items-center justify-between gap-3">
-                          <p className="text-[8px] font-black uppercase tracking-[0.07em] text-muted-foreground">
-                            Hazır avatarlar
-                          </p>
-
-                          <span className="text-[8px] text-muted-foreground">
-                            Fotoğraf yüklemek zorunda değilsin
-                          </span>
-                        </div>
-
-                        <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-8">
-                          {AVATAR_PRESETS.map(
-                            (preset) => {
-                              const selected =
-                                avatarUrl ===
-                                preset.src;
-
-                              return (
-                                <button
-                                  key={
-                                    preset.id
-                                  }
-                                  type="button"
-                                  title={
-                                    preset.label
-                                  }
-                                  disabled={
-                                    avatarUploading
-                                  }
-                                  onClick={() =>
-                                    void handleAvatarPresetSelect(
-                                      preset.src,
-                                    )
-                                  }
-                                  className={`relative aspect-square overflow-hidden rounded-[14px] border-2 transition ${
-                                    selected
-                                      ? "border-primary ring-2 ring-primary/15"
-                                      : "border-transparent hover:border-primary/30"
-                                  } disabled:cursor-not-allowed disabled:opacity-50`}
-                                >
-                                  <img
-                                    src={
-                                      preset.src
-                                    }
-                                    alt=""
-                                    className="h-full w-full object-cover"
-                                  />
-
-                                  {selected ? (
-                                    <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[9px] font-black text-white shadow-sm">
-                                      ✓
-                                    </span>
-                                  ) : null}
-                                </button>
-                              );
-                            },
-                          )}
-                        </div>
-                      </div>
-
-                      {avatarError && (
-                        <p className="mt-2 text-[9px] font-bold text-red-600">
-                          {avatarError}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
                       <div className="flex items-center justify-between gap-3">
                         <label
                           htmlFor="creator-bio"
@@ -1131,6 +801,65 @@ function CreatorProfilePage() {
                       : "Public profili kaydet"}
                   </button>
                 </form>
+
+                <div className="mt-4">
+                  <AvatarCustomizer
+                    value={avatarSettings}
+                    onChange={(nextValue) => {
+                      setAvatarSettings(
+                        nextValue,
+                      );
+                      setAvatarSettingsError(
+                        null,
+                      );
+                      setAvatarSettingsSuccess(
+                        null,
+                      );
+                    }}
+                    disabled={
+                      avatarSettingsSaving
+                    }
+                    displayName={
+                      displayName.trim() ||
+                      account.displayName
+                    }
+                    username={username}
+                    bio={bio}
+                  />
+
+                  <div className="mt-4 flex flex-wrap items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void handleAvatarSettingsSave();
+                      }}
+                      disabled={
+                        avatarSettingsSaving
+                      }
+                      className="inline-flex h-11 items-center justify-center rounded-full bg-primary px-5 text-[13px] font-black text-white transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {avatarSettingsSaving
+                        ? "Kaydediliyor..."
+                        : "Avatarı kaydet"}
+                    </button>
+
+                    {avatarSettingsSuccess ? (
+                      <p className="text-[12px] font-bold text-emerald-700">
+                        {
+                          avatarSettingsSuccess
+                        }
+                      </p>
+                    ) : null}
+
+                    {avatarSettingsError ? (
+                      <p className="text-[12px] font-bold text-red-600">
+                        {
+                          avatarSettingsError
+                        }
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
 
                 <div className="mt-4 divide-y divide-border rounded-[16px] border border-border bg-[#fafafa] px-4">
                   <AccountRow

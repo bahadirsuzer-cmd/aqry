@@ -1,11 +1,16 @@
 import { CreatorNavigation } from "@/components/CreatorNavigation";
+import { CreatorAvatar } from "@/components/creator/CreatorAvatar";
+import type {
+  CreatorAvatarBackground,
+  CreatorAvatarStyle,
+} from "@/services/creatorAvatar";
 import {
   getCurrentCreator,
   signOutCreator,
 } from "@/services/auth";
 import { supabase } from "@/services/supabase";
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute(
   "/creator-account",
@@ -17,6 +22,12 @@ type AccountProfile = {
   displayName: string;
   username: string;
   avatarUrl: string;
+  avatarStyle: CreatorAvatarStyle;
+  avatarBg: CreatorAvatarBackground;
+  avatarZoom: number;
+  avatarX: number;
+  avatarY: number;
+  avatarFrame: boolean;
   bio: string;
   email: string;
 };
@@ -119,6 +130,12 @@ function CreatorAccountHubPage() {
             `
               username,
               avatar_url,
+              avatar_style,
+              avatar_bg,
+              avatar_zoom,
+              avatar_x,
+              avatar_y,
+              avatar_frame,
               bio,
               updated_at
             `,
@@ -143,6 +160,30 @@ function CreatorAccountHubPage() {
             profileData?.username ?? "",
           avatarUrl:
             profileData?.avatar_url ?? "",
+          avatarStyle:
+            (profileData?.avatar_style ??
+              "classic") as CreatorAvatarStyle,
+          avatarBg:
+            (profileData?.avatar_bg ??
+              "violet") as CreatorAvatarBackground,
+          avatarZoom:
+            Number(
+              profileData?.avatar_zoom ??
+                1,
+            ),
+          avatarX:
+            Number(
+              profileData?.avatar_x ??
+                50,
+            ),
+          avatarY:
+            Number(
+              profileData?.avatar_y ??
+                50,
+            ),
+          avatarFrame:
+            profileData?.avatar_frame ??
+            true,
           bio:
             profileData?.bio ?? "",
           email: creator.email ?? "",
@@ -182,21 +223,6 @@ function CreatorAccountHubPage() {
       cancelled = true;
     };
   }, []);
-
-  const initials = useMemo(() => {
-    const source =
-      profile?.displayName?.trim() ||
-      profile?.username?.trim() ||
-      "AQ";
-
-    return source
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((part) =>
-        part.slice(0, 1).toUpperCase(),
-      )
-      .join("");
-  }, [profile]);
 
   return (
     <main className="min-h-screen bg-[#fbfbfd] text-foreground">
@@ -295,17 +321,36 @@ function CreatorAccountHubPage() {
             <aside className="space-y-5">
               <section className="rounded-[26px] border border-border bg-white p-6 shadow-[0_18px_50px_rgba(18,10,40,0.04)]">
                 <div className="flex items-start gap-4">
-                  {profile?.avatarUrl ? (
-                    <img
-                      src={profile.avatarUrl}
-                      alt=""
-                      className="h-[88px] w-[88px] shrink-0 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-[88px] w-[88px] shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-fuchsia-100 text-[28px] font-black text-primary">
-                      {initials}
-                    </div>
-                  )}
+                  <CreatorAvatar
+                    avatarUrl={
+                      profile?.avatarUrl
+                    }
+                    displayName={
+                      profile?.displayName
+                    }
+                    username={
+                      profile?.username
+                    }
+                    avatarStyle={
+                      profile?.avatarStyle
+                    }
+                    avatarBg={
+                      profile?.avatarBg
+                    }
+                    avatarZoom={
+                      profile?.avatarZoom
+                    }
+                    avatarX={
+                      profile?.avatarX
+                    }
+                    avatarY={
+                      profile?.avatarY
+                    }
+                    avatarFrame={
+                      profile?.avatarFrame
+                    }
+                    size={88}
+                  />
 
                   <div className="min-w-0 pt-1">
                     <h2 className="truncate text-[20px] font-black tracking-[-0.03em]">
