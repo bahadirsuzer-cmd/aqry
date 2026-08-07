@@ -23,11 +23,19 @@ import { Route as CreateRouteImport } from './routes/create'
 import { Route as CreatorAccountRouteImport } from './routes/creator-account'
 import { Route as CreatorAuthRouteImport } from './routes/creator-auth'
 import { Route as CreatorDashboardRouteImport } from './routes/creator-dashboard'
+import { Route as CreatorDeleteAccountRouteImport } from './routes/creator-delete-account'
 import { Route as CreatorEarningsRouteImport } from './routes/creator-earnings'
 import { Route as CreatorExperiencesRouteImport } from './routes/creator-experiences'
+import { Route as CreatorFollowingRouteImport } from './routes/creator-following'
 import { Route as CreatorGiftsRouteImport } from './routes/creator-gifts'
+import { Route as CreatorLegalRouteImport } from './routes/creator-legal'
 import { Route as CreatorPaymentsRouteImport } from './routes/creator-payments'
+import { Route as CreatorPrivacyRouteImport } from './routes/creator-privacy'
+import { Route as CreatorProfileRouteImport } from './routes/creator-profile'
+import { Route as CreatorPurchasesRouteImport } from './routes/creator-purchases'
 import { Route as CreatorResetPasswordRouteImport } from './routes/creator-reset-password'
+import { Route as CreatorSecurityRouteImport } from './routes/creator-security'
+import { Route as CreatorSentGiftsRouteImport } from './routes/creator-sent-gifts'
 import { Route as CreatorStudioRouteImport } from './routes/creator-studio'
 import { Route as CreatorTermsRouteImport } from './routes/creator-terms'
 import { Route as ExamplesRouteImport } from './routes/examples'
@@ -123,6 +131,11 @@ const CreatorDashboardRoute = CreatorDashboardRouteImport.update({
   path: '/creator-dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreatorDeleteAccountRoute = CreatorDeleteAccountRouteImport.update({
+  id: '/creator-delete-account',
+  path: '/creator-delete-account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreatorEarningsRoute = CreatorEarningsRouteImport.update({
   id: '/creator-earnings',
   path: '/creator-earnings',
@@ -133,9 +146,19 @@ const CreatorExperiencesRoute = CreatorExperiencesRouteImport.update({
   path: '/creator-experiences',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreatorFollowingRoute = CreatorFollowingRouteImport.update({
+  id: '/creator-following',
+  path: '/creator-following',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreatorGiftsRoute = CreatorGiftsRouteImport.update({
   id: '/creator-gifts',
   path: '/creator-gifts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorLegalRoute = CreatorLegalRouteImport.update({
+  id: '/creator-legal',
+  path: '/creator-legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreatorPaymentsRoute = CreatorPaymentsRouteImport.update({
@@ -143,9 +166,34 @@ const CreatorPaymentsRoute = CreatorPaymentsRouteImport.update({
   path: '/creator-payments',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreatorPrivacyRoute = CreatorPrivacyRouteImport.update({
+  id: '/creator-privacy',
+  path: '/creator-privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorProfileRoute = CreatorProfileRouteImport.update({
+  id: '/creator-profile',
+  path: '/creator-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorPurchasesRoute = CreatorPurchasesRouteImport.update({
+  id: '/creator-purchases',
+  path: '/creator-purchases',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreatorResetPasswordRoute = CreatorResetPasswordRouteImport.update({
   id: '/creator-reset-password',
   path: '/creator-reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorSecurityRoute = CreatorSecurityRouteImport.update({
+  id: '/creator-security',
+  path: '/creator-security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorSentGiftsRoute = CreatorSentGiftsRouteImport.update({
+  id: '/creator-sent-gifts',
+  path: '/creator-sent-gifts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreatorStudioRoute = CreatorStudioRouteImport.update({
@@ -286,11 +334,19 @@ export interface FileRoutesByFullPath {
   '/creator-account': typeof CreatorAccountRoute
   '/creator-auth': typeof CreatorAuthRoute
   '/creator-dashboard': typeof CreatorDashboardRoute
+  '/creator-delete-account': typeof CreatorDeleteAccountRoute
   '/creator-earnings': typeof CreatorEarningsRoute
   '/creator-experiences': typeof CreatorExperiencesRoute
+  '/creator-following': typeof CreatorFollowingRoute
   '/creator-gifts': typeof CreatorGiftsRoute
+  '/creator-legal': typeof CreatorLegalRoute
   '/creator-payments': typeof CreatorPaymentsRoute
+  '/creator-privacy': typeof CreatorPrivacyRoute
+  '/creator-profile': typeof CreatorProfileRoute
+  '/creator-purchases': typeof CreatorPurchasesRoute
   '/creator-reset-password': typeof CreatorResetPasswordRoute
+  '/creator-security': typeof CreatorSecurityRoute
+  '/creator-sent-gifts': typeof CreatorSentGiftsRoute
   '/creator-studio': typeof CreatorStudioRoute
   '/creator-terms': typeof CreatorTermsRoute
   '/examples': typeof ExamplesRoute
@@ -331,11 +387,19 @@ export interface FileRoutesByTo {
   '/creator-account': typeof CreatorAccountRoute
   '/creator-auth': typeof CreatorAuthRoute
   '/creator-dashboard': typeof CreatorDashboardRoute
+  '/creator-delete-account': typeof CreatorDeleteAccountRoute
   '/creator-earnings': typeof CreatorEarningsRoute
   '/creator-experiences': typeof CreatorExperiencesRoute
+  '/creator-following': typeof CreatorFollowingRoute
   '/creator-gifts': typeof CreatorGiftsRoute
+  '/creator-legal': typeof CreatorLegalRoute
   '/creator-payments': typeof CreatorPaymentsRoute
+  '/creator-privacy': typeof CreatorPrivacyRoute
+  '/creator-profile': typeof CreatorProfileRoute
+  '/creator-purchases': typeof CreatorPurchasesRoute
   '/creator-reset-password': typeof CreatorResetPasswordRoute
+  '/creator-security': typeof CreatorSecurityRoute
+  '/creator-sent-gifts': typeof CreatorSentGiftsRoute
   '/creator-studio': typeof CreatorStudioRoute
   '/creator-terms': typeof CreatorTermsRoute
   '/examples': typeof ExamplesRoute
@@ -376,11 +440,19 @@ export interface FileRoutesById {
   '/creator-account': typeof CreatorAccountRoute
   '/creator-auth': typeof CreatorAuthRoute
   '/creator-dashboard': typeof CreatorDashboardRoute
+  '/creator-delete-account': typeof CreatorDeleteAccountRoute
   '/creator-earnings': typeof CreatorEarningsRoute
   '/creator-experiences': typeof CreatorExperiencesRoute
+  '/creator-following': typeof CreatorFollowingRoute
   '/creator-gifts': typeof CreatorGiftsRoute
+  '/creator-legal': typeof CreatorLegalRoute
   '/creator-payments': typeof CreatorPaymentsRoute
+  '/creator-privacy': typeof CreatorPrivacyRoute
+  '/creator-profile': typeof CreatorProfileRoute
+  '/creator-purchases': typeof CreatorPurchasesRoute
   '/creator-reset-password': typeof CreatorResetPasswordRoute
+  '/creator-security': typeof CreatorSecurityRoute
+  '/creator-sent-gifts': typeof CreatorSentGiftsRoute
   '/creator-studio': typeof CreatorStudioRoute
   '/creator-terms': typeof CreatorTermsRoute
   '/examples': typeof ExamplesRoute
@@ -423,11 +495,19 @@ export interface FileRouteTypes {
     | '/creator-account'
     | '/creator-auth'
     | '/creator-dashboard'
+    | '/creator-delete-account'
     | '/creator-earnings'
     | '/creator-experiences'
+    | '/creator-following'
     | '/creator-gifts'
+    | '/creator-legal'
     | '/creator-payments'
+    | '/creator-privacy'
+    | '/creator-profile'
+    | '/creator-purchases'
     | '/creator-reset-password'
+    | '/creator-security'
+    | '/creator-sent-gifts'
     | '/creator-studio'
     | '/creator-terms'
     | '/examples'
@@ -468,11 +548,19 @@ export interface FileRouteTypes {
     | '/creator-account'
     | '/creator-auth'
     | '/creator-dashboard'
+    | '/creator-delete-account'
     | '/creator-earnings'
     | '/creator-experiences'
+    | '/creator-following'
     | '/creator-gifts'
+    | '/creator-legal'
     | '/creator-payments'
+    | '/creator-privacy'
+    | '/creator-profile'
+    | '/creator-purchases'
     | '/creator-reset-password'
+    | '/creator-security'
+    | '/creator-sent-gifts'
     | '/creator-studio'
     | '/creator-terms'
     | '/examples'
@@ -512,11 +600,19 @@ export interface FileRouteTypes {
     | '/creator-account'
     | '/creator-auth'
     | '/creator-dashboard'
+    | '/creator-delete-account'
     | '/creator-earnings'
     | '/creator-experiences'
+    | '/creator-following'
     | '/creator-gifts'
+    | '/creator-legal'
     | '/creator-payments'
+    | '/creator-privacy'
+    | '/creator-profile'
+    | '/creator-purchases'
     | '/creator-reset-password'
+    | '/creator-security'
+    | '/creator-sent-gifts'
     | '/creator-studio'
     | '/creator-terms'
     | '/examples'
@@ -558,11 +654,19 @@ export interface RootRouteChildren {
   CreatorAccountRoute: typeof CreatorAccountRoute
   CreatorAuthRoute: typeof CreatorAuthRoute
   CreatorDashboardRoute: typeof CreatorDashboardRoute
+  CreatorDeleteAccountRoute: typeof CreatorDeleteAccountRoute
   CreatorEarningsRoute: typeof CreatorEarningsRoute
   CreatorExperiencesRoute: typeof CreatorExperiencesRoute
+  CreatorFollowingRoute: typeof CreatorFollowingRoute
   CreatorGiftsRoute: typeof CreatorGiftsRoute
+  CreatorLegalRoute: typeof CreatorLegalRoute
   CreatorPaymentsRoute: typeof CreatorPaymentsRoute
+  CreatorPrivacyRoute: typeof CreatorPrivacyRoute
+  CreatorProfileRoute: typeof CreatorProfileRoute
+  CreatorPurchasesRoute: typeof CreatorPurchasesRoute
   CreatorResetPasswordRoute: typeof CreatorResetPasswordRoute
+  CreatorSecurityRoute: typeof CreatorSecurityRoute
+  CreatorSentGiftsRoute: typeof CreatorSentGiftsRoute
   CreatorStudioRoute: typeof CreatorStudioRoute
   CreatorTermsRoute: typeof CreatorTermsRoute
   ExamplesRoute: typeof ExamplesRoute
@@ -686,6 +790,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreatorDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creator-delete-account': {
+      id: '/creator-delete-account'
+      path: '/creator-delete-account'
+      fullPath: '/creator-delete-account'
+      preLoaderRoute: typeof CreatorDeleteAccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/creator-earnings': {
       id: '/creator-earnings'
       path: '/creator-earnings'
@@ -700,11 +811,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreatorExperiencesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creator-following': {
+      id: '/creator-following'
+      path: '/creator-following'
+      fullPath: '/creator-following'
+      preLoaderRoute: typeof CreatorFollowingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/creator-gifts': {
       id: '/creator-gifts'
       path: '/creator-gifts'
       fullPath: '/creator-gifts'
       preLoaderRoute: typeof CreatorGiftsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creator-legal': {
+      id: '/creator-legal'
+      path: '/creator-legal'
+      fullPath: '/creator-legal'
+      preLoaderRoute: typeof CreatorLegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/creator-payments': {
@@ -714,11 +839,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreatorPaymentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creator-privacy': {
+      id: '/creator-privacy'
+      path: '/creator-privacy'
+      fullPath: '/creator-privacy'
+      preLoaderRoute: typeof CreatorPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creator-profile': {
+      id: '/creator-profile'
+      path: '/creator-profile'
+      fullPath: '/creator-profile'
+      preLoaderRoute: typeof CreatorProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creator-purchases': {
+      id: '/creator-purchases'
+      path: '/creator-purchases'
+      fullPath: '/creator-purchases'
+      preLoaderRoute: typeof CreatorPurchasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/creator-reset-password': {
       id: '/creator-reset-password'
       path: '/creator-reset-password'
       fullPath: '/creator-reset-password'
       preLoaderRoute: typeof CreatorResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creator-security': {
+      id: '/creator-security'
+      path: '/creator-security'
+      fullPath: '/creator-security'
+      preLoaderRoute: typeof CreatorSecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creator-sent-gifts': {
+      id: '/creator-sent-gifts'
+      path: '/creator-sent-gifts'
+      fullPath: '/creator-sent-gifts'
+      preLoaderRoute: typeof CreatorSentGiftsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/creator-studio': {
@@ -923,11 +1083,19 @@ const rootRouteChildren: RootRouteChildren = {
   CreatorAccountRoute: CreatorAccountRoute,
   CreatorAuthRoute: CreatorAuthRoute,
   CreatorDashboardRoute: CreatorDashboardRoute,
+  CreatorDeleteAccountRoute: CreatorDeleteAccountRoute,
   CreatorEarningsRoute: CreatorEarningsRoute,
   CreatorExperiencesRoute: CreatorExperiencesRoute,
+  CreatorFollowingRoute: CreatorFollowingRoute,
   CreatorGiftsRoute: CreatorGiftsRoute,
+  CreatorLegalRoute: CreatorLegalRoute,
   CreatorPaymentsRoute: CreatorPaymentsRoute,
+  CreatorPrivacyRoute: CreatorPrivacyRoute,
+  CreatorProfileRoute: CreatorProfileRoute,
+  CreatorPurchasesRoute: CreatorPurchasesRoute,
   CreatorResetPasswordRoute: CreatorResetPasswordRoute,
+  CreatorSecurityRoute: CreatorSecurityRoute,
+  CreatorSentGiftsRoute: CreatorSentGiftsRoute,
   CreatorStudioRoute: CreatorStudioRoute,
   CreatorTermsRoute: CreatorTermsRoute,
   ExamplesRoute: ExamplesRoute,

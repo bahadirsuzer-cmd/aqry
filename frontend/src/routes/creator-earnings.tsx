@@ -213,9 +213,7 @@ function CreatorEarningsPage() {
       orders.filter(
         (order) =>
           order.status ===
-            "pending" ||
-          order.status ===
-            "payment_started",
+          "pending",
       ),
     [orders],
   );

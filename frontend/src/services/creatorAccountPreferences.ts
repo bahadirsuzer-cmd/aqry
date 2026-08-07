@@ -61,20 +61,38 @@ function normalizePreferences(
 }
 
 export async function getCreatorAccountExtensionSnapshot(): Promise<CreatorAccountExtensionSnapshot> {
-  const { data, error } = await supabase
-    .from("creator_account_preferences")
-    .select(
-      `
-        gift_email,
-        paid_offer_email,
-        payout_email,
-        moderation_email,
-        security_email,
-        deletion_requested_at,
-        data_export_requested_at
-      `,
-    )
-    .maybeSingle();
+  const {
+    data: userData,
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !userData.user) {
+    throw new Error(
+      "Oturum bulunamadı.",
+    );
+  }
+
+  const { data, error } =
+    await supabase
+      .from(
+        "creator_account_preferences",
+      )
+      .select(
+        `
+          gift_email,
+          paid_offer_email,
+          payout_email,
+          moderation_email,
+          security_email,
+          deletion_requested_at,
+          data_export_requested_at
+        `,
+      )
+      .eq(
+        "user_id",
+        userData.user.id,
+      )
+      .maybeSingle();
 
   if (error) {
     throw new Error(
@@ -83,7 +101,8 @@ export async function getCreatorAccountExtensionSnapshot(): Promise<CreatorAccou
   }
 
   return normalizePreferences(
-    (data as PreferencesRow | null) ?? null,
+    (data as PreferencesRow | null) ??
+      null,
   );
 }
 
@@ -97,32 +116,35 @@ export async function saveCreatorNotificationPreferences(
 
   if (userError || !userData.user) {
     throw new Error(
-      "Creator oturumu bulunamadı.",
+      "Oturum bulunamadı.",
     );
   }
 
-  const { error } = await supabase
-    .from("creator_account_preferences")
-    .upsert(
-      {
-        user_id: userData.user.id,
-        gift_email:
-          preferences.giftEmail,
-        paid_offer_email:
-          preferences.paidOfferEmail,
-        payout_email:
-          preferences.payoutEmail,
-        moderation_email:
-          preferences.moderationEmail,
-        security_email:
-          preferences.securityEmail,
-        updated_at:
-          new Date().toISOString(),
-      },
-      {
-        onConflict: "user_id",
-      },
-    );
+  const { error } =
+    await supabase
+      .from(
+        "creator_account_preferences",
+      )
+      .upsert(
+        {
+          user_id: userData.user.id,
+          gift_email:
+            preferences.giftEmail,
+          paid_offer_email:
+            preferences.paidOfferEmail,
+          payout_email:
+            preferences.payoutEmail,
+          moderation_email:
+            preferences.moderationEmail,
+          security_email:
+            preferences.securityEmail,
+          updated_at:
+            new Date().toISOString(),
+        },
+        {
+          onConflict: "user_id",
+        },
+      );
 
   if (error) {
     throw new Error(
@@ -139,26 +161,29 @@ export async function requestCreatorDataExport() {
 
   if (userError || !userData.user) {
     throw new Error(
-      "Creator oturumu bulunamadı.",
+      "Oturum bulunamadı.",
     );
   }
 
   const requestedAt =
     new Date().toISOString();
 
-  const { error } = await supabase
-    .from("creator_account_preferences")
-    .upsert(
-      {
-        user_id: userData.user.id,
-        data_export_requested_at:
-          requestedAt,
-        updated_at: requestedAt,
-      },
-      {
-        onConflict: "user_id",
-      },
-    );
+  const { error } =
+    await supabase
+      .from(
+        "creator_account_preferences",
+      )
+      .upsert(
+        {
+          user_id: userData.user.id,
+          data_export_requested_at:
+            requestedAt,
+          updated_at: requestedAt,
+        },
+        {
+          onConflict: "user_id",
+        },
+      );
 
   if (error) {
     throw new Error(
@@ -190,26 +215,29 @@ export async function requestCreatorAccountDeletion(
 
   if (userError || !userData.user) {
     throw new Error(
-      "Creator oturumu bulunamadı.",
+      "Oturum bulunamadı.",
     );
   }
 
   const requestedAt =
     new Date().toISOString();
 
-  const { error } = await supabase
-    .from("creator_account_preferences")
-    .upsert(
-      {
-        user_id: userData.user.id,
-        deletion_requested_at:
-          requestedAt,
-        updated_at: requestedAt,
-      },
-      {
-        onConflict: "user_id",
-      },
-    );
+  const { error } =
+    await supabase
+      .from(
+        "creator_account_preferences",
+      )
+      .upsert(
+        {
+          user_id: userData.user.id,
+          deletion_requested_at:
+            requestedAt,
+          updated_at: requestedAt,
+        },
+        {
+          onConflict: "user_id",
+        },
+      );
 
   if (error) {
     throw new Error(

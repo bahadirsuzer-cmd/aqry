@@ -185,9 +185,7 @@ function CreatorPaymentsPage() {
       orders.filter(
         (order) =>
           order.status ===
-            "pending" ||
-          order.status ===
-            "payment_started",
+          "pending",
       ),
     [orders],
   );
@@ -553,14 +551,21 @@ function StatusBadge({
     );
   }
 
-  if (
-    normalized === "pending" ||
-    normalized ===
-      "payment_started"
-  ) {
+  if (normalized === "pending") {
     return (
       <span className="inline-flex w-fit rounded-full bg-amber-50 px-2.5 py-1 text-[7px] font-black uppercase tracking-[0.08em] text-amber-700">
         Bekliyor
+      </span>
+    );
+  }
+
+  if (
+    normalized ===
+    "payment_started"
+  ) {
+    return (
+      <span className="inline-flex w-fit rounded-full bg-blue-50 px-2.5 py-1 text-[7px] font-black uppercase tracking-[0.08em] text-blue-700">
+        Başlatıldı
       </span>
     );
   }

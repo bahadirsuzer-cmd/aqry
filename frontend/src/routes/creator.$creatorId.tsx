@@ -4,6 +4,7 @@ import {
   Link,
 } from "@tanstack/react-router";
 import { supabase } from "@/services/supabase";
+import { getCurrentCreator } from "@/services/auth";
 
 type CreatorProfile = {
   id: string;
@@ -44,6 +45,15 @@ function PublicCreatorPage() {
 
   const [errorMessage, setErrorMessage] =
     useState<string | null>(null);
+
+  const [viewerId, setViewerId] =
+    useState<string | null>(null);
+
+  const [isFollowing, setIsFollowing] =
+    useState(false);
+
+  const [followLoading, setFollowLoading] =
+    useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,6 +126,37 @@ function PublicCreatorPage() {
           (experiencesResult.data ??
             []) as CreatorExperience[],
         );
+
+        const viewer =
+          await getCurrentCreator();
+
+        if (!cancelled && viewer) {
+          setViewerId(viewer.id);
+
+          if (viewer.id !== creatorId) {
+            const {
+              data: followingData,
+              error: followingError,
+            } = await supabase.rpc(
+              "is_following_creator",
+              {
+                p_creator_id:
+                  creatorId,
+              },
+            );
+
+            if (followingError) {
+              console.error(
+                "Takip durumu yüklenemedi:",
+                followingError,
+              );
+            } else {
+              setIsFollowing(
+                followingData === true,
+              );
+            }
+          }
+        }
       } catch (error) {
         const message =
           error instanceof Error
@@ -143,6 +184,62 @@ function PublicCreatorPage() {
       cancelled = true;
     };
   }, [creatorId]);
+
+  async function handleFollowToggle() {
+    if (followLoading) {
+      return;
+    }
+
+    const viewer =
+      await getCurrentCreator();
+
+    if (!viewer) {
+      window.location.href =
+        "/creator-auth";
+      return;
+    }
+
+    if (viewer.id === creatorId) {
+      return;
+    }
+
+    try {
+      setFollowLoading(true);
+
+      const rpcName =
+        isFollowing
+          ? "unfollow_creator"
+          : "follow_creator";
+
+      const { error } =
+        await supabase.rpc(
+          rpcName,
+          {
+            p_creator_id:
+              creatorId,
+          },
+        );
+
+      if (error) {
+        throw new Error(
+          error.message,
+        );
+      }
+
+      setViewerId(viewer.id);
+      setIsFollowing(
+        (current) => !current,
+      );
+    } catch (error) {
+      window.alert(
+        error instanceof Error
+          ? error.message
+          : "Takip işlemi tamamlanamadı.",
+      );
+    } finally {
+      setFollowLoading(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -244,14 +341,37 @@ function PublicCreatorPage() {
             </p>
           )}
 
-          <div className="mx-auto mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2.5 text-[9px] font-black shadow-[0_8px_24px_rgba(35,16,55,0.05)]">
-            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/[0.10] px-1.5 text-primary">
-              {experiences.length}
-            </span>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2.5 text-[9px] font-black shadow-[0_8px_24px_rgba(35,16,55,0.05)]">
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary/[0.10] px-1.5 text-primary">
+                {experiences.length}
+              </span>
 
-            <span>
-              yayındaki Experience
-            </span>
+              <span>
+                yayındaki Experience
+              </span>
+            </div>
+
+            {viewerId !== creatorId ? (
+              <button
+                type="button"
+                onClick={() =>
+                  void handleFollowToggle()
+                }
+                disabled={followLoading}
+                className={`inline-flex h-10 items-center justify-center rounded-full px-5 text-[11px] font-black transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                  isFollowing
+                    ? "border border-border bg-white text-foreground hover:border-red-200 hover:text-red-600"
+                    : "bg-primary text-white hover:opacity-90"
+                }`}
+              >
+                {followLoading
+                  ? "..."
+                  : isFollowing
+                    ? "Takibi bırak"
+                    : "Takip et"}
+              </button>
+            ) : null}
           </div>
         </section>
 
