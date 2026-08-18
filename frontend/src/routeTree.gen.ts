@@ -45,6 +45,7 @@ import { Route as DistanceSalesRouteImport } from './routes/distance-sales'
 import { Route as ExamplesRouteImport } from './routes/examples'
 import { Route as GuessBuilderRouteImport } from './routes/guess-builder'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as InternettenParaKazanmaRouteImport } from './routes/internetten-para-kazanma'
 import { Route as PaymentTermsRouteImport } from './routes/payment-terms'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -245,6 +246,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
   path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InternettenParaKazanmaRoute = InternettenParaKazanmaRouteImport.update({
+  id: '/internetten-para-kazanma',
+  path: '/internetten-para-kazanma',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PaymentTermsRoute = PaymentTermsRouteImport.update({
   id: '/payment-terms',
   path: '/payment-terms',
@@ -380,6 +386,7 @@ export interface FileRoutesByFullPath {
   '/examples': typeof ExamplesRoute
   '/guess-builder': typeof GuessBuilderRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/internetten-para-kazanma': typeof InternettenParaKazanmaRoute
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -437,6 +444,7 @@ export interface FileRoutesByTo {
   '/examples': typeof ExamplesRoute
   '/guess-builder': typeof GuessBuilderRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/internetten-para-kazanma': typeof InternettenParaKazanmaRoute
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -494,6 +502,7 @@ export interface FileRoutesById {
   '/examples': typeof ExamplesRoute
   '/guess-builder': typeof GuessBuilderRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/internetten-para-kazanma': typeof InternettenParaKazanmaRoute
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -553,6 +562,7 @@ export interface FileRouteTypes {
     | '/examples'
     | '/guess-builder'
     | '/how-it-works'
+    | '/internetten-para-kazanma'
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
@@ -610,6 +620,7 @@ export interface FileRouteTypes {
     | '/examples'
     | '/guess-builder'
     | '/how-it-works'
+    | '/internetten-para-kazanma'
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
@@ -666,6 +677,7 @@ export interface FileRouteTypes {
     | '/examples'
     | '/guess-builder'
     | '/how-it-works'
+    | '/internetten-para-kazanma'
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
@@ -724,6 +736,7 @@ export interface RootRouteChildren {
   ExamplesRoute: typeof ExamplesRoute
   GuessBuilderRoute: typeof GuessBuilderRoute
   HowItWorksRoute: typeof HowItWorksRoute
+  InternettenParaKazanmaRoute: typeof InternettenParaKazanmaRoute
   PaymentTermsRoute: typeof PaymentTermsRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -996,6 +1009,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/internetten-para-kazanma': {
+      id: '/internetten-para-kazanma'
+      path: '/internetten-para-kazanma'
+      fullPath: '/internetten-para-kazanma'
+      preLoaderRoute: typeof InternettenParaKazanmaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/payment-terms': {
       id: '/payment-terms'
       path: '/payment-terms'
@@ -1185,6 +1205,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExamplesRoute: ExamplesRoute,
   GuessBuilderRoute: GuessBuilderRoute,
   HowItWorksRoute: HowItWorksRoute,
+  InternettenParaKazanmaRoute: InternettenParaKazanmaRoute,
   PaymentTermsRoute: PaymentTermsRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

@@ -8,6 +8,7 @@ const groups = [
       ["Örnek deneyimler", "#examples"],
       ["AI kredileri", "#ai-credits"],
       ["Fiyatlandırma", "#pricing"],
+      ["İnternetten para kazanma", "/internetten-para-kazanma"],
     ],
   },
   {
