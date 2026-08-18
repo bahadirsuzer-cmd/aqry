@@ -11,14 +11,12 @@ interface LegalSection {
 interface LegalPageLayoutProps {
   title: string;
   description: string;
-  updatedLabel?: string;
   sections: LegalSection[];
 }
 
 export function LegalPageLayout({
   title,
   description,
-  updatedLabel = "Taslak sürüm",
   sections,
 }: LegalPageLayoutProps) {
   return (
@@ -28,29 +26,13 @@ export function LegalPageLayout({
       <main>
         <section className="border-b border-border bg-gradient-to-b from-violet-50/70 via-white to-white">
           <div className="mx-auto w-full max-w-[980px] px-5 pb-10 pt-12 sm:px-7 sm:pb-14 sm:pt-16 lg:px-10">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-primary/[0.07] px-3 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-primary">
-                Yasal
-              </span>
-
-              <span className="text-[9px] font-bold text-muted-foreground">
-                {updatedLabel}
-              </span>
-            </div>
-
-            <h1 className="mt-4 text-[36px] font-black leading-[1] tracking-[-0.055em] sm:text-[50px]">
+            <h1 className="text-[36px] font-black leading-[1] tracking-[-0.055em] sm:text-[50px]">
               {title}
             </h1>
 
             <p className="mt-4 max-w-[760px] text-[14px] leading-7 text-muted-foreground">
               {description}
             </p>
-
-            <div className="mt-5 rounded-[18px] border border-amber-200 bg-amber-50 px-4 py-3">
-              <p className="text-[10px] font-bold leading-5 text-amber-800">
-                Bu sayfa ürün geliştirme taslağıdır. Nihai hukuki metin değildir ve yayına alınmadan önce hukuk danışmanı tarafından incelenmelidir.
-              </p>
-            </div>
           </div>
         </section>
 
@@ -95,11 +77,29 @@ export function LegalPageLayout({
 
               <div className="rounded-[22px] border border-border bg-background p-5">
                 <p className="text-[11px] font-black">
-                  Sorun mu var?
+                  İletişim
                 </p>
 
                 <p className="mt-2 text-[10px] leading-5 text-muted-foreground">
-                  Yasal veya hesapla ilgili sorular için iletişim kanalı daha sonra production iletişim adresine bağlanacaktır.
+                  Yasal, ödeme, iade veya hesapla ilgili talepleriniz için
+                  {" "}
+                  <a
+                    href="mailto:hey@buum-e.com"
+                    className="font-semibold text-primary"
+                  >
+                    hey@buum-e.com
+                  </a>
+                  {" "}
+                  adresinden veya
+                  {" "}
+                  <a
+                    href="tel:+905412914935"
+                    className="font-semibold text-primary"
+                  >
+                    0541 291 49 35
+                  </a>
+                  {" "}
+                  numarasından bize ulaşabilirsiniz.
                 </p>
 
                 <Link
