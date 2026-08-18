@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UsernameRouteImport } from './routes/$username'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminLoginRouteImport } from './routes/admin-login'
 import { Route as AiCreditsRouteImport } from './routes/ai-credits'
@@ -18,6 +19,7 @@ import { Route as CipherBuilderRouteImport } from './routes/cipher-builder'
 import { Route as CommunityGuidelinesRouteImport } from './routes/community-guidelines'
 import { Route as CompatibilityBuilderRouteImport } from './routes/compatibility-builder'
 import { Route as CompatibilityPreviewRouteImport } from './routes/compatibility-preview'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as CreateRouteImport } from './routes/create'
 import { Route as CreatorAccountRouteImport } from './routes/creator-account'
@@ -38,6 +40,8 @@ import { Route as CreatorSecurityRouteImport } from './routes/creator-security'
 import { Route as CreatorSentGiftsRouteImport } from './routes/creator-sent-gifts'
 import { Route as CreatorStudioRouteImport } from './routes/creator-studio'
 import { Route as CreatorTermsRouteImport } from './routes/creator-terms'
+import { Route as DeliveryRefundRouteImport } from './routes/delivery-refund'
+import { Route as DistanceSalesRouteImport } from './routes/distance-sales'
 import { Route as ExamplesRouteImport } from './routes/examples'
 import { Route as GuessBuilderRouteImport } from './routes/guess-builder'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
@@ -69,6 +73,11 @@ const IndexRoute = IndexRouteImport.update({
 const UsernameRoute = UsernameRouteImport.update({
   id: '/$username',
   path: '/$username',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -104,6 +113,11 @@ const CompatibilityBuilderRoute = CompatibilityBuilderRouteImport.update({
 const CompatibilityPreviewRoute = CompatibilityPreviewRouteImport.update({
   id: '/compatibility-preview',
   path: '/compatibility-preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiesRoute = CookiesRouteImport.update({
@@ -204,6 +218,16 @@ const CreatorStudioRoute = CreatorStudioRouteImport.update({
 const CreatorTermsRoute = CreatorTermsRouteImport.update({
   id: '/creator-terms',
   path: '/creator-terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeliveryRefundRoute = DeliveryRefundRouteImport.update({
+  id: '/delivery-refund',
+  path: '/delivery-refund',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DistanceSalesRoute = DistanceSalesRouteImport.update({
+  id: '/distance-sales',
+  path: '/distance-sales',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExamplesRoute = ExamplesRouteImport.update({
@@ -322,6 +346,7 @@ const TestSlugPlayRoute = TestSlugPlayRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$username': typeof UsernameRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/admin-login': typeof AdminLoginRoute
   '/ai-credits': typeof AiCreditsRoute
@@ -329,6 +354,7 @@ export interface FileRoutesByFullPath {
   '/community-guidelines': typeof CommunityGuidelinesRoute
   '/compatibility-builder': typeof CompatibilityBuilderRoute
   '/compatibility-preview': typeof CompatibilityPreviewRoute
+  '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/create': typeof CreateRoute
   '/creator-account': typeof CreatorAccountRoute
@@ -349,6 +375,8 @@ export interface FileRoutesByFullPath {
   '/creator-sent-gifts': typeof CreatorSentGiftsRoute
   '/creator-studio': typeof CreatorStudioRoute
   '/creator-terms': typeof CreatorTermsRoute
+  '/delivery-refund': typeof DeliveryRefundRoute
+  '/distance-sales': typeof DistanceSalesRoute
   '/examples': typeof ExamplesRoute
   '/guess-builder': typeof GuessBuilderRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -375,6 +403,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$username': typeof UsernameRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/admin-login': typeof AdminLoginRoute
   '/ai-credits': typeof AiCreditsRoute
@@ -382,6 +411,7 @@ export interface FileRoutesByTo {
   '/community-guidelines': typeof CommunityGuidelinesRoute
   '/compatibility-builder': typeof CompatibilityBuilderRoute
   '/compatibility-preview': typeof CompatibilityPreviewRoute
+  '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/create': typeof CreateRoute
   '/creator-account': typeof CreatorAccountRoute
@@ -402,6 +432,8 @@ export interface FileRoutesByTo {
   '/creator-sent-gifts': typeof CreatorSentGiftsRoute
   '/creator-studio': typeof CreatorStudioRoute
   '/creator-terms': typeof CreatorTermsRoute
+  '/delivery-refund': typeof DeliveryRefundRoute
+  '/distance-sales': typeof DistanceSalesRoute
   '/examples': typeof ExamplesRoute
   '/guess-builder': typeof GuessBuilderRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -428,6 +460,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$username': typeof UsernameRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/admin-login': typeof AdminLoginRoute
   '/ai-credits': typeof AiCreditsRoute
@@ -435,6 +468,7 @@ export interface FileRoutesById {
   '/community-guidelines': typeof CommunityGuidelinesRoute
   '/compatibility-builder': typeof CompatibilityBuilderRoute
   '/compatibility-preview': typeof CompatibilityPreviewRoute
+  '/contact': typeof ContactRoute
   '/cookies': typeof CookiesRoute
   '/create': typeof CreateRoute
   '/creator-account': typeof CreatorAccountRoute
@@ -455,6 +489,8 @@ export interface FileRoutesById {
   '/creator-sent-gifts': typeof CreatorSentGiftsRoute
   '/creator-studio': typeof CreatorStudioRoute
   '/creator-terms': typeof CreatorTermsRoute
+  '/delivery-refund': typeof DeliveryRefundRoute
+  '/distance-sales': typeof DistanceSalesRoute
   '/examples': typeof ExamplesRoute
   '/guess-builder': typeof GuessBuilderRoute
   '/how-it-works': typeof HowItWorksRoute
@@ -483,6 +519,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$username'
+    | '/about'
     | '/admin'
     | '/admin-login'
     | '/ai-credits'
@@ -490,6 +527,7 @@ export interface FileRouteTypes {
     | '/community-guidelines'
     | '/compatibility-builder'
     | '/compatibility-preview'
+    | '/contact'
     | '/cookies'
     | '/create'
     | '/creator-account'
@@ -510,6 +548,8 @@ export interface FileRouteTypes {
     | '/creator-sent-gifts'
     | '/creator-studio'
     | '/creator-terms'
+    | '/delivery-refund'
+    | '/distance-sales'
     | '/examples'
     | '/guess-builder'
     | '/how-it-works'
@@ -536,6 +576,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$username'
+    | '/about'
     | '/admin'
     | '/admin-login'
     | '/ai-credits'
@@ -543,6 +584,7 @@ export interface FileRouteTypes {
     | '/community-guidelines'
     | '/compatibility-builder'
     | '/compatibility-preview'
+    | '/contact'
     | '/cookies'
     | '/create'
     | '/creator-account'
@@ -563,6 +605,8 @@ export interface FileRouteTypes {
     | '/creator-sent-gifts'
     | '/creator-studio'
     | '/creator-terms'
+    | '/delivery-refund'
+    | '/distance-sales'
     | '/examples'
     | '/guess-builder'
     | '/how-it-works'
@@ -588,6 +632,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/$username'
+    | '/about'
     | '/admin'
     | '/admin-login'
     | '/ai-credits'
@@ -595,6 +640,7 @@ export interface FileRouteTypes {
     | '/community-guidelines'
     | '/compatibility-builder'
     | '/compatibility-preview'
+    | '/contact'
     | '/cookies'
     | '/create'
     | '/creator-account'
@@ -615,6 +661,8 @@ export interface FileRouteTypes {
     | '/creator-sent-gifts'
     | '/creator-studio'
     | '/creator-terms'
+    | '/delivery-refund'
+    | '/distance-sales'
     | '/examples'
     | '/guess-builder'
     | '/how-it-works'
@@ -642,6 +690,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   UsernameRoute: typeof UsernameRoute
+  AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AiCreditsRoute: typeof AiCreditsRoute
@@ -649,6 +698,7 @@ export interface RootRouteChildren {
   CommunityGuidelinesRoute: typeof CommunityGuidelinesRoute
   CompatibilityBuilderRoute: typeof CompatibilityBuilderRoute
   CompatibilityPreviewRoute: typeof CompatibilityPreviewRoute
+  ContactRoute: typeof ContactRoute
   CookiesRoute: typeof CookiesRoute
   CreateRoute: typeof CreateRoute
   CreatorAccountRoute: typeof CreatorAccountRoute
@@ -669,6 +719,8 @@ export interface RootRouteChildren {
   CreatorSentGiftsRoute: typeof CreatorSentGiftsRoute
   CreatorStudioRoute: typeof CreatorStudioRoute
   CreatorTermsRoute: typeof CreatorTermsRoute
+  DeliveryRefundRoute: typeof DeliveryRefundRoute
+  DistanceSalesRoute: typeof DistanceSalesRoute
   ExamplesRoute: typeof ExamplesRoute
   GuessBuilderRoute: typeof GuessBuilderRoute
   HowItWorksRoute: typeof HowItWorksRoute
@@ -704,6 +756,13 @@ declare module '@tanstack/react-router' {
       path: '/$username'
       fullPath: '/$username'
       preLoaderRoute: typeof UsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -753,6 +812,13 @@ declare module '@tanstack/react-router' {
       path: '/compatibility-preview'
       fullPath: '/compatibility-preview'
       preLoaderRoute: typeof CompatibilityPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookies': {
@@ -893,6 +959,20 @@ declare module '@tanstack/react-router' {
       path: '/creator-terms'
       fullPath: '/creator-terms'
       preLoaderRoute: typeof CreatorTermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/delivery-refund': {
+      id: '/delivery-refund'
+      path: '/delivery-refund'
+      fullPath: '/delivery-refund'
+      preLoaderRoute: typeof DeliveryRefundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/distance-sales': {
+      id: '/distance-sales'
+      path: '/distance-sales'
+      fullPath: '/distance-sales'
+      preLoaderRoute: typeof DistanceSalesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/examples': {
@@ -1071,6 +1151,7 @@ const TestSlugRouteWithChildren = TestSlugRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   UsernameRoute: UsernameRoute,
+  AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AdminLoginRoute: AdminLoginRoute,
   AiCreditsRoute: AiCreditsRoute,
@@ -1078,6 +1159,7 @@ const rootRouteChildren: RootRouteChildren = {
   CommunityGuidelinesRoute: CommunityGuidelinesRoute,
   CompatibilityBuilderRoute: CompatibilityBuilderRoute,
   CompatibilityPreviewRoute: CompatibilityPreviewRoute,
+  ContactRoute: ContactRoute,
   CookiesRoute: CookiesRoute,
   CreateRoute: CreateRoute,
   CreatorAccountRoute: CreatorAccountRoute,
@@ -1098,6 +1180,8 @@ const rootRouteChildren: RootRouteChildren = {
   CreatorSentGiftsRoute: CreatorSentGiftsRoute,
   CreatorStudioRoute: CreatorStudioRoute,
   CreatorTermsRoute: CreatorTermsRoute,
+  DeliveryRefundRoute: DeliveryRefundRoute,
+  DistanceSalesRoute: DistanceSalesRoute,
   ExamplesRoute: ExamplesRoute,
   GuessBuilderRoute: GuessBuilderRoute,
   HowItWorksRoute: HowItWorksRoute,

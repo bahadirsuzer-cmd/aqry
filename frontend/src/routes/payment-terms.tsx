@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LegalPageLayout } from "@/components/legal/LegalPageLayout";
 
-export const Route = createFileRoute(
-  "/payment-terms",
-)({
+export const Route = createFileRoute("/payment-terms")({
   component: PaymentTermsPage,
 });
 
@@ -11,13 +9,26 @@ function PaymentTermsPage() {
   return (
     <LegalPageLayout
       title="Ödeme, Gift ve Dijital İçerik Koşulları"
-      description="AQRYO üzerinden yapılan Gift ve ücretli ek değer ödemelerinde uygulanacak temel ürün kuralları."
+      description="AQRYO üzerinden gerçekleştirilen ücretli dijital içerik, Offer ve Gift işlemlerinde geçerli temel ödeme koşulları."
       sections={[
         {
-          title: "Ücretli ek Result / Offer",
+          title: "Ücretli dijital içerik ve Offer",
           content: (
             <p>
-              Mevcut MVP yapısında ücretli ek değer Result sonrasında sunulur. Satın alma, kullanıcının ücretsiz Result’ını görmesine engel olmamalıdır.
+              Bir Experience kapsamında ücretli ek içerik veya Offer
+              sunulduğunda, satın alınacak dijital içeriğin kapsamı ve toplam
+              fiyatı ödeme öncesinde kullanıcıya açıkça gösterilir.
+            </p>
+          ),
+        },
+        {
+          title: "Ücretsiz Result",
+          content: (
+            <p>
+              Bir Experience'ın ücretsiz olarak sunduğu temel Result,
+              sonrasında sunulan isteğe bağlı ücretli Offer'dan ayrı
+              değerlendirilir. Ücretli Offer satın alınması ücretsiz Result'ın
+              görüntülenmesi için zorunlu değildir.
             </p>
           ),
         },
@@ -25,31 +36,59 @@ function PaymentTermsPage() {
           title: "Gift",
           content: (
             <p>
-              Gift, ücretli Result’ın kilidini açmaz. Gift ve ücretli ek değer ayrı satın alma türleridir. Repeat Gift ürün kuralları izin verdiği ölçüde tekrar satın alınabilir.
+              Gift, kullanıcının bir creator'a destek olmak amacıyla
+              gerçekleştirebildiği ayrı bir ödeme türüdür. Gift satın alınması
+              tek başına ücretli bir Result veya Offer içeriğinin erişimini
+              sağlamaz.
             </p>
           ),
         },
         {
-          title: "Ödeme durumu",
+          title: "Ödemenin tamamlanması",
           content: (
             <p>
-              Ödemeler pending, payment_started, paid, failed, cancelled, refunded veya disputed gibi durumlara sahip olabilir. Kullanıcı yalnızca başarıyla paid olan satın alma için ücretli içeriğe erişmelidir.
+              Bir satın alma işlemi yalnızca ödeme hizmeti sağlayıcısından
+              başarılı ödeme sonucu alınması halinde tamamlanmış kabul edilir.
+              Başarısız, iptal edilmiş veya tamamlanmamış işlemlerde ücretli
+              içerik erişime açılmaz.
             </p>
           ),
         },
         {
-          title: "Refund ve chargeback",
+          title: "Fiyat ve para birimi",
           content: (
             <p>
-              Refund, chargeback ve dispute politikası henüz finalize edilmemiştir. Production öncesinde Gift, dijital içerik ve ödeme sağlayıcı kurallarına göre ayrı refund senaryoları belirlenmelidir.
+              Kullanıcıdan tahsil edilecek toplam tutar ve para birimi ödeme
+              işlemi tamamlanmadan önce gösterilir. Kullanıcının açıkça
+              onaylamadığı ek bir ücret tahsil edilmez.
             </p>
           ),
         },
         {
-          title: "Para birimi",
+          title: "İade",
           content: (
             <p>
-              Satın alma tutarı ve para birimi sipariş anında immutable işlem verisi olarak saklanmalıdır. Global pazarlarda fiyatlar basit günlük kur çevirisi yerine market bazlı lokal fiyatlandırma ile belirlenebilir.
+              İptal ve iade talepleri Teslimat ve İade Koşulları ile
+              yürürlükteki tüketici mevzuatı kapsamında değerlendirilir.
+            </p>
+          ),
+        },
+        {
+          title: "Güvenlik",
+          content: (
+            <p>
+              Dolandırıcılık, yetkisiz ödeme aracı kullanımı, kötüye kullanım
+              veya güvenlik riski şüphesi bulunan işlemler reddedilebilir,
+              askıya alınabilir veya incelemeye alınabilir.
+            </p>
+          ),
+        },
+        {
+          title: "İletişim",
+          content: (
+            <p>
+              Ödeme işlemleriyle ilgili destek talepleri hey@buum-e.com
+              adresine iletilebilir.
             </p>
           ),
         },

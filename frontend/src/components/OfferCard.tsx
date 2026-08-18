@@ -35,9 +35,7 @@ export function OfferCard({
           </div>
 
           <div className="flex items-center justify-between rounded-2xl bg-gradient-brand-soft p-4">
-            <span className="font-semibold text-foreground">
-              Toplam
-            </span>
+            <span className="font-semibold text-foreground">Toplam</span>
 
             <span className="text-xl font-black text-foreground">
               {price} {currency}
@@ -81,9 +79,7 @@ export function OfferCard({
           </div>
 
           <div className="shrink-0 rounded-2xl bg-background px-4 py-3 text-center shadow-sm">
-            <p className="text-xl font-black text-foreground">
-              {price}
-            </p>
+            <p className="text-xl font-black text-foreground">{price}</p>
 
             <p className="text-xs font-bold text-muted-foreground">
               {currency}

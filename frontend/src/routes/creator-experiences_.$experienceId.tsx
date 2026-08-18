@@ -3315,7 +3315,7 @@ window.location.href =
             </p>
 
             <p className="mt-1 text-[22px] font-black">
-              {offer.price} TL
+              9 TL
             </p>
           </div>
 
@@ -3332,7 +3332,7 @@ window.location.href =
         >
           {orderLoading
             ? "Sipariş hazırlanıyor..."
-            : `${offer.price} TL ile aç`}
+            : `$9 TL ile aç`}
         </button>
 
         <button

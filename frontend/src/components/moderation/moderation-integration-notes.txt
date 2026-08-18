@@ -1,0 +1,146 @@
+AQRYO MODERATION / ENFORCEMENT — ENTEGRASYON
+
+==================================================
+PRECONDITIONS
+==================================================
+
+Paket 4:
+experience_reports.sql
+
+Paket 9:
+admin_mvp.sql
+
+önce uygulanmış olmalı.
+
+==================================================
+EXPERIENCE STATUS MODEL
+==================================================
+
+status:
+draft
+published
+paused
+archived
+...
+
+paused_by:
+null
+creator
+moderation
+
+creator pause:
+status = paused
+paused_by = creator
+pause_reason = null
+
+moderation pause:
+status = paused
+paused_by = moderation
+pause_reason = internal moderation reason
+moderated_at
+moderated_by
+
+==================================================
+CREATOR RULE
+==================================================
+
+Creator:
+published -> paused
+paused_by=creator
+
+Creator reopen:
+paused + paused_by=creator -> published
+
+Creator CANNOT:
+paused + paused_by=moderation -> published
+
+Bu kontrol UI'da değil DB RPC'de yapılır.
+
+==================================================
+ADMIN RELEASE
+==================================================
+
+Admin moderation kilidini kaldırınca Experience doğrudan publish edilmez.
+
+moderation pause
+↓
+admin release
+↓
+status = paused
+paused_by = creator
+↓
+creator isterse tekrar yayınlar
+
+Bu daha güvenli ve creator'a son kontrolü verir.
+
+==================================================
+PUBLIC PARTICIPANT
+==================================================
+
+Participant'a:
+pause_reason
+moderated_by
+report detail
+gösterilmez.
+
+Sadece generic:
+"Bu Experience şu anda kullanılamıyor."
+ekranı gösterilir.
+
+Paket 4 ExperienceUnavailableState bunun için hazır.
+
+==================================================
+CREATOR EXPERIENCE LIST INTEGRATION
+==================================================
+
+Güncel:
+src/routes/creator-experiences.tsx
+
+alındığında mevcut status update kodu:
+creator_set_experience_publish_state RPC'ye taşınmalı.
+
+UI:
+paused_by=moderation ise:
+- "Yeniden yayınla" göstermemeli
+- Moderasyon badge'i gösterebilir
+- Creator'a kendi hesabında kısa neden gösterilebilir
+
+Public participant'a neden gösterilmez.
+
+==================================================
+ADMIN INTEGRATION
+==================================================
+
+Güncel:
+src/routes/admin.tsx
+
+üzerinde Experience tablosuna:
+- ModerationBadge
+- "Moderasyonla duraklat"
+- "Kilidi kaldır"
+eklenebilir.
+
+Report satırından:
+"Experience'ı duraklat"
+aksiyonu ModerationActionDialog ile açılabilir.
+
+admin_pause_experience:
+- Experience pause
+- audit log
+- reportId verilirse report resolved
+işlemlerini tek RPC'de yapar.
+
+==================================================
+AUTO-PAUSE
+==================================================
+
+BU PAKET AUTO-PAUSE YAPMAZ.
+
+"5 negatif reportta otomatik kapat"
+gibi bir kural final ürün kararı değildir.
+
+İlk MVP:
+human moderation.
+
+Scale sonrası:
+risk scoring + thresholds + appeal.

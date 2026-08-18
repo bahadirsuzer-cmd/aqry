@@ -35,29 +35,32 @@ function ResultPage() {
   }
 
   async function handleShare() {
-    const shareData = {
-      title: `${test.title} sonucum`,
-      text: "Ben %86 Bree Van de Kamp çıktım. Sen de AQRY testini çöz.",
-      url: window.location.href,
-    };
+  if (!test) {
+    return;
+  }
 
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        return;
-      } catch {
-        return;
-      }
-    }
+  const shareData = {
+    title: `${test.title} sonucum`,
+    text: "Ben %86 Bree Van de Kamp çıktım. Sen de AQRY testini çöz.",
+    url: window.location.href,
+  };
 
+  if (navigator.share) {
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      window.alert("Sonuç bağlantısı kopyalandı.");
+      await navigator.share(shareData);
+      return;
     } catch {
-      window.alert("Bağlantı kopyalanamadı.");
+      return;
     }
   }
 
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    window.alert("Sonuç bağlantısı kopyalandı.");
+  } catch {
+    window.alert("Bağlantı kopyalanamadı.");
+  }
+}
   function handlePayment() {
     setIsProcessing(true);
 
