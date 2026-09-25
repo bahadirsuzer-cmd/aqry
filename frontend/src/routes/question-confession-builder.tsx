@@ -144,7 +144,7 @@ function QuestionConfessionBuilderPage() {
       <header className="border-b border-border bg-white">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <div>
-            <p className="text-[9px] font-black uppercase tracking-[0.16em] text-primary">
+            <p className="text-[13px] font-black uppercase tracking-[0.16em] text-primary">
               Ana format
             </p>
             <h1 className="mt-1 text-[22px] font-black tracking-[-0.045em]">
@@ -153,7 +153,7 @@ function QuestionConfessionBuilderPage() {
           </div>
           <Link
             to="/creator-studio"
-            className="rounded-full border border-border bg-white px-4 py-2 text-[10px] font-black text-muted-foreground"
+            className="rounded-full border border-border bg-white px-4 py-2 text-[14px] font-black text-muted-foreground"
           >
             Studio’ya dön
           </Link>
@@ -163,13 +163,13 @@ function QuestionConfessionBuilderPage() {
       <div className="mx-auto grid max-w-[1280px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:py-9">
         <section className="space-y-5">
           <div className="rounded-[28px] border border-border bg-white p-5 shadow-[0_16px_45px_rgba(33,21,53,0.04)] sm:p-7">
-            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-primary">
+            <p className="text-[12px] font-black uppercase tracking-[0.15em] text-primary">
               1 · Giriş
             </p>
             <h2 className="mt-2 text-[25px] font-black tracking-[-0.045em]">
               Takipçine ne söyleyeceksin?
             </h2>
-            <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
+            <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
               Başlık kısa kalsın. İnsan ne yapacağını ilk bakışta anlamalı.
             </p>
 
@@ -192,7 +192,7 @@ function QuestionConfessionBuilderPage() {
           </div>
 
           <div className="rounded-[28px] border border-border bg-white p-5 shadow-[0_16px_45px_rgba(33,21,53,0.04)] sm:p-7">
-            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-primary">
+            <p className="text-[12px] font-black uppercase tracking-[0.15em] text-primary">
               2 · Seçim
             </p>
             <h2 className="mt-2 text-[25px] font-black tracking-[-0.045em]">
@@ -226,7 +226,7 @@ function QuestionConfessionBuilderPage() {
           </div>
 
           <div className="rounded-[28px] border border-border bg-white p-5 sm:p-7">
-            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-primary">
+            <p className="text-[12px] font-black uppercase tracking-[0.15em] text-primary">
               3 · Görünüm
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -239,7 +239,7 @@ function QuestionConfessionBuilderPage() {
                   key={value}
                   type="button"
                   onClick={() => setState((current) => ({ ...current, accent: value }))}
-                  className={`rounded-full px-4 py-2 text-[10px] font-black transition ${
+                  className={`rounded-full px-4 py-2 text-[14px] font-black transition ${
                     state.accent === value
                       ? "bg-black text-white"
                       : "border border-border bg-white text-muted-foreground"
@@ -252,15 +252,15 @@ function QuestionConfessionBuilderPage() {
           </div>
 
           <div className="rounded-[24px] border border-violet-200 bg-violet-50/70 p-5">
-            <p className="text-[11px] font-black text-violet-950">Hazırsa yayınla ve paylaş.</p>
-            <p className="mt-1 text-[10px] leading-5 text-violet-900/65">
+            <p className="text-[13px] font-black text-violet-950">Hazırsa yayınla ve paylaş.</p>
+            <p className="mt-1 text-[14px] leading-5 text-violet-900/65">
               Yayınlandıktan sonra sana paylaşılabilir AQRYO linki verilecek. Takipçilerin linkten anonim soru veya itiraf bırakabilecek.
             </p>
             <button
               type="button"
               disabled={publishing}
               onClick={() => void publishExperience()}
-              className="mt-4 h-11 w-full rounded-full bg-violet-700 px-5 text-[10px] font-black text-white disabled:opacity-50 sm:w-auto"
+              className="mt-4 h-11 w-full rounded-full bg-violet-700 px-5 text-[14px] font-black text-white disabled:opacity-50 sm:w-auto"
             >
               {publishing ? "Yayınlanıyor..." : "Yayınla ve paylaş →"}
             </button>
@@ -268,7 +268,7 @@ function QuestionConfessionBuilderPage() {
         </section>
 
         <aside className="lg:sticky lg:top-[92px] lg:self-start">
-          <p className="mb-3 text-[9px] font-black uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="mb-3 text-[13px] font-black uppercase tracking-[0.16em] text-muted-foreground">
             Canlı önizleme
           </p>
 
@@ -279,15 +279,15 @@ function QuestionConfessionBuilderPage() {
                   Q
                 </div>
                 <div>
-                  <p className="text-[11px] font-black">Anonim kutu</p>
-                  <p className="text-[9px] text-muted-foreground">AQRYO</p>
+                  <p className="text-[13px] font-black">Anonim kutu</p>
+                  <p className="text-[13px] text-muted-foreground">AQRYO</p>
                 </div>
               </div>
 
               <h3 className="mt-6 text-[27px] font-black leading-[0.98] tracking-[-0.055em]">
                 {state.title || "Soru mu İtiraf mı?"}
               </h3>
-              <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
+              <p className="mt-3 text-[13px] leading-5 text-muted-foreground">
                 {state.intro}
               </p>
 
@@ -305,7 +305,7 @@ function QuestionConfessionBuilderPage() {
                   }`}
                 >
                   <span className="text-[19px] font-black">?</span>
-                  <p className="mt-3 text-[11px] font-black">{state.questionLabel}</p>
+                  <p className="mt-3 text-[13px] font-black">{state.questionLabel}</p>
                 </button>
 
                 <button
@@ -321,7 +321,7 @@ function QuestionConfessionBuilderPage() {
                   }`}
                 >
                   <span className="text-[19px]">♡</span>
-                  <p className="mt-3 text-[11px] font-black">{state.confessionLabel}</p>
+                  <p className="mt-3 text-[13px] font-black">{state.confessionLabel}</p>
                 </button>
               </div>
 
@@ -329,13 +329,13 @@ function QuestionConfessionBuilderPage() {
                 rows={5}
                 value={previewText}
                 onChange={(event) => setPreviewText(event.target.value)}
-                className="mt-3 w-full resize-none rounded-[18px] border border-border bg-background px-4 py-4 text-[11px] font-semibold leading-5 outline-none focus:border-primary"
+                className="mt-3 w-full resize-none rounded-[18px] border border-border bg-background px-4 py-4 text-[13px] font-semibold leading-5 outline-none focus:border-primary"
                 placeholder={state.placeholder}
               />
 
               <button
                 type="button"
-                className="mt-3 h-11 w-full rounded-full bg-black text-[10px] font-black text-white"
+                className="mt-3 h-11 w-full rounded-full bg-black text-[14px] font-black text-white"
               >
                 Anonim gönder
               </button>
@@ -354,7 +354,7 @@ function QuestionConfessionBuilderPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="mt-5 block">
-      <span className="text-[10px] font-black">{label}</span>
+      <span className="text-[14px] font-black">{label}</span>
       {children}
     </label>
   );
@@ -371,7 +371,7 @@ function LoadingScreen() {
 }
 
 const inputClass =
-  "mt-2 h-12 w-full rounded-[16px] border border-border bg-background px-4 text-[12px] font-bold outline-none focus:border-primary";
+  "mt-2 h-12 w-full rounded-[16px] border border-border bg-background px-4 text-[14px] font-bold outline-none focus:border-primary";
 
 const textareaClass =
-  "mt-2 w-full resize-none rounded-[16px] border border-border bg-background px-4 py-3 text-[12px] font-semibold leading-6 outline-none focus:border-primary";
+  "mt-2 w-full resize-none rounded-[16px] border border-border bg-background px-4 py-3 text-[14px] font-semibold leading-6 outline-none focus:border-primary";
