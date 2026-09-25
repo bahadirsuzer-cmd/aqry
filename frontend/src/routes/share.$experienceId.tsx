@@ -123,11 +123,11 @@ export const Route = createFileRoute(
         },
         {
           property: "og:image:width",
-          content: "1080",
+          content: "1200",
         },
         {
           property: "og:image:height",
-          content: "1080",
+          content: "628",
         },
         {
           property: "og:image:alt",
