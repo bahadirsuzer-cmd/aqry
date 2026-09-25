@@ -8,7 +8,7 @@ export function CreatorHomeCta({
   isCreator = false,
 }: CreatorHomeCtaProps) {
   return (
-    <section className="mx-auto w-full max-w-[1440px] px-5 pb-12 sm:px-7 lg:px-10">
+    <section id="start-creating" className="mx-auto w-full max-w-[1240px] scroll-mt-24 px-5 pb-12 sm:px-7 lg:px-10">
       <div className="rounded-[28px] border border-primary/10 bg-gradient-to-r from-violet-50 via-fuchsia-50/70 to-purple-50 p-6 sm:p-8">
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.6fr_auto] lg:items-center">
           <div className="flex items-center gap-4">

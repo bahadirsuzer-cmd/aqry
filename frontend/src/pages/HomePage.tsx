@@ -4,7 +4,6 @@ import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { PublicNavigation } from "@/components/home/PublicNavigation";
 import { HomeHero } from "@/components/home/HomeHero";
 import { AiCreditsIntro } from "@/components/home/AiCreditsIntro";
-import { ExampleExperiences } from "@/components/home/ExampleExperiences";
 import { CreatorHomeCta } from "@/components/home/CreatorHomeCta";
 import { HomeFooter } from "@/components/home/HomeFooter";
 import { HomeAnnouncement } from "@/components/home/HomeAnnouncement";
@@ -78,7 +77,6 @@ export function HomePage() {
         />
 
         <AiCreditsIntro />
-        <ExampleExperiences />
         <CreatorHomeCta
           isCreator={isCreator}
         />

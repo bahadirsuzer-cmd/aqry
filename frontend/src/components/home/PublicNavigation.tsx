@@ -4,19 +4,15 @@ import { Link } from "@tanstack/react-router";
 const navItems = [
   {
     label: "Nasıl çalışır?",
-    href: "#how-it-works",
+    href: "/#how-it-works",
   },
   {
-    label: "Örnek deneyimler",
-    href: "#examples",
+    label: "Örneği oyna",
+    href: "/#hero-demo",
   },
   {
-    label: "AI kredileri",
-    href: "#ai-credits",
-  },
-  {
-    label: "Fiyatlandırma",
-    href: "#pricing",
+    label: "İçerik oluştur",
+    href: "/#start-creating",
   },
 ];
 

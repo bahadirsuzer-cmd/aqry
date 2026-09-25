@@ -4,10 +4,10 @@ const groups = [
   {
     title: "Ürün",
     items: [
-      ["Nasıl çalışır?", "#how-it-works"],
-      ["Örnek deneyimler", "#examples"],
-      ["AI kredileri", "#ai-credits"],
-      ["Fiyatlandırma", "#pricing"],
+      ["Nasıl çalışır?", "/#how-it-works"],
+      ["Örneği oyna", "/#hero-demo"],
+      ["İçerik oluştur", "/#start-creating"],
+      ["Fiyatlandırma", "/pricing"],
       ["İnternetten para kazanma", "/internetten-para-kazanma"],
     ],
   },
@@ -87,7 +87,7 @@ export function HomeFooter() {
 
               <div className="mt-3 flex flex-col gap-2.5">
                 {group.items.map(([label, href]) =>
-                  href.startsWith("/") ? (
+                  href.startsWith("/") && !href.includes("#") ? (
                     <Link
                       key={href}
                       to={href}

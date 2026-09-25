@@ -1314,16 +1314,16 @@ function CreatorStudioPage() {
 
                   <p className="mt-2 max-w-[760px] text-[14px] font-medium leading-6 text-muted-foreground">
                     {creationMode === "ai"
-                      ? "Tek cümleyle başlayabilirsin. Konuyu, tonu veya hedeflediğin etkileşimi söylemen yeterli."
+                      ? "Bir cümleyle test veya uyumluluk fikrini anlat. Oluşan taslağı yayınlamadan önce düzenleyebilirsin."
                       : "Notunu, taslağını, hikâyeni veya hazır içeriğini yapıştır. Yapıyı AQRYO oluştursun."}
                   </p>
 
                   {creationMode === "ai" ? (
                     <div className="mt-5 flex flex-wrap gap-2" aria-label="Hazır fikirler">
                       {[
-                        ["Kişilik testi", "İnsanların ilk izlenimde beni neden yanlış anladığını gösteren iki dakikalık eğlenceli bir kişilik testi oluştur."],
-                        ["Mini bulmaca", "Arkadaşlarla paylaşılabilecek kısa ve eğlenceli bir görsel ipucu bulmacası oluştur."],
-                        ["Ürün önerisi", "İnsanların tercihlerine göre onlara en uygun ürünü öneren kısa bir etkileşimli deneyim oluştur."],
+                        ["Kişilik testi", "Karakter profilleri olan, insanların ilk izlenimde neden yanlış anlaşıldığını gösteren eğlenceli bir kişilik testi oluştur."],
+                        ["Bilgi testi", "Arkadaşlarla paylaşılabilecek, dört cevaplı kısa ve eğlenceli bir bilgi testi oluştur. Sonunda ücretsiz tam sonuç göster."],
+                        ["Uyumluluk testi", "İki kişinin cevaplarını karşılaştıran kısa bir uyumluluk testi oluştur. Sonuçta güçlü ve farklı yönlerini açıkla."],
                       ].map(([label, prompt]) => (
                         <button key={label} type="button" onClick={() => setAiInput(prompt)} className="rounded-full border border-primary/15 bg-white px-4 py-2 text-[13px] font-bold text-primary transition hover:border-primary hover:bg-primary/5">
                           ✦ {label}
@@ -1344,7 +1344,7 @@ function CreatorStudioPage() {
                       }
                       placeholder={
                         creationMode === "ai"
-                          ? "Örn. İnsanların ilk izlenimde beni neden yanlış anladığını gösteren eğlenceli bir kişilik testi oluştur..."
+                          ? "Örn. Takipçilerimin nasıl karar verdiğini gösteren kısa bir kişilik testi oluştur..."
                           : "Hazır metnini buraya yapıştır..."
                       }
                       className="w-full resize-none bg-transparent px-2 py-2 text-[15px] font-semibold leading-7 outline-none placeholder:font-medium placeholder:text-muted-foreground/70"
@@ -1409,7 +1409,7 @@ function CreatorStudioPage() {
                     </p>
 
                     <p className="mt-2 text-[13px] font-medium leading-6 text-muted-foreground">
-                      AQRYO yapıyı seçer, içeriği hazırlar ve seni düzenleme ekranına götürür.
+                      Taslağını aç, soruları ve ücretsiz sonucu düzenle. İstersen sonuca ayrı bir ek teklif bağla.
                     </p>
                   </div>
                 </div>

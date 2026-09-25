@@ -233,6 +233,7 @@ type ExperienceScreen =
   | "guess"
   | "story"
   | "result"
+  | "completion"
   | "gift"
   | "offer";
 
@@ -1037,12 +1038,7 @@ useEffect(() => {
             <StoryResultScreen
               experience={experience}
               onRestart={restartExperience}
-              onOffer={() =>
-                setScreen("offer")
-              }
-              onGift={() =>
-                setScreen("gift")
-              }
+              onComplete={() => setScreen("completion")}
             />
           ) : screen === "result" &&
           experience.type === "guess" &&
@@ -1050,12 +1046,7 @@ useEffect(() => {
             <GuessResultScreen
               experience={experience}
               onRestart={restartExperience}
-              onOffer={() =>
-                setScreen("offer")
-              }
-              onGift={() =>
-                setScreen("gift")
-              }
+              onComplete={() => setScreen("completion")}
             />
           ) : screen === "result" ? (
             <ResultScreen
@@ -1068,10 +1059,7 @@ useEffect(() => {
     experience.blueprint?.test
       ?.strategy ?? null
   }
-  offerEnabled={experience.offer.enabled}
-  offerTitle={experience.offer.title}
-  onOffer={() => setScreen("offer")}
-  onGift={() => setScreen("gift")}
+  onComplete={() => setScreen("completion")}
   onRestart={restartExperience}
 />
           ) : null}
@@ -1081,6 +1069,15 @@ useEffect(() => {
               experienceId={experience.id}
             />
           ) : null}
+
+          {screen === "completion" && (
+            <CompletionScreen
+              experience={experience}
+              onOffer={() => setScreen("offer")}
+              onGift={() => setScreen("gift")}
+              onBack={() => setScreen("result")}
+            />
+          )}
 
           {screen === "gift" && (
             <GiftScreen
@@ -1111,7 +1108,7 @@ useEffect(() => {
     setPaymentOrderId(orderId);
     setPaymentResult("paid");
   }}
-  onBack={() => setScreen("result")}
+  onBack={() => setScreen("completion")}
 />
           )}
 
@@ -1775,13 +1772,11 @@ function StoryContentScreen({
 function StoryResultScreen({
   experience,
   onRestart,
-  onOffer,
-  onGift,
+  onComplete,
 }: {
   experience: PublishedExperience;
   onRestart: () => void;
-  onOffer: () => void;
-  onGift: () => void;
+  onComplete: () => void;
 }) {
   const story =
     experience.story;
@@ -1810,23 +1805,11 @@ function StoryResultScreen({
 
       <button
         type="button"
-        onClick={onGift}
-        className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-[10px] font-black text-white"
+        onClick={onComplete}
+        className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-primary text-[14px] font-black text-white"
       >
-        Creator’a hediye gönder 🎁
+        Tamamla →
       </button>
-
-      {experience.offer.enabled ? (
-        <button
-          type="button"
-          onClick={onOffer}
-          className="mt-2.5 flex h-12 w-full items-center justify-center rounded-full bg-black text-[10px] font-black text-white transition hover:bg-primary"
-        >
-          {experience.offer.title ||
-            "Devamını gör"}{" "}
-          →
-        </button>
-      ) : null}
 
       <button
         type="button"
@@ -1951,13 +1934,11 @@ function GuessAnswerScreen({
 function GuessResultScreen({
   experience,
   onRestart,
-  onOffer,
-  onGift,
+  onComplete,
 }: {
   experience: PublishedExperience;
   onRestart: () => void;
-  onOffer: () => void;
-  onGift: () => void;
+  onComplete: () => void;
 }) {
   const guess =
     experience.guess;
@@ -1986,23 +1967,11 @@ function GuessResultScreen({
 
       <button
         type="button"
-        onClick={onGift}
-        className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-[10px] font-black text-white"
+        onClick={onComplete}
+        className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-primary text-[14px] font-black text-white"
       >
-        Creator’a hediye gönder 🎁
+        Tamamla →
       </button>
-
-      {experience.offer.enabled ? (
-        <button
-          type="button"
-          onClick={onOffer}
-          className="mt-2.5 flex h-12 w-full items-center justify-center rounded-full bg-black text-[10px] font-black text-white transition hover:bg-primary"
-        >
-          {experience.offer.title ||
-            "Devamını gör"}{" "}
-          →
-        </button>
-      ) : null}
 
       <button
         type="button"
@@ -2225,6 +2194,35 @@ function calculateBlueprintTestOutcome(
   };
 }
 
+function CompletionScreen({
+  experience,
+  onOffer,
+  onGift,
+  onBack,
+}: {
+  experience: PublishedExperience;
+  onOffer: () => void;
+  onGift: () => void;
+  onBack: () => void;
+}) {
+  return (
+    <section className="rounded-[30px] border border-border bg-white p-7 text-center shadow-[0_24px_70px_rgba(35,16,55,0.12)] sm:p-9">
+      <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-3xl text-emerald-700" aria-hidden="true">✓</span>
+      <p className="mt-5 text-xs font-black uppercase tracking-[0.14em] text-emerald-700">Deneyim tamamlandı</p>
+      <h2 className="mt-3 text-[30px] font-black tracking-[-0.05em]">Sonucun senin.</h2>
+      <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">Ücretsiz sonucunu eksiksiz gördün. Dilersen creator’ın sunduğu ek içeriğe göz atabilirsin.</p>
+      {experience.offer.enabled ? (
+        <button type="button" onClick={onOffer} className="mt-8 flex min-h-14 w-full items-center justify-between rounded-2xl bg-[#26183c] px-5 text-left text-sm font-bold text-white transition hover:bg-primary">
+          <span>{experience.offer.title || "Ek içeriği gör"}<span className="mt-1 block text-xs font-medium text-white/70">İsteğe bağlı teklif · Sonucun ücretsiz kaldı</span></span>
+          <span aria-hidden="true">↗</span>
+        </button>
+      ) : null}
+      <button type="button" onClick={onGift} className="mt-3 flex min-h-12 w-full items-center justify-center rounded-full border border-primary/20 text-sm font-bold text-primary">Creator’a hediye gönder 🎁</button>
+      <button type="button" onClick={onBack} className="mt-5 text-sm font-semibold text-muted-foreground underline underline-offset-4">Ücretsiz sonucuma dön</button>
+    </section>
+  );
+}
+
 function ResultScreen({
   score,
   result,
@@ -2232,10 +2230,7 @@ function ResultScreen({
   experienceType,
   testMode,
   testStrategy,
-  offerEnabled,
-  offerTitle,
-  onOffer,
-  onGift,
+  onComplete,
   onRestart,
 }: {
   score: number;
@@ -2248,10 +2243,7 @@ function ResultScreen({
     | "spectrum"
     | "archetype"
     | null;
-  offerEnabled: boolean;
-  offerTitle: string;
-  onOffer: () => void;
-  onGift: () => void;
+  onComplete: () => void;
   onRestart: () => void;
 }) {
   const isArchetypeTest =
@@ -2413,21 +2405,11 @@ function ResultScreen({
 
         <button
           type="button"
-          onClick={onGift}
-          className="mx-auto mt-5 flex h-12 w-[92%] items-center justify-center rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 px-5 text-center text-[14px] font-black text-white shadow-[0_12px_28px_rgba(124,58,237,0.22)] transition hover:opacity-95"
+          onClick={onComplete}
+          className="mx-auto mt-5 flex h-12 w-[92%] items-center justify-center rounded-full bg-primary px-5 text-center text-[14px] font-black text-white transition hover:bg-primary/90"
         >
-          Creator’a hediye gönder 🎁
+          Sonucumu tamamla →
         </button>
-
-        {offerEnabled && (
-          <button
-            type="button"
-            onClick={onOffer}
-            className="mx-auto mt-2.5 flex h-11 w-[92%] items-center justify-center rounded-full bg-black px-5 text-center text-[14px] font-bold text-white transition hover:bg-primary"
-          >
-            {offerTitle || "Ekstra içeriği gör"} →
-          </button>
-        )}
 
         <button
           type="button"
