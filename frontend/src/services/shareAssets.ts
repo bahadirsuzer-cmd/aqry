@@ -125,5 +125,5 @@ export function getPublicShareUrl(
 ) {
   return `https://www.aqryo.com/share/${encodeURIComponent(
     experienceId,
-  )}`;
+  )}?card=v2`;
 }
