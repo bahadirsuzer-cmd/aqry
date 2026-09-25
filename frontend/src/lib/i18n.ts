@@ -21,6 +21,7 @@ export const AQRYO_LANGUAGES = [
 export type AqryoLocale = (typeof AQRYO_LANGUAGES)[number][0];
 
 const STORAGE_KEY = "aqryo-locale";
+const STORAGE_SOURCE_KEY = "aqryo-locale-source";
 
 const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
   tr: {
@@ -219,11 +220,38 @@ function normalizeLocale(input?: string | null): AqryoLocale {
     : "en";
 }
 
+function detectDeviceLocale(): AqryoLocale {
+  if (typeof window === "undefined") return "tr";
+
+  const candidates = [
+    ...(window.navigator.languages ?? []),
+    window.navigator.language,
+  ].filter(Boolean);
+
+  for (const candidate of candidates) {
+    const normalized = normalizeLocale(candidate);
+    if (AQRYO_LANGUAGES.some(([code]) => code === normalized)) {
+      return normalized;
+    }
+  }
+
+  return "en";
+}
+
 export function detectLocale(): AqryoLocale {
   if (typeof window === "undefined") return "tr";
+
+  const source = window.localStorage.getItem(STORAGE_SOURCE_KEY);
   const stored = window.localStorage.getItem(STORAGE_KEY);
-  if (stored) return normalizeLocale(stored);
-  return normalizeLocale(window.navigator.language || window.navigator.languages?.[0]);
+
+  if (source === "manual" && stored) {
+    return normalizeLocale(stored);
+  }
+
+  const deviceLocale = detectDeviceLocale();
+  window.localStorage.setItem(STORAGE_KEY, deviceLocale);
+  window.localStorage.setItem(STORAGE_SOURCE_KEY, "auto");
+  return deviceLocale;
 }
 
 export function translate(locale: AqryoLocale, key: string) {
@@ -242,6 +270,7 @@ export function useAqryoLocale() {
 
   function setLocale(next: AqryoLocale) {
     window.localStorage.setItem(STORAGE_KEY, next);
+    window.localStorage.setItem(STORAGE_SOURCE_KEY, "manual");
     setLocaleState(next);
     window.dispatchEvent(new CustomEvent("aqryo:locale", { detail: next }));
   }
@@ -251,8 +280,26 @@ export function useAqryoLocale() {
       const detail = (event as CustomEvent<string>).detail;
       setLocaleState(normalizeLocale(detail));
     };
+
+    const handleDeviceLanguageChange = () => {
+      if (window.localStorage.getItem(STORAGE_SOURCE_KEY) === "manual") {
+        return;
+      }
+
+      const next = detectDeviceLocale();
+      window.localStorage.setItem(STORAGE_KEY, next);
+      window.localStorage.setItem(STORAGE_SOURCE_KEY, "auto");
+      setLocaleState(next);
+      window.dispatchEvent(new CustomEvent("aqryo:locale", { detail: next }));
+    };
+
     window.addEventListener("aqryo:locale", handler);
-    return () => window.removeEventListener("aqryo:locale", handler);
+    window.addEventListener("languagechange", handleDeviceLanguageChange);
+
+    return () => {
+      window.removeEventListener("aqryo:locale", handler);
+      window.removeEventListener("languagechange", handleDeviceLanguageChange);
+    };
   }, []);
 
   return {
