@@ -38,7 +38,7 @@ const COPY: Record<AqryoLocale, PuzzleCopy> = {
   tr: {
     descriptions: {
       math: "İşlem önceliği, parantez, yüzde ve üs tuzakları",
-      geometry: "Açı, paralel, ters açı ve çokgen soruları",
+      geometry: "Kontrollü şablonlardan üretilen çok adımlı açı problemleri",
       count: "Kare, dikdörtgen, çizgi ve üçgen sayma",
       algebra: "Lineer denklem, oran, sistem ve ardışık sayılar",
       area: "Alan, çevre, Pisagor ve bileşik şekiller",
@@ -574,10 +574,10 @@ function PuzzleBuilderPage() {
   const { locale, t } = useAqryoLocale();
   const copy = COPY[locale] ?? COPY.en;
   const [loading,setLoading]=useState(true);
-  const [kind,setKind]=useState<PuzzleKind>("math");
+  const [kind,setKind]=useState<PuzzleKind>("geometry");
   const [presentation,setPresentation]=useState<Presentation>("clean");
   const [recent,setRecent]=useState<string[]>([]);
-  const [puzzle,setPuzzle]=useState<Puzzle>(()=>makeMath());
+  const [puzzle,setPuzzle]=useState<Puzzle>(()=>makeGeometry([]));
   const [socialText,setSocialText]=useState("");
   const [copied,setCopied]=useState(false);
   const [sharing,setSharing]=useState(false);
@@ -669,11 +669,7 @@ function PuzzleBuilderPage() {
   if(loading) return <LoadingScreen/>;
 
   const kinds:Array<[PuzzleKind,string,string]> = [
-    ["math",t("math"),copy.descriptions.math],
     ["geometry",t("geometry"),copy.descriptions.geometry],
-    ["count",t("count"),copy.descriptions.count],
-    ["algebra",t("algebra"),copy.descriptions.algebra],
-    ["area",t("area"),copy.descriptions.area],
   ];
 
   return (
@@ -696,11 +692,14 @@ function PuzzleBuilderPage() {
             <p className="text-[11px] font-black uppercase tracking-[0.15em] text-violet-600">1 · {t("questionType")}</p>
             <h2 className="mt-3 text-[31px] font-black leading-tight tracking-[-0.055em]">{t("viralInFive")}</h2>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <div className="mt-6 grid gap-3">
               {kinds.map(([value,title,description])=>(
                 <PuzzleTypeButton key={value} active={kind===value} title={title} description={description} onClick={()=>chooseKind(value)}/>
               ))}
             </div>
+            <p className="mt-3 text-[12px] font-semibold leading-5 text-muted-foreground">
+              Diğer puzzle türleri kalite bankası tamamlanana kadar gizlendi.
+            </p>
 
             <p className="mt-6 text-[12px] font-black">{t("presentation")}</p>
             <div className="mt-2 grid grid-cols-2 gap-3">
