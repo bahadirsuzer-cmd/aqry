@@ -109,8 +109,15 @@ const MASTERS: Master[] = [
       const a=+v.a,b=+v.b,c=+v.c;
       const row1=a*3;
       const row2=a+b*2;
-      const row3=b-c;
-      return {answer:String(row3),commonWrong:String(b+c),titleKey:"symbolPuzzle",subtitleKey:"sameSymbols",data:{a,b,c,row1,row2}};
+      const row3=b+c*2;
+      const answer=b-c;
+      return {
+        answer:String(answer),
+        commonWrong:String(b+c),
+        titleKey:"symbolPuzzle",
+        subtitleKey:"sameSymbols",
+        data:{a,b,c,row1,row2,row3}
+      };
     }
   },
   {
