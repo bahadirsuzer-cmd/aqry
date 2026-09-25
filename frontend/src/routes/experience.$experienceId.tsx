@@ -4191,11 +4191,11 @@ function QuestionConfessionPublicExperience({
     <div className={`min-h-screen bg-gradient-to-br ${accent} px-4 py-8 text-foreground sm:py-14`}>
       <div className="mx-auto max-w-[520px]">
         <div className="mb-4 flex items-center justify-center">
-          <img src="/aqryo-logo.png" alt="AQRYO" className="h-9 w-auto brightness-0 invert" />
+          <img src="/aqryo-logo.png" alt="AQRYO" className="h-12 w-auto brightness-0 invert" />
         </div>
 
         {experience.creator ? (
-          <div className="mb-3 text-center text-[11px] font-bold text-white/80">
+          <div className="mb-4 text-center text-[14px] font-bold text-white/85">
             {experience.creator.username
               ? `@${experience.creator.username}`
               : experience.creator.displayName}
@@ -4203,23 +4203,34 @@ function QuestionConfessionPublicExperience({
         ) : null}
 
         <div className="rounded-[30px] bg-white p-5 shadow-[0_30px_90px_rgba(0,0,0,0.22)] sm:p-6">
-          <h1 className="text-[32px] font-black leading-[0.98] tracking-[-0.06em]">
+          <h1 className="text-[38px] font-black leading-[0.98] tracking-[-0.06em]">
             {experience.title}
           </h1>
-          <p className="mt-3 text-[12px] leading-6 text-muted-foreground">
+          <p className="mt-4 text-[16px] leading-7 text-muted-foreground">
             {config.intro}
           </p>
 
           {sent ? (
             <div className="mt-6 rounded-[22px] bg-emerald-50 p-5 text-center">
-              <p className="text-[18px] font-black text-emerald-800">Gönderildi ✓</p>
-              <p className="mt-2 text-[10px] leading-5 text-emerald-800/70">
+              <p className="text-[24px] font-black text-emerald-800">Gönderildi ✓</p>
+              <p className="mt-3 text-[14px] leading-6 text-emerald-800/75">
                 Kimliğin creator ile paylaşılmadı.
               </p>
+
+              <a
+                href="/creator-auth"
+                className="mt-5 flex h-12 w-full items-center justify-center rounded-full bg-black px-5 text-[13px] font-black text-white"
+              >
+                Sen de soru sor →
+              </a>
+              <p className="mt-2 text-[11px] font-semibold text-emerald-900/60">
+                Kendi Soru mu İtiraf mı linkini oluştur.
+              </p>
+
               <button
                 type="button"
                 onClick={() => setSent(false)}
-                className="mt-4 rounded-full bg-white px-4 py-2 text-[10px] font-black text-emerald-800"
+                className="mt-4 rounded-full bg-white px-5 py-3 text-[12px] font-black text-emerald-800"
               >
                 Bir tane daha bırak
               </button>
@@ -4236,8 +4247,8 @@ function QuestionConfessionPublicExperience({
                       : "bg-violet-50 text-violet-950"
                   }`}
                 >
-                  <span className="text-[22px] font-black">?</span>
-                  <p className="mt-3 text-[12px] font-black">{config.questionLabel}</p>
+                  <span className="text-[28px] font-black">?</span>
+                  <p className="mt-3 text-[15px] font-black">{config.questionLabel}</p>
                 </button>
                 <button
                   type="button"
@@ -4248,7 +4259,7 @@ function QuestionConfessionPublicExperience({
                       : "bg-rose-50 text-rose-950"
                   }`}
                 >
-                  <span className="text-[22px]">♡</span>
+                  <span className="text-[28px]">♡</span>
                   <p className="mt-3 text-[12px] font-black">{config.confessionLabel}</p>
                 </button>
               </div>
@@ -4259,10 +4270,10 @@ function QuestionConfessionPublicExperience({
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
                 placeholder={config.placeholder}
-                className="mt-3 w-full resize-none rounded-[20px] border border-border bg-background px-4 py-4 text-[13px] font-semibold leading-6 outline-none focus:border-primary"
+                className="mt-4 w-full resize-none rounded-[20px] border border-border bg-background px-5 py-5 text-[16px] font-semibold leading-7 outline-none focus:border-primary"
               />
 
-              <div className="mt-2 flex justify-between text-[9px] font-bold text-muted-foreground">
+              <div className="mt-2 flex justify-between text-[11px] font-bold text-muted-foreground">
                 <span>Anonim gönderim</span>
                 <span>{message.length}/500</span>
               </div>
@@ -4271,14 +4282,14 @@ function QuestionConfessionPublicExperience({
                 type="button"
                 disabled={!message.trim() || sending}
                 onClick={() => void submit()}
-                className="mt-4 h-12 w-full rounded-full bg-black text-[11px] font-black text-white disabled:opacity-35"
+                className="mt-4 h-13 w-full rounded-full bg-black text-[14px] font-black text-white disabled:opacity-35"
               >
                 {sending ? "Gönderiliyor..." : "Anonim gönder →"}
               </button>
             </>
           )}
 
-          <p className="mt-4 text-center text-[8px] font-bold text-muted-foreground">
+          <p className="mt-5 text-center text-[11px] font-bold text-muted-foreground">
             AQRYO · Kimliğin mesajla birlikte gönderilmez.
           </p>
         </div>
