@@ -16,6 +16,7 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
     typeof Notification === "undefined" ? "denied" : Notification.permission,
   );
   const lastUnreadRef = useRef(0);
+  const initializedInboxRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -31,6 +32,7 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
         const unreadItems = getUnreadAnonymousItems(items);
 
         if (
+          initializedInboxRef.current &&
           typeof Notification !== "undefined" &&
           Notification.permission === "granted" &&
           unread > lastUnreadRef.current &&
@@ -47,6 +49,7 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
         }
 
         lastUnreadRef.current = unread;
+        initializedInboxRef.current = true;
         if (!cancelled) setUnreadCount(unread);
       } catch (error) {
         console.error("AQRYO inbox badge yüklenemedi:", error);
@@ -162,9 +165,24 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
                   }`}
                 >
                   {item.label}
+                  {item.badge > 0 ? (
+                    <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px] font-black text-white">
+                      {item.badge > 9 ? "9+" : item.badge}
+                    </span>
+                  ) : null}
                 </Link>
               );
             })}
+
+            {notificationPermission === "default" ? (
+              <button
+                type="button"
+                onClick={() => void enableNotifications()}
+                className="flex h-11 shrink-0 items-center justify-center rounded-full border border-violet-200 bg-violet-50 px-4 text-[12px] font-black text-violet-700"
+              >
+                🔔
+              </button>
+            ) : null}
 
             <select
               aria-label={t("language")}
