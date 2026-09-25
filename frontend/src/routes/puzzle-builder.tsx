@@ -291,14 +291,26 @@ function templateText(locale:AqryoLocale,key:string,fallback:string){
 
 function ctaFor(locale: AqryoLocale, puzzle: Puzzle) {
   const copy = COPY[locale] ?? COPY.en;
-  const variants: Record<PuzzleKind, string[]> = {
-    math: [copy.subtitles.math, copy.titles.math, `${copy.titles.math} 👇`],
-    geometry: [copy.subtitles.geometry, copy.titles.geometry, `${copy.titles.geometry} 👇`],
-    count: [copy.subtitles.count, copy.titles.count, `${copy.titles.count} 👀`],
-    algebra: [copy.subtitles.algebra, copy.titles.algebra, `${copy.titles.algebra} 👇`],
-    area: [copy.subtitles.area, copy.titles.area, `${copy.titles.area} 👇`],
-  };
-  return pick(variants[puzzle.kind]);
+
+  if (puzzle.kind !== "geometry") {
+    const title = templateText(
+      locale,
+      String(puzzle.data.titleKey ?? ""),
+      copy.titles[puzzle.kind],
+    );
+    const subtitle = templateText(
+      locale,
+      String(puzzle.data.subtitleKey ?? ""),
+      copy.subtitles[puzzle.kind],
+    );
+    return pick([`${title} 👇`, subtitle, `${title} · cevabını yaz 👀`]);
+  }
+
+  return pick([
+    copy.subtitles.geometry,
+    copy.titles.geometry,
+    `${copy.titles.geometry} 👇`,
+  ]);
 }
 
 function PuzzleBuilderPage() {
