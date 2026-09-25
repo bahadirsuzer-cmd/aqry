@@ -747,7 +747,7 @@ return (
 
     {sourceExperienceId && (
       <div className="border-b border-amber-200 bg-amber-50">
-        <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-4 py-2.5 text-[9px] sm:px-7">
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-4 py-2.5 text-[11px] sm:px-7">
           <p className="font-bold text-amber-900">
             Yayındaki Experience değişmeyecek. Bu düzenlemeler yeni bir sürüm olarak yayınlanacak.
           </p>
@@ -790,7 +790,7 @@ return (
         </nav>
 
         <div className="mt-5 hidden rounded-[18px] border border-border bg-white p-4 lg:block">
-          <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-primary">
+          <p className="text-[11px] font-black uppercase tracking-[0.15em] text-primary">
             İlerleme
           </p>
           <div className="mt-3 space-y-2">
@@ -853,7 +853,7 @@ return (
             description={description}
             questions={questions}
             creatorAnswers={creatorAnswers}
-            offerEnabled={offerEnabled}
+            offerEnabled={false}
             offerTitle={offerTitle}
             offerDescription={offerDescription}
             offerPrice={offerPrice}
@@ -877,7 +877,7 @@ return (
 
         {activePanel === "preview" && (
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5">
-            <button type="button" onClick={goBack} className="h-11 rounded-full border border-border bg-white px-5 text-[10px] font-bold">
+            <button type="button" onClick={goBack} className="h-11 rounded-full border border-border bg-white px-5 text-[13px] font-extrabold">
               ← Geri
             </button>
             <button
@@ -936,7 +936,7 @@ function BuilderTab({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`flex min-w-0 items-center justify-center gap-2 rounded-[13px] px-2 py-2.5 text-[9px] font-bold transition lg:justify-start lg:px-3 ${
+      className={`flex min-w-0 items-center justify-center gap-2 rounded-[13px] px-2 py-2.5 text-[11px] font-bold transition lg:justify-start lg:px-3 ${
         active
           ? "bg-primary text-white shadow-[0_8px_20px_rgba(124,58,237,0.16)]"
           : disabled
@@ -975,7 +975,7 @@ function StatusRow({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-2 text-[9px]">
+    <div className="flex items-center gap-2 text-[11px]">
       <span
         className={`flex h-4 w-4 items-center justify-center rounded-full text-[7px] font-black ${
           completed
@@ -1010,11 +1010,11 @@ function SectionHeader({
 }) {
   return (
     <div>
-      <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-primary">
+      <p className="text-[11px] font-black uppercase tracking-[0.16em] text-primary">
         {eyebrow}
       </p>
 
-      <h1 className="mt-1.5 text-[27px] font-black leading-none tracking-[-0.05em]">
+      <h1 className="mt-1.5 text-[31px] font-black leading-none tracking-[-0.05em]">
         {title}
       </h1>
 
@@ -1081,18 +1081,13 @@ function ContentEditor({
             <div>
               <p className="text-sm font-black">Kapak</p>
 
-              <p className="mt-1 text-[10px] leading-4 text-muted-foreground">
-                Katılımcının AQRY’ye girdiğinde ilk göreceği
+              <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
+                Katılımcının AQRYO’ya girdiğinde ilk göreceği
                 görsel alanı düzenle.
               </p>
             </div>
 
-            <button
-              type="button"
-              className="shrink-0 rounded-full border border-primary/20 bg-primary/[0.06] px-3 py-1.5 text-[8px] font-bold text-primary"
-            >
-              ✦ AI ile kapak üret
-            </button>
+            
           </div>
 
           <div className="mt-5 grid gap-5 xl:grid-cols-[230px_minmax(0,1fr)]">
@@ -1128,7 +1123,7 @@ function ContentEditor({
                   <span className="text-3xl">♥</span>
 
                   <p className="mt-2 text-xs font-black">
-                    {title || "AQRY başlığı"}
+                    {title || "Aşk Metre"}
                   </p>
                 </div>
               </div>
@@ -1136,7 +1131,7 @@ function ContentEditor({
 
             <div className="grid gap-4">
               <div>
-                <p className="text-[10px] font-bold">
+                <p className="text-[13px] font-extrabold">
                   Kapak stili
                 </p>
 
@@ -1175,7 +1170,7 @@ function ContentEditor({
                       onClick={() =>
                         setCoverStyle(style.id)
                       }
-                      className={`flex items-center gap-2 rounded-full border px-3 py-2 text-[9px] font-bold transition ${
+                      className={`flex items-center gap-2 rounded-full border px-3 py-2 text-[11px] font-bold transition ${
                         coverStyle === style.id
                           ? "border-primary bg-primary/[0.04] text-primary"
                           : "border-border text-muted-foreground"
@@ -1192,7 +1187,7 @@ function ContentEditor({
               </div>
 
               <label>
-                <span className="text-[10px] font-bold">
+                <span className="text-[13px] font-extrabold">
                   Kapak etiketi
                 </span>
 
@@ -1203,7 +1198,7 @@ function ContentEditor({
                   onChange={(event) =>
                     setCoverLabel(event.target.value)
                   }
-                  className="mt-2 h-10 w-full rounded-[14px] border border-border bg-background px-4 text-[10px] font-bold outline-none focus:border-primary"
+                  className="mt-2 h-10 w-full rounded-[14px] border border-border bg-background px-4 text-[13px] font-extrabold outline-none focus:border-primary"
                 />
               </label>
 
@@ -1245,7 +1240,7 @@ function ContentEditor({
 
           <div className="mt-5 grid gap-4">
             <label>
-              <span className="text-[10px] font-bold">
+              <span className="text-[13px] font-extrabold">
                 Başlık
               </span>
 
@@ -1262,7 +1257,7 @@ function ContentEditor({
             </label>
 
             <label>
-              <span className="text-[10px] font-bold">
+              <span className="text-[13px] font-extrabold">
                 Açıklama
               </span>
 
@@ -1285,7 +1280,7 @@ function ContentEditor({
             <div>
               <p className="text-sm font-black">Sorular</p>
 
-              <p className="mt-1 text-[10px] leading-4 text-muted-foreground">
+              <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
                 Katılımcılar ve creator aynı alanları
                 cevaplayacak.
               </p>
@@ -1294,7 +1289,7 @@ function ContentEditor({
             <button
               type="button"
               onClick={addQuestion}
-              className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-black px-4 text-[9px] font-bold text-white transition hover:bg-primary"
+              className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-black px-4 text-[11px] font-bold text-white transition hover:bg-primary"
             >
               + Soru ekle
             </button>
@@ -1308,7 +1303,7 @@ function ContentEditor({
                 className="rounded-[18px] border border-border bg-background p-4"
               >
                 <div className="flex items-start gap-3">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-[9px] font-black text-white">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-black text-white">
                     {questionIndex + 1}
                   </span>
 
@@ -1381,7 +1376,7 @@ function ContentEditor({
           <button
             type="button"
             onClick={addQuestion}
-            className="mt-4 flex h-10 w-full items-center justify-center rounded-[14px] border border-dashed border-primary/30 bg-primary/[0.025] text-[9px] font-bold text-primary"
+            className="mt-4 flex h-10 w-full items-center justify-center rounded-[14px] border border-dashed border-primary/30 bg-primary/[0.025] text-[11px] font-bold text-primary"
           >
             + Yeni soru ekle
           </button>
@@ -1429,7 +1424,7 @@ function CreatorAnswersEditor({
               Karşılaştırma profilin
             </p>
 
-            <p className="mt-1 text-[9px] text-muted-foreground">
+            <p className="mt-1 text-[11px] text-muted-foreground">
               {answersLocked
                 ? "Cevapların kilitlendi ve karşılaştırmaya hazır."
                 : allAnswersSelected
@@ -1438,7 +1433,7 @@ function CreatorAnswersEditor({
             </p>
           </div>
 
-          <span className="rounded-full bg-white px-3 py-1 text-[9px] font-black text-primary shadow-sm">
+          <span className="rounded-full bg-white px-3 py-1 text-[11px] font-black text-primary shadow-sm">
             {answeredCount}/{questions.length}
           </span>
         </div>
@@ -1460,7 +1455,7 @@ function CreatorAnswersEditor({
             >
               <div className="flex items-start gap-3">
                 <span
-                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[9px] font-black ${
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-black ${
                     selectedOption !== undefined
                       ? "bg-primary text-white"
                       : "bg-muted text-muted-foreground"
@@ -1491,7 +1486,7 @@ function CreatorAnswersEditor({
                             optionIndex,
                           )
                         }
-                        className={`rounded-[13px] border px-3 py-2.5 text-left text-[10px] font-bold transition ${
+                        className={`rounded-[13px] border px-3 py-2.5 text-left text-[13px] font-extrabold transition ${
                           isSelected
                             ? "border-primary bg-primary text-white"
                             : "border-border bg-white text-muted-foreground"
@@ -1523,7 +1518,7 @@ function CreatorAnswersEditor({
                   : `${answeredCount}/${questions.length} cevap tamamlandı`}
             </p>
 
-            <p className="mt-1 text-[9px] text-muted-foreground">
+            <p className="mt-1 text-[11px] text-muted-foreground">
               {answersLocked
                 ? "Yayınlamadan önce istersen kilidi açıp cevaplarını değiştirebilirsin."
                 : allAnswersSelected
@@ -1536,7 +1531,7 @@ function CreatorAnswersEditor({
             <button
               type="button"
               onClick={unlockCreatorAnswers}
-              className="inline-flex h-10 shrink-0 items-center justify-center rounded-full border border-border bg-white px-5 text-[9px] font-bold text-foreground transition hover:border-primary hover:text-primary"
+              className="inline-flex h-10 shrink-0 items-center justify-center rounded-full border border-border bg-white px-5 text-[11px] font-bold text-foreground transition hover:border-primary hover:text-primary"
             >
               Kilidi aç
             </button>
@@ -1545,7 +1540,7 @@ function CreatorAnswersEditor({
               type="button"
               disabled={!allAnswersSelected}
               onClick={lockCreatorAnswers}
-              className="inline-flex h-10 shrink-0 items-center justify-center rounded-full bg-black px-6 text-[9px] font-bold text-white transition enabled:hover:bg-primary disabled:cursor-not-allowed disabled:bg-black/15 disabled:text-muted-foreground"
+              className="inline-flex h-10 shrink-0 items-center justify-center rounded-full bg-black px-6 text-[11px] font-bold text-white transition enabled:hover:bg-primary disabled:cursor-not-allowed disabled:bg-black/15 disabled:text-muted-foreground"
             >
               Cevaplarımı kilitle →
             </button>
@@ -1607,7 +1602,7 @@ function ResultEditor({
                 key={result.id}
                 className="rounded-[16px] border border-border bg-background p-4"
               >
-                <p className="text-[9px] font-bold text-primary">
+                <p className="text-[11px] font-bold text-primary">
                   {result.range}
                 </p>
 
@@ -1634,7 +1629,7 @@ function ResultEditor({
                       event.target.value,
                     )
                   }
-                  className="mt-2 w-full resize-none rounded-[12px] border border-border bg-white px-3 py-2 text-[9px] leading-4 outline-none focus:border-primary"
+                  className="mt-2 w-full resize-none rounded-[12px] border border-border bg-white px-3 py-2 text-[11px] leading-4 outline-none focus:border-primary"
                 />
               </article>
             ))}
@@ -1677,7 +1672,7 @@ function OfferEditor({
               Teklif kullan
             </p>
 
-            <p className="mt-1 text-[10px] leading-4 text-muted-foreground">
+            <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
               Kapalı olduğunda AQRY ücretsiz sonuçtan sonra
               tamamlanır.
             </p>
@@ -1709,14 +1704,14 @@ function OfferEditor({
                 Önce ücretsiz sonuç gösterilecek
               </p>
 
-              <p className="mt-1 text-[9px] leading-4 text-emerald-700">
+              <p className="mt-1 text-[11px] leading-4 text-emerald-700">
                 Bu teklif, katılımcı vaat edilen uyum sonucunu
                 aldıktan sonra açılır.
               </p>
             </div>
 
             <label>
-              <span className="text-[10px] font-bold">
+              <span className="text-[13px] font-extrabold">
                 Teklif başlığı
               </span>
 
@@ -1731,7 +1726,7 @@ function OfferEditor({
             </label>
 
             <label>
-              <span className="text-[10px] font-bold">
+              <span className="text-[13px] font-extrabold">
                 Açıklama
               </span>
 
@@ -1751,7 +1746,7 @@ function OfferEditor({
                   <p className="text-[10px] font-black">
                     AQRYO standart Offer fiyatı
                   </p>
-                  <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
+                  <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
                     Fiyat tüm standart Offer’larda otomatik belirlenir.
                   </p>
                 </div>
@@ -1797,7 +1792,7 @@ function OfferEditor({
               Bu AQRY teklif içermeyecek
             </p>
 
-            <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
+            <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
               Katılımcı ücretsiz sonucunu gördüğünde AQRY
               tamamlanacak.
             </p>
@@ -1829,7 +1824,7 @@ function LivePreview({
     <div className="sticky top-[78px]">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-primary">
+          <p className="text-[11px] font-black uppercase tracking-[0.15em] text-primary">
             Canlı ön izleme
           </p>
 
@@ -1880,7 +1875,7 @@ function LivePreview({
               <div>
                 <div className="text-3xl">♥</div>
 
-                <p className="mt-2 text-[10px] font-bold text-white/75">
+                <p className="mt-2 text-[13px] font-extrabold text-white/75">
                   AQRY Originals
                 </p>
               </div>
@@ -1889,7 +1884,7 @@ function LivePreview({
 
           <div className="p-5">
             <h3 className="text-[22px] font-black leading-[0.98] tracking-[-0.05em]">
-              {title || "AQRY başlığı"}
+              {title || "Aşk Metre"}
             </h3>
 
             <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
@@ -1906,7 +1901,7 @@ function LivePreview({
                 Creator ile uyumunu keşfet
               </p>
 
-              <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
+              <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
                 Cevapların creator’ın cevaplarıyla
                 karşılaştırılacak.
               </p>
@@ -1914,7 +1909,7 @@ function LivePreview({
 
             <button
               type="button"
-              className="mt-4 flex h-10 w-full items-center justify-center rounded-full bg-black text-[9px] font-bold text-white"
+              className="mt-4 flex h-10 w-full items-center justify-center rounded-full bg-black text-[11px] font-bold text-white"
             >
               Başla →
             </button>
@@ -1940,7 +1935,7 @@ function WizardFooter({
           <button
             type="button"
             onClick={onBack}
-            className="h-11 rounded-full border border-border bg-white px-5 text-[10px] font-bold"
+            className="h-11 rounded-full border border-border bg-white px-5 text-[13px] font-extrabold"
           >
             ← Geri
           </button>
@@ -1991,7 +1986,7 @@ function GuidanceModal({
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/35 px-4 backdrop-blur-sm">
       <div className="w-full max-w-[430px] rounded-[26px] bg-white p-6 shadow-[0_28px_90px_rgba(0,0,0,0.2)]">
-        <p className="text-[9px] font-black uppercase tracking-[0.16em] text-primary">
+        <p className="text-[11px] font-black uppercase tracking-[0.16em] text-primary">
           AQRYO yönlendiriyor
         </p>
         <h2 className="mt-2 text-[24px] font-black leading-tight tracking-[-0.04em]">
@@ -2001,10 +1996,10 @@ function GuidanceModal({
           {copy.description}
         </p>
         <div className="mt-6 flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="h-10 rounded-full px-4 text-[9px] font-bold text-muted-foreground">
+          <button type="button" onClick={onClose} className="h-10 rounded-full px-4 text-[11px] font-bold text-muted-foreground">
             Geri dön
           </button>
-          <button type="button" onClick={onConfirm} className="h-10 rounded-full bg-black px-5 text-[9px] font-black text-white">
+          <button type="button" onClick={onConfirm} className="h-10 rounded-full bg-black px-5 text-[11px] font-black text-white">
             {copy.button}
           </button>
         </div>
@@ -2073,7 +2068,7 @@ function SelfPreview({
 
       {started && !finished && question && (
         <div className="mt-5 rounded-[26px] border border-border bg-white p-6">
-          <div className="flex items-center justify-between text-[9px] font-bold text-muted-foreground">
+          <div className="flex items-center justify-between text-[11px] font-bold text-muted-foreground">
             <span>{questionIndex + 1}/{questions.length}</span>
             <span>{Math.round(((questionIndex + 1) / questions.length) * 100)}%</span>
           </div>
@@ -2097,7 +2092,7 @@ function SelfPreview({
             })}
           </div>
           {questionIndex > 0 && (
-            <button type="button" onClick={onPrevious} className="mt-5 text-[10px] font-bold text-muted-foreground">
+            <button type="button" onClick={onPrevious} className="mt-5 text-[13px] font-extrabold text-muted-foreground">
               ← Önceki soru
             </button>
           )}
@@ -2106,21 +2101,21 @@ function SelfPreview({
 
       {started && finished && (
         <div className="mt-5 rounded-[26px] border border-border bg-white p-6">
-          <p className="text-[9px] font-black uppercase tracking-[0.16em] text-primary">Sonuç</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-primary">Sonuç</p>
           <p className="mt-2 text-[44px] font-black tracking-[-0.06em]">%{score}</p>
           <h3 className="mt-1 text-[22px] font-black tracking-[-0.04em]">{result?.title ?? "Sonuç"}</h3>
           <p className="mt-2 text-[11px] leading-5 text-muted-foreground">{result?.description}</p>
 
           {offerEnabled && (
             <div className="mt-5 rounded-[20px] border border-primary/15 bg-primary/[0.035] p-4">
-              <p className="text-[9px] font-black uppercase tracking-[0.12em] text-primary">Offer</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.12em] text-primary">Offer</p>
               <p className="mt-1 text-[13px] font-black">{offerTitle}</p>
-              <p className="mt-1 text-[10px] leading-4 text-muted-foreground">{offerDescription}</p>
+              <p className="mt-1 text-[13px] leading-5 text-muted-foreground">{offerDescription}</p>
               <p className="mt-3 text-[15px] font-black">{offerPrice} TL</p>
             </div>
           )}
 
-          <button type="button" onClick={onReset} className="mt-5 h-10 rounded-full border border-border bg-white px-5 text-[9px] font-bold">
+          <button type="button" onClick={onReset} className="mt-5 h-10 rounded-full border border-border bg-white px-5 text-[11px] font-bold">
             Tekrar dene
           </button>
         </div>
