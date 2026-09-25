@@ -27,7 +27,7 @@ export function HomeHero({ isCreator = false, authChecked = true }: HomeHeroProp
         <div className="max-w-xl">
           <p className="text-[13px] font-bold tracking-[0.12em] text-[#7140c4]">AQRYO · CREATOR STUDIO</p>
           <h1 className="mt-4 text-[clamp(2.75rem,5vw,5.25rem)] font-black leading-[0.99] tracking-[-0.065em] text-[#21163b]">
-            Kitleni oyuna davet et.<br /><span className="text-[#7540d0]">Kendi teklifinle kazan.</span>
+            Kitleni oyuna davet et.<br /><span className="text-[#7540d0]">Etkileşimi başlat.</span>
           </h1>
           <p className="mt-5 max-w-[30rem] text-base leading-7 text-[#625a70] sm:text-lg">Fikrini yaz, deneyimini oluştur, linkini kendi kitlenle paylaş.</p>
           <div className="mt-7 flex flex-wrap gap-3">
@@ -46,7 +46,7 @@ export function HomeHero({ isCreator = false, authChecked = true }: HomeHeroProp
             </> : <div className="flex flex-1 flex-col justify-center">
               <span className="text-xs font-bold tracking-[0.12em] text-[#7540d0]">ÜCRETSİZ SONUCUN</span>
               <div className="mt-5 rounded-[25px] bg-gradient-to-br from-[#edddff] via-[#faf4ff] to-[#d9f6ef] p-7"><span className="text-4xl" aria-hidden="true">{outgoing ? "⚡" : "🌙"}</span><h2 className="mt-5 text-[30px] font-black leading-tight tracking-[-0.04em] text-[#27173f]">{outgoing ? "Grubun kıvılcımı sensin" : "Grubun sakin gücüsün"}</h2><p className="mt-3 text-base leading-6 text-[#574c66]">{outgoing ? "Yeni planları başlatıp insanları bir araya getiriyorsun. Bazen herkesin senin hızına yetişmesini bekliyorsun." : "İnsanları dikkatle dinleyip ortamı dengeliyorsun. Bazen kendi isteğini de açıkça söylemen gerekiyor."}</p></div>
-              {!showBonus ? <button type="button" onClick={() => setShowBonus(true)} className="mt-7 min-h-12 rounded-full bg-[#7540d0] px-6 text-sm font-bold text-white">Tamamla →</button> : <div className="mt-6 rounded-2xl border border-[#e6dcf1] p-5"><p className="font-bold text-[#26163e]">Deneyim burada bitti.</p><p className="mt-1 text-sm leading-6 text-[#625a70]">Gerçek deneyimlerde creator, tamamlanan sonucun ardından ayrı bir bonus sunabilir.</p><button type="button" onClick={reset} className="mt-4 text-sm font-bold text-[#7540d0]">Baştan oyna ↺</button></div>}
+              {!showBonus ? <button type="button" onClick={() => setShowBonus(true)} className="mt-7 min-h-12 rounded-full bg-[#7540d0] px-6 text-sm font-bold text-white">Tamamla →</button> : <div className="mt-6 rounded-2xl border border-[#e6dcf1] p-5"><p className="font-bold text-[#26163e]">Deneyim burada bitti.</p><p className="mt-1 text-sm leading-6 text-[#625a70]">Gerçek deneyimlerde creator yeni bir soru, hikaye veya meydan okumayla etkileşimi devam ettirebilir.</p><button type="button" onClick={reset} className="mt-4 text-sm font-bold text-[#7540d0]">Baştan oyna ↺</button></div>}
             </div>}
           </div>
           <p className="mt-4 text-center text-xs font-medium text-white/70">Oynanabilir örnek · Ücretsiz sonuç eksiksiz gösterilir</p>
