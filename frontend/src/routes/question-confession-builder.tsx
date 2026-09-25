@@ -358,7 +358,7 @@ function QuestionConfessionBuilderPage() {
                 {isTr ? "Anonim gönder" : "Send anonymously"}
               </button>
 
-              <p className="mt-3 text-center text-[8px] font-bold text-muted-foreground">
+              <p className="mt-3 text-center text-[11px] font-bold text-muted-foreground">
                 {isTr ? "Kimliğin creator ile paylaşılmaz." : "Your identity is never shared with the creator."}
               </p>
             </div>
