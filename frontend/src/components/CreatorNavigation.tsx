@@ -1,5 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AQRYO_LANGUAGES, useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
+import { getCurrentCreator } from "@/services/auth";
+import { getUnreadAnonymousCount, getUnreadAnonymousItems, loadAnonymousInbox } from "@/services/anonymousInbox";
+import { useEffect, useRef, useState } from "react";
 
 interface CreatorNavigationProps {
   onSignOut: () => void | Promise<void>;
@@ -8,12 +11,72 @@ interface CreatorNavigationProps {
 export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { locale, setLocale, t } = useAqryoLocale();
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
+    typeof Notification === "undefined" ? "denied" : Notification.permission,
+  );
+  const lastUnreadRef = useRef(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    let timer: number | null = null;
+
+    async function refreshInbox() {
+      const creator = await getCurrentCreator();
+      if (!creator || cancelled) return;
+
+      try {
+        const items = await loadAnonymousInbox(creator.id);
+        const unread = getUnreadAnonymousCount(items);
+        const unreadItems = getUnreadAnonymousItems(items);
+
+        if (
+          typeof Notification !== "undefined" &&
+          Notification.permission === "granted" &&
+          unread > lastUnreadRef.current &&
+          unreadItems.length > 0
+        ) {
+          const newest = unreadItems[0];
+          new Notification(
+            newest.mode === "question" ? "AQRYO · Yeni soru geldi" : "AQRYO · Yeni itiraf geldi",
+            {
+              body: newest.message.length > 110 ? `${newest.message.slice(0, 107)}...` : newest.message,
+              icon: "/aqryo-logo.png",
+            },
+          );
+        }
+
+        lastUnreadRef.current = unread;
+        if (!cancelled) setUnreadCount(unread);
+      } catch (error) {
+        console.error("AQRYO inbox badge yüklenemedi:", error);
+      }
+    }
+
+    void refreshInbox();
+    timer = window.setInterval(() => void refreshInbox(), 60_000);
+
+    const handleRead = () => void refreshInbox();
+    window.addEventListener("aqryo:inbox-read", handleRead);
+
+    return () => {
+      cancelled = true;
+      if (timer !== null) window.clearInterval(timer);
+      window.removeEventListener("aqryo:inbox-read", handleRead);
+    };
+  }, []);
+
+  async function enableNotifications() {
+    if (typeof Notification === "undefined") return;
+    const permission = await Notification.requestPermission();
+    setNotificationPermission(permission);
+  }
 
   const navigationItems = [
-    { label: t("studio"), to: "/creator-studio" },
-    { label: t("inbox"), to: "/creator-inbox" },
-    { label: t("experiences"), to: "/creator-experiences" },
-    { label: t("account"), to: "/creator-account" },
+    { label: t("studio"), to: "/creator-studio", badge: 0 },
+    { label: t("inbox"), to: "/creator-inbox", badge: unreadCount },
+    { label: t("experiences"), to: "/creator-experiences", badge: 0 },
+    { label: t("account"), to: "/creator-account", badge: 0 },
   ];
 
   return (
@@ -42,12 +105,26 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
                   }`}
                 >
                   {item.label}
+                  {item.badge > 0 ? (
+                    <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px] font-black text-white">
+                      {item.badge > 9 ? "9+" : item.badge}
+                    </span>
+                  ) : null}
                 </Link>
               );
             })}
           </nav>
 
           <div className="flex shrink-0 items-center gap-2">
+            {notificationPermission === "default" ? (
+              <button
+                type="button"
+                onClick={() => void enableNotifications()}
+                className="hidden h-11 items-center justify-center rounded-full border border-violet-200 bg-violet-50 px-3 text-[11px] font-black text-violet-700 lg:flex"
+              >
+                Bildirimleri aç
+              </button>
+            ) : null}
             <label className="hidden sm:block">
               <span className="sr-only">{t("language")}</span>
               <select
