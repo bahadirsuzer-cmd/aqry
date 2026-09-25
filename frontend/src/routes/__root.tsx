@@ -93,12 +93,12 @@ export const Route =
         },
         {
           title:
-            "AQRYO | Creator Monetizasyon ve İnteraktif İçerik",
+            "AQRYO | 5 Saniyede Viral İçerik Üret",
         },
         {
           name: "description",
           content:
-            "İçerik üreticileri için test, hikaye, bulmaca ve interaktif deneyimler oluşturma ve takipçilerden gelir elde etme aracı.",
+            "Creator'lar için anonim etkileşim, Aşk Metre, hikaye ve sosyal puzzle içerikleri üretme aracı.",
         },
         {
           name: "author",
@@ -116,12 +116,12 @@ export const Route =
         {
           property: "og:title",
           content:
-            "AQRYO | Creator Monetizasyon ve İnteraktif İçerik",
+            "AQRYO | 5 Saniyede Viral İçerik Üret",
         },
         {
           property: "og:description",
           content:
-            "İçerik üreticileri için interaktif deneyimler oluştur, paylaş ve kitleni gelire dönüştür.",
+            "5 saniyede paylaşılabilir içerik üret, kitlenle paylaş ve etkileşimi başlat.",
         },
         {
           property: "og:type",
@@ -138,12 +138,12 @@ export const Route =
         {
           name: "twitter:title",
           content:
-            "AQRYO | Creator Monetizasyon ve İnteraktif İçerik",
+            "AQRYO | 5 Saniyede Viral İçerik Üret",
         },
         {
           name: "twitter:description",
           content:
-            "İçerik üreticileri için interaktif deneyimler oluştur, paylaş ve kitleni gelire dönüştür.",
+            "5 saniyede paylaşılabilir içerik üret, kitlenle paylaş ve etkileşimi başlat.",
         },
       ],
 
