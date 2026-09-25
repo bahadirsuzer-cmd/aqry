@@ -13,7 +13,7 @@ export interface ExperienceShareAssets {
 async function uploadShareAsset(
   creatorId: string,
   experienceId: string,
-  suffix: "square" | "story",
+  suffix: "square" | "story" | "og-v2",
   blob: Blob,
 ) {
   const path =
@@ -52,10 +52,10 @@ export async function ensureExperienceShareAssets(
   creatorId: string,
   source: ShareCardSource,
 ): Promise<ExperienceShareAssets> {
-  const squareBlob =
+  const ogBlob =
     await createShareCardBlob(
       source,
-      "square",
+      "og",
     );
 
   const storyBlob =
@@ -71,8 +71,8 @@ export async function ensureExperienceShareAssets(
     uploadShareAsset(
       creatorId,
       source.id,
-      "square",
-      squareBlob,
+      "og-v2",
+      ogBlob,
     ),
     uploadShareAsset(
       creatorId,
