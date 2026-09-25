@@ -443,7 +443,8 @@ useEffect(() => {
     }
 
     if (
-      !shareAssetsReady
+      !shareAssetsReady &&
+      experience.type !== "question_confession"
     ) {
       window.alert(
         shareAssetsError ??
@@ -453,21 +454,22 @@ useEffect(() => {
     }
 
     const publicShareUrl =
-      getPublicShareUrl(
-        experience.id,
-      );
+      experience.type === "question_confession"
+        ? `${window.location.origin}/experience/${experience.id}`
+        : getPublicShareUrl(
+            experience.id,
+          );
 
     const shareText =
-      experience.type ===
-        "guess"
-        ? `${experience.title}\n\nSence cevabı ne? 👀`
-        : experience.type ===
-            "story"
-          ? `${experience.title}\n\nDevamında ne olduğunu gör 👀`
-          : experience.type ===
-              "compatibility"
-            ? `${experience.title}\n\nNe kadar yakınsınız?`
-            : `${experience.title}\n\nSenin sonucun ne çıkacak?`;
+      experience.type === "question_confession"
+        ? `${experience.title}\n\nBana anonim bir soru sor ya da bir itiraf bırak 👀`
+        : experience.type === "guess"
+          ? `${experience.title}\n\nSence cevabı ne? 👀`
+          : experience.type === "story"
+            ? `${experience.title}\n\nDevamında ne olduğunu gör 👀`
+            : experience.type === "compatibility"
+              ? `${experience.title}\n\nNe kadar yakınsınız?`
+              : `${experience.title}\n\nSenin sonucun ne çıkacak?`;
 
     const shareUrl =
       new URL(
