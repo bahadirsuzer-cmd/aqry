@@ -25,6 +25,8 @@ function CreatorInboxPage() {
   const [filter, setFilter] = useState<InboxFilter>("all");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sharingId, setSharingId] = useState<string | null>(null);
+  const [creatorHandle, setCreatorHandle] = useState("@creator");
 
   useEffect(() => {
     let cancelled = false;
@@ -39,6 +41,24 @@ function CreatorInboxPage() {
         if (!creator) {
           window.location.href = "/creator-auth";
           return;
+        }
+
+        const { data: profile } = await supabase
+          .from("creator_profiles")
+          .select("username,display_name")
+          .eq("id", creator.id)
+          .maybeSingle();
+
+        if (!cancelled) {
+          const handle =
+            typeof profile?.username === "string" &&
+            profile.username.trim()
+              ? `@${profile.username.trim().replace(/^@/, "")}`
+              : typeof profile?.display_name === "string" &&
+                  profile.display_name.trim()
+                ? profile.display_name.trim()
+                : "@creator";
+          setCreatorHandle(handle);
         }
 
         const { data: experiences, error: experienceError } =
@@ -154,22 +174,222 @@ function CreatorInboxPage() {
     window.setTimeout(() => setCopiedId(null), 1400);
   }
 
-  function answerOnX(item: InboxItem) {
-    const label =
+  function wrapText(
+    context: CanvasRenderingContext2D,
+    text: string,
+    maxWidth: number,
+  ) {
+    const words = text.replace(/\s+/g, " ").trim().split(" ");
+    const lines: string[] = [];
+    let line = "";
+
+    for (const word of words) {
+      const test = line ? `${line} ${word}` : word;
+
+      if (context.measureText(test).width <= maxWidth) {
+        line = test;
+        continue;
+      }
+
+      if (line) lines.push(line);
+      line = word;
+    }
+
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  async function createAnswerCard(item: InboxItem) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1200;
+    canvas.height = 900;
+
+    const context = canvas.getContext("2d");
+
+    if (!context) {
+      throw new Error("Paylaşım kartı oluşturulamadı.");
+    }
+
+    const gradient = context.createLinearGradient(0, 0, 1200, 260);
+
+    if (item.mode === "question") {
+      gradient.addColorStop(0, "#6d28d9");
+      gradient.addColorStop(0.55, "#8b5cf6");
+      gradient.addColorStop(1, "#36d7c4");
+    } else {
+      gradient.addColorStop(0, "#7c3aed");
+      gradient.addColorStop(0.55, "#ec4899");
+      gradient.addColorStop(1, "#fb7185");
+    }
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, canvas.width, 240);
+
+    context.fillStyle = "rgba(255,255,255,0.16)";
+    context.beginPath();
+    context.arc(1080, 35, 170, 0, Math.PI * 2);
+    context.fill();
+
+    context.fillStyle = "#ffffff";
+    context.font = "900 56px Arial, sans-serif";
+    context.textAlign = "center";
+    context.fillText(
       item.mode === "question"
-        ? "Anonim soru"
-        : "Anonim itiraf";
-
-    const text = `${label}: “${item.message}”\n\nCevabım:`;
-
-    const url = new URL("https://twitter.com/intent/tweet");
-    url.searchParams.set("text", text);
-
-    window.open(
-      url.toString(),
-      "_blank",
-      "noopener,noreferrer",
+        ? "Bana anonim bir soru sor"
+        : "Bana anonim bir itiraf bırak",
+      600,
+      105,
     );
+
+    context.font = "700 28px Arial, sans-serif";
+    context.fillStyle = "rgba(255,255,255,0.9)";
+    context.fillText("Soru mu İtiraf mı? · AQRYO", 600, 165);
+
+    const badgeText =
+      item.mode === "question" ? "SORU" : "İTİRAF";
+
+    context.font = "900 25px Arial, sans-serif";
+    const badgeWidth = context.measureText(badgeText).width + 56;
+    const badgeX = 92;
+    const badgeY = 310;
+    const badgeH = 54;
+
+    context.fillStyle =
+      item.mode === "question" ? "#ede9fe" : "#ffe4e6";
+    roundedRect(context, badgeX, badgeY, badgeWidth, badgeH, 27);
+    context.fill();
+
+    context.fillStyle =
+      item.mode === "question" ? "#6d28d9" : "#e11d48";
+    context.textAlign = "left";
+    context.fillText(
+      badgeText,
+      badgeX + 28,
+      badgeY + 36,
+    );
+
+    const cleanMessage = item.message.trim();
+    let fontSize = 58;
+
+    if (cleanMessage.length > 180) fontSize = 44;
+    else if (cleanMessage.length > 110) fontSize = 50;
+
+    context.fillStyle = "#17101f";
+    context.font = `900 ${fontSize}px Arial, sans-serif`;
+    const lines = wrapText(context, cleanMessage, 1016);
+    const lineHeight = fontSize * 1.22;
+    const maxLines = 7;
+    const visibleLines = lines.slice(0, maxLines);
+
+    if (lines.length > maxLines) {
+      const last = visibleLines[maxLines - 1];
+      visibleLines[maxLines - 1] =
+        last.length > 3 ? `${last.slice(0, -3)}...` : `${last}...`;
+    }
+
+    const bodyTop = 430;
+    visibleLines.forEach((line, index) => {
+      context.fillText(
+        line,
+        92,
+        bodyTop + index * lineHeight,
+      );
+    });
+
+    context.fillStyle = "#f4f0fb";
+    roundedRect(context, 82, 790, 1036, 74, 26);
+    context.fill();
+
+    context.fillStyle = "#6b6475";
+    context.font = "700 27px Arial, sans-serif";
+    context.textAlign = "left";
+    context.fillText(
+      `${creatorHandle} · anonim mesajlar için aqryo.com`,
+      112,
+      838,
+    );
+
+    context.fillStyle = "#4f2a84";
+    context.font = "900 30px Arial, sans-serif";
+    context.textAlign = "right";
+    context.fillText("AQRYO", 1083, 838);
+
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (result) =>
+          result
+            ? resolve(result)
+            : reject(new Error("PNG oluşturulamadı.")),
+        "image/png",
+        0.96,
+      );
+    });
+
+    return new File(
+      [blob],
+      `aqryo-${item.mode}-${item.id}.png`,
+      { type: "image/png" },
+    );
+  }
+
+  async function answerOnX(item: InboxItem) {
+    if (sharingId) return;
+
+    try {
+      setSharingId(item.id);
+
+      const file = await createAnswerCard(item);
+
+      if (
+        navigator.share &&
+        (!navigator.canShare ||
+          navigator.canShare({ files: [file] }))
+      ) {
+        await navigator.share({
+          files: [file],
+          title: "AQRYO · Soru mu İtiraf mı?",
+          text: "Cevabım:",
+        });
+        return;
+      }
+
+      const fileUrl = URL.createObjectURL(file);
+      const anchor = document.createElement("a");
+      anchor.href = fileUrl;
+      anchor.download = file.name;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(fileUrl);
+
+      const url = new URL("https://twitter.com/intent/tweet");
+      url.searchParams.set("text", "Cevabım:");
+
+      window.open(
+        url.toString(),
+        "_blank",
+        "noopener,noreferrer",
+      );
+    } catch (shareError) {
+      if (
+        shareError instanceof DOMException &&
+        shareError.name === "AbortError"
+      ) {
+        return;
+      }
+
+      console.error("AQRYO cevap kartı paylaşılamadı:", shareError);
+      window.alert(
+        shareError instanceof Error
+          ? shareError.message
+          : "Paylaşım kartı hazırlanamadı.",
+      );
+    } finally {
+      setSharingId(null);
+    }
   }
 
   if (loading) {
@@ -292,10 +512,13 @@ function CreatorInboxPage() {
                 <div className="mt-6 flex gap-2">
                   <button
                     type="button"
-                    onClick={() => answerOnX(item)}
-                    className="h-11 flex-1 rounded-full bg-black px-5 text-[10px] font-black text-white"
+                    disabled={sharingId === item.id}
+                    onClick={() => void answerOnX(item)}
+                    className="h-11 flex-1 rounded-full bg-black px-5 text-[10px] font-black text-white disabled:opacity-50"
                   >
-                    X’te cevapla →
+                    {sharingId === item.id
+                      ? "Kart hazırlanıyor..."
+                      : "X’te cevapla →"}
                   </button>
                   <button
                     type="button"
@@ -387,6 +610,34 @@ function EmptyState({
       </Link>
     </div>
   );
+}
+
+function roundedRect(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number,
+) {
+  const r = Math.min(radius, width / 2, height / 2);
+
+  context.beginPath();
+  context.moveTo(x + r, y);
+  context.lineTo(x + width - r, y);
+  context.quadraticCurveTo(x + width, y, x + width, y + r);
+  context.lineTo(x + width, y + height - r);
+  context.quadraticCurveTo(
+    x + width,
+    y + height,
+    x + width - r,
+    y + height,
+  );
+  context.lineTo(x + r, y + height);
+  context.quadraticCurveTo(x, y + height, x, y + height - r);
+  context.lineTo(x, y + r);
+  context.quadraticCurveTo(x, y, x + r, y);
+  context.closePath();
 }
 
 function formatTime(value: string) {
