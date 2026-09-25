@@ -26,7 +26,6 @@ function CreatorInboxPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sharingId, setSharingId] = useState<string | null>(null);
-  const [creatorHandle, setCreatorHandle] = useState("@creator");
 
   useEffect(() => {
     let cancelled = false;
@@ -41,24 +40,6 @@ function CreatorInboxPage() {
         if (!creator) {
           window.location.href = "/creator-auth";
           return;
-        }
-
-        const { data: profile } = await supabase
-          .from("creator_profiles")
-          .select("username,display_name")
-          .eq("id", creator.id)
-          .maybeSingle();
-
-        if (!cancelled) {
-          const handle =
-            typeof profile?.username === "string" &&
-            profile.username.trim()
-              ? `@${profile.username.trim().replace(/^@/, "")}`
-              : typeof profile?.display_name === "string" &&
-                  profile.display_name.trim()
-                ? profile.display_name.trim()
-                : "@creator";
-          setCreatorHandle(handle);
         }
 
         const { data: experiences, error: experienceError } =
@@ -234,28 +215,28 @@ function CreatorInboxPage() {
     context.fill();
 
     context.fillStyle = "#ffffff";
-    context.font = "900 56px Arial, sans-serif";
+    context.font = "900 68px Arial, sans-serif";
     context.textAlign = "center";
     context.fillText(
       item.mode === "question"
         ? "Bana anonim bir soru sor"
         : "Bana anonim bir itiraf bırak",
       600,
-      105,
+      112,
     );
 
-    context.font = "700 28px Arial, sans-serif";
+    context.font = "800 34px Arial, sans-serif";
     context.fillStyle = "rgba(255,255,255,0.9)";
-    context.fillText("Soru mu İtiraf mı? · AQRYO", 600, 165);
+    context.fillText("Soru mu İtiraf mı? · AQRYO", 600, 178);
 
     const badgeText =
       item.mode === "question" ? "SORU" : "İTİRAF";
 
-    context.font = "900 25px Arial, sans-serif";
-    const badgeWidth = context.measureText(badgeText).width + 56;
+    context.font = "900 30px Arial, sans-serif";
+    const badgeWidth = context.measureText(badgeText).width + 68;
     const badgeX = 92;
-    const badgeY = 310;
-    const badgeH = 54;
+    const badgeY = 300;
+    const badgeH = 62;
 
     context.fillStyle =
       item.mode === "question" ? "#ede9fe" : "#ffe4e6";
@@ -267,15 +248,15 @@ function CreatorInboxPage() {
     context.textAlign = "left";
     context.fillText(
       badgeText,
-      badgeX + 28,
-      badgeY + 36,
+      badgeX + 34,
+      badgeY + 42,
     );
 
     const cleanMessage = item.message.trim();
-    let fontSize = 58;
+    let fontSize = 66;
 
-    if (cleanMessage.length > 180) fontSize = 44;
-    else if (cleanMessage.length > 110) fontSize = 50;
+    if (cleanMessage.length > 180) fontSize = 50;
+    else if (cleanMessage.length > 110) fontSize = 56;
 
     context.fillStyle = "#17101f";
     context.font = `900 ${fontSize}px Arial, sans-serif`;
@@ -290,7 +271,7 @@ function CreatorInboxPage() {
         last.length > 3 ? `${last.slice(0, -3)}...` : `${last}...`;
     }
 
-    const bodyTop = 430;
+    const bodyTop = 425;
     visibleLines.forEach((line, index) => {
       context.fillText(
         line,
@@ -304,18 +285,18 @@ function CreatorInboxPage() {
     context.fill();
 
     context.fillStyle = "#6b6475";
-    context.font = "700 27px Arial, sans-serif";
+    context.font = "800 30px Arial, sans-serif";
     context.textAlign = "left";
     context.fillText(
-      `${creatorHandle} · anonim mesajlar için aqryo.com`,
+      "Anonim mesajlar için aqryo.com",
       112,
       838,
     );
 
     context.fillStyle = "#4f2a84";
-    context.font = "900 30px Arial, sans-serif";
+    context.font = "900 42px Arial, sans-serif";
     context.textAlign = "right";
-    context.fillText("AQRYO", 1083, 838);
+    context.fillText("AQRYO", 1083, 841);
 
     const blob = await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob(
@@ -420,13 +401,13 @@ function CreatorInboxPage() {
       <section className="mx-auto max-w-[1120px] px-4 pb-16 pt-7 sm:px-6 sm:pt-10">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary">
+            <p className="text-[12px] font-black uppercase tracking-[0.18em] text-primary">
               Soru mu İtiraf mı?
             </p>
             <h1 className="mt-2 text-[32px] font-black tracking-[-0.055em] sm:text-[42px]">
               Gelen kutusu
             </h1>
-            <p className="mt-2 max-w-[620px] text-[12px] leading-6 text-muted-foreground">
+            <p className="mt-2 max-w-[620px] text-[14px] leading-6 text-muted-foreground">
               Kimlik yok. Sadece insanların sana bıraktığı soru ve itiraflar var.
               İçlerinden istediğini seçip X’te cevapla.
             </p>
@@ -434,7 +415,7 @@ function CreatorInboxPage() {
 
           <Link
             to="/question-confession-builder"
-            className="inline-flex h-11 items-center justify-center rounded-full bg-black px-5 text-[10px] font-black text-white"
+            className="inline-flex h-11 items-center justify-center rounded-full bg-black px-5 text-[12px] font-black text-white"
           >
             Yeni link oluştur +
           </Link>
@@ -495,7 +476,7 @@ function CreatorInboxPage() {
                     >
                       {item.mode === "question" ? "SORU" : "İTİRAF"}
                     </span>
-                    <p className="mt-2 text-[9px] font-bold text-muted-foreground">
+                    <p className="mt-2 text-[11px] font-bold text-muted-foreground">
                       {item.experienceTitle}
                     </p>
                   </div>
@@ -505,7 +486,7 @@ function CreatorInboxPage() {
                   </time>
                 </div>
 
-                <p className="mt-5 whitespace-pre-wrap text-[18px] font-black leading-7 tracking-[-0.025em]">
+                <p className="mt-5 whitespace-pre-wrap text-[20px] font-black leading-8 tracking-[-0.025em]">
                   {item.message}
                 </p>
 
@@ -529,7 +510,7 @@ function CreatorInboxPage() {
                   </button>
                 </div>
 
-                <p className="mt-3 text-[8px] font-semibold text-muted-foreground">
+                <p className="mt-3 text-[10px] font-semibold text-muted-foreground">
                   Gönderenin kimliği AQRYO tarafından creator’a gösterilmez.
                 </p>
               </article>
