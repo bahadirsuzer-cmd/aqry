@@ -415,7 +415,7 @@ function CreatorInboxPage() {
 
           <Link
             to="/question-confession-builder"
-            className="inline-flex h-11 items-center justify-center rounded-full bg-black px-5 text-[12px] font-black text-white"
+            className="inline-flex h-11 items-center justify-center rounded-full bg-black px-5 text-[14px] font-black text-white"
           >
             Yeni link oluştur +
           </Link>
@@ -449,10 +449,10 @@ function CreatorInboxPage() {
 
         {error ? (
           <div className="mt-6 rounded-[24px] border border-rose-200 bg-rose-50 p-5">
-            <p className="text-[11px] font-black text-rose-800">
+            <p className="text-[13px] font-black text-rose-800">
               Gelen kutusu açılamadı
             </p>
-            <p className="mt-2 text-[10px] leading-5 text-rose-700">
+            <p className="mt-2 text-[14px] leading-5 text-rose-700">
               {error}
             </p>
           </div>
@@ -468,7 +468,7 @@ function CreatorInboxPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <span
-                      className={`inline-flex rounded-full px-3 py-1 text-[9px] font-black ${
+                      className={`inline-flex rounded-full px-3 py-1 text-[13px] font-black ${
                         item.mode === "question"
                           ? "bg-violet-100 text-violet-700"
                           : "bg-rose-100 text-rose-700"
@@ -476,12 +476,12 @@ function CreatorInboxPage() {
                     >
                       {item.mode === "question" ? "SORU" : "İTİRAF"}
                     </span>
-                    <p className="mt-2 text-[11px] font-bold text-muted-foreground">
+                    <p className="mt-2 text-[13px] font-bold text-muted-foreground">
                       {item.experienceTitle}
                     </p>
                   </div>
 
-                  <time className="text-[9px] font-bold text-muted-foreground">
+                  <time className="text-[13px] font-bold text-muted-foreground">
                     {formatTime(item.createdAt)}
                   </time>
                 </div>
@@ -495,7 +495,7 @@ function CreatorInboxPage() {
                     type="button"
                     disabled={sharingId === item.id}
                     onClick={() => void answerOnX(item)}
-                    className="h-11 flex-1 rounded-full bg-black px-5 text-[10px] font-black text-white disabled:opacity-50"
+                    className="h-11 flex-1 rounded-full bg-black px-5 text-[14px] font-black text-white disabled:opacity-50"
                   >
                     {sharingId === item.id
                       ? "Kart hazırlanıyor..."
@@ -504,13 +504,13 @@ function CreatorInboxPage() {
                   <button
                     type="button"
                     onClick={() => void copyMessage(item)}
-                    className="h-11 rounded-full border border-border bg-white px-4 text-[10px] font-black"
+                    className="h-11 rounded-full border border-border bg-white px-4 text-[14px] font-black"
                   >
                     {copiedId === item.id ? "✓" : "Kopyala"}
                   </button>
                 </div>
 
-                <p className="mt-3 text-[10px] font-semibold text-muted-foreground">
+                <p className="mt-3 text-[14px] font-semibold text-muted-foreground">
                   Gönderenin kimliği AQRYO tarafından creator’a gösterilmez.
                 </p>
               </article>
@@ -531,7 +531,7 @@ function StatCard({
 }) {
   return (
     <div className="rounded-[22px] border border-border bg-white p-4">
-      <p className="text-[9px] font-black uppercase tracking-[0.12em] text-muted-foreground">
+      <p className="text-[13px] font-black uppercase tracking-[0.12em] text-muted-foreground">
         {label}
       </p>
       <p className="mt-2 text-[28px] font-black tracking-[-0.05em]">
@@ -554,7 +554,7 @@ function FilterButton({
     <button
       type="button"
       onClick={onClick}
-      className={`h-10 shrink-0 rounded-full px-4 text-[10px] font-black transition ${
+      className={`h-10 shrink-0 rounded-full px-4 text-[14px] font-black transition ${
         active
           ? "bg-primary text-white"
           : "border border-border bg-white text-muted-foreground"
@@ -580,12 +580,12 @@ function EmptyState({
           ? "Bu filtrede mesaj yok."
           : "Henüz anonim mesaj yok."}
       </h2>
-      <p className="mx-auto mt-2 max-w-[420px] text-[11px] leading-5 text-muted-foreground">
+      <p className="mx-auto mt-2 max-w-[420px] text-[13px] leading-5 text-muted-foreground">
         Soru mu İtiraf mı linkini paylaş. İlk mesaj geldiğinde burada görünecek.
       </p>
       <Link
         to="/question-confession-builder"
-        className="mt-5 inline-flex h-11 items-center justify-center rounded-full bg-violet-600 px-5 text-[10px] font-black text-white"
+        className="mt-5 inline-flex h-11 items-center justify-center rounded-full bg-violet-600 px-5 text-[14px] font-black text-white"
       >
         Soru mu İtiraf mı oluştur →
       </Link>
