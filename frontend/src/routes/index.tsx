@@ -2,10 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HomePage } from "@/pages/HomePage";
 
 const title =
-  "AQRYO | İçerik Üreterek ve Takipçilerinle İnternetten Para Kazan";
+  "AQRYO | Takipçilerinle Etkileşimli İçerikler Oluştur";
 
 const description =
-  "AQRYO ile test, hikaye, bulmaca ve interaktif deneyimler oluştur. Kitlenle paylaş, takipçilerinle etkileşimini artır ve içeriklerinden gelir elde et.";
+  "AQRYO ile Soru mu İtiraf mı, Aşk Metre, hikaye ve puzzle içerikleri oluştur. Linkini paylaş, takipçilerini etkileşime davet et.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -104,7 +104,7 @@ export const Route = createFileRoute("/")({
               operatingSystem: "Web",
               url: "https://aqryo.com/",
               description:
-                "İçerik üreticilerinin interaktif deneyimler oluşturup takipçileriyle paylaşmasına ve içeriklerini gelire dönüştürmesine yardımcı olan web tabanlı creator monetizasyon aracı.",
+                "İçerik üreticilerinin takipçileriyle paylaşabilecekleri interaktif içerikler ve deneyimler oluşturmasına yardımcı olan web tabanlı creator aracı.",
               offers: {
                 "@type": "Offer",
                 price: "0",
