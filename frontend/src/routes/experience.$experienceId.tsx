@@ -2202,7 +2202,7 @@ function CompletionScreen({
           <span aria-hidden="true">↗</span>
         </button>
       ) : null}
-      <button type="button" onClick={onGift} className="mt-3 flex min-h-12 w-full items-center justify-center rounded-full border border-primary/20 text-sm font-bold text-primary">Creator’a hediye gönder 🎁</button>
+      
       <button type="button" onClick={onBack} className="mt-5 text-sm font-semibold text-muted-foreground underline underline-offset-4">Ücretsiz sonucuma dön</button>
     </section>
   );
