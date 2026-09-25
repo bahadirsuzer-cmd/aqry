@@ -261,3 +261,124 @@ export function useAqryoLocale() {
     t: (key: string) => translate(locale, key),
   };
 }
+
+
+export type QuestionConfessionDefaults = {
+  title: string;
+  intro: string;
+  questionLabel: string;
+  confessionLabel: string;
+  placeholder: string;
+};
+
+const QUESTION_CONFESSION_DEFAULTS: Record<AqryoLocale, QuestionConfessionDefaults> = {
+  tr: {
+    title: "Soru mu İtiraf mı?",
+    intro: "Bana anonim bir şey bırak. Kim olduğunu görmeyeceğim.",
+    questionLabel: "Soru sor",
+    confessionLabel: "İtiraf et",
+    placeholder: "Buraya yaz...",
+  },
+  en: {
+    title: "Question or Confession?",
+    intro: "Leave me something anonymously. I won’t see who you are.",
+    questionLabel: "Ask a question",
+    confessionLabel: "Confess",
+    placeholder: "Write here...",
+  },
+  es: {
+    title: "¿Pregunta o confesión?",
+    intro: "Déjame algo de forma anónima. No veré quién eres.",
+    questionLabel: "Haz una pregunta",
+    confessionLabel: "Confiesa",
+    placeholder: "Escribe aquí...",
+  },
+  pt: {
+    title: "Pergunta ou confissão?",
+    intro: "Deixe algo anonimamente. Eu não verei quem você é.",
+    questionLabel: "Faça uma pergunta",
+    confessionLabel: "Confesse",
+    placeholder: "Escreva aqui...",
+  },
+  fr: {
+    title: "Question ou confession ?",
+    intro: "Laisse-moi quelque chose anonymement. Je ne verrai pas qui tu es.",
+    questionLabel: "Poser une question",
+    confessionLabel: "Avouer",
+    placeholder: "Écris ici...",
+  },
+  de: {
+    title: "Frage oder Geständnis?",
+    intro: "Hinterlasse mir anonym etwas. Ich sehe nicht, wer du bist.",
+    questionLabel: "Frage stellen",
+    confessionLabel: "Geständnis",
+    placeholder: "Hier schreiben...",
+  },
+  it: {
+    title: "Domanda o confessione?",
+    intro: "Lasciami qualcosa in anonimo. Non vedrò chi sei.",
+    questionLabel: "Fai una domanda",
+    confessionLabel: "Confessa",
+    placeholder: "Scrivi qui...",
+  },
+  ar: {
+    title: "سؤال أم اعتراف؟",
+    intro: "اترك لي شيئًا بشكل مجهول. لن أرى من أنت.",
+    questionLabel: "اطرح سؤالًا",
+    confessionLabel: "اعترف",
+    placeholder: "اكتب هنا...",
+  },
+  hi: {
+    title: "सवाल या इकरार?",
+    intro: "मुझे गुमनाम रूप से कुछ लिखें। मुझे पता नहीं चलेगा कि आप कौन हैं।",
+    questionLabel: "सवाल पूछें",
+    confessionLabel: "इकरार करें",
+    placeholder: "यहाँ लिखें...",
+  },
+  id: {
+    title: "Pertanyaan atau pengakuan?",
+    intro: "Tinggalkan sesuatu secara anonim. Aku tidak akan tahu siapa kamu.",
+    questionLabel: "Ajukan pertanyaan",
+    confessionLabel: "Mengaku",
+    placeholder: "Tulis di sini...",
+  },
+  ru: {
+    title: "Вопрос или признание?",
+    intro: "Оставь мне что-нибудь анонимно. Я не увижу, кто ты.",
+    questionLabel: "Задать вопрос",
+    confessionLabel: "Признаться",
+    placeholder: "Напиши здесь...",
+  },
+  bn: {
+    title: "প্রশ্ন না স্বীকারোক্তি?",
+    intro: "আমাকে পরিচয় গোপন রেখে কিছু লিখুন। আমি জানব না আপনি কে।",
+    questionLabel: "প্রশ্ন করুন",
+    confessionLabel: "স্বীকার করুন",
+    placeholder: "এখানে লিখুন...",
+  },
+  ur: {
+    title: "سوال یا اعتراف؟",
+    intro: "مجھے گمنام طور پر کچھ لکھیں۔ مجھے معلوم نہیں ہوگا آپ کون ہیں۔",
+    questionLabel: "سوال پوچھیں",
+    confessionLabel: "اعتراف کریں",
+    placeholder: "یہاں لکھیں...",
+  },
+  vi: {
+    title: "Câu hỏi hay thú nhận?",
+    intro: "Hãy để lại điều gì đó ẩn danh. Tôi sẽ không biết bạn là ai.",
+    questionLabel: "Đặt câu hỏi",
+    confessionLabel: "Thú nhận",
+    placeholder: "Viết ở đây...",
+  },
+  fil: {
+    title: "Tanong o pag-amin?",
+    intro: "Mag-iwan ng mensahe nang anonymous. Hindi ko makikita kung sino ka.",
+    questionLabel: "Magtanong",
+    confessionLabel: "Umamin",
+    placeholder: "Magsulat dito...",
+  },
+};
+
+export function getQuestionConfessionDefaults(locale: AqryoLocale) {
+  return QUESTION_CONFESSION_DEFAULTS[locale] ?? QUESTION_CONFESSION_DEFAULTS.en;
+}
