@@ -129,15 +129,10 @@ function squareCount(n: number) {
 }
 
 function makeCount(): Puzzle {
-  const family = pick(["grid", "grid-plus", "nested", "rect-grid"]);
+  const family = pick(["grid", "nested", "rect-grid"]);
   if (family === "grid") {
     const n = pick([3,4,5,6]);
     return { id:crypto.randomUUID(), kind:"count", family, answer:String(squareCount(n)), commonWrong:String(n*n), title:"Toplam kaç kare var?", subtitle:"İlk gördüğünü sayıp geçme 👀", data:{rows:n,cols:n} };
-  }
-  if (family === "grid-plus") {
-    const n = pick([3,4,5]);
-    const bonus = n - 1;
-    return { id:crypto.randomUUID(), kind:"count", family, answer:String(squareCount(n)+bonus), commonWrong:String(n*n+bonus), title:"Kaç kare görüyorsun?", subtitle:"Ortadaki ek çizgilere dikkat", data:{rows:n,cols:n,bonus} };
   }
   if (family === "nested") {
     const levels = pick([4,5,6,7]);
@@ -156,8 +151,8 @@ function makeAlgebra(): Puzzle {
     const b = pick([2,3,4,5,6]);
     const k = pick([2,3,4,5,6,7,8]);
     const rhs = k * b * b;
-    const answer = k * b * b * b;
-    return { id:crypto.randomUUID(), kind:"algebra", family, answer:String(answer), commonWrong:String(rhs*b*b), title:"Tek adım görünüyor, iki adım var", subtitle:"b³ kaç?", data:{k,rhs,b} };
+    const answer = b * b * b;
+    return { id:crypto.randomUUID(), kind:"algebra", family, answer:String(answer), commonWrong:String(rhs), title:"Tek adım görünüyor, iki adım var", subtitle:"b³ kaç?", data:{k,rhs,b} };
   }
   if (family === "linear") {
     const x = randomInt(4,18);
@@ -196,13 +191,15 @@ function makeArea(): Puzzle {
     return { id:crypto.randomUUID(), kind:"area", family, answer:String(big-cut), commonWrong:String(big+cut), title:"Boyalı alan kaç?", subtitle:"Dışarıyı değil içeriyi çıkar", data:{a,b} };
   }
   if (family === "step-distance") {
-    const horizontal = randomInt(5,12);
-    const v1 = randomInt(6,12);
+    const h1 = randomInt(4,8);
+    const h2 = randomInt(3,7);
+    const v1 = randomInt(7,12);
     const v2 = randomInt(2,5);
-    const dy = v1-v2;
-    const dist = Math.sqrt(horizontal*horizontal+dy*dy);
+    const dx = h1 + h2;
+    const dy = v1 - v2;
+    const dist = Math.sqrt(dx*dx+dy*dy);
     const rounded = Math.round(dist*10)/10;
-    return { id:crypto.randomUUID(), kind:"area", family, answer:String(rounded), commonWrong:String(horizontal+dy), title:"A ile E arası kaç?", subtitle:"Kırmızı çizgiyi hesapla", data:{horizontal,v1,v2,dy} };
+    return { id:crypto.randomUUID(), kind:"area", family, answer:String(rounded), commonWrong:String(dx+dy), title:"A ile E arası kaç?", subtitle:"Kırmızı çizgiyi hesapla", data:{h1,h2,v1,v2,dx,dy} };
   }
   const base = pick([6,8,10,12,14]);
   const height = pick([4,6,8,10]);
@@ -490,7 +487,7 @@ function PuzzleBody({puzzle}:{puzzle:Puzzle}){
       <rect x={x0} y={y0} width={w} height={h} fill="none" stroke="#17101f" strokeWidth="6"/>
       {Array.from({length:cols-1},(_,i)=><line key={"v"+i} x1={x0+(i+1)*cellW} y1={y0} x2={x0+(i+1)*cellW} y2={y0+h} stroke="#17101f" strokeWidth="4"/>)}
       {Array.from({length:rows-1},(_,i)=><line key={"h"+i} x1={x0} y1={y0+(i+1)*cellH} x2={x0+w} y2={y0+(i+1)*cellH} stroke="#17101f" strokeWidth="4"/>)}
-      {puzzle.family==="grid-plus"?<line x1={x0+w/2} y1={y0+cellH} x2={x0+w/2} y2={y0+h-cellH} stroke="#7c3aed" strokeWidth="4"/>:null}
+
     </>;
   }
 
@@ -535,7 +532,8 @@ function PuzzleBody({puzzle}:{puzzle:Puzzle}){
     return <>
       <path d="M70 145H190V320H290V250" fill="none" stroke="#17101f" strokeWidth="7"/>
       <path d="M70 145L290 250" fill="none" stroke="#e0524d" strokeWidth="7"/>
-      <text x="113" y="132" fontSize="18" fontWeight="900">{String(d.horizontal)}m</text>
+      <text x="113" y="132" fontSize="18" fontWeight="900">{String(d.h1)}m</text>
+      <text x="235" y="340" fontSize="18" fontWeight="900">{String(d.h2)}m</text>
       <text x="198" y="230" fontSize="18" fontWeight="900">{String(d.v1)}m</text>
       <text x="298" y="290" fontSize="18" fontWeight="900">{String(d.v2)}m</text>
     </>;
