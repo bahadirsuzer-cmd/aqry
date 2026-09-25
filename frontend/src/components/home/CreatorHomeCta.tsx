@@ -26,7 +26,7 @@ export function CreatorHomeCta({
               <p className="mt-2 text-[15px] leading-6 text-muted-foreground">
                 {isCreator
                   ? "Yeni bir deneyim oluştur ve kitlenle paylaş."
-                  : "Kendi kitleni etkile, gelirini artır."}
+                  : "Kendi kitleni etkileşime davet et."}
               </p>
             </div>
           </div>
@@ -44,9 +44,9 @@ export function CreatorHomeCta({
                 "Fikirden taslağa",
               ],
               [
-                "▣",
-                "Gelir",
-                "Hediye ve teklif",
+                "↗",
+                "Paylaş",
+                "Etkileşimi büyüt",
               ],
             ].map(
               ([icon, title, text]) => (
