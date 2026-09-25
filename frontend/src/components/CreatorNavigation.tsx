@@ -42,7 +42,9 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
           new Notification(
             newest.mode === "question" ? "AQRYO · Yeni soru geldi" : "AQRYO · Yeni itiraf geldi",
             {
-              body: newest.message.length > 110 ? `${newest.message.slice(0, 107)}...` : newest.message,
+              body: newest.mode === "question"
+                ? "Gelen kutunda yeni bir anonim soru var."
+                : "Gelen kutunda yeni bir anonim itiraf var.",
               icon: "/aqryo-logo.png",
             },
           );
@@ -50,7 +52,11 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
 
         lastUnreadRef.current = unread;
         initializedInboxRef.current = true;
-        if (!cancelled) setUnreadCount(unread);
+        if (!cancelled) {
+          setUnreadCount(unread);
+          const baseTitle = document.title.replace(/^\(\d+\+?\)\s*/, "");
+          document.title = unread > 0 ? `(${unread > 9 ? "9+" : unread}) ${baseTitle}` : baseTitle;
+        }
       } catch (error) {
         console.error("AQRYO inbox badge yüklenemedi:", error);
       }
