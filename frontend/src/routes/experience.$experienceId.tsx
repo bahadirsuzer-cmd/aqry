@@ -4221,10 +4221,10 @@ function QuestionConfessionPublicExperience({
                 href="/creator-auth"
                 className="mt-5 flex h-12 w-full items-center justify-center rounded-full bg-black px-5 text-[13px] font-black text-white"
               >
-                Sen de soru sor →
+                Sen de anonim link oluştur →
               </a>
               <p className="mt-2 text-[11px] font-semibold text-emerald-900/60">
-                Kendi Soru mu İtiraf mı linkini oluştur.
+                Kendi linkini oluştur, paylaş ve anonim mesajlarını topla. #AQRYO
               </p>
 
               <button
@@ -4260,7 +4260,7 @@ function QuestionConfessionPublicExperience({
                   }`}
                 >
                   <span className="text-[28px]">♡</span>
-                  <p className="mt-3 text-[12px] font-black">{config.confessionLabel}</p>
+                  <p className="mt-3 text-[15px] font-black">{config.confessionLabel}</p>
                 </button>
               </div>
 
@@ -4290,7 +4290,7 @@ function QuestionConfessionPublicExperience({
           )}
 
           <p className="mt-5 text-center text-[11px] font-bold text-muted-foreground">
-            AQRYO · Kimliğin mesajla birlikte gönderilmez.
+            AQRYO · Kimliğin mesajla birlikte gönderilmez · aqryo.com
           </p>
         </div>
       </div>
