@@ -1286,145 +1286,17 @@ function CreatorStudioPage() {
           </section>
         ) : (
           <>
-            <section className="rounded-[24px] border border-primary/15 bg-gradient-to-r from-violet-50 via-white to-fuchsia-50 p-5 shadow-[0_12px_35px_rgba(22,12,34,0.04)] sm:p-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-start gap-4">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-primary text-[20px] text-white">
-                    ✦
-                  </span>
-
-                  <div>
-                    <p className="text-[16px] font-black text-foreground">
-                      Her gün 3 Yapay Zeka üretimi ücretsiz
-                    </p>
-                    <p className="mt-1 text-[13px] font-medium leading-5 text-muted-foreground">
-                      Günde 3 içeriğini Yapay Zeka ile ücretsiz oluştur. Manuel üretim her zaman sınırsızdır.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex shrink-0 items-center gap-3">
-                  <span className="rounded-full border border-primary/15 bg-white px-4 py-2 text-[12px] font-black text-primary">
-                    Daha fazla Yapay Zeka üret
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      scrollToAiCreate("ai")
-                    }
-                    className="inline-flex h-11 items-center justify-center rounded-full bg-black px-5 text-[13px] font-black text-white transition hover:bg-primary"
-                  >
-                    Planları gör →
-                  </button>
-                </div>
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-[12px] font-black uppercase tracking-[0.15em] text-primary">AQRYO Creator Studio</p>
+                <h1 className="mt-1 text-[32px] font-black tracking-[-0.05em] sm:text-[42px]">Fikrini deneyime dönüştür.</h1>
               </div>
-            </section>
-
-            <section className="relative mt-5 overflow-hidden rounded-[30px] border border-border bg-white p-7 shadow-[0_18px_55px_rgba(22,12,34,0.05)] sm:p-9 lg:p-10">
-              <div className="absolute right-[-90px] top-[-100px] h-64 w-64 rounded-full bg-violet-100 blur-3xl" />
-              <div className="absolute bottom-[-120px] left-[45%] h-64 w-64 rounded-full bg-pink-100 blur-3xl" />
-
-              <div className="relative z-10">
-                <p className="text-[12px] font-black uppercase tracking-[0.16em] text-primary">
-                  Creator Studio
-                </p>
-
-                <h1 className="mt-3 max-w-[920px] text-[38px] font-black leading-[0.98] tracking-[-0.055em] sm:text-[50px] lg:text-[56px]">
-                  İçeriğini üret. Paylaş. Para kazanmaya başla.
-                </h1>
-
-                <p className="mt-5 max-w-[800px] text-[16px] font-medium leading-7 text-muted-foreground">
-                  Yapay Zeka ile saniyeler içinde oluştur, hazır metnini içeriğe dönüştür veya manuel olarak sınırsız üret.
-                </p>
-
-                {isFirstExperience ? (
-                  <p className="mt-3 text-[13px] font-bold text-primary">
-                    İlk içeriğini birkaç dakika içinde yayına alabilirsin.
-                  </p>
-                ) : null}
-
-                <div className="mt-8 grid gap-4 lg:grid-cols-3">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      scrollToAiCreate("ai")
-                    }
-                    className="group rounded-[24px] bg-black p-6 text-left text-white transition hover:-translate-y-0.5 hover:bg-primary"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <span className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-white/12 text-[22px]">
-                        ✦
-                      </span>
-                      <span className="rounded-full bg-white/10 px-3 py-1.5 text-[12px] font-black text-white/90">
-                        Bugün {remainingToday} ücretsiz üretim kaldı
-                      </span>
-                    </div>
-
-                    <h2 className="mt-6 text-[24px] font-black tracking-[-0.04em]">
-                      Yapay Zeka ile oluştur
-                    </h2>
-                    <p className="mt-2 text-[14px] font-medium leading-6 text-white/75">
-                      Fikrini yaz. Soruları, yapıyı ve sonucu AQRYO hazırlasın.
-                    </p>
-                    <span className="mt-6 inline-flex text-[13px] font-black">
-                      Yapay Zeka ile başla →
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      scrollToAiCreate("text")
-                    }
-                    className="group rounded-[24px] border border-border bg-gradient-to-br from-violet-50 via-white to-white p-6 text-left transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_16px_40px_rgba(22,12,34,0.06)]"
-                  >
-                    <span className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-primary/[0.08] text-[22px] text-primary">
-                      ▤
-                    </span>
-
-                    <h2 className="mt-6 text-[24px] font-black tracking-[-0.04em]">
-                      Metinden oluştur
-                    </h2>
-                    <p className="mt-2 text-[14px] font-medium leading-6 text-muted-foreground">
-                      Hazır metnini yapıştır. AQRYO bunu etkileşimli bir içeriğe dönüştürsün.
-                    </p>
-                    <span className="mt-6 inline-flex text-[13px] font-black text-primary">
-                      Metin yapıştır →
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={openManualCreate}
-                    className="group relative overflow-hidden rounded-[24px] border border-border bg-white p-6 text-left transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_16px_40px_rgba(22,12,34,0.06)]"
-                  >
-                    <span className="absolute -right-10 top-5 rotate-45 bg-red-600 px-12 py-2 text-[11px] font-black tracking-[0.12em] text-white shadow-sm">
-                      SINIRSIZ
-                    </span>
-
-                    <div className="flex items-start justify-between gap-4">
-                      <span className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-black/[0.05] text-[22px]">
-                        ✎
-                      </span>
-                    </div>
-
-                    <h2 className="mt-6 text-[24px] font-black tracking-[-0.04em]">
-                      Kendin oluştur
-                    </h2>
-                    <p className="mt-2 text-[14px] font-medium leading-6 text-muted-foreground">
-                      İçeriğini adım adım kendin hazırla. Manuel üretimde sınır yok.
-                    </p>
-                    <span className="mt-6 inline-flex text-[13px] font-black text-foreground">
-                      Manuel oluştur →
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </section>
+              <button type="button" onClick={openManualCreate} className="rounded-full border border-border bg-white px-5 py-3 text-[13px] font-bold transition hover:border-primary/30">Kendim oluşturacağım →</button>
+            </div>
 
             <section
               id="ai-create"
-              className="mt-8 scroll-mt-36 overflow-hidden rounded-[28px] border border-primary/15 bg-gradient-to-r from-violet-50 via-fuchsia-50 to-white"
+              className="scroll-mt-36 overflow-hidden rounded-[28px] border border-primary/15 bg-gradient-to-r from-violet-50 via-fuchsia-50 to-white"
             >
               <div className="grid lg:grid-cols-[minmax(0,1fr)_300px]">
                 <div className="p-6 sm:p-8">
@@ -1446,7 +1318,21 @@ function CreatorStudioPage() {
                       : "Notunu, taslağını, hikâyeni veya hazır içeriğini yapıştır. Yapıyı AQRYO oluştursun."}
                   </p>
 
-                  <div className="mt-5 rounded-[20px] border border-white bg-white/90 p-4 shadow-sm">
+                  {creationMode === "ai" ? (
+                    <div className="mt-5 flex flex-wrap gap-2" aria-label="Hazır fikirler">
+                      {[
+                        ["Kişilik testi", "İnsanların ilk izlenimde beni neden yanlış anladığını gösteren iki dakikalık eğlenceli bir kişilik testi oluştur."],
+                        ["Mini bulmaca", "Arkadaşlarla paylaşılabilecek kısa ve eğlenceli bir görsel ipucu bulmacası oluştur."],
+                        ["Ürün önerisi", "İnsanların tercihlerine göre onlara en uygun ürünü öneren kısa bir etkileşimli deneyim oluştur."],
+                      ].map(([label, prompt]) => (
+                        <button key={label} type="button" onClick={() => setAiInput(prompt)} className="rounded-full border border-primary/15 bg-white px-4 py-2 text-[13px] font-bold text-primary transition hover:border-primary hover:bg-primary/5">
+                          ✦ {label}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  <div className="mt-4 rounded-[20px] border border-white bg-white/90 p-4 shadow-sm">
                     <textarea
                       rows={5}
                       value={aiInput}
