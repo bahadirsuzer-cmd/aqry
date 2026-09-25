@@ -1,6 +1,8 @@
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
 import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
+import { makeVettedGeometryPuzzle } from "@/lib/geometryPuzzleTemplates";
+import { GeometryTemplateVisual } from "@/components/puzzle/GeometryTemplateVisual";
 import React, { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -323,66 +325,16 @@ function makeMath(): Puzzle {
   };
 }
 
-function makeGeometry(): Puzzle {
-  const family = pick([
-    "triangle-sum",
-    "exterior",
-    "isosceles",
-    "right-angle",
-    "vertical",
-    "supplementary",
-    "parallel",
-    "quadrilateral",
-  ]);
-
-  if (family === "triangle-sum") {
-    const a = pick([30, 35, 40, 45, 50, 55, 60]);
-    const b = pick([35, 40, 45, 50, 55, 60, 65]);
-    const x = 180 - a - b;
-    return { id:crypto.randomUUID(),kind:"geometry",family,answer:`${x}°`,commonWrong:`${180-x}°`,data:{a,b,x} };
-  }
-
-  if (family === "exterior") {
-    const a = pick([25,30,35,40,45,50]);
-    const x = pick([30,35,40,45,50,55]);
-    const exterior = a + x;
-    return { id:crypto.randomUUID(),kind:"geometry",family,answer:`${x}°`,commonWrong:`${180-exterior}°`,data:{a,exterior,x} };
-  }
-
-  if (family === "isosceles") {
-    const apex = pick([30,40,50,60,70,80]);
-    const x = (180 - apex) / 2;
-    return { id:crypto.randomUUID(),kind:"geometry",family,answer:`${x}°`,commonWrong:`${180-apex}°`,data:{apex,x} };
-  }
-
-  if (family === "right-angle") {
-    const a = pick([20,25,30,35,40,45,50,55,60,65]);
-    const x = 90 - a;
-    return { id:crypto.randomUUID(),kind:"geometry",family,answer:`${x}°`,commonWrong:`${180-a}°`,data:{a,x} };
-  }
-
-  if (family === "vertical") {
-    const a = pick([35,40,45,50,55,60,65,70,75,80]);
-    return { id:crypto.randomUUID(),kind:"geometry",family,answer:`${a}°`,commonWrong:`${180-a}°`,data:{a} };
-  }
-
-  if (family === "supplementary") {
-    const a = pick([35,45,55,65,75,85,95,105,115,125]);
-    const x = 180 - a;
-    return { id:crypto.randomUUID(),kind:"geometry",family,answer:`${x}°`,commonWrong:`${90-a}°`,data:{a,x} };
-  }
-
-  if (family === "quadrilateral") {
-    const a = pick([70,80,90,100]);
-    const b = pick([75,85,95,105]);
-    const c = pick([80,90,100,110]);
-    const x = 360 - a - b - c;
-    return { id:crypto.randomUUID(),kind:"geometry",family,answer:`${x}°`,commonWrong:`${180-x}°`,data:{a,b,c,x} };
-  }
-
-  const a = pick([45,50,55,60,65,70]);
-  const x = 180 - a;
-  return { id:crypto.randomUUID(),kind:"geometry",family,answer:`${x}°`,commonWrong:`${a}°`,data:{a,x} };
+function makeGeometry(recentFamilies: string[] = []): Puzzle {
+  const vetted = makeVettedGeometryPuzzle(recentFamilies);
+  return {
+    id: crypto.randomUUID(),
+    kind: "geometry",
+    family: vetted.family,
+    answer: vetted.answer,
+    commonWrong: vetted.commonWrong,
+    data: vetted.data,
+  };
 }
 
 function makeCount(): Puzzle {
@@ -571,9 +523,21 @@ function makeArea(): Puzzle {
 }
 
 function generate(kind: PuzzleKind, recent: string[]): Puzzle {
+  const recentFamilyIds = recent
+    .slice(0, RECENT_FAMILY_WINDOW)
+    .filter((item) => item.startsWith(`${kind}:`))
+    .map((item) => item.split(":")[1]);
+
+  if (kind === "geometry") {
+    for (let attempt = 0; attempt < 40; attempt += 1) {
+      const next = makeGeometry(recentFamilyIds);
+      if (!recent.includes(signature(next))) return next;
+    }
+    return makeGeometry([]);
+  }
+
   const maker =
     kind === "math" ? makeMath :
-    kind === "geometry" ? makeGeometry :
     kind === "count" ? makeCount :
     kind === "algebra" ? makeAlgebra :
     makeArea;
@@ -823,76 +787,7 @@ function PuzzleBody({puzzle}:{puzzle:Puzzle}){
   }
 
   if(puzzle.kind==="geometry"){
-    if(puzzle.family==="triangle-sum"){
-      return <>
-        <path d="M70 330L180 135L295 330Z" fill="none" stroke="#17101f" strokeWidth="7" strokeLinejoin="round"/>
-        <text x="86" y="315" fontSize="20" fontWeight="900">{String(d.a)}°</text>
-        <text x="255" y="315" fontSize="20" fontWeight="900">{String(d.b)}°</text>
-        <text x="172" y="175" fontSize="25" fontWeight="900" fill="#7c3aed">x</text>
-      </>;
-    }
-
-    if(puzzle.family==="exterior"){
-      return <>
-        <path d="M75 330L175 150L290 330Z" fill="none" stroke="#17101f" strokeWidth="7"/>
-        <path d="M175 150L215 88" stroke="#17101f" strokeWidth="7" strokeLinecap="round"/>
-        <text x="84" y="314" fontSize="20" fontWeight="900">{String(d.a)}°</text>
-        <text x="205" y="152" fontSize="21" fontWeight="900" fill="#e0524d">{String(d.exterior)}°</text>
-        <text x="248" y="312" fontSize="25" fontWeight="900" fill="#7c3aed">x</text>
-      </>;
-    }
-
-    if(puzzle.family==="isosceles"){
-      return <>
-        <path d="M75 330L180 135L285 330Z" fill="none" stroke="#17101f" strokeWidth="7"/>
-        <path d="M100 274L121 286M260 274L239 286" stroke="#7c3aed" strokeWidth="5"/>
-        <text x="166" y="177" fontSize="20" fontWeight="900">{String(d.apex)}°</text>
-        <text x="90" y="316" fontSize="25" fontWeight="900" fill="#7c3aed">x</text>
-      </>;
-    }
-
-    if(puzzle.family==="right-angle"){
-      return <>
-        <path d="M85 325L85 145L295 325Z" fill="none" stroke="#17101f" strokeWidth="7"/>
-        <path d="M85 300H110V325" fill="none" stroke="#7c3aed" strokeWidth="5"/>
-        <text x="102" y="178" fontSize="21" fontWeight="900">{String(d.a)}°</text>
-        <text x="245" y="310" fontSize="25" fontWeight="900" fill="#7c3aed">x</text>
-      </>;
-    }
-
-    if(puzzle.family==="vertical"){
-      return <>
-        <path d="M80 145L285 330M280 145L75 330" stroke="#17101f" strokeWidth="7" strokeLinecap="round"/>
-        <text x="128" y="195" fontSize="22" fontWeight="900">{String(d.a)}°</text>
-        <text x="215" y="300" fontSize="28" fontWeight="900" fill="#7c3aed">x</text>
-      </>;
-    }
-
-    if(puzzle.family==="supplementary"){
-      return <>
-        <path d="M45 300H315" stroke="#17101f" strokeWidth="7" strokeLinecap="round"/>
-        <path d="M180 300L235 155" stroke="#17101f" strokeWidth="7" strokeLinecap="round"/>
-        <text x="108" y="280" fontSize="22" fontWeight="900">{String(d.a)}°</text>
-        <text x="224" y="280" fontSize="28" fontWeight="900" fill="#7c3aed">x</text>
-      </>;
-    }
-
-    if(puzzle.family==="quadrilateral"){
-      return <>
-        <path d="M90 150L265 165L285 320L70 315Z" fill="none" stroke="#17101f" strokeWidth="7" strokeLinejoin="round"/>
-        <text x="98" y="185" fontSize="18" fontWeight="900">{String(d.a)}°</text>
-        <text x="226" y="195" fontSize="18" fontWeight="900">{String(d.b)}°</text>
-        <text x="236" y="302" fontSize="18" fontWeight="900">{String(d.c)}°</text>
-        <text x="92" y="296" fontSize="27" fontWeight="900" fill="#7c3aed">x</text>
-      </>;
-    }
-
-    return <>
-      <path d="M45 175H315M45 320H315" stroke="#17101f" strokeWidth="7"/>
-      <path d="M105 115L250 380" stroke="#17101f" strokeWidth="7"/>
-      <text x="118" y="180" fontSize="20" fontWeight="900">{String(d.a)}°</text>
-      <text x="222" y="312" fontSize="25" fontWeight="900" fill="#7c3aed">x</text>
-    </>;
+    return <GeometryTemplateVisual family={puzzle.family} data={d} />;
   }
 
   if(puzzle.kind==="count"){
