@@ -457,14 +457,12 @@ useEffect(() => {
 
     const shareText =
       experience.type === "question_confession"
-        ? `${experience.title}\n\nBana anonim bir soru sor ya da bir itiraf bırak 👀`
-        : experience.type === "guess"
-          ? `${experience.title}\n\nSence cevabı ne? 👀`
-          : experience.type === "story"
-            ? `${experience.title}\n\nDevamında ne olduğunu gör 👀`
-            : experience.type === "compatibility"
-              ? `${experience.title}\n\nNe kadar yakınsınız?`
-              : `${experience.title}\n\nSenin sonucun ne çıkacak?`;
+        ? `${experience.title}\n\nBana anonim bir soru sor ya da bir itiraf bırak 👀\n\n#AQRYO`
+        : experience.type === "story"
+          ? `${experience.title}\n\nHikâyeye göz at 👀\n\n#AQRYO`
+          : experience.type === "compatibility"
+            ? `${experience.title}\n\nUyumumuz kaç çıkacak? ❤️\n\n#AQRYO`
+            : `${experience.title}\n\nSenin sonucun ne çıkacak?\n\n#AQRYO`;
 
     const shareUrl =
       new URL(
@@ -493,13 +491,13 @@ useEffect(() => {
       return "";
     }
 
-    return experience.type === "guess"
-      ? `${experience.title}\n\nSence cevabı ne? 👀`
+    return experience.type === "question_confession"
+      ? `${experience.title}\n\nBana anonim bir soru sor ya da bir itiraf bırak 👀\n\n#AQRYO`
       : experience.type === "story"
-        ? `${experience.title}\n\nDevamında ne olduğunu gör 👀`
+        ? `${experience.title}\n\nHikâyeye göz at 👀\n\n#AQRYO`
         : experience.type === "compatibility"
-          ? `${experience.title}\n\nNe kadar yakınsınız?`
-          : `${experience.title}\n\nSenin sonucun ne çıkacak?`;
+          ? `${experience.title}\n\nUyumumuz kaç çıkacak? ❤️\n\n#AQRYO`
+          : `${experience.title}\n\nSenin sonucun ne çıkacak?\n\n#AQRYO`;
   }
 
   function shareOnWhatsApp() {
@@ -701,7 +699,7 @@ useEffect(() => {
   </span>
 
   <h1 className="text-4xl font-black tracking-[-0.05em]">
-    AQRYO’n yayında
+    İçeriğin yayında
   </h1>
 </div>
 
@@ -778,7 +776,7 @@ useEffect(() => {
       </p>
 
       <p className="mt-1 text-[10px] leading-5 text-muted-foreground">
-        Başlık, Experience türü ve kapak görselinden otomatik hazırlanır.
+        AQRYO paylaşım kartını otomatik hazırlar; sen sadece paylaş.
       </p>
     </div>
 
