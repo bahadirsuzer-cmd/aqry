@@ -442,10 +442,7 @@ useEffect(() => {
       return;
     }
 
-    if (
-      !shareAssetsReady &&
-      experience.type !== "question_confession"
-    ) {
+    if (!shareAssetsReady) {
       window.alert(
         shareAssetsError ??
           "Paylaşım kartı henüz hazırlanıyor. Birkaç saniye sonra tekrar dene.",
@@ -454,11 +451,9 @@ useEffect(() => {
     }
 
     const publicShareUrl =
-      experience.type === "question_confession"
-        ? `${window.location.origin}/experience/${experience.id}`
-        : getPublicShareUrl(
-            experience.id,
-          );
+      getPublicShareUrl(
+        experience.id,
+      );
 
     const shareText =
       experience.type === "question_confession"
