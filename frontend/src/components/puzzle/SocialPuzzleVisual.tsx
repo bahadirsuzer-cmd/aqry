@@ -60,10 +60,10 @@ function AlgebraVisual({family,data}:{family:string;data:Record<string,number|st
     </>;
   }
   return <>
-    <text x="180" y="165" textAnchor="middle" fontSize="26" fontWeight="900">● + ● + ● = {String(data.row1)}</text>
-    <text x="180" y="220" textAnchor="middle" fontSize="26" fontWeight="900">● + ▲ + ▲ = {String(data.row2)}</text>
-    <text x="180" y="285" textAnchor="middle" fontSize="31" fontWeight="900" fill={PURPLE}>▲ − ■ = ?</text>
-    <text x="180" y="325" textAnchor="middle" fontSize="12" fontWeight="800" fill="#6b7280">●, ▲ ve ■ aynı değerleri korur</text>
+    <text x="180" y="150" textAnchor="middle" fontSize="24" fontWeight="900">● + ● + ● = {String(data.row1)}</text>
+    <text x="180" y="200" textAnchor="middle" fontSize="24" fontWeight="900">● + ▲ + ▲ = {String(data.row2)}</text>
+    <text x="180" y="250" textAnchor="middle" fontSize="24" fontWeight="900">▲ + ■ + ■ = {String(data.row3)}</text>
+    <text x="180" y="315" textAnchor="middle" fontSize="31" fontWeight="900" fill={PURPLE}>▲ − ■ = ?</text>
   </>;
 }
 
