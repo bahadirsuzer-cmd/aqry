@@ -114,7 +114,7 @@ function CompatibilityBuilderPage() {
     useState<CoverStyle>("pink");
 
   const [coverImageUrl, setCoverImageUrl] = useState("");
-  const [coverLabel, setCoverLabel] = useState("Uyumluluk");
+  const [coverLabel, setCoverLabel] = useState("Aşk Metre");
 
   const [results, setResults] =
     useState<ResultDefinition[]>(initialResults);
@@ -1154,7 +1154,7 @@ function ContentEditor({
 
               <div className="relative z-10 flex h-full flex-col justify-between p-4 text-white">
                 <span className="w-fit rounded-full bg-white/15 px-3 py-1 text-[8px] font-bold uppercase tracking-[0.12em] backdrop-blur-md">
-                  {coverLabel || "Uyumluluk"}
+                  {coverLabel || "Aşk Metre"}
                 </span>
 
                 <div>
@@ -1907,7 +1907,7 @@ function LivePreview({
 
             <div className="relative z-10 flex h-full flex-col justify-between">
               <span className="w-fit rounded-full bg-white/15 px-3 py-1 text-[7px] font-bold uppercase tracking-[0.12em] backdrop-blur-md">
-                {coverLabel || "Uyumluluk"}
+                {coverLabel || "Aşk Metre"}
               </span>
 
               <div>
