@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 const steps = [
   { index: "01", title: "Fikrini yaz", detail: "Bir cümleyle başla. AQRYO soruları ve sonucu taslak olarak hazırlasın." },
-  { index: "02", title: "Düzenle ve yayınla", detail: "Sonucu sen belirle. İstersen tamamlanma sonrasına tek bir teklif ekle." },
+  { index: "02", title: "Düzenle ve yayınla", detail: "Metni, görseli ve akışı düzenle. Hazır olduğunda tek linkle yayınla." },
   { index: "03", title: "Linkini paylaş", detail: "Kendi kitleni davet et. Trafiği ve ilişkiyi sen yönet." },
 ];
 
@@ -25,7 +25,7 @@ export function AiCreditsIntro() {
           </div>
         ))}
       </div>
-      <p className="mt-7 text-center text-sm text-[#665d73]">Katılımcı ücretsiz ve tam sonucunu görür. Ek teklif yalnızca deneyim tamamlandıktan sonra çıkar.</p>
+      <p className="mt-7 text-center text-sm text-[#665d73]">Amaç basit: içerik oluştur, paylaş ve konuşmayı kendi kitlende devam ettir.</p>
     </section>
   );
 }
