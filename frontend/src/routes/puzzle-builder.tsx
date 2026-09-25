@@ -558,7 +558,7 @@ function PuzzleTypeButton({active,title,description,onClick}:{active:boolean;tit
 function Choice({active,title,description,onClick}:{active:boolean;title:string;description:string;onClick:()=>void}){
   return <button type="button" onClick={onClick} className={`rounded-[20px] border px-4 py-4 text-left ${active?"border-violet-500 bg-violet-50":"border-border bg-white"}`}>
     <p className="text-[14px] font-black">{title}</p>
-    <p className="mt-1 text-[10px] font-semibold text-muted-foreground">{description}</p>
+    <p className="mt-1 text-[12px] font-semibold text-muted-foreground">{description}</p>
   </button>;
 }
 
