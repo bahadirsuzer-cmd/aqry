@@ -17,6 +17,12 @@ const navigationItems = [
     enabled: true,
   },
   {
+    label: "Gelen Kutusu",
+    mobileLabel: "Gelen",
+    to: "/creator-inbox",
+    enabled: true,
+  },
+  {
     label: "Experience’larım",
     mobileLabel: "Experience",
     to: "/creator-experiences",
