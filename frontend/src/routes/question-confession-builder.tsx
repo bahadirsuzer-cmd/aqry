@@ -90,11 +90,11 @@ function QuestionConfessionBuilderPage() {
         type: "question_confession",
         status: "published",
         publishedAt: new Date().toISOString(),
-        title: state.title.trim() || "Soru mu İtiraf mı?",
+        title: state.title.trim() || getQuestionConfessionDefaults(locale).title,
         description: state.intro.trim(),
         cover: {
           style: state.accent === "dark" ? "dark" : state.accent === "rose" ? "pink" : "purple",
-          label: "Soru mu İtiraf mı?",
+          label: getQuestionConfessionDefaults(locale).title,
           imageUrl: "",
         },
         questions: [],
@@ -107,9 +107,9 @@ function QuestionConfessionBuilderPage() {
         },
         questionConfession: {
           intro: state.intro.trim(),
-          questionLabel: state.questionLabel.trim() || "Soru sor",
-          confessionLabel: state.confessionLabel.trim() || "İtiraf et",
-          placeholder: state.placeholder.trim() || "Buraya yaz...",
+          questionLabel: state.questionLabel.trim() || getQuestionConfessionDefaults(locale).questionLabel,
+          confessionLabel: state.confessionLabel.trim() || getQuestionConfessionDefaults(locale).confessionLabel,
+          placeholder: state.placeholder.trim() || getQuestionConfessionDefaults(locale).placeholder,
           accent: state.accent,
         },
       });
