@@ -3,6 +3,8 @@ import { getCurrentCreator, signOutCreator } from "@/services/auth";
 import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
 import { makeVettedGeometryPuzzle } from "@/lib/geometryPuzzleTemplates";
 import { GeometryTemplateVisual } from "@/components/puzzle/GeometryTemplateVisual";
+import { makeSocialPuzzle } from "@/lib/socialPuzzleTemplates";
+import { SocialPuzzleVisual } from "@/components/puzzle/SocialPuzzleVisual";
 import React, { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -181,149 +183,26 @@ function signature(puzzle: Puzzle) {
     .join("|")}`;
 }
 
-function squareCount(rows: number, cols: number) {
-  let total = 0;
-  for (let size = 1; size <= Math.min(rows, cols); size += 1) {
-    total += (rows - size + 1) * (cols - size + 1);
-  }
-  return total;
-}
-
-function rectangleCount(rows: number, cols: number) {
-  return ((rows * (rows + 1)) / 2) * ((cols * (cols + 1)) / 2);
-}
-
-function makeMath(): Puzzle {
-  const family = pick([
-    "priority",
-    "division",
-    "bracket",
-    "nested",
-    "percentage",
-    "negative",
-    "powers",
-    "fraction",
-  ]);
-
-  if (family === "priority") {
-    const a = randomInt(12, 48);
-    const b = randomInt(2, 9);
-    const c = randomInt(2, 8);
-    return {
-      id: crypto.randomUUID(),
-      kind: "math",
-      family,
-      answer: String(a + b * c),
-      commonWrong: String((a + b) * c),
-      data: { expression: `${a} + ${b} × ${c}` },
-    };
-  }
-
-  if (family === "division") {
-    const d = pick([2, 3, 4, 5, 6]);
-    const q = randomInt(3, 9);
-    const a = d * q;
-    const b = randomInt(4, 12);
-    const c = randomInt(2, 5);
-    return {
-      id: crypto.randomUUID(),
-      kind: "math",
-      family,
-      answer: String(q + b * c),
-      commonWrong: String(Math.round(((a + b) * c) / d)),
-      data: { expression: `${a} ÷ ${d} + ${b} × ${c}` },
-    };
-  }
-
-  if (family === "bracket") {
-    const a = randomInt(2, 9);
-    const b = randomInt(3, 12);
-    const c = randomInt(2, 7);
-    const d = randomInt(2, 12);
-    return {
-      id: crypto.randomUUID(),
-      kind: "math",
-      family,
-      answer: String((a + b) * c - d),
-      commonWrong: String(a + b * c - d),
-      data: { expression: `(${a} + ${b}) × ${c} − ${d}` },
-    };
-  }
-
-  if (family === "nested") {
-    const a = randomInt(10, 30);
-    const b = randomInt(7, 14);
-    const c = randomInt(2, b - 1);
-    const d = randomInt(2, 6);
-    return {
-      id: crypto.randomUUID(),
-      kind: "math",
-      family,
-      answer: String(a + (b - c) * d),
-      commonWrong: String((a + b - c) * d),
-      data: { expression: `${a} + (${b} − ${c}) × ${d}` },
-    };
-  }
-
-  if (family === "percentage") {
-    const percent = pick([10, 20, 25, 50, 75]);
-    const base = pick([40, 60, 80, 100, 120, 160, 200]);
-    const extra = randomInt(3, 20);
-    const value = (base * percent) / 100;
-    return {
-      id: crypto.randomUUID(),
-      kind: "math",
-      family,
-      answer: String(value + extra),
-      commonWrong: String((base + extra) * percent / 100),
-      data: { expression: `${percent}% of ${base} + ${extra}` },
-    };
-  }
-
-  if (family === "negative") {
-    const a = randomInt(20, 45);
-    const b = randomInt(4, 9);
-    const c = randomInt(2, 8);
-    const d = randomInt(2, 5);
-    return {
-      id: crypto.randomUUID(),
-      kind: "math",
-      family,
-      answer: String(a - (b + c) * d),
-      commonWrong: String((a - b + c) * d),
-      data: { expression: `${a} − (${b} + ${c}) × ${d}` },
-    };
-  }
-
-  if (family === "powers") {
-    const a = randomInt(2, 8);
-    const b = randomInt(2, 7);
-    const c = randomInt(2, 6);
-    return {
-      id: crypto.randomUUID(),
-      kind: "math",
-      family,
-      answer: String(a * a + b * c),
-      commonWrong: String((a + b) * c),
-      data: { expression: `${a}² + ${b} × ${c}` },
-    };
-  }
-
-  const leftDen = pick([2, 3, 4]);
-  const rightDen = pick([2, 3, 5]);
-  const leftQ = randomInt(2, 8);
-  const rightQ = randomInt(2, 8);
-  const left = leftDen * leftQ;
-  const right = rightDen * rightQ;
+function makeCurated(kind: "math" | "count" | "algebra" | "area", recentFamilies: string[] = []): Puzzle {
+  const curated = makeSocialPuzzle(kind, recentFamilies);
   return {
     id: crypto.randomUUID(),
-    kind: "math",
-    family,
-    answer: String(leftQ + rightQ),
-    commonWrong: String(Math.round((left + right) / (leftDen + rightDen))),
-    data: { expression: `${left} ÷ ${leftDen} + ${right} ÷ ${rightDen}` },
+    kind,
+    family: curated.family,
+    answer: curated.answer,
+    commonWrong: curated.commonWrong,
+    data: {
+      ...curated.data,
+      titleKey: curated.titleKey,
+      subtitleKey: curated.subtitleKey,
+    },
   };
 }
+
+function makeMath(recentFamilies: string[] = []) {
+  return makeCurated("math", recentFamilies);
+}
+
 
 function makeGeometry(recentFamilies: string[] = []): Puzzle {
   const vetted = makeVettedGeometryPuzzle(recentFamilies);
@@ -337,225 +216,77 @@ function makeGeometry(recentFamilies: string[] = []): Puzzle {
   };
 }
 
-function makeCount(): Puzzle {
-  const family = pick([
-    "square-grid",
-    "rectangle-grid",
-    "nested",
-    "segments",
-    "triangle-fan",
-    "triangle-nested",
-  ]);
-
-  if (family === "square-grid") {
-    const rows = pick([3,4,5]);
-    const cols = pick([3,4,5,6]);
-    return {
-      id:crypto.randomUUID(),kind:"count",family,
-      answer:String(squareCount(rows,cols)),
-      commonWrong:String(rows*cols),
-      data:{rows,cols},
-    };
-  }
-
-  if (family === "rectangle-grid") {
-    const rows = pick([2,3,4]);
-    const cols = pick([3,4,5]);
-    return {
-      id:crypto.randomUUID(),kind:"count",family,
-      answer:String(rectangleCount(rows,cols)),
-      commonWrong:String(rows*cols),
-      data:{rows,cols},
-    };
-  }
-
-  if (family === "nested") {
-    const levels = pick([4,5,6,7]);
-    return { id:crypto.randomUUID(),kind:"count",family,answer:String(levels),commonWrong:String(levels-1),data:{levels} };
-  }
-
-  if (family === "segments") {
-    const points = pick([5,6,7,8]);
-    const answer = (points * (points - 1)) / 2;
-    return { id:crypto.randomUUID(),kind:"count",family,answer:String(answer),commonWrong:String(points-1),data:{points} };
-  }
-
-  if (family === "triangle-fan") {
-    const basePoints = pick([4,5,6]);
-    const answer = (basePoints * (basePoints - 1)) / 2;
-    return { id:crypto.randomUUID(),kind:"count",family,answer:String(answer),commonWrong:String(basePoints-1),data:{basePoints} };
-  }
-
-  const levels = pick([3,4,5,6]);
-  return { id:crypto.randomUUID(),kind:"count",family,answer:String(levels),commonWrong:String(levels+1),data:{levels} };
-}
-
-function makeAlgebra(): Puzzle {
-  const family = pick([
-    "linear-plus",
-    "linear-minus",
-    "distributive",
-    "ratio",
-    "sum-product",
-    "system",
-    "consecutive",
-    "fraction",
-  ]);
-
-  if (family === "linear-plus") {
-    const x = randomInt(3,18);
-    const a = randomInt(2,8);
-    const b = randomInt(3,20);
-    const rhs = a*x+b;
-    return { id:crypto.randomUUID(),kind:"algebra",family,answer:String(x),commonWrong:String(Math.round(rhs/a)),data:{a,b,rhs} };
-  }
-
-  if (family === "linear-minus") {
-    const x = randomInt(4,18);
-    const a = randomInt(2,7);
-    const b = randomInt(2,15);
-    const rhs = a*x-b;
-    return { id:crypto.randomUUID(),kind:"algebra",family,answer:String(x),commonWrong:String(Math.round(rhs/a)),data:{a,b,rhs} };
-  }
-
-  if (family === "distributive") {
-    const x = randomInt(2,12);
-    const a = randomInt(2,6);
-    const b = randomInt(2,8);
-    const rhs = a*(x+b);
-    return { id:crypto.randomUUID(),kind:"algebra",family,answer:String(x),commonWrong:String(rhs/a),data:{a,b,rhs} };
-  }
-
-  if (family === "ratio") {
-    const factor = randomInt(3,8);
-    const ratioA = pick([2,3,4,5]);
-    const ratioB = pick([2,3,4,5]);
-    const x = ratioA*factor;
-    const y = ratioB*factor;
-    return { id:crypto.randomUUID(),kind:"algebra",family,answer:String(x),commonWrong:String(y),data:{ratioA,ratioB,total:x+y} };
-  }
-
-  if (family === "sum-product") {
-    const x = randomInt(3,9);
-    const y = randomInt(2,8);
-    const sum = x+y;
-    const product = x*y;
-    return { id:crypto.randomUUID(),kind:"algebra",family,answer:String(x*x+y*y),commonWrong:String(sum*sum),data:{sum,product} };
-  }
-
-  if (family === "system") {
-    const x = randomInt(4,15);
-    const y = randomInt(2,10);
-    return { id:crypto.randomUUID(),kind:"algebra",family,answer:String(x),commonWrong:String(y),data:{sum:x+y,diff:x-y} };
-  }
-
-  if (family === "consecutive") {
-    const x = randomInt(4,20);
-    const sum = x + (x+1);
-    return { id:crypto.randomUUID(),kind:"algebra",family,answer:String(x),commonWrong:String(Math.round(sum/2)),data:{sum} };
-  }
-
-  const divisor = pick([2,3,4,5]);
-  const x = divisor * randomInt(3,12);
-  const add = randomInt(2,10);
-  const rhs = x/divisor + add;
-  return { id:crypto.randomUUID(),kind:"algebra",family,answer:String(x),commonWrong:String((rhs-add)*2),data:{divisor,add,rhs} };
-}
-
-function makeArea(): Puzzle {
-  const family = pick([
-    "rectangle-side",
-    "triangle-area",
-    "shaded",
-    "perimeter",
-    "pythagoras",
-    "l-shape",
-    "trapezoid",
-    "circle",
-  ]);
-
-  if (family === "rectangle-side") {
-    const w = randomInt(4,12);
-    const h = randomInt(3,10);
-    return { id:crypto.randomUUID(),kind:"area",family,answer:String(w),commonWrong:String(h),data:{area:w*h,h,w} };
-  }
-
-  if (family === "triangle-area") {
-    const base = pick([6,8,10,12,14]);
-    const height = pick([4,6,8,10]);
-    return { id:crypto.randomUUID(),kind:"area",family,answer:String(base*height/2),commonWrong:String(base*height),data:{base,height} };
-  }
-
-  if (family === "shaded") {
-    const a = pick([5,6,7,8,9]);
-    const b = pick([2,3,4]);
-    return { id:crypto.randomUUID(),kind:"area",family,answer:String(a*a-b*b),commonWrong:String(a*a+b*b),data:{a,b} };
-  }
-
-  if (family === "perimeter") {
-    const w = randomInt(5,14);
-    const h = randomInt(3,10);
-    return { id:crypto.randomUUID(),kind:"area",family,answer:String(2*(w+h)),commonWrong:String(w*h),data:{w,h} };
-  }
-
-  if (family === "pythagoras") {
-    const triple = pick([[3,4,5],[5,12,13],[6,8,10],[8,15,17]] as const);
-    return { id:crypto.randomUUID(),kind:"area",family,answer:String(triple[2]),commonWrong:String(triple[0]+triple[1]),data:{a:triple[0],b:triple[1],c:triple[2]} };
-  }
-
-  if (family === "l-shape") {
-    const bigW = randomInt(8,12);
-    const bigH = randomInt(7,11);
-    const cutW = randomInt(2,4);
-    const cutH = randomInt(2,4);
-    return { id:crypto.randomUUID(),kind:"area",family,answer:String(bigW*bigH-cutW*cutH),commonWrong:String(bigW*bigH),data:{bigW,bigH,cutW,cutH} };
-  }
-
-  if (family === "trapezoid") {
-    const a = pick([6,8,10,12]);
-    const b = pick([10,12,14,16]);
-    const h = pick([4,6,8]);
-    return { id:crypto.randomUUID(),kind:"area",family,answer:String(((a+b)*h)/2),commonWrong:String((a+b)*h),data:{a,b,h} };
-  }
-
-  const radius = pick([3,4,5,6,7]);
-  return { id:crypto.randomUUID(),kind:"area",family,answer:`${2*radius}π`,commonWrong:`${radius*radius}π`,data:{radius} };
-}
-
 function generate(kind: PuzzleKind, recent: string[]): Puzzle {
   const recentFamilyIds = recent
     .slice(0, RECENT_FAMILY_WINDOW)
     .filter((item) => item.startsWith(`${kind}:`))
     .map((item) => item.split(":")[1]);
 
-  if (kind === "geometry") {
-    for (let attempt = 0; attempt < 40; attempt += 1) {
-      const next = makeGeometry(recentFamilyIds);
-      if (!recent.includes(signature(next))) return next;
-    }
-    return makeGeometry([]);
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    const next =
+      kind === "geometry"
+        ? makeGeometry(recentFamilyIds)
+        : makeCurated(kind, recentFamilyIds);
+
+    if (!recent.includes(signature(next))) return next;
   }
 
-  const maker =
-    kind === "math" ? makeMath :
-    kind === "count" ? makeCount :
-    kind === "algebra" ? makeAlgebra :
-    makeArea;
+  return kind === "geometry" ? makeGeometry([]) : makeCurated(kind, []);
+}
 
-  const recentFamilies = new Set(
-    recent.slice(0, RECENT_FAMILY_WINDOW).map((item) => item.split(":").slice(0,2).join(":")),
-  );
+const TEMPLATE_TEXT: Partial<Record<AqryoLocale, Record<string,string>>> = {
+  tr: {
+    calc:"Sonucu bul",
+    dontRush:"İlk gördüğün işlemi yapma",
+    bracketsMatter:"Parantezi atlayan kaybediyor",
+    powerTrap:"Üs işaretini kaçırma",
+    countSquares:"Kaç kare görüyorsun?",
+    notJustSmall:"Sadece küçük kareleri sayma",
+    countRectangles:"Kaç dikdörtgen var?",
+    countAllSizes:"Her boyutu dahil et",
+    countTriangles:"Kaç üçgen görüyorsun?",
+    combineThem:"Büyük üçgenleri de unutma",
+    findValue:"İstenen değeri bul",
+    identityTrap:"Direkt sayıları aramaya çalışma",
+    findX:"x kaç?",
+    twoLines:"İki satır birlikte yeterli",
+    symbolPuzzle:"Sembollerin değerini çöz",
+    sameSymbols:"Aynı sembol aynı değerde",
+    shadedArea:"Boyalı alan kaç?",
+    subtractCorrectly:"Büyük alandan doğru parçayı çıkar",
+    findArea:"Boyalı şeklin alanı kaç?",
+    missingCorner:"Eksik köşeyi hesaba kat",
+    findLength:"Kırmızı yolun toplamı kaç?",
+    twoStepLength:"Önce eğik kenarı bul",
+  },
+  en: {
+    calc:"Find the result",
+    dontRush:"Don’t rush the first operation",
+    bracketsMatter:"Miss the brackets, lose the puzzle",
+    powerTrap:"Don’t miss the exponent",
+    countSquares:"How many squares can you see?",
+    notJustSmall:"Don’t count only the small squares",
+    countRectangles:"How many rectangles are there?",
+    countAllSizes:"Include every size",
+    countTriangles:"How many triangles can you see?",
+    combineThem:"Don’t forget the larger triangles",
+    findValue:"Find the requested value",
+    identityTrap:"Don’t search for the numbers directly",
+    findX:"Find x",
+    twoLines:"Both lines are enough",
+    symbolPuzzle:"Solve the symbol values",
+    sameSymbols:"Same symbol, same value",
+    shadedArea:"What is the shaded area?",
+    subtractCorrectly:"Subtract the right region",
+    findArea:"What is the area of the shape?",
+    missingCorner:"Account for the missing corner",
+    findLength:"What is the total red length?",
+    twoStepLength:"Find the slanted side first",
+  },
+};
 
-  for (let attempt = 0; attempt < 80; attempt += 1) {
-    const next = maker();
-    const sig = signature(next);
-    const familyKey = `${next.kind}:${next.family}`;
-    if (!recent.includes(sig) && !recentFamilies.has(familyKey)) {
-      return next;
-    }
-  }
-
-  return maker();
+function templateText(locale:AqryoLocale,key:string,fallback:string){
+  return TEMPLATE_TEXT[locale]?.[key] ?? TEMPLATE_TEXT.en?.[key] ?? fallback;
 }
 
 function ctaFor(locale: AqryoLocale, puzzle: Puzzle) {
@@ -574,10 +305,10 @@ function PuzzleBuilderPage() {
   const { locale, t } = useAqryoLocale();
   const copy = COPY[locale] ?? COPY.en;
   const [loading,setLoading]=useState(true);
-  const [kind,setKind]=useState<PuzzleKind>("geometry");
+  const [kind,setKind]=useState<PuzzleKind>("math");
   const [presentation,setPresentation]=useState<Presentation>("clean");
   const [recent,setRecent]=useState<string[]>([]);
-  const [puzzle,setPuzzle]=useState<Puzzle>(()=>makeGeometry([]));
+  const [puzzle,setPuzzle]=useState<Puzzle>(()=>makeMath([]));
   const [socialText,setSocialText]=useState("");
   const [copied,setCopied]=useState(false);
   const [sharing,setSharing]=useState(false);
@@ -669,7 +400,11 @@ function PuzzleBuilderPage() {
   if(loading) return <LoadingScreen/>;
 
   const kinds:Array<[PuzzleKind,string,string]> = [
+    ["math",t("math"),copy.descriptions.math],
     ["geometry",t("geometry"),copy.descriptions.geometry],
+    ["count",t("count"),"Kare, dikdörtgen ve üçgenleri tüm boyutlarıyla say"],
+    ["algebra",t("algebra"),"Sistem, özdeşlik ve sembol denklemleri"],
+    ["area",t("area"),"Gölgeli alan, bileşik şekil ve iki adımlı uzunluk"],
   ];
 
   return (
@@ -692,14 +427,11 @@ function PuzzleBuilderPage() {
             <p className="text-[11px] font-black uppercase tracking-[0.15em] text-violet-600">1 · {t("questionType")}</p>
             <h2 className="mt-3 text-[31px] font-black leading-tight tracking-[-0.055em]">{t("viralInFive")}</h2>
 
-            <div className="mt-6 grid gap-3">
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {kinds.map(([value,title,description])=>(
                 <PuzzleTypeButton key={value} active={kind===value} title={title} description={description} onClick={()=>chooseKind(value)}/>
               ))}
             </div>
-            <p className="mt-3 text-[12px] font-semibold leading-5 text-muted-foreground">
-              Diğer puzzle türleri kalite bankası tamamlanana kadar gizlendi.
-            </p>
 
             <p className="mt-6 text-[12px] font-black">{t("presentation")}</p>
             <div className="mt-2 grid grid-cols-2 gap-3">
@@ -736,7 +468,7 @@ function PuzzleBuilderPage() {
         <aside ref={previewRef} className="scroll-mt-40 lg:sticky lg:top-[110px] lg:self-start">
           <p className="mb-3 text-[11px] font-black uppercase tracking-[0.16em] text-muted-foreground">{t("shareVisual")}</p>
           <div className="overflow-hidden rounded-[32px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)]">
-            <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy}/>
+            <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale}/>
           </div>
         </aside>
       </div>
@@ -746,17 +478,31 @@ function PuzzleBuilderPage() {
 
 const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
-  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy}
->(function PuzzleSvg({puzzle,presentation,copy},ref){
+  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale}
+>(function PuzzleSvg({puzzle,presentation,copy,locale},ref){
+  const title = templateText(locale,String(puzzle.data.titleKey ?? ""),copy.titles[puzzle.kind]);
+  const subtitle = templateText(locale,String(puzzle.data.subtitleKey ?? ""),copy.subtitles[puzzle.kind]);
+
   return (
     <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" className="w-full rounded-[24px]">
       <rect width="360" height="480" rx="28" fill="#fbfafc"/>
       <circle cx="48" cy="45" r="20" fill="#74f0de"/>
       <text x="48" y="52" textAnchor="middle" fontSize="19" fontWeight="900" fill="#17101f">Q</text>
       <text x="78" y="51" fontSize="14" fontWeight="900" fill="#17101f">AQRYO</text>
-      <text x="180" y="95" textAnchor="middle" fontSize="20" fontWeight="900" fill="#17101f">{copy.titles[puzzle.kind]}</text>
-
-      <PuzzleBody puzzle={puzzle}/>
+      {puzzle.kind === "geometry" ? (
+        <>
+          <text x="180" y="95" textAnchor="middle" fontSize="20" fontWeight="900" fill="#17101f">{copy.titles.geometry}</text>
+          <GeometryTemplateVisual family={puzzle.family} data={puzzle.data} />
+        </>
+      ) : (
+        <SocialPuzzleVisual
+          kind={puzzle.kind}
+          family={puzzle.family}
+          data={puzzle.data}
+          title={title}
+          subtitle={presentation === "debate" ? "" : subtitle}
+        />
+      )}
 
       {presentation==="debate" ? (
         <>
@@ -772,185 +518,13 @@ const PuzzleSvg=React.forwardRef<
           <text x="180" y="462" textAnchor="middle" fontSize="18" fontWeight="900" fill="#6d28d9">{copy.debateQuestion}</text>
         </>
       ) : (
-        <text x="180" y="440" textAnchor="middle" fontSize="17" fontWeight="900" fill="#6b7280">{copy.subtitles[puzzle.kind]}</text>
+        puzzle.kind === "geometry" ? (
+          <text x="180" y="440" textAnchor="middle" fontSize="17" fontWeight="900" fill="#6b7280">{copy.subtitles.geometry}</text>
+        ) : null
       )}
     </svg>
   );
 });
-
-function PuzzleBody({puzzle}:{puzzle:Puzzle}){
-  const d=puzzle.data;
-
-  if(puzzle.kind==="math"){
-    return <text x="180" y="245" textAnchor="middle" fontSize="38" fontWeight="900" fill="#17101f">{String(d.expression)}</text>;
-  }
-
-  if(puzzle.kind==="geometry"){
-    return <GeometryTemplateVisual family={puzzle.family} data={d} />;
-  }
-
-  if(puzzle.kind==="count"){
-    if(puzzle.family==="nested"){
-      const levels=Number(d.levels);
-      return <>{Array.from({length:levels},(_,i)=><rect key={i} x={70+i*12} y={140+i*12} width={220-i*24} height={220-i*24} fill="none" stroke="#17101f" strokeWidth="4"/>)}</>;
-    }
-
-    if(puzzle.family==="segments"){
-      const points=Number(d.points);
-      return <>
-        <line x1="55" y1="250" x2="305" y2="250" stroke="#17101f" strokeWidth="5"/>
-        {Array.from({length:points},(_,i)=>{
-          const x=65+i*(230/(points-1));
-          return <g key={i}><circle cx={x} cy="250" r="7" fill="#7c3aed"/><text x={x} y="285" textAnchor="middle" fontSize="14" fontWeight="900">{String.fromCharCode(65+i)}</text></g>;
-        })}
-      </>;
-    }
-
-    if(puzzle.family==="triangle-fan"){
-      const points=Number(d.basePoints);
-      const xs=Array.from({length:points},(_,i)=>70+i*(220/(points-1)));
-      return <>
-        <line x1="70" y1="330" x2="290" y2="330" stroke="#17101f" strokeWidth="6"/>
-        {xs.map((x,i)=><line key={i} x1="180" y1="135" x2={x} y2="330" stroke="#17101f" strokeWidth={i===0||i===points-1?6:3}/>)}
-      </>;
-    }
-
-    if(puzzle.family==="triangle-nested"){
-      const levels=Number(d.levels);
-      return <>{Array.from({length:levels},(_,i)=>{
-        const inset=i*16;
-        return <path key={i} d={`M${70+inset} ${330-inset/2}L180 ${135+inset}L${290-inset} ${330-inset/2}Z`} fill="none" stroke="#17101f" strokeWidth="4"/>;
-      })}</>;
-    }
-
-    const rows=Number(d.rows);
-    const cols=Number(d.cols);
-    const x0=55,y0=145,w=250,h=200,cellW=w/cols,cellH=h/rows;
-    return <>
-      <rect x={x0} y={y0} width={w} height={h} fill="none" stroke="#17101f" strokeWidth="6"/>
-      {Array.from({length:cols-1},(_,i)=><line key={"v"+i} x1={x0+(i+1)*cellW} y1={y0} x2={x0+(i+1)*cellW} y2={y0+h} stroke="#17101f" strokeWidth="4"/>)}
-      {Array.from({length:rows-1},(_,i)=><line key={"h"+i} x1={x0} y1={y0+(i+1)*cellH} x2={x0+w} y2={y0+(i+1)*cellH} stroke="#17101f" strokeWidth="4"/>)}
-    </>;
-  }
-
-  if(puzzle.kind==="algebra"){
-    if(puzzle.family==="linear-plus") return <>
-      <text x="180" y="220" textAnchor="middle" fontSize="39" fontWeight="900">{String(d.a)}x + {String(d.b)} = {String(d.rhs)}</text>
-      <text x="180" y="290" textAnchor="middle" fontSize="36" fontWeight="900" fill="#7c3aed">x = ?</text>
-    </>;
-
-    if(puzzle.family==="linear-minus") return <>
-      <text x="180" y="220" textAnchor="middle" fontSize="39" fontWeight="900">{String(d.a)}x − {String(d.b)} = {String(d.rhs)}</text>
-      <text x="180" y="290" textAnchor="middle" fontSize="36" fontWeight="900" fill="#7c3aed">x = ?</text>
-    </>;
-
-    if(puzzle.family==="distributive") return <>
-      <text x="180" y="220" textAnchor="middle" fontSize="36" fontWeight="900">{String(d.a)}(x + {String(d.b)}) = {String(d.rhs)}</text>
-      <text x="180" y="290" textAnchor="middle" fontSize="36" fontWeight="900" fill="#7c3aed">x = ?</text>
-    </>;
-
-    if(puzzle.family==="ratio") return <>
-      <text x="180" y="205" textAnchor="middle" fontSize="30" fontWeight="900">x : y = {String(d.ratioA)} : {String(d.ratioB)}</text>
-      <text x="180" y="255" textAnchor="middle" fontSize="28" fontWeight="900">x + y = {String(d.total)}</text>
-      <text x="180" y="310" textAnchor="middle" fontSize="34" fontWeight="900" fill="#7c3aed">x = ?</text>
-    </>;
-
-    if(puzzle.family==="sum-product") return <>
-      <text x="180" y="190" textAnchor="middle" fontSize="29" fontWeight="900">a + b = {String(d.sum)}</text>
-      <text x="180" y="235" textAnchor="middle" fontSize="29" fontWeight="900">ab = {String(d.product)}</text>
-      <text x="180" y="300" textAnchor="middle" fontSize="34" fontWeight="900" fill="#7c3aed">a² + b² = ?</text>
-    </>;
-
-    if(puzzle.family==="system") return <>
-      <text x="180" y="195" textAnchor="middle" fontSize="31" fontWeight="900">x + y = {String(d.sum)}</text>
-      <text x="180" y="245" textAnchor="middle" fontSize="31" fontWeight="900">x − y = {String(d.diff)}</text>
-      <text x="180" y="305" textAnchor="middle" fontSize="34" fontWeight="900" fill="#7c3aed">x = ?</text>
-    </>;
-
-    if(puzzle.family==="consecutive") return <>
-      <text x="180" y="215" textAnchor="middle" fontSize="34" fontWeight="900">x + (x + 1) = {String(d.sum)}</text>
-      <text x="180" y="290" textAnchor="middle" fontSize="36" fontWeight="900" fill="#7c3aed">x = ?</text>
-    </>;
-
-    return <>
-      <text x="180" y="215" textAnchor="middle" fontSize="33" fontWeight="900">x ÷ {String(d.divisor)} + {String(d.add)} = {String(d.rhs)}</text>
-      <text x="180" y="290" textAnchor="middle" fontSize="36" fontWeight="900" fill="#7c3aed">x = ?</text>
-    </>;
-  }
-
-  if(puzzle.family==="rectangle-side"){
-    return <>
-      <rect x="80" y="155" width="200" height="150" fill="none" stroke="#17101f" strokeWidth="7"/>
-      <text x="180" y="235" textAnchor="middle" fontSize="32" fontWeight="900">{String(d.area)} m²</text>
-      <text x="48" y="235" fontSize="22" fontWeight="900">{String(d.h)}m</text>
-      <text x="165" y="340" fontSize="27" fontWeight="900" fill="#7c3aed">x</text>
-    </>;
-  }
-
-  if(puzzle.family==="triangle-area"){
-    return <>
-      <path d="M75 325L180 145L290 325Z" fill="none" stroke="#17101f" strokeWidth="7"/>
-      <line x1="180" y1="145" x2="180" y2="325" stroke="#7c3aed" strokeWidth="4" strokeDasharray="8 8"/>
-      <text x="160" y="350" fontSize="20" fontWeight="900">{String(d.base)}m</text>
-      <text x="190" y="240" fontSize="20" fontWeight="900">{String(d.height)}m</text>
-    </>;
-  }
-
-  if(puzzle.family==="shaded"){
-    return <>
-      <rect x="75" y="145" width="210" height="210" fill="#ede9fe" stroke="#17101f" strokeWidth="7"/>
-      <rect x="155" y="225" width="90" height="90" fill="#fbfafc" stroke="#17101f" strokeWidth="5"/>
-      <text x="82" y="135" fontSize="19" fontWeight="900">{String(d.a)}m</text>
-      <text x="162" y="218" fontSize="18" fontWeight="900">{String(d.b)}m</text>
-    </>;
-  }
-
-  if(puzzle.family==="perimeter"){
-    return <>
-      <rect x="75" y="165" width="210" height="145" fill="none" stroke="#17101f" strokeWidth="7"/>
-      <text x="160" y="342" fontSize="20" fontWeight="900">{String(d.w)}m</text>
-      <text x="38" y="245" fontSize="20" fontWeight="900">{String(d.h)}m</text>
-      <text x="180" y="240" textAnchor="middle" fontSize="26" fontWeight="900" fill="#7c3aed">P = ?</text>
-    </>;
-  }
-
-  if(puzzle.family==="pythagoras"){
-    return <>
-      <path d="M75 325L75 145L290 325Z" fill="none" stroke="#17101f" strokeWidth="7"/>
-      <path d="M75 300H100V325" fill="none" stroke="#7c3aed" strokeWidth="4"/>
-      <text x="38" y="245" fontSize="20" fontWeight="900">{String(d.a)}</text>
-      <text x="165" y="350" fontSize="20" fontWeight="900">{String(d.b)}</text>
-      <text x="190" y="220" fontSize="28" fontWeight="900" fill="#7c3aed">x</text>
-    </>;
-  }
-
-  if(puzzle.family==="l-shape"){
-    return <>
-      <path d="M70 145H290V250H220V340H70Z" fill="#ede9fe" stroke="#17101f" strokeWidth="7" strokeLinejoin="round"/>
-      <text x="155" y="130" fontSize="18" fontWeight="900">{String(d.bigW)}m</text>
-      <text x="35" y="250" fontSize="18" fontWeight="900">{String(d.bigH)}m</text>
-      <text x="225" y="275" fontSize="16" fontWeight="900">{String(d.cutW)}m</text>
-      <text x="245" y="330" fontSize="16" fontWeight="900">{String(d.cutH)}m</text>
-    </>;
-  }
-
-  if(puzzle.family==="trapezoid"){
-    return <>
-      <path d="M105 155H255L300 330H60Z" fill="none" stroke="#17101f" strokeWidth="7" strokeLinejoin="round"/>
-      <line x1="180" y1="155" x2="180" y2="330" stroke="#7c3aed" strokeWidth="4" strokeDasharray="8 8"/>
-      <text x="170" y="140" fontSize="18" fontWeight="900">{String(d.a)}m</text>
-      <text x="168" y="355" fontSize="18" fontWeight="900">{String(d.b)}m</text>
-      <text x="190" y="245" fontSize="18" fontWeight="900">{String(d.h)}m</text>
-    </>;
-  }
-
-  return <>
-    <circle cx="180" cy="245" r="95" fill="none" stroke="#17101f" strokeWidth="7"/>
-    <line x1="180" y1="245" x2="275" y2="245" stroke="#7c3aed" strokeWidth="5"/>
-    <text x="215" y="230" fontSize="20" fontWeight="900">r = {String(d.radius)}</text>
-    <text x="180" y="385" textAnchor="middle" fontSize="24" fontWeight="900" fill="#7c3aed">C = ?</text>
-  </>;
-}
 
 function PuzzleTypeButton({
   active,title,description,onClick,
