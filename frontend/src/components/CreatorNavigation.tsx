@@ -29,12 +29,6 @@ const navigationItems = [
     enabled: true,
   },
   {
-    label: "Hediyeler",
-    mobileLabel: "Hediye",
-    to: "/creator-gifts",
-    enabled: true,
-  },
-  {
     label: "Ödemeler",
     mobileLabel: "Ödeme",
     to: "/creator-payments",
