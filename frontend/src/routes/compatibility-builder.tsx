@@ -11,7 +11,7 @@ export const Route = createFileRoute("/compatibility-builder")({
   component: CompatibilityBuilderPage,
 });
 
-type BuilderPanel = "content" | "answers" | "result" | "offer" | "preview";
+type BuilderPanel = "content" | "answers" | "result" | "preview";
 type CoverStyle = "pink" | "purple" | "blue" | "dark";
 
 type Question = {
@@ -27,7 +27,7 @@ type ResultDefinition = {
   description: string;
 };
 
-const STANDARD_OFFER_PRICE = 9;
+const STANDARD_OFFER_PRICE = 0;
 const BUILDER_STORAGE_KEY = "aqry-compatibility-builder-v2";
 const initialQuestions: Question[] = [
   {
@@ -119,7 +119,7 @@ function CompatibilityBuilderPage() {
   const [results, setResults] =
     useState<ResultDefinition[]>(initialResults);
 
-  const [offerEnabled, setOfferEnabled] = useState(true);
+  const [offerEnabled, setOfferEnabled] = useState(false);
 
   const [offerTitle, setOfferTitle] = useState(
     "Detaylı uyum haritanı gör",
@@ -141,14 +141,13 @@ function CompatibilityBuilderPage() {
     "content",
     "answers",
     "result",
-    "offer",
     "preview",
   ];
 
   const [maxVisitedStep, setMaxVisitedStep] =
     useState(0);
   const [guidance, setGuidance] = useState<
-    "answers" | "result" | "offer" | null
+    "answers" | "result" | null
   >(null);
 
   const [previewStarted, setPreviewStarted] =
@@ -350,12 +349,7 @@ useEffect(() => {
       result.description.trim().length > 0,
   );
 
-  const offerIsValid =
-    !offerEnabled ||
-    (offerTitle.trim().length > 0 &&
-      offerDescription.trim().length > 0);
-
-  const canPublish = useMemo(
+   const canPublish = useMemo(
     () =>
       title.trim().length > 0 &&
       description.trim().length > 0 &&
@@ -363,13 +357,11 @@ useEffect(() => {
       questionsAreValid &&
       allAnswersSelected &&
       answersLocked &&
-      resultsAreValid &&
-      offerIsValid,
+      resultsAreValid,
     [
       allAnswersSelected,
       answersLocked,
       description,
-      offerIsValid,
       questions.length,
       questionsAreValid,
       resultsAreValid,
@@ -552,16 +544,9 @@ useEffect(() => {
       window.alert("Devam etmeden önce sonuç başlıklarını ve açıklamalarını tamamla.");
       return;
     }
-    setGuidance("offer");
-  }
-
-  function continueFromOffer() {
-    if (!offerIsValid) {
-      window.alert("Offer açıksa başlık ve açıklamayı tamamla.");
-      return;
-    }
-    setMaxVisitedStep((current) => Math.max(current, 4));
+    setMaxVisitedStep((current) => Math.max(current, 3));
     setActivePanel("preview");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function confirmGuidance() {
@@ -637,7 +622,7 @@ useEffect(() => {
     creatorAnswers,
     results,
     offer: {
-      enabled: offerEnabled,
+      enabled: false,
       title: offerTitle,
       description: offerDescription,
       price: offerPrice,
@@ -680,7 +665,7 @@ const publishedExperience = {
     creatorAnswers,
     results,
     offer: {
-      enabled: offerEnabled,
+      enabled: false,
       title: offerTitle,
       description: offerDescription,
       price: offerPrice,
@@ -743,17 +728,17 @@ return (
     <header className="sticky top-16 z-30 border-b border-border/80 bg-[#faf8fb]/95 backdrop-blur-xl">
       <div className="mx-auto flex h-[58px] max-w-[1500px] items-center justify-between gap-3 px-4 sm:px-7">
         <div className="min-w-0">
-          <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-primary">
+          <p className="text-[11px] font-black uppercase tracking-[0.15em] text-primary">
             {sourceExperienceId
               ? "Yeni sürüm oluşturuluyor"
-              : "Bana ne kadar yakınsın?"}
+              : "Aşk Metre"}
           </p>
-          <p className="truncate text-[11px] font-bold">{title}</p>
+          <p className="truncate text-[14px] font-extrabold">{title}</p>
         </div>
 
         <Link
           to="/creator-studio"
-          className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-white px-4 text-[9px] font-bold text-muted-foreground transition hover:border-primary hover:text-primary"
+          className="inline-flex h-11 items-center justify-center rounded-full border border-border bg-white px-5 text-[12px] font-black text-muted-foreground transition hover:border-primary hover:text-primary"
         >
           Studio’ya dön
         </Link>
@@ -782,7 +767,7 @@ return (
         <p className="mb-3 hidden px-3 text-[8px] font-black uppercase tracking-[0.16em] text-muted-foreground lg:block">
           Oluşturma akışı
         </p>
-        <nav className="grid grid-cols-5 gap-1.5 lg:grid-cols-1">
+        <nav className="grid grid-cols-4 gap-1.5 lg:grid-cols-1">
           {builderSteps.map((step, index) => (
             <BuilderTab
               key={step}
@@ -794,9 +779,7 @@ return (
                     ? "Cevapların"
                     : step === "result"
                       ? "Sonuç"
-                      : step === "offer"
-                        ? "Kazanç"
-                        : "Önizleme"
+                      : "Önizleme"
               }
               icon={String(index + 1)}
               completed={index < activeStepIndex}
@@ -814,7 +797,6 @@ return (
             <StatusRow completed={questionsAreValid} label={`${questions.length} soru hazır`} />
             <StatusRow completed={allAnswersSelected} label={`Kendi cevapların ${answeredCount}/${questions.length}`} />
             <StatusRow completed={resultsAreValid} label="Sonuçlar hazır" />
-            <StatusRow completed={offerIsValid} label="Kazanç ayarı hazır" />
           </div>
         </div>
       </aside>
@@ -862,21 +844,6 @@ return (
           <>
             <ResultEditor results={results} updateResult={updateResult} />
             <WizardFooter onBack={goBack} onNext={continueFromResult} />
-          </>
-        )}
-
-        {activePanel === "offer" && (
-          <>
-            <OfferEditor
-              enabled={offerEnabled}
-              title={offerTitle}
-              description={offerDescription}
-              price={offerPrice}
-              setEnabled={setOfferEnabled}
-              setTitle={setOfferTitle}
-              setDescription={setOfferDescription}
-            />
-            <WizardFooter onBack={goBack} onNext={continueFromOffer} />
           </>
         )}
 
