@@ -9,7 +9,7 @@ function AboutPage() {
     return (
         <LegalPageLayout
             title="Hakkımızda"
-            description="AQRYO, içerik üreticilerinin kendi kitleleri için interaktif dijital deneyimler oluşturmasını ve bu deneyimler üzerinden gelir elde etmesini sağlayan web tabanlı bir teknoloji platformudur."
+            description="AQRYO, içerik üreticilerinin kendi kitleleri için interaktif dijital içerikler ve deneyimler oluşturmasını sağlayan web tabanlı bir teknoloji platformudur."
             sections={[
                 {
                     title: "AQRYO nedir?",
@@ -40,14 +40,13 @@ function AboutPage() {
                     ),
                 },
                 {
-                    title: "Ücretsiz ve ücretli içerikler",
+                    title: "Nasıl kullanılır?",
                     content: (
                         <p>
-                            AQRYO üzerindeki deneyimler ücretsiz bir temel sonuç sunabilir.
-                            İçerik üreticileri bunun ardından isteğe bağlı ücretli dijital
-                            içerikler, ek sonuçlar, teklifler veya Gift seçenekleri sunabilir.
-                            Ücretli işlemin kapsamı ve toplam fiyatı ödeme öncesinde
-                            kullanıcıya gösterilir.
+                            Creator bir içerik formatı seçer, metnini veya görselini hazırlar
+                            ve oluşan bağlantıyı kendi kitlesiyle paylaşır. AQRYO keşfet akışı
+                            oluşturmak yerine creator ile takipçisi arasındaki etkileşimi
+                            kolaylaştıran bir araç olarak çalışır.
                         </p>
                     ),
                 },
@@ -56,9 +55,9 @@ function AboutPage() {
                     content: (
                         <p>
                             Amacımız içerik üreticilerinin mevcut kitleleriyle daha
-                            etkileşimli ilişkiler kurmasını ve dijital üretimlerinden doğrudan
-                            gelir elde edebilmesini sağlayan sade ve güvenli araçlar
-                            geliştirmektir.
+                            etkileşimli ilişkiler kurmasını, kolayca paylaşılabilir içerikler
+                            üretmesini ve takipçileriyle yeni konuşmalar başlatmasını sağlayan
+                            sade araçlar geliştirmektir.
                         </p>
                     ),
                 },
