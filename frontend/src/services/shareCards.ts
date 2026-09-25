@@ -1,8 +1,9 @@
 export type ShareExperienceType =
+  | "question_confession"
   | "compatibility"
+  | "story"
   | "test"
   | "guess"
-  | "story"
   | string;
 
 export type ShareTestMode =
@@ -460,25 +461,6 @@ function drawImageCover(
   );
 }
 
-function drawBrand(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  color: string,
-  size: number,
-) {
-  ctx.fillStyle = color;
-
-  ctx.font =
-    `900 ${size}px Inter, Arial, sans-serif`;
-
-  ctx.fillText(
-    "AQRYO.",
-    x,
-    y,
-  );
-}
-
 function drawSquare(
   ctx: CanvasRenderingContext2D,
   source: ShareCardSource,
@@ -734,13 +716,10 @@ function drawSquare(
     970,
   );
 
-  drawBrand(
-    ctx,
-    455,
-    1050,
-    "#28115e",
-    30,
-  );
+  ctx.fillStyle = "#6b6475";
+  ctx.font = "800 24px Inter, Arial, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Sen de oluştur · aqryo.com · #AQRYO", width / 2, 1044);
 }
 
 function drawOg(
@@ -824,7 +803,7 @@ function drawOg(
 
   ctx.font = "700 24px Inter, Arial, sans-serif";
   ctx.fillStyle = "rgba(255,255,255,0.78)";
-  ctx.fillText("aqryo.com", 1128, 552);
+  ctx.fillText("Sen de oluştur · aqryo.com · #AQRYO", 1128, 552);
 }
 
 function drawStory(
@@ -1084,13 +1063,10 @@ function drawStory(
     buttonY + 76,
   );
 
-  drawBrand(
-    ctx,
-    430,
-    1880,
-    "#ffffff",
-    34,
-  );
+  ctx.fillStyle = "rgba(255,255,255,0.82)";
+  ctx.font = "800 28px Inter, Arial, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Sen de oluştur · aqryo.com · #AQRYO", width / 2, 1880);
 }
 
 export async function renderShareCard(
