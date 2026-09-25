@@ -650,6 +650,8 @@ useEffect(() => {
 
   const [guessError, setGuessError] =
     useState<string | null>(null);
+  const completionSavedRef = useRef(false);
+  const [completionState, setCompletionState] = useState<"idle" | "saving" | "saved" | "failed">("idle");
   if (!experienceLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#faf8fb]">
@@ -732,31 +734,32 @@ useEffect(() => {
   const result =
     calculatedOutcome.result;
 
-  async function finishQuestionFlow(
-    answers: Record<number, number>,
-  ) {
+  function confirmCompletion() {
     if (!experience) return;
 
-    const outcome =
-      experience.type === "test" && experience.blueprint
-        ? calculateBlueprintTestOutcome(experience, answers)
-        : calculateExperienceOutcome(experience, answers);
+    setScreen("completion");
 
-    const orderedAnswers = experience.questions.map(
-      (question) => answers[question.id] ?? -1,
+    if (completionSavedRef.current) return;
+    completionSavedRef.current = true;
+    setCompletionState("saving");
+
+    const answers = experience.questions.map(
+      (question) => participantAnswers[question.id] ?? -1,
     );
 
-    try {
-      await saveCompletion({
-        experienceId,
-        score: outcome.score,
-        resultKey: outcome.result.title,
-        answers: orderedAnswers,
-      });
-    } catch (error) {
-      console.error("Tamamlama Supabase'e kaydedilemedi:", error);
-    }
+    void saveCompletion({
+      experienceId,
+      score: experience.type === "story" || experience.type === "guess" ? 100 : resultScore,
+      resultKey: experience.type === "story" ? "completed" : experience.type === "guess" ? "correct" : result.title,
+      answers: experience.type === "story" || experience.type === "guess" ? [] : answers,
+    }).then(() => setCompletionState("saved")).catch((error) => {
+      completionSavedRef.current = false;
+      setCompletionState("failed");
+      console.error("Tamamlama kaydedilemedi:", error);
+    });
+  }
 
+  function finishQuestionFlow() {
     setScreen("result");
   }
 
@@ -775,7 +778,7 @@ useEffect(() => {
 
     window.setTimeout(() => {
       if (isLastQuestion) {
-        void finishQuestionFlow(nextAnswers);
+        finishQuestionFlow();
         return;
       }
 
@@ -841,20 +844,6 @@ useEffect(() => {
 
     setGuessError(null);
 
-    try {
-      await saveCompletion({
-        experienceId,
-        score: 100,
-        resultKey: "correct",
-        answers: [],
-      });
-    } catch (error) {
-      console.error(
-        "Guess completion kaydedilemedi:",
-        error,
-      );
-    }
-
     setScreen("result");
   }
 
@@ -867,24 +856,12 @@ useEffect(() => {
       return;
     }
 
-    try {
-      await saveCompletion({
-        experienceId,
-        score: 100,
-        resultKey: "completed",
-        answers: [],
-      });
-    } catch (error) {
-      console.error(
-        "Story completion kaydedilemedi:",
-        error,
-      );
-    }
-
     setScreen("result");
   }
 
   function restartExperience() {
+    completionSavedRef.current = false;
+    setCompletionState("idle");
     setParticipantAnswers({});
     setCurrentQuestionIndex(0);
     setGuessAnswer("");
@@ -1038,7 +1015,7 @@ useEffect(() => {
             <StoryResultScreen
               experience={experience}
               onRestart={restartExperience}
-              onComplete={() => setScreen("completion")}
+              onComplete={confirmCompletion}
             />
           ) : screen === "result" &&
           experience.type === "guess" &&
@@ -1046,7 +1023,7 @@ useEffect(() => {
             <GuessResultScreen
               experience={experience}
               onRestart={restartExperience}
-              onComplete={() => setScreen("completion")}
+              onComplete={confirmCompletion}
             />
           ) : screen === "result" ? (
             <ResultScreen
@@ -1059,7 +1036,7 @@ useEffect(() => {
     experience.blueprint?.test
       ?.strategy ?? null
   }
-  onComplete={() => setScreen("completion")}
+  onComplete={confirmCompletion}
   onRestart={restartExperience}
 />
           ) : null}
@@ -1073,6 +1050,8 @@ useEffect(() => {
           {screen === "completion" && (
             <CompletionScreen
               experience={experience}
+              completionState={completionState}
+              onRetry={confirmCompletion}
               onOffer={() => setScreen("offer")}
               onGift={() => setScreen("gift")}
               onBack={() => setScreen("result")}
@@ -2196,11 +2175,15 @@ function calculateBlueprintTestOutcome(
 
 function CompletionScreen({
   experience,
+  completionState,
+  onRetry,
   onOffer,
   onGift,
   onBack,
 }: {
   experience: PublishedExperience;
+  completionState: "idle" | "saving" | "saved" | "failed";
+  onRetry: () => void;
   onOffer: () => void;
   onGift: () => void;
   onBack: () => void;
@@ -2211,6 +2194,8 @@ function CompletionScreen({
       <p className="mt-5 text-xs font-black uppercase tracking-[0.14em] text-emerald-700">Deneyim tamamlandı</p>
       <h2 className="mt-3 text-[30px] font-black tracking-[-0.05em]">Sonucun senin.</h2>
       <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">Ücretsiz sonucunu eksiksiz gördün. Dilersen creator’ın sunduğu ek içeriğe göz atabilirsin.</p>
+      {completionState === "saving" ? <p role="status" className="mt-5 text-sm font-semibold text-muted-foreground">Tamamlanma kaydediliyor…</p> : null}
+      {completionState === "failed" ? <div role="alert" className="mt-5 rounded-2xl bg-red-50 p-4 text-sm text-red-800">Bağlantı nedeniyle tamamlanma kaydedilemedi. <button type="button" onClick={onRetry} className="font-black underline">Yeniden dene</button></div> : null}
       {experience.offer.enabled ? (
         <button type="button" onClick={onOffer} className="mt-8 flex min-h-14 w-full items-center justify-between rounded-2xl bg-[#26183c] px-5 text-left text-sm font-bold text-white transition hover:bg-primary">
           <span>{experience.offer.title || "Ek içeriği gör"}<span className="mt-1 block text-xs font-medium text-white/70">İsteğe bağlı teklif · Sonucun ücretsiz kaldı</span></span>
