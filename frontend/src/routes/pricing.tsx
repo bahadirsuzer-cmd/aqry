@@ -14,50 +14,50 @@ function PricingPage() {
   return (
     <PublicPageShell
       eyebrow="Fiyatlandırma"
-      title="Basit olması gerekiyor. Bu yüzden acele etmiyoruz."
-      description="AQRYO’nun creator fiyatlandırması, AI kredi sistemi ve gelir paylaşımı birlikte ele alınacak. Kesinleşmemiş bir planı kullanıcıya fiyatmış gibi göstermiyoruz."
+      title="Çekirdek üretim araçlarıyla başla."
+      description="Soru mu İtiraf mı, Aşk Metre, Flood/Hikaye ve temel SVG Puzzle araçları ürünün çekirdeğini oluşturuyor. AI ile özel görsel üretimi ayrı krediyle sunulacak."
     >
       <section className="mx-auto w-full max-w-[1180px] px-5 py-12 sm:px-7 lg:px-10">
         <div className="grid gap-5 lg:grid-cols-3">
           <article className="rounded-[26px] border border-border bg-white p-6">
             <span className="text-[10px] font-black uppercase tracking-[0.1em] text-primary">
-              Experience
+              Çekirdek araçlar
             </span>
 
             <h2 className="mt-3 text-[22px] font-black tracking-[-0.04em]">
-              Creator planı
+              Başlangıç
             </h2>
 
             <p className="mt-3 text-[12px] leading-6 text-muted-foreground">
-              Hesap/abonelik yapısının nihai fiyatlandırması henüz kesinleştirilmedi.
+              Temel içerik oluşturma akışlarını mümkün olduğunca sade tutuyoruz. Kesin plan yapısı ürün kullanımıyla birlikte netleşecek.
             </p>
           </article>
 
           <article className="rounded-[26px] border border-primary/15 bg-violet-50/60 p-6">
             <span className="text-[10px] font-black uppercase tracking-[0.1em] text-primary">
-              Result sonrası
+              Puzzle
             </span>
 
             <h2 className="mt-3 text-[22px] font-black tracking-[-0.04em]">
-              Ücretli ek değer
+              SVG üretimi
             </h2>
 
             <p className="mt-3 text-[12px] leading-6 text-muted-foreground">
-              Mevcut MVP kararında ücretli ek Result / Offer fiyatı 9 TL’dir. Result’ın kendisi ücretsiz kalır.
+              Kaç tane var, geometri ve matematik puzzle görselleri AQRYO içinde SVG olarak üretilebilir.
             </p>
           </article>
 
           <article className="rounded-[26px] border border-border bg-white p-6">
             <span className="text-[10px] font-black uppercase tracking-[0.1em] text-primary">
-              Creator geliri
+              Özel görsel
             </span>
 
             <h2 className="mt-3 text-[22px] font-black tracking-[-0.04em]">
-              Gelir paylaşımı
+              AI görsel kredisi
             </h2>
 
             <p className="mt-3 text-[12px] leading-6 text-muted-foreground">
-              Creator / AQRYO gelir paylaşımı henüz nihai sözleşme oranı olarak sabitlenmedi. Payout, ödeme maliyetleri, vergi, refund ve chargeback modeliyle birlikte finalize edilecek.
+              AI ile özel görsel üretimi ücretsiz kotaya dahil edilmeyecek. İhtiyaç olduğunda kredi paketiyle kullanılabilecek; manuel görsel yükleme ücretsiz kalacak.
             </p>
           </article>
         </div>
@@ -65,11 +65,11 @@ function PricingPage() {
         <div className="mt-10 flex flex-col items-start justify-between gap-5 rounded-[28px] bg-black p-6 text-white sm:flex-row sm:items-center sm:p-8">
           <div>
             <h2 className="text-[24px] font-black tracking-[-0.04em]">
-              Ürün hazır olduğunda fiyat da net olacak.
+              Önce ürünü hızlıca kullan.
             </h2>
 
             <p className="mt-2 max-w-xl text-[11px] leading-5 text-white/65">
-              Amaç creator’ın ne ödediğini ve ne kazandığını tek bakışta anlayabileceği bir model kurmak.
+              Amaç creator’ın neyin ücretsiz, neyin isteğe bağlı ücretli olduğunu tek bakışta anlayabildiği sade bir model kurmak.
             </p>
           </div>
 
