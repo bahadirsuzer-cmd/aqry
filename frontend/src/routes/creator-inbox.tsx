@@ -1,6 +1,11 @@
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
-import { supabase } from "@/services/supabase";
+import {
+  loadAnonymousInbox,
+  markAnonymousMessagesRead,
+  type AnonymousInboxItem,
+} from "@/services/anonymousInbox";
+import { useAqryoLocale } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
@@ -10,14 +15,7 @@ export const Route = createFileRoute("/creator-inbox")({
 
 type InboxFilter = "all" | "question" | "confession";
 
-type InboxItem = {
-  id: string;
-  experienceId: string;
-  experienceTitle: string;
-  mode: "question" | "confession";
-  message: string;
-  createdAt: string;
-};
+type InboxItem = AnonymousInboxItem;
 
 function CreatorInboxPage() {
   const [loading, setLoading] = useState(true);
@@ -26,6 +24,7 @@ function CreatorInboxPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sharingId, setSharingId] = useState<string | null>(null);
+  const { locale, t } = useAqryoLocale();
 
   useEffect(() => {
     let cancelled = false;
@@ -42,76 +41,12 @@ function CreatorInboxPage() {
           return;
         }
 
-        const { data: experiences, error: experienceError } =
-          await supabase
-            .from("experiences")
-            .select("id,title")
-            .eq("creator_id", creator.id)
-            .eq("type", "question_confession");
+        const parsed = await loadAnonymousInbox(creator.id);
 
-        if (experienceError) {
-          throw new Error(experienceError.message);
+        if (!cancelled) {
+          setItems(parsed);
+          markAnonymousMessagesRead(parsed.map((item) => item.id));
         }
-
-        const experienceRows = experiences ?? [];
-
-        if (experienceRows.length === 0) {
-          if (!cancelled) setItems([]);
-          return;
-        }
-
-        const titleById = new Map(
-          experienceRows.map((experience) => [
-            experience.id,
-            experience.title ?? "Soru mu İtiraf mı?",
-          ]),
-        );
-
-        const { data: events, error: eventError } =
-          await supabase
-            .from("experience_events")
-            .select("id,experience_id,event_type,metadata,created_at")
-            .in(
-              "experience_id",
-              experienceRows.map((experience) => experience.id),
-            )
-            .eq("event_type", "share")
-            .order("created_at", { ascending: false });
-
-        if (eventError) {
-          throw new Error(eventError.message);
-        }
-
-        const parsed = (events ?? []).flatMap((event) => {
-          const metadata =
-            event.metadata && typeof event.metadata === "object"
-              ? (event.metadata as Record<string, unknown>)
-              : null;
-
-          if (
-            metadata?.kind !== "anonymous_message" ||
-            typeof metadata.message !== "string" ||
-            (metadata.mode !== "question" &&
-              metadata.mode !== "confession")
-          ) {
-            return [];
-          }
-
-          return [
-            {
-              id: event.id,
-              experienceId: event.experience_id,
-              experienceTitle:
-                titleById.get(event.experience_id) ??
-                "Soru mu İtiraf mı?",
-              mode: metadata.mode,
-              message: metadata.message,
-              createdAt: event.created_at,
-            } satisfies InboxItem,
-          ];
-        });
-
-        if (!cancelled) setItems(parsed);
       } catch (loadError) {
         console.error("Anonim gelen kutusu yüklenemedi:", loadError);
 
@@ -227,7 +162,7 @@ function CreatorInboxPage() {
 
     context.font = "800 34px Arial, sans-serif";
     context.fillStyle = "rgba(255,255,255,0.9)";
-    context.fillText("Soru mu İtiraf mı? · AQRYO", 600, 178);
+    context.fillText("{t("questionConfession")} · AQRYO", 600, 178);
 
     const badgeText =
       item.mode === "question" ? "SORU" : "İTİRAF";
@@ -405,7 +340,7 @@ function CreatorInboxPage() {
               Soru mu İtiraf mı?
             </p>
             <h1 className="mt-2 text-[32px] font-black tracking-[-0.055em] sm:text-[42px]">
-              Gelen kutusu
+              {locale === "tr" ? "Anonim Gelen Kutusu" : "Anonymous Inbox"}
             </h1>
             <p className="mt-2 max-w-[620px] text-[14px] leading-6 text-muted-foreground">
               Kimlik yok. Sadece insanların sana bıraktığı soru ve itiraflar var.
@@ -417,13 +352,13 @@ function CreatorInboxPage() {
             to="/question-confession-builder"
             className="inline-flex h-11 items-center justify-center rounded-full bg-black px-5 text-[14px] font-black text-white"
           >
-            Yeni link oluştur +
+            {locale === "tr" ? "Anonim link oluştur +" : "Create anonymous link +"}
           </Link>
         </div>
 
         <div className="mt-7 grid grid-cols-2 gap-3 sm:max-w-[420px]">
-          <StatCard label="Sorular" value={questionCount} />
-          <StatCard label="İtiraflar" value={confessionCount} />
+          <StatCard label="{locale === "tr" ? "Sorular" : "Questions"}" value={questionCount} />
+          <StatCard label="{locale === "tr" ? "İtiraflar" : "Confessions"}" value={confessionCount} />
         </div>
 
         <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
@@ -431,19 +366,19 @@ function CreatorInboxPage() {
             active={filter === "all"}
             onClick={() => setFilter("all")}
           >
-            Tümü · {items.length}
+            {locale === "tr" ? "Tümü" : "All"} · {items.length}
           </FilterButton>
           <FilterButton
             active={filter === "question"}
             onClick={() => setFilter("question")}
           >
-            Sorular · {questionCount}
+            {locale === "tr" ? "Sorular" : "Questions"} · {questionCount}
           </FilterButton>
           <FilterButton
             active={filter === "confession"}
             onClick={() => setFilter("confession")}
           >
-            İtiraflar · {confessionCount}
+            {locale === "tr" ? "İtiraflar" : "Confessions"} · {confessionCount}
           </FilterButton>
         </div>
 
@@ -482,7 +417,7 @@ function CreatorInboxPage() {
                   </div>
 
                   <time className="text-[13px] font-bold text-muted-foreground">
-                    {formatTime(item.createdAt)}
+                    {formatTime(item.createdAt, locale)}
                   </time>
                 </div>
 
@@ -499,19 +434,21 @@ function CreatorInboxPage() {
                   >
                     {sharingId === item.id
                       ? "Kart hazırlanıyor..."
-                      : "X’te cevapla →"}
+                      : "{locale === "tr" ? "X’te cevapla →" : "Answer on X →"}"}
                   </button>
                   <button
                     type="button"
                     onClick={() => void copyMessage(item)}
                     className="h-11 rounded-full border border-border bg-white px-4 text-[14px] font-black"
                   >
-                    {copiedId === item.id ? "✓" : "Kopyala"}
+                    {copiedId === item.id ? "✓" : "{locale === "tr" ? "Kopyala" : "Copy"}"}
                   </button>
                 </div>
 
                 <p className="mt-3 text-[14px] font-semibold text-muted-foreground">
-                  Gönderenin kimliği AQRYO tarafından creator’a gösterilmez.
+                  {locale === "tr"
+                    ? "Gönderenin kimliği creator’a gösterilmez."
+                    : "The sender’s identity is never shown to the creator."}
                 </p>
               </article>
             ))}
@@ -621,12 +558,12 @@ function roundedRect(
   context.closePath();
 }
 
-function formatTime(value: string) {
+function formatTime(value: string, locale = "tr") {
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) return "";
 
-  return new Intl.DateTimeFormat("tr-TR", {
+  return new Intl.DateTimeFormat(locale === "tr" ? "tr-TR" : locale, {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
