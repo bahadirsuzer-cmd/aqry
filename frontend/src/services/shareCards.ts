@@ -14,7 +14,8 @@ export type ShareTestMode =
 
 export type ShareFormat =
   | "square"
-  | "story";
+  | "story"
+  | "og";
 
 export interface ShareCardSource {
   id: string;
@@ -742,6 +743,90 @@ function drawSquare(
   );
 }
 
+function drawOg(
+  ctx: CanvasRenderingContext2D,
+  source: ShareCardSource,
+  theme: ShareCardTheme,
+) {
+  const { label, cta, helper } = getShareCopy(source);
+  const width = 1200;
+  const height = 628;
+
+  const background = ctx.createLinearGradient(0, 0, width, height);
+  background.addColorStop(0, "#5b21b6");
+  background.addColorStop(0.52, theme.accent);
+  background.addColorStop(1, theme.accentDark);
+
+  ctx.fillStyle = background;
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.fillStyle = "rgba(255,255,255,0.10)";
+  ctx.beginPath();
+  ctx.arc(1100, 60, 220, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(255,255,255,0.08)";
+  ctx.beginPath();
+  ctx.arc(80, 650, 300, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "rgba(255,255,255,0.18)";
+  roundedRect(ctx, 72, 58, 300, 52, 26);
+  ctx.fill();
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "900 22px Inter, Arial, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText(label, 96, 92);
+
+  const titleSize = fitFontSize(
+    ctx,
+    source.title,
+    1010,
+    74,
+    52,
+    900,
+  );
+
+  ctx.font = `900 ${titleSize}px Inter, Arial, sans-serif`;
+  const titleLines = wrapText(ctx, source.title, 1010, 2);
+
+  let titleY = 205;
+  titleLines.forEach((line, index) => {
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(
+      line,
+      72,
+      titleY + index * titleSize * 1.02,
+    );
+  });
+
+  const helperY =
+    titleY + titleLines.length * titleSize + 46;
+
+  ctx.fillStyle = "rgba(255,255,255,0.86)";
+  ctx.font = "600 29px Inter, Arial, sans-serif";
+  ctx.fillText(helper, 74, helperY);
+
+  ctx.fillStyle = "#ffffff";
+  roundedRect(ctx, 72, 470, 390, 82, 41);
+  ctx.fill();
+
+  ctx.fillStyle = "#35145f";
+  ctx.font = "900 30px Inter, Arial, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(cta, 267, 522);
+
+  ctx.textAlign = "right";
+  ctx.fillStyle = "rgba(255,255,255,0.92)";
+  ctx.font = "900 30px Inter, Arial, sans-serif";
+  ctx.fillText("AQRYO.", 1128, 526);
+
+  ctx.font = "600 19px Inter, Arial, sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.72)";
+  ctx.fillText("aqryo.com", 1128, 558);
+}
+
 function drawStory(
   ctx: CanvasRenderingContext2D,
   source: ShareCardSource,
@@ -1020,12 +1105,12 @@ export async function renderShareCard(
       "canvas",
     );
 
-  if (
-    format ===
-    "square"
-  ) {
+  if (format === "square") {
     canvas.width = 1080;
     canvas.height = 1080;
+  } else if (format === "og") {
+    canvas.width = 1200;
+    canvas.height = 628;
   } else {
     canvas.width = 1080;
     canvas.height = 1920;
@@ -1045,14 +1130,17 @@ export async function renderShareCard(
       source.coverImageUrl,
     );
 
-  if (
-    format ===
-    "square"
-  ) {
+  if (format === "square") {
     drawSquare(
       ctx,
       source,
       image,
+      theme,
+    );
+  } else if (format === "og") {
+    drawOg(
+      ctx,
+      source,
       theme,
     );
   } else {
