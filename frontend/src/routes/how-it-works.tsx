@@ -28,8 +28,8 @@ const participantSteps = [
   },
   {
     number: "04",
-    title: "İstersen devam et",
-    text: "Result sonrasında creator ek değer sunabilir veya kullanıcı Gift gönderebilir. Bunlar Experience’ı tamamlamak için zorunlu değildir.",
+    title: "Konuşmayı sürdür",
+    text: "Creator içeriği kendi sosyal hesabında yeniden paylaşabilir, cevaplayabilir veya yeni bir etkileşim başlatabilir.",
   },
 ];
 
@@ -51,8 +51,8 @@ const creatorSteps = [
   },
   {
     number: "04",
-    title: "Etkileşim ve gelir",
-    text: "Katılımları takip et; Result sonrası Gift ve isteğe bağlı ücretli ek değerlerden gelir elde et.",
+    title: "Etkileşimi sürdür",
+    text: "Gelen katılımı yeni paylaşımlara, cevaplara ve takipçilerinle devam eden bir konuşmaya dönüştür.",
   },
 ];
 
@@ -90,7 +90,7 @@ function HowItWorksPage() {
     <PublicPageShell
       eyebrow="Nasıl çalışır?"
       title="Bir link. Bir Experience. Net bir sonuç."
-      description="AQRYO, creator’ın dışarıdan getirdiği trafiği etkileşimli Experience’lara dönüştürür. Katılımcı değer alır; creator isterse Result sonrasında ek gelir fırsatı sunar."
+      description="AQRYO, creator’ın kendi kitlesiyle paylaşabileceği etkileşimli içerikler oluşturmasını sağlar. Linkini paylaşır, takipçilerini katılıma davet eder ve konuşmayı kendi sosyal hesabında sürdürür."
     >
       <section className="mx-auto w-full max-w-[1180px] px-5 py-12 sm:px-7 lg:px-10">
         <div>
