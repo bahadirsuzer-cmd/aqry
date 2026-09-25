@@ -145,7 +145,7 @@ function ProductCard({ eyebrow, title, description, href, badge, accent, visual,
         <div className="flex items-center justify-between gap-3">
           <p className={`text-[11px] font-black uppercase tracking-[0.15em] ${accentClass}`}>{eyebrow}</p>
           {badge ? (
-            <span className="max-w-[55%] truncate rounded-full bg-background px-3 py-1.5 text-[10px] font-extrabold text-muted-foreground">
+            <span className="max-w-[55%] truncate rounded-full bg-background px-3 py-1.5 text-[12px] font-extrabold text-muted-foreground">
               {badge}
             </span>
           ) : null}
@@ -191,7 +191,7 @@ function QuestionConfessionPreview() {
 function LoveVisual() {
   return (
     <div className="relative h-[210px] overflow-hidden rounded-[24px] bg-gradient-to-br from-rose-100 via-fuchsia-50 to-white">
-      <div className="absolute left-5 top-5 rounded-full bg-white/90 px-3 py-1.5 text-[10px] font-black text-rose-600">LOVE METER</div>
+      <div className="absolute left-5 top-5 rounded-full bg-white/90 px-3 py-1.5 text-[12px] font-black text-rose-600">LOVE METER</div>
       <div className="absolute inset-x-5 bottom-6 flex items-end justify-between">
         <div>
           <p className="text-[46px] font-black leading-none text-rose-600">87%</p>
