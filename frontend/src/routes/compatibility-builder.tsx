@@ -62,6 +62,77 @@ const TOPIC_IDEAS = [
   "Gelecek beklentileri",
 ];
 
+type LovePreset = {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+  questions: Array<{ text: string; options: string[] }>;
+};
+
+const LOVE_PRESETS: LovePreset[] = [
+  {
+    id: "flirt",
+    label: "Flört",
+    title: "Benimle ne kadar uyumlusun?",
+    description: "Cevaplarını seç. Bakalım aynı frekansta mıyız?",
+    questions: [
+      { text: "İlk buluşmada seni en çok ne etkiler?", options: ["Mizah", "Göz teması", "Sohbet", "Enerji"] },
+      { text: "Bir mesajı ne kadar geç cevaplamak normal?", options: ["Hemen", "10-20 dk", "1-2 saat", "Canım ne zaman isterse"] },
+      { text: "Planı kim yapsın?", options: ["Ben", "Sen", "Birlikte", "Spontane olsun"] },
+      { text: "Flörtte en önemli şey?", options: ["Güven", "Çekim", "Eğlence", "İletişim"] },
+    ],
+  },
+  {
+    id: "redflag",
+    label: "Red Flag",
+    title: "Red flag radarım senden geçecek mi?",
+    description: "Dört soruda ne kadar aynı düşündüğümüzü görelim.",
+    questions: [
+      { text: "Eski sevgiliyle yakın arkadaş kalmak?", options: ["Olur", "Olmaz", "Duruma bağlı", "Hiç umrumda değil"] },
+      { text: "Telefon şifresi paylaşmak?", options: ["Normal", "Gereksiz", "Şüpheli", "İlişkiye göre"] },
+      { text: "Kıskançlık sence?", options: ["Tatlıdır", "Yorucudur", "Biraz olmalı", "Hiç olmamalı"] },
+      { text: "Tartışınca ne yaparsın?", options: ["Konuşurum", "Susarım", "Uzaklaşırım", "Sonra dönerim"] },
+    ],
+  },
+  {
+    id: "firstdate",
+    label: "İlk Buluşma",
+    title: "İlk buluşmada anlaşır mıydık?",
+    description: "Buluşma başlamadan uyumumuzu ölçelim.",
+    questions: [
+      { text: "İlk buluşma nerede olsun?", options: ["Kahve", "Akşam yemeği", "Yürüyüş", "Sürpriz"] },
+      { text: "Geç kalma toleransın?", options: ["0 dk", "10 dk", "20 dk", "Sorun değil"] },
+      { text: "Hesap nasıl olsun?", options: ["Ben öderim", "Sen öde", "Bölüşelim", "Kim davet ettiyse"] },
+      { text: "Buluşma iyi gittiyse?", options: ["Hemen mesaj", "Eve dönünce", "Ertesi gün", "Karşı taraf yazsın"] },
+    ],
+  },
+  {
+    id: "night",
+    label: "Gece Modu",
+    title: "Gece 02:00 uyum testi",
+    description: "Normalde söylemediğin cevapları seç.",
+    questions: [
+      { text: "Gece en çok kimi ararsın?", options: ["Sevgilimi", "Arkadaşımı", "Kimseyi", "Aklımdaki kişiyi"] },
+      { text: "İtiraf mı soru mu?", options: ["İtiraf", "Soru", "İkisi de", "Kaçarım"] },
+      { text: "Birini özleyince?", options: ["Yazarım", "Beklerim", "Story atarım", "Sessiz kalırım"] },
+      { text: "Duygularını söylemek?", options: ["Kolay", "Zor", "Kişiye göre", "Asla"] },
+    ],
+  },
+  {
+    id: "greenflag",
+    label: "Green Flag",
+    title: "Green flag uyumumuz kaç?",
+    description: "İlişkide iyi gelen şeylerde ne kadar aynıyız?",
+    questions: [
+      { text: "En güçlü green flag?", options: ["Tutarlılık", "Saygı", "Mizah", "Açık iletişim"] },
+      { text: "Kötü gününde ne beklersin?", options: ["Dinlesin", "Sarılalım", "Çözüm bulsun", "Alan bıraksın"] },
+      { text: "Birlikte zaman geçirmenin en iyi hali?", options: ["Evde", "Dışarıda", "Seyahatte", "Fark etmez"] },
+      { text: "Sevgi dili?", options: ["Sözler", "Dokunmak", "Zaman", "Jestler"] },
+    ],
+  },
+];
+
 const initialResults: ResultDefinition[] = [
   {
     id: "strong",
@@ -368,6 +439,27 @@ useEffect(() => {
       title,
     ],
   );
+
+  function applyLovePreset(presetId: string) {
+    const preset = LOVE_PRESETS.find((item) => item.id === presetId);
+    if (!preset) return;
+
+    setTitle(preset.title);
+    setDescription(preset.description);
+    setQuestions(
+      preset.questions.map((question, index) => ({
+        id: index + 1,
+        text: question.text,
+        options: question.options,
+      })),
+    );
+    setCreatorAnswers({});
+    setAnswersLocked(false);
+    setCoverLabel("Aşk Metre");
+    window.setTimeout(() => {
+      document.getElementById("love-questions")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  }
 
   function invalidateLockedAnswers() {
     setAnswersLocked(false);
@@ -820,6 +912,7 @@ return (
               updateOption={updateOption}
               addQuestion={addQuestion}
               removeQuestion={removeQuestion}
+              applyLovePreset={applyLovePreset}
             />
             <WizardFooter onNext={continueFromContent} />
           </>
@@ -1041,6 +1134,7 @@ function ContentEditor({
   updateOption,
   addQuestion,
   removeQuestion,
+  applyLovePreset,
 }: {
   title: string;
   description: string;
@@ -1064,18 +1158,34 @@ function ContentEditor({
   ) => void;
   addQuestion: () => void;
   removeQuestion: (questionId: number) => void;
+  applyLovePreset: (presetId: string) => void;
 }) {
   const coverClass = getCoverClass(coverStyle);
 
   return (
     <section>
       <SectionHeader
-        eyebrow="İçerik"
-        title="Şablonu kendi içeriğine dönüştür"
-        description="Kapağı, başlığı, açıklamayı, soruları ve cevap seçeneklerini doğrudan düzenle."
+        eyebrow="Aşk Metre"
+        title="Hazır set seç, 5 saniyede yayına hazırla"
+        description="Bir tema seç. Sorular otomatik dolsun; sonra istediğin cümleyi değiştir."
       />
 
-      <div className="mt-5 grid gap-4">
+      <div className="mt-5 overflow-x-auto pb-1">
+        <div className="flex min-w-max gap-2">
+          {LOVE_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              onClick={() => applyLovePreset(preset.id)}
+              className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2.5 text-[12px] font-black text-rose-700 transition hover:border-rose-400"
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div id="love-questions" className="mt-5 grid scroll-mt-40 gap-4">
         <div className="rounded-[22px] border border-border bg-white p-5">
           <div className="flex items-start justify-between gap-4">
             <div>
