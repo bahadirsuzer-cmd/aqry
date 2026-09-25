@@ -771,27 +771,27 @@ function drawOg(
   ctx.fill();
 
   ctx.fillStyle = "rgba(255,255,255,0.18)";
-  roundedRect(ctx, 72, 58, 300, 52, 26);
+  roundedRect(ctx, 72, 52, 360, 64, 32);
   ctx.fill();
 
   ctx.fillStyle = "#ffffff";
-  ctx.font = "900 22px Inter, Arial, sans-serif";
+  ctx.font = "900 28px Inter, Arial, sans-serif";
   ctx.textAlign = "left";
-  ctx.fillText(label, 96, 92);
+  ctx.fillText(label, 100, 95);
 
   const titleSize = fitFontSize(
     ctx,
     source.title,
     1010,
-    74,
-    52,
+    86,
+    60,
     900,
   );
 
   ctx.font = `900 ${titleSize}px Inter, Arial, sans-serif`;
   const titleLines = wrapText(ctx, source.title, 1010, 2);
 
-  let titleY = 205;
+  let titleY = 215;
   titleLines.forEach((line, index) => {
     ctx.fillStyle = "#ffffff";
     ctx.fillText(
@@ -805,26 +805,26 @@ function drawOg(
     titleY + titleLines.length * titleSize + 46;
 
   ctx.fillStyle = "rgba(255,255,255,0.86)";
-  ctx.font = "600 29px Inter, Arial, sans-serif";
+  ctx.font = "700 34px Inter, Arial, sans-serif";
   ctx.fillText(helper, 74, helperY);
 
   ctx.fillStyle = "#ffffff";
-  roundedRect(ctx, 72, 470, 390, 82, 41);
+  roundedRect(ctx, 72, 458, 440, 92, 46);
   ctx.fill();
 
   ctx.fillStyle = "#35145f";
-  ctx.font = "900 30px Inter, Arial, sans-serif";
+  ctx.font = "900 34px Inter, Arial, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText(cta, 267, 522);
+  ctx.fillText(cta, 292, 516);
 
   ctx.textAlign = "right";
-  ctx.fillStyle = "rgba(255,255,255,0.92)";
-  ctx.font = "900 30px Inter, Arial, sans-serif";
-  ctx.fillText("AQRYO.", 1128, 526);
+  ctx.fillStyle = "rgba(255,255,255,0.96)";
+  ctx.font = "900 46px Inter, Arial, sans-serif";
+  ctx.fillText("AQRYO.", 1128, 516);
 
-  ctx.font = "600 19px Inter, Arial, sans-serif";
-  ctx.fillStyle = "rgba(255,255,255,0.72)";
-  ctx.fillText("aqryo.com", 1128, 558);
+  ctx.font = "700 24px Inter, Arial, sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.78)";
+  ctx.fillText("aqryo.com", 1128, 552);
 }
 
 function drawStory(
