@@ -1,5 +1,6 @@
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
+import { savePublishedExperience } from "@/services/experiences";
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -35,6 +36,8 @@ function QuestionConfessionBuilderPage() {
   const [state, setState] = useState<BuilderState>(DEFAULT_STATE);
   const [mode, setMode] = useState<Mode>("question");
   const [previewText, setPreviewText] = useState("");
+  const [creatorId, setCreatorId] = useState<string | null>(null);
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -44,6 +47,10 @@ function QuestionConfessionBuilderPage() {
       if (!creator) {
         window.location.href = "/creator-auth";
         return;
+      }
+
+      if (!cancelled) {
+        setCreatorId(creator.id);
       }
 
       const stored = window.sessionStorage.getItem(STORAGE_KEY);
@@ -69,6 +76,52 @@ function QuestionConfessionBuilderPage() {
       window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }
   }, [loading, state]);
+
+  async function publishExperience() {
+    if (!creatorId || publishing) return;
+
+    try {
+      setPublishing(true);
+      const experienceId = crypto.randomUUID();
+
+      await savePublishedExperience({
+        id: experienceId,
+        creatorId,
+        type: "question_confession",
+        status: "published",
+        publishedAt: new Date().toISOString(),
+        title: state.title.trim() || "Soru mu İtiraf mı?",
+        description: state.intro.trim(),
+        cover: {
+          style: state.accent === "dark" ? "dark" : state.accent === "rose" ? "pink" : "purple",
+          label: "Soru mu İtiraf mı?",
+          imageUrl: "",
+        },
+        questions: [],
+        results: [],
+        offer: {
+          enabled: false,
+          title: "",
+          description: "",
+          price: 0,
+        },
+        questionConfession: {
+          intro: state.intro.trim(),
+          questionLabel: state.questionLabel.trim() || "Soru sor",
+          confessionLabel: state.confessionLabel.trim() || "İtiraf et",
+          placeholder: state.placeholder.trim() || "Buraya yaz...",
+          accent: state.accent,
+        },
+      });
+
+      window.location.href = `/publish-success/${experienceId}`;
+    } catch (error) {
+      console.error(error);
+      window.alert(error instanceof Error ? error.message : "Yayınlanamadı.");
+    } finally {
+      setPublishing(false);
+    }
+  }
 
   if (loading) return <LoadingScreen />;
 
@@ -198,11 +251,19 @@ function QuestionConfessionBuilderPage() {
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-dashed border-violet-200 bg-violet-50/60 p-5">
-            <p className="text-[11px] font-black text-violet-950">Taslağın otomatik kaydediliyor.</p>
+          <div className="rounded-[24px] border border-violet-200 bg-violet-50/70 p-5">
+            <p className="text-[11px] font-black text-violet-950">Hazırsa yayınla ve paylaş.</p>
             <p className="mt-1 text-[10px] leading-5 text-violet-900/65">
-              Anonim mesajların gerçek hesaba düşeceği yayın akışını veri bağlantısı tamamlandığında bu ekranın altına bağlayacağız.
+              Yayınlandıktan sonra sana paylaşılabilir AQRYO linki verilecek. Takipçilerin linkten anonim soru veya itiraf bırakabilecek.
             </p>
+            <button
+              type="button"
+              disabled={publishing}
+              onClick={() => void publishExperience()}
+              className="mt-4 h-11 w-full rounded-full bg-violet-700 px-5 text-[10px] font-black text-white disabled:opacity-50 sm:w-auto"
+            >
+              {publishing ? "Yayınlanıyor..." : "Yayınla ve paylaş →"}
+            </button>
           </div>
         </section>
 
