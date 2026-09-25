@@ -65,6 +65,14 @@ interface PublishedExperienceInput {
     retryEnabled: boolean;
   };
 
+  questionConfession?: {
+    intro: string;
+    questionLabel: string;
+    confessionLabel: string;
+    placeholder: string;
+    accent: "violet" | "rose" | "dark";
+  };
+
   story?: {
     items: Array<
       | {
@@ -139,6 +147,9 @@ export async function savePublishedExperience(
 
           guess:
             experience.guess ?? null,
+
+          questionConfession:
+            experience.questionConfession ?? null,
 
           story:
             experience.story ?? null,
