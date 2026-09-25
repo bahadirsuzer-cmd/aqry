@@ -1,7 +1,7 @@
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
 import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/puzzle-builder")({
@@ -32,9 +32,6 @@ function pick<T>(items: T[]): T {
   return items[randomInt(0, items.length - 1)];
 }
 
-function shuffle<T>(items: T[]) {
-  return [...items].sort(() => Math.random() - 0.5);
-}
 
 function signature(kind: PuzzleKind, family: string, data: Record<string, number | string>) {
   return `${kind}:${family}:${Object.entries(data).map(([k,v]) => `${k}=${v}`).join("|")}`;
