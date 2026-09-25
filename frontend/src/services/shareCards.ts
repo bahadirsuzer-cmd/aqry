@@ -71,6 +71,13 @@ const THEMES: Record<
     squareBackground: "#eef5ff",
   },
 
+  question_confession: {
+    accent: "#7c3aed",
+    accentDark: "#ec4899",
+    background: "#12091e",
+    squareBackground: "#f8f4ff",
+  },
+
   compatibility: {
     accent: "#f43f5e",
     accentDark: "#be123c",
@@ -89,6 +96,10 @@ const THEMES: Record<
 export function getShareTheme(
   source: ShareCardSource,
 ): ShareCardTheme {
+  if (source.type === "question_confession") {
+    return THEMES.question_confession;
+  }
+
   if (source.type === "guess") {
     return THEMES.guess;
   }
@@ -132,7 +143,9 @@ function getShareCopy(
 ) {
   const label =
     source.coverLabel?.trim() ||
-    (source.type === "story"
+    (source.type === "question_confession"
+      ? "SORU MU İTİRAF MI?"
+      : source.type === "story"
       ? "HİKÂYE"
       : source.type === "guess"
         ? "TAHMİN"
@@ -143,7 +156,9 @@ function getShareCopy(
             : "AQRYO");
 
   const cta =
-    source.type === "story"
+    source.type === "question_confession"
+      ? "Anonim mesaj bırak"
+      : source.type === "story"
       ? "Hikâyeyi aç"
       : source.type === "guess"
         ? "Tahmin et"
@@ -154,7 +169,9 @@ function getShareCopy(
             : "Başla";
 
   const helper =
-    source.type === "story"
+    source.type === "question_confession"
+      ? "Soru sor ya da itirafını bırak. Kimliğin görünmez."
+      : source.type === "story"
       ? "Devamını AQRYO’da gör."
       : source.type === "guess"
         ? "Tahmin et. Cevabı AQRYO’da gör."
