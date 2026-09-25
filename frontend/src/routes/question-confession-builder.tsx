@@ -2,6 +2,7 @@ import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
 import { savePublishedExperience } from "@/services/experiences";
 import { useEffect, useState } from "react";
+import { detectLocale, getQuestionConfessionDefaults, useAqryoLocale } from "@/lib/i18n";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/question-confession-builder")({
@@ -22,12 +23,9 @@ type BuilderState = {
 
 const STORAGE_KEY = "aqry-question-confession-builder";
 
+const DEFAULT_COPY = getQuestionConfessionDefaults(detectLocale());
 const DEFAULT_STATE: BuilderState = {
-  title: "Soru mu İtiraf mı?",
-  intro: "Bana anonim bir şey bırak. Kim olduğunu görmeyeceğim.",
-  questionLabel: "Soru sor",
-  confessionLabel: "İtiraf et",
-  placeholder: "Buraya yaz...",
+  ...DEFAULT_COPY,
   accent: "violet",
 };
 
@@ -38,6 +36,8 @@ function QuestionConfessionBuilderPage() {
   const [previewText, setPreviewText] = useState("");
   const [creatorId, setCreatorId] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
+  const { locale } = useAqryoLocale();
+  const isTr = locale === "tr";
 
   useEffect(() => {
     let cancelled = false;
@@ -123,6 +123,11 @@ function QuestionConfessionBuilderPage() {
     }
   }
 
+  function applyCurrentLanguage() {
+    const copy = getQuestionConfessionDefaults(locale);
+    setState((current) => ({ ...current, ...copy }));
+  }
+
   if (loading) return <LoadingScreen />;
 
   const accent =
@@ -145,18 +150,27 @@ function QuestionConfessionBuilderPage() {
         <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <div>
             <p className="text-[13px] font-black uppercase tracking-[0.16em] text-primary">
-              Ana format
+              {isTr ? "Ana format" : "Main format"}
             </p>
-            <h1 className="mt-1 text-[22px] font-black tracking-[-0.045em]">
-              Soru mu İtiraf mı?
+            <h1 className="mt-1 text-[28px] font-black tracking-[-0.045em]">
+              {state.title}
             </h1>
           </div>
-          <Link
-            to="/creator-studio"
-            className="rounded-full border border-border bg-white px-4 py-2 text-[14px] font-black text-muted-foreground"
-          >
-            Studio’ya dön
-          </Link>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={applyCurrentLanguage}
+              className="rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-[12px] font-black text-violet-700"
+            >
+              {isTr ? "Seçili dile uygula" : "Apply selected language"}
+            </button>
+            <Link
+              to="/creator-studio"
+              className="rounded-full border border-border bg-white px-4 py-2 text-[13px] font-black text-muted-foreground"
+            >
+              {isTr ? "Studio’ya dön" : "Back to Studio"}
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -167,13 +181,13 @@ function QuestionConfessionBuilderPage() {
               1 · Giriş
             </p>
             <h2 className="mt-2 text-[25px] font-black tracking-[-0.045em]">
-              Takipçine ne söyleyeceksin?
+              {isTr ? "Takipçine ne söyleyeceksin?" : "What will your followers see?"}
             </h2>
             <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
-              Başlık kısa kalsın. İnsan ne yapacağını ilk bakışta anlamalı.
+              {isTr ? "Başlık kısa kalsın. İnsan ne yapacağını ilk bakışta anlamalı." : "Keep it short. People should understand it at a glance."}
             </p>
 
-            <Field label="Başlık">
+            <Field label={isTr ? "Başlık" : "Title"}>
               <input
                 value={state.title}
                 onChange={(event) => setState((current) => ({ ...current, title: event.target.value }))}
@@ -181,7 +195,7 @@ function QuestionConfessionBuilderPage() {
               />
             </Field>
 
-            <Field label="Kısa açıklama">
+            <Field label={isTr ? "Kısa açıklama" : "Short description"}>
               <textarea
                 rows={3}
                 value={state.intro}
@@ -196,18 +210,18 @@ function QuestionConfessionBuilderPage() {
               2 · Seçim
             </p>
             <h2 className="mt-2 text-[25px] font-black tracking-[-0.045em]">
-              İki kapı. Fazlası yok.
+              {isTr ? "İki kapı. Fazlası yok." : "Two choices. Nothing more."}
             </h2>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Field label="Soru butonu">
+              <Field label={isTr ? "Soru butonu" : "Question button"}>
                 <input
                   value={state.questionLabel}
                   onChange={(event) => setState((current) => ({ ...current, questionLabel: event.target.value }))}
                   className={inputClass}
                 />
               </Field>
-              <Field label="İtiraf butonu">
+              <Field label={isTr ? "İtiraf butonu" : "Confession button"}>
                 <input
                   value={state.confessionLabel}
                   onChange={(event) => setState((current) => ({ ...current, confessionLabel: event.target.value }))}
@@ -216,7 +230,7 @@ function QuestionConfessionBuilderPage() {
               </Field>
             </div>
 
-            <Field label="Yazı alanı">
+            <Field label={isTr ? "Yazı alanı" : "Input placeholder"}>
               <input
                 value={state.placeholder}
                 onChange={(event) => setState((current) => ({ ...current, placeholder: event.target.value }))}
@@ -252,9 +266,11 @@ function QuestionConfessionBuilderPage() {
           </div>
 
           <div className="rounded-[24px] border border-violet-200 bg-violet-50/70 p-5">
-            <p className="text-[13px] font-black text-violet-950">Hazırsa yayınla ve paylaş.</p>
+            <p className="text-[13px] font-black text-violet-950">{isTr ? "Hazırsa yayınla ve paylaş." : "Publish and share when ready."}</p>
             <p className="mt-1 text-[14px] leading-5 text-violet-900/65">
-              Yayınlandıktan sonra sana paylaşılabilir AQRYO linki verilecek. Takipçilerin linkten anonim soru veya itiraf bırakabilecek.
+              {isTr
+                ? "Yayınlandıktan sonra paylaşılabilir AQRYO linkini alacaksın. Takipçilerin anonim soru veya itiraf bırakabilecek."
+                : "After publishing, you’ll get a shareable AQRYO link for anonymous questions and confessions."}
             </p>
             <button
               type="button"
@@ -262,14 +278,16 @@ function QuestionConfessionBuilderPage() {
               onClick={() => void publishExperience()}
               className="mt-4 h-11 w-full rounded-full bg-violet-700 px-5 text-[14px] font-black text-white disabled:opacity-50 sm:w-auto"
             >
-              {publishing ? "Yayınlanıyor..." : "Yayınla ve paylaş →"}
+              {publishing
+                ? isTr ? "Yayınlanıyor..." : "Publishing..."
+                : isTr ? "Yayınla ve paylaş →" : "Publish and share →"}
             </button>
           </div>
         </section>
 
         <aside className="lg:sticky lg:top-[92px] lg:self-start">
           <p className="mb-3 text-[13px] font-black uppercase tracking-[0.16em] text-muted-foreground">
-            Canlı önizleme
+            {isTr ? "Canlı önizleme" : "Live preview"}
           </p>
 
           <div className={`overflow-hidden rounded-[32px] bg-gradient-to-br ${accent} p-3 shadow-[0_24px_70px_rgba(56,27,90,0.22)]`}>
@@ -337,11 +355,11 @@ function QuestionConfessionBuilderPage() {
                 type="button"
                 className="mt-3 h-11 w-full rounded-full bg-black text-[14px] font-black text-white"
               >
-                Anonim gönder
+                {isTr ? "Anonim gönder" : "Send anonymously"}
               </button>
 
               <p className="mt-3 text-center text-[8px] font-bold text-muted-foreground">
-                Kimliğin creator ile paylaşılmaz.
+                {isTr ? "Kimliğin creator ile paylaşılmaz." : "Your identity is never shared with the creator."}
               </p>
             </div>
           </div>
