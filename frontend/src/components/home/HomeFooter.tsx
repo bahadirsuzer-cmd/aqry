@@ -8,7 +8,6 @@ const groups = [
       ["Örneği oyna", "/#hero-demo"],
       ["İçerik oluştur", "/#start-creating"],
       ["Fiyatlandırma", "/pricing"],
-      ["İnternetten para kazanma", "/internetten-para-kazanma"],
     ],
   },
   {
