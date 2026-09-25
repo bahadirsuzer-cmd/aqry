@@ -173,7 +173,7 @@ type PublishedExperience = {
   id: string;
   creatorId: string;
   creator: CreatorProfile | null;
-  type: "compatibility" | "test" | "guess" | "story";
+  type: "compatibility" | "test" | "guess" | "story" | "question_confession";
   status: "published";
   publishedAt: string;
   title: string;
@@ -208,6 +208,13 @@ type PublishedExperience = {
     successTitle: string;
     successDescription: string;
     retryEnabled: boolean;
+  } | null;
+  questionConfession: {
+    intro: string;
+    questionLabel: string;
+    confessionLabel: string;
+    placeholder: string;
+    accent: "violet" | "rose" | "dark";
   } | null;
   story: {
     items: Array<
@@ -360,6 +367,13 @@ function PublishedExperiencePage() {
             successDescription?: string;
             retryEnabled?: boolean;
           } | null;
+          questionConfession?: {
+            intro?: string;
+            questionLabel?: string;
+            confessionLabel?: string;
+            placeholder?: string;
+            accent?: "violet" | "rose" | "dark";
+          } | null;
           story?: {
             items?: Array<
               | {
@@ -437,13 +451,15 @@ function PublishedExperiencePage() {
             : "",
         creator: creatorProfile,
         type:
-          data.type === "story"
-            ? "story"
-            : data.type === "guess"
-              ? "guess"
-              : data.type === "test"
-                ? "test"
-                : "compatibility",
+          data.type === "question_confession"
+            ? "question_confession"
+            : data.type === "story"
+              ? "story"
+              : data.type === "guess"
+                ? "guess"
+                : data.type === "test"
+                  ? "test"
+                  : "compatibility",
         status: "published",
         publishedAt:
           data.published_at ?? "",
@@ -498,6 +514,19 @@ function PublishedExperiencePage() {
               retryEnabled:
                 content.guess.retryEnabled ??
                 true,
+            }
+          : null,
+        questionConfession: content?.questionConfession
+          ? {
+              intro: content.questionConfession.intro ?? "",
+              questionLabel: content.questionConfession.questionLabel ?? "Soru sor",
+              confessionLabel: content.questionConfession.confessionLabel ?? "İtiraf et",
+              placeholder: content.questionConfession.placeholder ?? "Buraya yaz...",
+              accent:
+                content.questionConfession.accent === "rose" ||
+                content.questionConfession.accent === "dark"
+                  ? content.questionConfession.accent
+                  : "violet",
             }
           : null,
         story: content?.story
@@ -672,6 +701,18 @@ useEffect(() => {
       />
     );
   }
+  if (
+    experience.type === "question_confession" &&
+    experience.questionConfession
+  ) {
+    return (
+      <QuestionConfessionPublicExperience
+        experienceId={experienceId}
+        experience={experience}
+      />
+    );
+  }
+
   const currentQuestion =
     experience.questions[currentQuestionIndex];
 
@@ -4094,6 +4135,156 @@ function parseResultRange(
       second,
     ),
   };
+}
+
+function QuestionConfessionPublicExperience({
+  experienceId,
+  experience,
+}: {
+  experienceId: string;
+  experience: PublishedExperience;
+}) {
+  const config = experience.questionConfession!;
+  const [mode, setMode] = useState<"question" | "confession">("question");
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const accent =
+    config.accent === "rose"
+      ? "from-rose-500 via-pink-500 to-fuchsia-600"
+      : config.accent === "dark"
+        ? "from-zinc-950 via-violet-950 to-black"
+        : "from-violet-700 via-purple-600 to-fuchsia-600";
+
+  async function submit() {
+    const clean = message.trim();
+    if (!clean || sending) return;
+
+    try {
+      setSending(true);
+      await recordExperienceEvent({
+        experienceId,
+        eventType: "share",
+        source: "question_confession",
+        metadata: {
+          kind: "anonymous_message",
+          mode,
+          message: clean,
+        },
+      });
+      setMessage("");
+      setSent(true);
+    } catch (error) {
+      console.error(error);
+      window.alert(
+        error instanceof Error
+          ? error.message
+          : "Mesaj gönderilemedi.",
+      );
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className={`min-h-screen bg-gradient-to-br ${accent} px-4 py-8 text-foreground sm:py-14`}>
+      <div className="mx-auto max-w-[520px]">
+        <div className="mb-4 flex items-center justify-center">
+          <img src="/aqryo-logo.png" alt="AQRYO" className="h-9 w-auto brightness-0 invert" />
+        </div>
+
+        {experience.creator ? (
+          <div className="mb-3 text-center text-[11px] font-bold text-white/80">
+            {experience.creator.username
+              ? `@${experience.creator.username}`
+              : experience.creator.displayName}
+          </div>
+        ) : null}
+
+        <div className="rounded-[30px] bg-white p-5 shadow-[0_30px_90px_rgba(0,0,0,0.22)] sm:p-6">
+          <h1 className="text-[32px] font-black leading-[0.98] tracking-[-0.06em]">
+            {experience.title}
+          </h1>
+          <p className="mt-3 text-[12px] leading-6 text-muted-foreground">
+            {config.intro}
+          </p>
+
+          {sent ? (
+            <div className="mt-6 rounded-[22px] bg-emerald-50 p-5 text-center">
+              <p className="text-[18px] font-black text-emerald-800">Gönderildi ✓</p>
+              <p className="mt-2 text-[10px] leading-5 text-emerald-800/70">
+                Kimliğin creator ile paylaşılmadı.
+              </p>
+              <button
+                type="button"
+                onClick={() => setSent(false)}
+                className="mt-4 rounded-full bg-white px-4 py-2 text-[10px] font-black text-emerald-800"
+              >
+                Bir tane daha bırak
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="mt-6 grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMode("question")}
+                  className={`rounded-[20px] px-4 py-5 text-left ${
+                    mode === "question"
+                      ? "bg-violet-600 text-white"
+                      : "bg-violet-50 text-violet-950"
+                  }`}
+                >
+                  <span className="text-[22px] font-black">?</span>
+                  <p className="mt-3 text-[12px] font-black">{config.questionLabel}</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode("confession")}
+                  className={`rounded-[20px] px-4 py-5 text-left ${
+                    mode === "confession"
+                      ? "bg-rose-500 text-white"
+                      : "bg-rose-50 text-rose-950"
+                  }`}
+                >
+                  <span className="text-[22px]">♡</span>
+                  <p className="mt-3 text-[12px] font-black">{config.confessionLabel}</p>
+                </button>
+              </div>
+
+              <textarea
+                rows={6}
+                maxLength={500}
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                placeholder={config.placeholder}
+                className="mt-3 w-full resize-none rounded-[20px] border border-border bg-background px-4 py-4 text-[13px] font-semibold leading-6 outline-none focus:border-primary"
+              />
+
+              <div className="mt-2 flex justify-between text-[9px] font-bold text-muted-foreground">
+                <span>Anonim gönderim</span>
+                <span>{message.length}/500</span>
+              </div>
+
+              <button
+                type="button"
+                disabled={!message.trim() || sending}
+                onClick={() => void submit()}
+                className="mt-4 h-12 w-full rounded-full bg-black text-[11px] font-black text-white disabled:opacity-35"
+              >
+                {sending ? "Gönderiliyor..." : "Anonim gönder →"}
+              </button>
+            </>
+          )}
+
+          <p className="mt-4 text-center text-[8px] font-bold text-muted-foreground">
+            AQRYO · Kimliğin mesajla birlikte gönderilmez.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function getCreatorInitials(
