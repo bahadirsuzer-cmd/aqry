@@ -14,6 +14,7 @@ export const Route = createFileRoute(
         .select(
           `
             id,
+            creator_id,
             title,
             description
           `,
@@ -21,15 +22,19 @@ export const Route = createFileRoute(
         .eq("id", experienceId)
         .maybeSingle();
 
-    const { data: assets } =
-      await supabase
-        .from("experience_share_assets")
-        .select("square_url")
-        .eq(
-          "experience_id",
-          experienceId,
-        )
-        .maybeSingle();
+    const creatorId =
+      typeof experience?.creator_id === "string"
+        ? experience.creator_id
+        : "";
+
+    const imageUrl =
+      creatorId
+        ? supabase.storage
+            .from("experience-media")
+            .getPublicUrl(
+              `${creatorId}/share-${experienceId}-og-v2.png`,
+            ).data.publicUrl
+        : null;
 
     return {
       experienceId,
@@ -39,8 +44,7 @@ export const Route = createFileRoute(
       description:
         experience?.description ??
         "Bu Experience'ı AQRYO'da keşfet.",
-      imageUrl:
-        assets?.square_url ?? null,
+      imageUrl,
     };
   },
 
