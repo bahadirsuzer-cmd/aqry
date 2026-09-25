@@ -856,7 +856,7 @@ return (
 
     <div className="mx-auto grid max-w-[1500px] lg:grid-cols-[210px_minmax(0,1fr)_330px]">
       <aside className="sticky top-[58px] z-20 border-b border-border bg-[#faf8fb]/95 px-3 py-3 backdrop-blur-xl lg:h-[calc(100vh-58px)] lg:self-start lg:border-b-0 lg:border-r lg:bg-white/60 lg:py-5">
-        <p className="mb-3 hidden px-3 text-[8px] font-black uppercase tracking-[0.16em] text-muted-foreground lg:block">
+        <p className="mb-3 hidden px-3 text-[11px] font-black uppercase tracking-[0.16em] text-muted-foreground lg:block">
           Oluşturma akışı
         </p>
         <nav className="grid grid-cols-4 gap-1.5 lg:grid-cols-1">
@@ -977,7 +977,7 @@ return (
               type="button"
               disabled={!canPublish}
               onClick={handlePublish}
-              className="h-11 rounded-full bg-black px-7 text-[10px] font-black text-white transition enabled:hover:bg-primary disabled:cursor-not-allowed disabled:bg-black/15 disabled:text-muted-foreground"
+              className="h-11 rounded-full bg-black px-7 text-[12px] font-black text-white transition enabled:hover:bg-primary disabled:cursor-not-allowed disabled:bg-black/15 disabled:text-muted-foreground"
             >
               {sourceExperienceId ? "Yeni sürümü yayınla" : "Yayınla"}
             </button>
@@ -1225,7 +1225,7 @@ function ContentEditor({
               />
 
               <div className="relative z-10 flex h-full flex-col justify-between p-4 text-white">
-                <span className="w-fit rounded-full bg-white/15 px-3 py-1 text-[8px] font-bold uppercase tracking-[0.12em] backdrop-blur-md">
+                <span className="w-fit rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] backdrop-blur-md">
                   {coverLabel || "Aşk Metre"}
                 </span>
 
@@ -1441,7 +1441,7 @@ function ContentEditor({
                     onClick={() =>
                       removeQuestion(question.id)
                     }
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-white text-[10px] text-muted-foreground disabled:opacity-30"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-white text-[12px] text-muted-foreground disabled:opacity-30"
                   >
                     ×
                   </button>
@@ -1530,7 +1530,7 @@ function CreatorAnswersEditor({
       <div className="mt-5 rounded-[18px] border border-primary/15 bg-primary/[0.04] p-4">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-[10px] font-black">
+            <p className="text-[12px] font-black">
               Karşılaştırma profilin
             </p>
 
@@ -1683,7 +1683,7 @@ function ResultEditor({
       <div className="mt-5 grid gap-4">
         <div className="rounded-[22px] border border-border bg-white p-5">
           <div className="rounded-[20px] bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 p-5 text-white">
-            <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-white/70">
+            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/70">
               Örnek katılımcı sonucu
             </p>
 
@@ -1726,7 +1726,7 @@ function ResultEditor({
                       event.target.value,
                     )
                   }
-                  className="mt-2 h-9 w-full rounded-[12px] border border-border bg-white px-3 text-[10px] font-black outline-none focus:border-primary"
+                  className="mt-2 h-9 w-full rounded-[12px] border border-border bg-white px-3 text-[12px] font-black outline-none focus:border-primary"
                 />
 
                 <textarea
@@ -1810,7 +1810,7 @@ function OfferEditor({
         {enabled ? (
           <div className="mt-5 grid gap-4">
             <div className="rounded-[16px] border border-emerald-200 bg-emerald-50 p-4">
-              <p className="text-[10px] font-black text-emerald-900">
+              <p className="text-[12px] font-black text-emerald-900">
                 Önce ücretsiz sonuç gösterilecek
               </p>
 
@@ -1853,7 +1853,7 @@ function OfferEditor({
             <div className="rounded-[16px] border border-primary/15 bg-primary/[0.04] px-4 py-3">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-[10px] font-black">
+                  <p className="text-[12px] font-black">
                     AQRYO standart Offer fiyatı
                   </p>
                   <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
@@ -1868,7 +1868,7 @@ function OfferEditor({
             </div>
 
             <div className="rounded-[20px] bg-gradient-to-br from-violet-600 via-fuchsia-500 to-pink-500 p-5 text-white">
-              <p className="text-[8px] font-bold uppercase tracking-[0.14em] text-white/70">
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-white/70">
                 Ücretsiz sonucundan sonra
               </p>
 
@@ -1878,7 +1878,7 @@ function OfferEditor({
                     {title || "Teklif başlığı"}
                   </h3>
 
-                  <p className="mt-2 max-w-[520px] text-[10px] leading-4 text-white/80">
+                  <p className="mt-2 max-w-[520px] text-[12px] leading-4 text-white/80">
                     {description ||
                       "Teklif açıklaması burada görünür."}
                   </p>
@@ -1898,7 +1898,7 @@ function OfferEditor({
           </div>
         ) : (
           <div className="mt-5 rounded-[16px] bg-muted/45 p-4">
-            <p className="text-[10px] font-black">
+            <p className="text-[12px] font-black">
               Bu AQRY teklif içermeyecek
             </p>
 
@@ -1943,7 +1943,7 @@ function LivePreview({
           </h2>
         </div>
 
-        <span className="rounded-full bg-primary/[0.08] px-3 py-1 text-[8px] font-bold text-primary">
+        <span className="rounded-full bg-primary/[0.08] px-3 py-1 text-[11px] font-bold text-primary">
           Mobil
         </span>
       </div>
@@ -2003,7 +2003,7 @@ function LivePreview({
             </p>
 
             <div className="mt-5 rounded-[18px] border border-border bg-white p-4">
-              <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-primary">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-primary">
                 {questionCount} soru
               </p>
 
@@ -2054,7 +2054,7 @@ function WizardFooter({
       <button
         type="button"
         onClick={onNext}
-        className="h-11 rounded-full bg-black px-7 text-[10px] font-black text-white transition hover:bg-primary"
+        className="h-11 rounded-full bg-black px-7 text-[12px] font-black text-white transition hover:bg-primary"
       >
         Sonraki →
       </button>
@@ -2170,7 +2170,7 @@ function SelfPreview({
         <div className="mt-5 rounded-[26px] border border-border bg-white p-6">
           <p className="text-[22px] font-black tracking-[-0.04em]">{title}</p>
           <p className="mt-2 text-[11px] leading-5 text-muted-foreground">{description}</p>
-          <button type="button" onClick={onStart} className="mt-6 h-11 rounded-full bg-black px-6 text-[10px] font-black text-white">
+          <button type="button" onClick={onStart} className="mt-6 h-11 rounded-full bg-black px-6 text-[12px] font-black text-white">
             Experience’ı dene
           </button>
         </div>
