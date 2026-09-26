@@ -226,11 +226,17 @@ Deno.serve(async (request) => {
           })
           .eq("creator_id", experience.creator_id);
       } else {
-        const resendApiKey = Deno.env.get("RESEND_API_KEY");
-        const resendFrom =
-          Deno.env.get("RESEND_FROM") || "AQRYO <bildirim@aqryo.com>";
+        const { data: resendApiKey, error: resendSecretError } =
+          await admin.rpc("get_aqryo_push_secret", {
+            secret_name: "RESEND_API_KEY",
+          });
+        const resendFrom = "AQRYO <bildirim@aqryo.com>";
 
-        if (resendApiKey) {
+        if (
+          !resendSecretError &&
+          typeof resendApiKey === "string" &&
+          resendApiKey
+        ) {
           const {
             data: { user },
             error: userError,
