@@ -66,8 +66,6 @@ export async function shareToInstagram({
   text: string;
   shareUrl: string;
 }) {
-  const fullText = `${text}\n\n${shareUrl}`;
-
   if (
     file &&
     navigator.share &&
@@ -75,11 +73,21 @@ export async function shareToInstagram({
   ) {
     await navigator.share({
       files: [file],
-      text: fullText,
       title: "AQRYO",
     });
     return;
   }
+
+  if (!file && navigator.share) {
+    await navigator.share({
+      title: "AQRYO",
+      text,
+      url: shareUrl,
+    });
+    return;
+  }
+
+  const fullText = `${text}\n\n${shareUrl}`;
 
   if (file) {
     const objectUrl = URL.createObjectURL(file);
