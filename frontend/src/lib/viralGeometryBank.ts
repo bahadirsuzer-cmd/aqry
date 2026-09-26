@@ -21,6 +21,24 @@ const arc = (
 };
 const par = (x: number, y: number) =>
   `<path d="M${x - 8} ${y - 6}L${x} ${y}L${x - 8} ${y + 6}" fill="none" stroke="#7c3aed" stroke-width="3"/>`;
+const slantedPar = (x: number, y: number, angle: number) =>
+  `<g transform="translate(${x} ${y}) rotate(${-angle})"><path d="M-12 -6L-4 0L-12 6M-4 -6L4 0L-4 6" fill="none" stroke="#7c3aed" stroke-width="3"/></g>`;
+const arcTick = (x: number, y: number, radius: number, angle: number) => {
+  const p = polar(x, y, radius - 6, angle),
+    q = polar(x, y, radius + 6, angle);
+  return line(p[0], p[1], q[0], q[1], "#7c3aed", 3);
+};
+const rightSquare = (
+  x: number,
+  y: number,
+  u: readonly [number, number],
+  v: readonly [number, number],
+) => {
+  const size = 13,
+    a = size / Math.hypot(u[0], u[1]),
+    b = size / Math.hypot(v[0], v[1]);
+  return `<path d="M${x + u[0] * a} ${y + u[1] * a}L${x + u[0] * a + v[0] * b} ${y + u[1] * a + v[1] * b}L${x + v[0] * b} ${y + v[1] * b}" fill="none" stroke="#7c3aed" stroke-width="3"/>`;
+};
 const tick = (x: number, y: number, angle: number) => {
   const p = polar(x, y, 8, angle + 90),
     q = polar(x, y, 8, angle - 90);
@@ -57,13 +75,16 @@ function zigzag(a: number, b: number, bisect: boolean) {
     ]);
   const middle = (a - b) / 2,
     m = polar(x, y, 190, middle),
+    xLabel = polar(x, y, 78, (middle + a) / 2),
     ans = (a + b) / 2;
   const visual =
     d +
     line(x, y, m[0], m[1], "#7c3aed", 3) +
     arc(x, y, 56, -b, middle, "#7c3aed") +
     arc(x, y, 56, middle, a, "#7c3aed") +
-    label(x + 75, y - 15, "x", "#e0524d");
+    arcTick(x, y, 56, (-b + middle) / 2) +
+    arcTick(x, y, 56, (middle + a) / 2) +
+    label(xLabel[0], xLabel[1], "x", "#e0524d");
   return out(ans, a + b, visual, [`∥ ⇒ ${a}°+${b}°=${a + b}°`, `½ ⇒ x=${a + b}°÷2=${ans}°`]);
 }
 
@@ -86,8 +107,10 @@ function parallelogram(e: number, phi: number, half: boolean) {
     line(ax, ay, cx, dy) +
     par(150, ay) +
     par(150 + offset, dy) +
+    slantedPar((ax + dx) / 2, (ay + dy) / 2, theta) +
+    slantedPar((bx + cx) / 2, (ay + dy) / 2, theta) +
     arc(bx, ay, 37, theta, 180) +
-    label(bx - 35, ay - 65, `${e}°`) +
+    label(bx - 20, ay - 38, `${e}°`) +
     arc(ax, ay, 40, 0, phi, "#7c3aed") +
     label(ax + 66, ay - 15, `${phi}°`);
   if (!half)
@@ -95,10 +118,10 @@ function parallelogram(e: number, phi: number, half: boolean) {
       theta - phi,
       e - phi,
       base + arc(ax, ay, 58, phi, theta) + label(ax + 74, ay - 63, "x", "#e0524d"),
-      [`180°−${e}°=${theta}°`, `x=${theta}°−${phi}°=${theta - phi}°`],
+      [`∥ ⇒ 180°−${e}°=${theta}°`, `x=${theta}°−${phi}°=${theta - phi}°`],
     );
   const mid = (phi + theta) / 2,
-    p = polar(ax, ay, 165, mid),
+    p = polar(ax, ay, h / Math.sin(mid * rad), mid),
     ans = (theta - phi) / 2;
   return out(
     ans,
@@ -107,8 +130,10 @@ function parallelogram(e: number, phi: number, half: boolean) {
       line(ax, ay, p[0], p[1], "#7c3aed", 3) +
       arc(ax, ay, 60, phi, mid) +
       arc(ax, ay, 60, mid, theta) +
+      arcTick(ax, ay, 60, (phi + mid) / 2) +
+      arcTick(ax, ay, 60, (mid + theta) / 2) +
       label(ax + 97, ay - 64, "x", "#e0524d"),
-    [`180°−${e}°−${phi}°=${theta - phi}°`, `x=(${theta - phi}°)÷2=${ans}°`],
+    [`∥ ⇒ 180°−${e}°−${phi}°=${theta - phi}°`, `x=(${theta - phi}°)÷2=${ans}°`],
   );
 }
 
@@ -130,11 +155,16 @@ function isosceles(e: number) {
     label(293, ay - 45, `${e}°`) +
     arc(163, apexY, 39, 180 + base, 270) +
     arc(163, apexY, 39, 270, 360 - base) +
+    arcTick(163, apexY, 39, (180 + base + 270) / 2) +
+    arcTick(163, apexY, 39, (270 + 360 - base) / 2) +
     `<path d="M163 ${ay - 15}h15v15" fill="none" stroke="#7c3aed" stroke-width="3"/>` +
+    label(93, ay - 25, "β₁") +
+    label(233, ay - 25, "β₂") +
     label(127, apexY + 58, "x", "#e0524d");
   return out(answer, 2 * answer, diagram, [
-    `∠B=180°−${e}°=${base}°`,
-    `∠A=180°−2×${base}°=${2 * e - 180}°`,
+    `180°−${e}°=${base}°`,
+    `β₁=β₂=${base}°`,
+    `180°−2×${base}°=${2 * e - 180}°`,
     `x=${2 * e - 180}°÷2=${answer}°`,
   ]);
 }
@@ -163,13 +193,16 @@ function rightAltitude(a: number) {
     line(ax, ay, fx, fy, "#7c3aed", 3) +
     line(ax, ay, ray[0], ray[1], "#e0524d", 3) +
     `<path d="M${ax} ${ay - 20}h20v20" fill="none" stroke="#7c3aed" stroke-width="3"/>` +
+    rightSquare(fx, fy, [ax - fx, ay - fy], [bx - fx, ay - fy]) +
     arc(bx, ay, 34, 180 - a, 180) +
     label(bx - 50, ay - 20, `${a}°`) +
-    arc(ax, ay, 39, 0, half) +
+    arc(ax, ay, 39, 0, half, "#7c3aed") +
     arc(ax, ay, 39, half, angle, "#7c3aed") +
+    arcTick(ax, ay, 39, half / 2) +
+    arcTick(ax, ay, 39, (half + angle) / 2) +
     label(ax + 59, ay - 9, "x", "#e0524d") +
     `<circle cx="${fx}" cy="${fy}" r="4" fill="#7c3aed"/>`;
-  return out(answer, angle, diagram, [`h ⟂ c`, `∠A=${angle}°`, `½ ⇒ x=${angle}°÷2=${answer}°`]);
+  return out(answer, angle, diagram, [`⊥ ⇒ 90°`, `90°−${a}°=${angle}°`, `½ ⇒ x=${angle}°÷2=${answer}°`]);
 }
 
 function crossed(a: number, b: number) {
@@ -212,7 +245,7 @@ function trapezoid(a: number, phi: number) {
     cx = ax + h / Math.tan(phi * rad),
     bx = 315;
   const answer = a / 2 - phi,
-    mid = polar(ax, ay, 155, a / 2);
+    mid = polar(ax, ay, h / Math.sin((a / 2) * rad), a / 2);
   const diagram =
     line(ax, ay, bx, ay) +
     line(bx, ay, cx, dy) +
@@ -224,13 +257,15 @@ function trapezoid(a: number, phi: number) {
     par(155, dy) +
     arc(ax, ay, 49, 0, a / 2, "#7c3aed") +
     arc(ax, ay, 49, a / 2, a, "#7c3aed") +
+    arcTick(ax, ay, 49, a / 4) +
+    arcTick(ax, ay, 49, (3 * a) / 4) +
     arc(cx, dy, 36, 180, 180 + phi, "#e0524d") +
     arc(ax, ay, 70, phi, a / 2, "#e0524d") +
     label(cx - 43, dy + 17, `${phi}°`) +
     label(ax + 15, ay - 58, `${a}°`) +
     label(ax + 78, ay - 39, "x", "#e0524d");
   return out(answer, a - phi, diagram, [
-    `∥ ⇒ diagonal angle ${phi}°`,
+    `∥ ⇒ ${phi}°`,
     `½ =${a}°÷2=${a / 2}°`,
     `x=${a / 2}°−${phi}°=${answer}°`,
   ]);
@@ -256,10 +291,12 @@ function exteriorBisector(a: number, e: number) {
     arc(bx, by, 36, 0, e) +
     arc(cx, cy, 40, 180 + a, mid, "#7c3aed") +
     arc(cx, cy, 40, mid, 180 + e, "#7c3aed") +
+    arcTick(cx, cy, 40, (180 + a + mid) / 2) +
+    arcTick(cx, cy, 40, (mid + 180 + e) / 2) +
     label(ax + 54, by - 24, `${a}°`) +
     label(bx + 12, by - 54, `${e}°`) +
     label(cx - 32, cy + 65, "x", "#e0524d");
-  return out(half, e - a, diagram, [`∠B=180°−${e}°`, `∠A=${e}°−${a}°=${e - a}°`, `½ ⇒ x=${half}°`]);
+  return out(half, e - a, diagram, [`180°−${e}°`, `${e}°−${a}°=${e - a}°`, `½ ⇒ x=${half}°`]);
 }
 
 export const GEOMETRY_FAMILIES: Family[] = [
@@ -276,7 +313,7 @@ export const GEOMETRY_FAMILIES: Family[] = [
   {
     id: "diagonal_parallelogram",
     kind: "geometry",
-    make: (r) => parallelogram(choose(r, [110, 120, 130]), choose(r, [15, 20, 25]), false),
+    make: (r) => parallelogram(choose(r, [110, 120, 130]), choose(r, [20, 25]), false),
   },
   {
     id: "bisected_diagonal_parallelogram",

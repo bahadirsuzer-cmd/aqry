@@ -2,6 +2,7 @@ import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
 import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
 import { makeViralPuzzle, VIRAL_FAMILIES, type ViralKind, type ViralPuzzle } from "@/lib/viralPuzzleBank";
+import { localizedPuzzleSteps } from "@/lib/puzzleSolutionI18n";
 import React, { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -374,7 +375,7 @@ function PuzzleBuilderPage() {
           </div>
           <details className="rounded-[24px] border border-border bg-white p-5 text-[13px] font-semibold">
             <summary className="cursor-pointer font-black">{SOLUTION_TITLE[locale]}</summary>
-            <ol className="mt-3 list-inside list-decimal space-y-1">{puzzle.steps.map((step,index)=><li key={`${puzzle.id}-${index}`}>{step}</li>)}</ol>
+            <ol className="mt-3 list-inside list-decimal space-y-1">{localizedPuzzleSteps(locale,puzzle).map((step,index)=><li key={`${puzzle.id}-${index}`}>{step}</li>)}</ol>
           </details>
         </section>
 
