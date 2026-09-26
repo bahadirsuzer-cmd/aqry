@@ -1068,6 +1068,7 @@ useEffect(() => {
             />
           ) : screen === "result" ? (
             <ResultScreen
+  experienceId={experience.id}
   score={resultScore}
   result={result}
   experienceTitle={experience.title}
@@ -2250,6 +2251,7 @@ function CompletionScreen({
 }
 
 function ResultScreen({
+  experienceId,
   score,
   result,
   experienceTitle,
@@ -2259,6 +2261,7 @@ function ResultScreen({
   onComplete,
   onRestart,
 }: {
+  experienceId: string;
   score: number;
   result: ResultDefinition;
   experienceTitle: string;
@@ -2292,6 +2295,11 @@ function ResultScreen({
   const displayResultTitle = result.title;
   const displayResultDescription = result.description;
 
+  const publicShareUrl =
+    typeof window === "undefined"
+      ? ""
+      : `${window.location.origin}/share/${experienceId}`;
+
   const shareText =
     isArchetypeTest
       ? `Bu teste göre ben “${displayResultTitle}” çıktım. Sen ne çıkacaksın?`
@@ -2303,7 +2311,7 @@ function ResultScreen({
 
   function copyResultLink() {
     navigator.clipboard
-      .writeText(window.location.href)
+      .writeText(publicShareUrl)
       .then(() => {
         window.alert("Deneyim bağlantısı kopyalandı.");
       })
@@ -2318,7 +2326,7 @@ function ResultScreen({
         .share({
           title: experienceTitle,
           text: shareText,
-          url: window.location.href,
+          url: publicShareUrl,
         })
         .catch(() => {
           // Kullanıcı paylaşım ekranını kapatırsa işlem yapılmaz.
@@ -2341,7 +2349,7 @@ function ResultScreen({
     );
     shareUrl.searchParams.set(
       "url",
-      window.location.href,
+      publicShareUrl,
     );
 
     window.open(
