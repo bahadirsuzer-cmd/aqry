@@ -6,6 +6,12 @@ import {
   type AnonymousInboxItem,
 } from "@/services/anonymousInbox";
 import { useAqryoLocale } from "@/lib/i18n";
+import {
+  downloadShareFile,
+  openSocialShare,
+  shareToInstagram,
+  type SocialChannel,
+} from "@/services/socialShare";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
@@ -229,39 +235,39 @@ function CreatorInboxPage() {
     });
   }
 
-  async function answerOnX(item: InboxItem) {
+  async function answerOnChannel(
+    item: InboxItem,
+    channel: SocialChannel,
+  ) {
     if (sharingId) return;
 
     try {
       setSharingId(item.id);
       const file = await createAnswerCard(item);
+      const shareUrl = `${window.location.origin}/experience/${item.experienceId}`;
+      const text = isTr
+        ? "Cevabım 👇\n\n#AQRYO"
+        : "My answer 👇\n\n#AQRYO";
 
-      if (
-        navigator.share &&
-        (!navigator.canShare || navigator.canShare({ files: [file] }))
-      ) {
-        await navigator.share({
-          files: [file],
-          title: "AQRYO",
-          text: isTr ? "Cevabım:" : "My answer:",
+      if (channel === "instagram") {
+        await shareToInstagram({
+          file,
+          text,
+          shareUrl,
         });
         return;
       }
 
-      const fileUrl = URL.createObjectURL(file);
-      const anchor = document.createElement("a");
-      anchor.href = fileUrl;
-      anchor.download = file.name;
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      URL.revokeObjectURL(fileUrl);
-
-      const url = new URL("https://twitter.com/intent/tweet");
-      url.searchParams.set("text", isTr ? "Cevabım:" : "My answer:");
-      window.open(url.toString(), "_blank", "noopener,noreferrer");
+      downloadShareFile(file);
+      openSocialShare(channel, text, shareUrl);
     } catch (shareError) {
-      if (shareError instanceof DOMException && shareError.name === "AbortError") return;
+      if (
+        shareError instanceof DOMException &&
+        shareError.name === "AbortError"
+      ) {
+        return;
+      }
+
       console.error("AQRYO cevap kartı paylaşılamadı:", shareError);
       window.alert(
         shareError instanceof Error
@@ -311,8 +317,8 @@ function CreatorInboxPage() {
             </h1>
             <p className="mt-3 max-w-[650px] text-[16px] font-medium leading-7 text-muted-foreground">
               {isTr
-                ? "Takipçilerin sana anonim soru veya itiraf bırakır. İstediğini seç, X’te cevapla."
-                : "Followers leave anonymous questions or confessions. Pick one and answer it on X."}
+                ? "Takipçilerin sana anonim soru veya itiraf bırakır. İstediğini seç ve istediğin sosyal ağda cevapla."
+                : "Followers leave anonymous questions or confessions. Pick one and answer on any social network."}
             </p>
           </div>
 
@@ -384,23 +390,28 @@ function CreatorInboxPage() {
                   {item.message}
                 </p>
 
-                <div className="mt-6 flex gap-2">
-                  <button
-                    type="button"
-                    disabled={sharingId === item.id}
-                    onClick={() => void answerOnX(item)}
-                    className="h-12 flex-1 rounded-full bg-black px-5 text-[14px] font-black text-white disabled:opacity-50"
-                  >
+                <div className="mt-6">
+                  <p className="text-[12px] font-black text-muted-foreground">
                     {sharingId === item.id
                       ? isTr ? "Kart hazırlanıyor..." : "Preparing..."
-                      : isTr ? "X’te cevapla →" : "Answer on X →"}
-                  </button>
+                      : isTr ? "Nerede cevaplamak istiyorsun?" : "Where do you want to answer?"}
+                  </p>
+
+                  <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    <button type="button" disabled={sharingId === item.id} onClick={() => void answerOnChannel(item, "x")} className="h-11 rounded-full bg-black px-3 text-[12px] font-black text-white disabled:opacity-50">X</button>
+                    <button type="button" disabled={sharingId === item.id} onClick={() => void answerOnChannel(item, "linkedin")} className="h-11 rounded-full border border-sky-200 bg-sky-50 px-3 text-[12px] font-black text-sky-700 disabled:opacity-50">LinkedIn</button>
+                    <button type="button" disabled={sharingId === item.id} onClick={() => void answerOnChannel(item, "whatsapp")} className="h-11 rounded-full border border-emerald-200 bg-emerald-50 px-3 text-[12px] font-black text-emerald-700 disabled:opacity-50">WhatsApp</button>
+                    <button type="button" disabled={sharingId === item.id} onClick={() => void answerOnChannel(item, "facebook")} className="h-11 rounded-full border border-blue-200 bg-blue-50 px-3 text-[12px] font-black text-blue-700 disabled:opacity-50">Facebook</button>
+                    <button type="button" disabled={sharingId === item.id} onClick={() => void answerOnChannel(item, "telegram")} className="h-11 rounded-full border border-cyan-200 bg-cyan-50 px-3 text-[12px] font-black text-cyan-700 disabled:opacity-50">Telegram</button>
+                    <button type="button" disabled={sharingId === item.id} onClick={() => void answerOnChannel(item, "instagram")} className="h-11 rounded-full border border-pink-200 bg-pink-50 px-3 text-[12px] font-black text-pink-700 disabled:opacity-50">Instagram</button>
+                  </div>
+
                   <button
                     type="button"
                     onClick={() => void copyMessage(item)}
-                    className="h-12 rounded-full border border-border bg-white px-4 text-[14px] font-black"
+                    className="mt-2 h-11 w-full rounded-full border border-border bg-white px-4 text-[13px] font-black"
                   >
-                    {copiedId === item.id ? "✓" : isTr ? "Kopyala" : "Copy"}
+                    {copiedId === item.id ? "✓" : isTr ? "Mesajı kopyala" : "Copy message"}
                   </button>
                 </div>
 
