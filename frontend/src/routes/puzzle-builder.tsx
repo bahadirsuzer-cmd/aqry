@@ -14,6 +14,41 @@ type PuzzleKind = ViralKind;
 type Presentation = "clean" | "debate";
 type Puzzle = ViralPuzzle & { id: string };
 
+async function puzzlePng(source: string, name: string): Promise<File> {
+  const svgUrl = URL.createObjectURL(new Blob([source], { type: "image/svg+xml;charset=utf-8" }));
+  try {
+    const image = new Image();
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error("Puzzle image could not be rendered"));
+      image.src = svgUrl;
+    });
+    const canvas = document.createElement("canvas");
+    canvas.width = 1080;
+    canvas.height = 1440;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Canvas unavailable");
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob((result) => result ? resolve(result) : reject(new Error("PNG unavailable")), "image/png");
+    });
+    return new File([blob], name, { type: "image/png" });
+  } finally {
+    URL.revokeObjectURL(svgUrl);
+  }
+}
+
+function downloadPng(file: File) {
+  const url = URL.createObjectURL(file);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = file.name;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
+
 type PuzzleCopy = {
   descriptions: Record<PuzzleKind, string>;
   titles: Record<PuzzleKind, string>;
@@ -257,6 +292,7 @@ function PuzzleBuilderPage() {
   const [socialText,setSocialText]=useState("");
   const [copied,setCopied]=useState(false);
   const [sharing,setSharing]=useState(false);
+  const [shareImage,setShareImage]=useState<{key:string;file:File}|null>(null);
   const previewRef=useRef<HTMLDivElement|null>(null);
   const svgRef=useRef<SVGSVGElement|null>(null);
 
@@ -307,6 +343,18 @@ function PuzzleBuilderPage() {
     return new XMLSerializer().serializeToString(svgRef.current);
   }
 
+  const shareImageKey = `${puzzle.id}:${presentation}:${locale}`;
+  useEffect(() => {
+    let cancelled = false;
+    const source = serializeSvg();
+    if (source) {
+      void puzzlePng(source, `aqryo-${puzzle.kind}-${puzzle.family}.png`)
+        .then((file) => { if (!cancelled) setShareImage({key:shareImageKey,file}); })
+        .catch((error) => { if (!cancelled) console.error(error); });
+    }
+    return () => { cancelled = true; };
+  }, [shareImageKey]);
+
   function downloadSvg(){
     const source=serializeSvg();
     if(!source) return;
@@ -331,15 +379,13 @@ function PuzzleBuilderPage() {
     if(sharing) return;
     try{
       setSharing(true);
-      const source=serializeSvg();
-      if(!source) throw new Error("Visual unavailable");
-      const blob=new Blob([source],{type:"image/svg+xml"});
-      const file=new File([blob],`aqryo-${puzzle.kind}.svg`,{type:"image/svg+xml"});
+      const file = shareImage?.key === shareImageKey ? shareImage.file : null;
+      if(!file) throw new Error("Visual unavailable");
       if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
         await navigator.share({files:[file],text:socialText,title:"AQRYO"});
       } else {
-        downloadSvg();
-        const x=new URL("https://twitter.com/intent/tweet");
+        downloadPng(file);
+        const x=new URL("https://x.com/intent/tweet");
         x.searchParams.set("text",`${socialText}\n\n#AQRYO`);
         window.open(x.toString(),"_blank","noopener,noreferrer");
       }
@@ -423,7 +469,7 @@ function PuzzleBuilderPage() {
               className="mt-4 w-full resize-none rounded-[20px] border border-border bg-background px-5 py-5 text-[17px] font-bold leading-8 outline-none focus:border-violet-400 sm:text-[18px]"
             />
             <div className="mt-4 flex flex-wrap gap-2">
-              <button disabled={sharing} onClick={()=>void share()} className="rounded-full bg-violet-600 px-6 py-3.5 text-[14px] font-black text-white">{sharing?"...":t("share")} →</button>
+              <button disabled={sharing || shareImage?.key !== shareImageKey} onClick={()=>void share()} className="rounded-full bg-violet-600 px-6 py-3.5 text-[14px] font-black text-white disabled:opacity-50">{sharing?"...":t("share")} →</button>
               <button onClick={()=>void copyText()} className="rounded-full border border-border bg-white px-6 py-3.5 text-[14px] font-black">{copied?"✓":t("copyText")}</button>
               <button onClick={downloadSvg} className="rounded-full border border-border bg-white px-6 py-3.5 text-[14px] font-black">{t("downloadSvg")}</button>
             </div>
