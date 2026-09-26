@@ -6,6 +6,7 @@ import {
   Outlet,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -17,6 +18,7 @@ import {
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { NotFoundPage } from "@/pages/NotFoundPage";
+import { trackSitePage } from "@/services/siteTraffic";
 
 function NotFoundComponent() {
   return <NotFoundPage />;
@@ -214,6 +216,11 @@ function RootShell({
 function RootComponent() {
   const { queryClient } =
     Route.useRouteContext();
+  const path = useRouterState({ select: (state) => state.location.pathname });
+
+  useEffect(() => {
+    void trackSitePage(path);
+  }, [path]);
 
   return (
     <QueryClientProvider

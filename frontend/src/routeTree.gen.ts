@@ -57,6 +57,8 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StoryBuilderRouteImport } from './routes/story-builder'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TestBuilderRouteImport } from './routes/test-builder'
+import { Route as TrafficRouteImport } from './routes/traffic'
+import { Route as TrafficLoginRouteImport } from './routes/traffic-login'
 import { Route as CreatorExperiencesExperienceIdRouteImport } from './routes/creator-experiences_.$experienceId'
 import { Route as CreatorCreatorIdRouteImport } from './routes/creator.$creatorId'
 import { Route as ExperienceExperienceIdRouteImport } from './routes/experience.$experienceId'
@@ -310,6 +312,16 @@ const TestBuilderRoute = TestBuilderRouteImport.update({
   path: '/test-builder',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrafficRoute = TrafficRouteImport.update({
+  id: '/traffic',
+  path: '/traffic',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrafficLoginRoute = TrafficLoginRouteImport.update({
+  id: '/traffic-login',
+  path: '/traffic-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreatorExperiencesExperienceIdRoute =
   CreatorExperiencesExperienceIdRouteImport.update({
     id: '/creator-experiences_/$experienceId',
@@ -417,6 +429,8 @@ export interface FileRoutesByFullPath {
   '/story-builder': typeof StoryBuilderRoute
   '/terms': typeof TermsRoute
   '/test-builder': typeof TestBuilderRoute
+  '/traffic': typeof TrafficRoute
+  '/traffic-login': typeof TrafficLoginRoute
   '/creator-experiences/$experienceId': typeof CreatorExperiencesExperienceIdRoute
   '/creator/$creatorId': typeof CreatorCreatorIdRoute
   '/experience/$experienceId': typeof ExperienceExperienceIdRoute
@@ -478,6 +492,8 @@ export interface FileRoutesByTo {
   '/story-builder': typeof StoryBuilderRoute
   '/terms': typeof TermsRoute
   '/test-builder': typeof TestBuilderRoute
+  '/traffic': typeof TrafficRoute
+  '/traffic-login': typeof TrafficLoginRoute
   '/creator-experiences/$experienceId': typeof CreatorExperiencesExperienceIdRoute
   '/creator/$creatorId': typeof CreatorCreatorIdRoute
   '/experience/$experienceId': typeof ExperienceExperienceIdRoute
@@ -539,6 +555,8 @@ export interface FileRoutesById {
   '/story-builder': typeof StoryBuilderRoute
   '/terms': typeof TermsRoute
   '/test-builder': typeof TestBuilderRoute
+  '/traffic': typeof TrafficRoute
+  '/traffic-login': typeof TrafficLoginRoute
   '/creator-experiences_/$experienceId': typeof CreatorExperiencesExperienceIdRoute
   '/creator/$creatorId': typeof CreatorCreatorIdRoute
   '/experience/$experienceId': typeof ExperienceExperienceIdRoute
@@ -602,6 +620,8 @@ export interface FileRouteTypes {
     | '/story-builder'
     | '/terms'
     | '/test-builder'
+    | '/traffic'
+    | '/traffic-login'
     | '/creator-experiences/$experienceId'
     | '/creator/$creatorId'
     | '/experience/$experienceId'
@@ -663,6 +683,8 @@ export interface FileRouteTypes {
     | '/story-builder'
     | '/terms'
     | '/test-builder'
+    | '/traffic'
+    | '/traffic-login'
     | '/creator-experiences/$experienceId'
     | '/creator/$creatorId'
     | '/experience/$experienceId'
@@ -723,6 +745,8 @@ export interface FileRouteTypes {
     | '/story-builder'
     | '/terms'
     | '/test-builder'
+    | '/traffic'
+    | '/traffic-login'
     | '/creator-experiences_/$experienceId'
     | '/creator/$creatorId'
     | '/experience/$experienceId'
@@ -785,6 +809,8 @@ export interface RootRouteChildren {
   StoryBuilderRoute: typeof StoryBuilderRoute
   TermsRoute: typeof TermsRoute
   TestBuilderRoute: typeof TestBuilderRoute
+  TrafficRoute: typeof TrafficRoute
+  TrafficLoginRoute: typeof TrafficLoginRoute
   CreatorExperiencesExperienceIdRoute: typeof CreatorExperiencesExperienceIdRoute
   CreatorCreatorIdRoute: typeof CreatorCreatorIdRoute
   ExperienceExperienceIdRoute: typeof ExperienceExperienceIdRoute
@@ -1133,6 +1159,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestBuilderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/traffic': {
+      id: '/traffic'
+      path: '/traffic'
+      fullPath: '/traffic'
+      preLoaderRoute: typeof TrafficRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/traffic-login': {
+      id: '/traffic-login'
+      path: '/traffic-login'
+      fullPath: '/traffic-login'
+      preLoaderRoute: typeof TrafficLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/creator-experiences_/$experienceId': {
       id: '/creator-experiences_/$experienceId'
       path: '/creator-experiences/$experienceId'
@@ -1278,6 +1318,8 @@ const rootRouteChildren: RootRouteChildren = {
   StoryBuilderRoute: StoryBuilderRoute,
   TermsRoute: TermsRoute,
   TestBuilderRoute: TestBuilderRoute,
+  TrafficRoute: TrafficRoute,
+  TrafficLoginRoute: TrafficLoginRoute,
   CreatorExperiencesExperienceIdRoute: CreatorExperiencesExperienceIdRoute,
   CreatorCreatorIdRoute: CreatorCreatorIdRoute,
   ExperienceExperienceIdRoute: ExperienceExperienceIdRoute,
