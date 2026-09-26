@@ -83,13 +83,13 @@ function CreatorStudioPage() {
 
       <section className="mx-auto max-w-[1240px] px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
         <div className="mb-7">
-          <p className="text-[12px] font-black uppercase tracking-[0.18em] text-primary">
+          <p className="text-[13px] font-black uppercase tracking-[0.18em] text-primary">
             {t("studioEyebrow")}
           </p>
-          <h1 className="mt-2 max-w-[760px] text-[38px] font-black leading-[0.98] tracking-[-0.06em] sm:text-[58px]">
+          <h1 className="mt-2 max-w-[760px] text-[42px] font-black leading-[0.98] tracking-[-0.06em] sm:text-[64px]">
             {t("studioTitle")}
           </h1>
-          <p className="mt-4 max-w-[680px] text-[16px] font-semibold leading-7 text-muted-foreground sm:text-[18px]">
+          <p className="mt-4 max-w-[680px] text-[18px] font-semibold leading-8 text-muted-foreground sm:text-[20px]">
             {t("studioDescription")}
           </p>
         </div>
@@ -112,13 +112,13 @@ function CreatorStudioPage() {
                 </span>
               </div>
 
-              <h2 className="mt-6 text-[46px] font-black leading-[0.92] tracking-[-0.07em] sm:text-[66px]">
+              <h2 className="mt-6 text-[50px] font-black leading-[0.92] tracking-[-0.07em] sm:text-[72px]">
                 {t("questionConfession")}
               </h2>
-              <p className="mt-5 max-w-[590px] text-[16px] font-semibold leading-7 text-white/72 sm:text-[18px]">
+              <p className="mt-5 max-w-[590px] text-[18px] font-semibold leading-8 text-white/72 sm:text-[20px]">
                 {t("questionConfessionDesc")}
               </p>
-              <span className="mt-7 inline-flex h-13 items-center justify-center rounded-full bg-white px-7 py-3.5 text-[14px] font-black text-[#17101f] transition group-hover:bg-[#74f0de]">
+              <span className="mt-7 inline-flex h-13 items-center justify-center rounded-full bg-white px-7 py-3.5 text-[15px] font-black text-[#17101f] transition group-hover:bg-[#74f0de]">
                 {t("create")} →
               </span>
             </div>
@@ -183,9 +183,9 @@ function ProductCard({ eyebrow, title, description, href, badge, accent, visual,
             </span>
           ) : null}
         </div>
-        <h3 className="mt-3 text-[29px] font-black leading-tight tracking-[-0.055em]">{title}</h3>
-        <p className="mt-3 min-h-[84px] text-[14px] font-medium leading-6 text-muted-foreground">{description}</p>
-        <p className="mt-5 text-[13px] font-black text-foreground">{cta} →</p>
+        <h3 className="mt-3 text-[32px] font-black leading-tight tracking-[-0.055em]">{title}</h3>
+        <p className="mt-3 min-h-[84px] text-[16px] font-medium leading-7 text-muted-foreground">{description}</p>
+        <p className="mt-5 text-[14px] font-black text-foreground">{cta} →</p>
       </div>
     </Link>
   );
