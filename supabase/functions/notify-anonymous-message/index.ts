@@ -26,23 +26,31 @@ Deno.serve(async (request) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY");
-    const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY");
-    const vapidSubject =
-      Deno.env.get("VAPID_SUBJECT") || "mailto:hello@aqryo.com";
+    const vapidPublicKey =
+      "BPIAqho6q2tQ0W0jTX2_hJkSBvhi9e1vvriPrX_BeTRkhbhR3DYonjWyd4pKjWm3GHCgnkBhLuDf2QS3Fb7kWFM";
+    const vapidSubject = "mailto:hello@aqryo.com";
 
-    if (
-      !supabaseUrl ||
-      !serviceRoleKey ||
-      !vapidPublicKey ||
-      !vapidPrivateKey
-    ) {
+    if (!supabaseUrl || !serviceRoleKey) {
       return json({ error: "push_not_configured" }, 503);
     }
 
     const admin = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
+
+    const { data: vapidPrivateKey, error: vapidSecretError } =
+      await admin.rpc("get_aqryo_push_secret", {
+        secret_name: "VAPID_PRIVATE_KEY",
+      });
+
+    if (
+      vapidSecretError ||
+      typeof vapidPrivateKey !== "string" ||
+      !vapidPrivateKey
+    ) {
+      console.error("VAPID secret alınamadı:", vapidSecretError);
+      return json({ error: "push_not_configured" }, 503);
+    }
 
     const { data: event, error: eventError } = await admin
       .from("experience_events")
