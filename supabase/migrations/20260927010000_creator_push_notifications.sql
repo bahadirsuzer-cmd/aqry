@@ -41,7 +41,7 @@ to authenticated
 using (creator_id = auth.uid());
 
 create table if not exists public.push_notification_deliveries (
-  event_id uuid primary key references public.experience_events(id) on delete cascade,
+  event_id text primary key,
   creator_id uuid not null references auth.users(id) on delete cascade,
   created_at timestamptz not null default now()
 );
