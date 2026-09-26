@@ -176,10 +176,149 @@ Deno.serve(async (request) => {
         });
     }
 
+    const { data: preferenceRow } = await admin
+      .from("creator_notification_preferences")
+      .select(
+        "email_enabled,email_cooldown_minutes,last_email_sent_at,suppressed_email_count",
+      )
+      .eq("creator_id", experience.creator_id)
+      .maybeSingle();
+
+    const preferences = preferenceRow ?? {
+      email_enabled: true,
+      email_cooldown_minutes: 15,
+      last_email_sent_at: null,
+      suppressed_email_count: 0,
+    };
+
+    if (!preferenceRow) {
+      await admin
+        .from("creator_notification_preferences")
+        .upsert({
+          creator_id: experience.creator_id,
+          email_enabled: true,
+          push_enabled: true,
+          email_cooldown_minutes: 15,
+        });
+    }
+
+    let emailSent = false;
+    let emailSuppressed = false;
+
+    if (sent === 0 && preferences.email_enabled) {
+      const lastSentAt = preferences.last_email_sent_at
+        ? new Date(preferences.last_email_sent_at).getTime()
+        : 0;
+      const cooldownMs =
+        Number(preferences.email_cooldown_minutes || 15) * 60_000;
+      const withinCooldown =
+        lastSentAt > 0 && Date.now() - lastSentAt < cooldownMs;
+
+      if (withinCooldown) {
+        emailSuppressed = true;
+
+        await admin
+          .from("creator_notification_preferences")
+          .update({
+            suppressed_email_count:
+              Number(preferences.suppressed_email_count || 0) + 1,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("creator_id", experience.creator_id);
+      } else {
+        const resendApiKey = Deno.env.get("RESEND_API_KEY");
+        const resendFrom =
+          Deno.env.get("RESEND_FROM") || "AQRYO <bildirim@aqryo.com>";
+
+        if (resendApiKey) {
+          const {
+            data: { user },
+            error: userError,
+          } = await admin.auth.admin.getUserById(
+            experience.creator_id,
+          );
+
+          const recipient = user?.email;
+
+          if (!userError && recipient) {
+            const groupedCount =
+              Number(preferences.suppressed_email_count || 0) + 1;
+            const subject =
+              groupedCount > 1
+                ? `AQRYO’da ${groupedCount} yeni anonim mesajın var 👀`
+                : mode === "question"
+                  ? "AQRYO’da yeni anonim sorun var 👀"
+                  : "AQRYO’da yeni anonim itirafın var 👀";
+
+            const inboxUrl = "https://aqryo.com/creator-inbox";
+            const html = `
+              <div style="font-family:Arial,sans-serif;background:#f7f5fb;padding:32px 16px;color:#17101f">
+                <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:24px;padding:28px">
+                  <div style="font-size:28px;font-weight:900;letter-spacing:-1px">AQRYO.</div>
+                  <div style="margin-top:28px;font-size:13px;font-weight:800;color:#7c3aed;text-transform:uppercase;letter-spacing:1.2px">
+                    Yeni anonim mesaj
+                  </div>
+                  <h1 style="margin:10px 0 0;font-size:28px;line-height:1.05">
+                    ${groupedCount > 1 ? `${groupedCount} yeni mesajın var.` : "Biri sana anonim bir mesaj bıraktı."}
+                  </h1>
+                  <p style="margin:14px 0 0;font-size:15px;line-height:1.7;color:#6b6475">
+                    Mesaj içeriğini e-postada göstermiyoruz. Gelen kutunu açıp istediğin cevabı görsel olarak paylaşabilirsin.
+                  </p>
+                  <a href="${inboxUrl}" style="display:inline-block;margin-top:24px;background:#17101f;color:#fff;text-decoration:none;padding:14px 22px;border-radius:999px;font-weight:800">
+                    Gelen kutusunu aç →
+                  </a>
+                  <p style="margin:24px 0 0;font-size:12px;line-height:1.6;color:#8a8292">
+                    AQRYO bildirim tercihlerini hesabındaki Bildirimler ekranından değiştirebilirsin.
+                  </p>
+                </div>
+              </div>
+            `;
+
+            const resendResponse = await fetch(
+              "https://api.resend.com/emails",
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${resendApiKey}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  from: resendFrom,
+                  to: [recipient],
+                  subject,
+                  html,
+                }),
+              },
+            );
+
+            if (resendResponse.ok) {
+              emailSent = true;
+
+              await admin
+                .from("creator_notification_preferences")
+                .update({
+                  last_email_sent_at: new Date().toISOString(),
+                  suppressed_email_count: 0,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq("creator_id", experience.creator_id);
+            } else {
+              console.error(
+                "Resend e-posta gönderimi başarısız:",
+                await resendResponse.text(),
+              );
+            }
+          }
+        }
+      }
+    }
+
     return json({
-      delivered: sent > 0,
+      delivered: sent > 0 || emailSent,
       subscriptions: subscriptions.length,
       sent,
+      emailSent,
+      emailSuppressed,
     });
   } catch (error) {
     console.error(error);
