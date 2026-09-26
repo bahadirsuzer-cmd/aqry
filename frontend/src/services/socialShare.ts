@@ -1,3 +1,4 @@
+// deploy-retry: 2026-09-26
 export type SocialChannel =
   | "x"
   | "linkedin"
