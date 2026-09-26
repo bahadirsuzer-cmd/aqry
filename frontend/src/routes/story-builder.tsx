@@ -1171,15 +1171,15 @@ function StoryBuilderPage() {
       <header className="sticky top-16 z-30 border-b border-border/80 bg-[#fbfbfd]/95 backdrop-blur-xl">
         <div className="mx-auto flex h-[58px] max-w-[1500px] items-center justify-between gap-3 px-4 sm:px-7">
           <div className="min-w-0">
-            <p className="text-[11px] font-black uppercase tracking-[0.15em] text-teal-600">
+            <p className="text-[14px] font-black uppercase tracking-[0.15em] text-teal-600">
               {state.sourceExperienceId ? "Yeni sürüm oluşturuluyor" : "Story / İçerik"}
             </p>
-            <p className="truncate text-[11px] font-bold">{state.title || "Yeni Story"}</p>
+            <p className="truncate text-[14px] font-bold">{state.title || "Yeni Story"}</p>
           </div>
           <button
             type="button"
             onClick={() => { window.location.href = "/creator-studio"; }}
-            className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-white px-4 text-[11px] font-bold text-muted-foreground"
+            className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-white px-4 text-[14px] font-bold text-muted-foreground"
           >
             Studio’ya dön
           </button>
@@ -1188,7 +1188,7 @@ function StoryBuilderPage() {
 
       <div className="mx-auto grid max-w-[1500px] lg:grid-cols-[210px_minmax(0,1fr)_360px]">
         <aside className="sticky top-[122px] z-20 border-b border-border bg-[#fbfbfd]/95 px-3 py-3 backdrop-blur-xl lg:h-[calc(100vh-122px)] lg:self-start lg:border-b-0 lg:border-r lg:bg-white/60 lg:py-5">
-          <p className="mb-3 hidden px-3 text-[12px] font-black uppercase tracking-[0.16em] text-muted-foreground lg:block">
+          <p className="mb-3 hidden px-3 text-[15px] font-black uppercase tracking-[0.16em] text-muted-foreground lg:block">
             Oluşturma akışı
           </p>
           <nav className="grid grid-cols-4 gap-1.5 lg:grid-cols-1">
@@ -1198,7 +1198,7 @@ function StoryBuilderPage() {
                 type="button"
                 disabled={index > maxVisitedStep}
                 onClick={() => openStep(step)}
-                className={`flex min-h-11 items-center gap-3 rounded-[14px] px-3 text-left text-[11px] font-black transition ${
+                className={`flex min-h-11 items-center gap-3 rounded-[14px] px-3 text-left text-[14px] font-black transition ${
                   activePanel === step
                     ? "bg-black text-white"
                     : index <= maxVisitedStep
@@ -1206,7 +1206,7 @@ function StoryBuilderPage() {
                       : "cursor-not-allowed bg-transparent text-muted-foreground/35"
                 }`}
               >
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 text-[12px]">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 text-[15px]">
                   {index < activeStepIndex ? "✓" : index + 1}
                 </span>
                 <span>
@@ -1219,7 +1219,7 @@ function StoryBuilderPage() {
 
         <section className="min-w-0 px-4 py-6 sm:px-7">
           {state.sourceExperienceId ? (
-            <div className="mb-5 rounded-[18px] border border-amber-200 bg-amber-50 px-4 py-3 text-[12px] font-bold text-amber-800">
+            <div className="mb-5 rounded-[18px] border border-amber-200 bg-amber-50 px-4 py-3 text-[15px] font-bold text-amber-800">
               Yayındaki Experience değişmeyecek. Düzenlemelerin yeni bir sürüm olarak yayınlanacak.
             </div>
           ) : null}
@@ -1255,7 +1255,7 @@ function StoryBuilderPage() {
                     {STORY_TOPIC_IDEAS.map((topic) => (
                       <span
                         key={topic}
-                        className="rounded-full border border-teal-100 bg-white px-3 py-2 text-[11px] font-bold text-foreground"
+                        className="rounded-full border border-teal-100 bg-white px-3 py-2 text-[14px] font-bold text-foreground"
                       >
                         {topic}
                       </span>
@@ -1266,8 +1266,8 @@ function StoryBuilderPage() {
                 <FieldLabel className="mt-5">Kapak görseli</FieldLabel>
                 <label className="mt-2 flex min-h-[88px] cursor-pointer items-center justify-between gap-4 rounded-[18px] border border-dashed border-teal-200 bg-teal-50/40 p-4">
                   <div>
-                    <p className="text-[12px] font-black">{uploadingId === "cover" ? "Yükleniyor..." : state.coverImageUrl ? "Kapak görselini değiştir" : "Kapak görseli yükle"}</p>
-                    <p className="mt-1 text-[12px] text-muted-foreground">JPG veya PNG · en fazla 8 MB</p>
+                    <p className="text-[15px] font-black">{uploadingId === "cover" ? "Yükleniyor..." : state.coverImageUrl ? "Kapak görselini değiştir" : "Kapak görseli yükle"}</p>
+                    <p className="mt-1 text-[15px] text-muted-foreground">JPG veya PNG · en fazla 8 MB</p>
                   </div>
                   <span className="text-[18px] font-black text-teal-600">↑</span>
                   <input
@@ -1289,7 +1289,7 @@ function StoryBuilderPage() {
                   {state.items.map((item, index) => (
                     <div key={item.id} className="rounded-[20px] border border-border bg-background p-4">
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-[12px] font-black uppercase tracking-[0.1em] text-teal-600">{index + 1}. {item.type === "text" ? "Metin" : "Görsel"}</p>
+                        <p className="text-[15px] font-black uppercase tracking-[0.1em] text-teal-600">{index + 1}. {item.type === "text" ? "Metin" : "Görsel"}</p>
                         <div className="flex items-center gap-1">
                           <SmallButton disabled={index === 0} onClick={() => moveItem(item.id, -1)}>↑</SmallButton>
                           <SmallButton disabled={index === state.items.length - 1} onClick={() => moveItem(item.id, 1)}>↓</SmallButton>
@@ -1311,19 +1311,19 @@ function StoryBuilderPage() {
                       ) : (
                         <div className="mt-3">
                           {item.imageUrl ? <div className="flex min-h-[180px] items-center justify-center overflow-hidden rounded-[16px] border border-border bg-[#f3f3f5] p-3"><img src={item.imageUrl} alt="" className="max-h-[360px] max-w-full object-contain" /></div> : null}
-                          <label className="mt-2 flex h-11 cursor-pointer items-center justify-center rounded-[14px] border border-dashed border-teal-200 bg-white text-[12px] font-black text-teal-700">
+                          <label className="mt-2 flex h-11 cursor-pointer items-center justify-center rounded-[14px] border border-dashed border-teal-200 bg-white text-[15px] font-black text-teal-700">
                             {uploadingId === `free:${item.id}` ? "Yükleniyor..." : item.imageUrl ? "Görseli değiştir / kırp" : "+ Görsel yükle"}
                             <input type="file" accept="image/jpeg,image/png" className="hidden" disabled={uploadingId !== null} onChange={(event) => { const file = event.target.files?.[0]; if (file) beginCrop(file, { kind: "free", itemId: item.id }); event.currentTarget.value = ""; }} />
                           </label>
-                          {item.imageUrl ? <button type="button" onClick={() => updateImageItem(item.id, "")} className="mt-2 text-[11px] font-black text-muted-foreground hover:text-red-600">Görseli kaldır</button> : null}
+                          {item.imageUrl ? <button type="button" onClick={() => updateImageItem(item.id, "")} className="mt-2 text-[14px] font-black text-muted-foreground hover:text-red-600">Görseli kaldır</button> : null}
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
                 <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                  <button type="button" onClick={() => addTextItem(false)} className="h-11 rounded-[14px] border border-border bg-white text-[12px] font-black">+ Metin</button>
-                  <button type="button" onClick={() => addImageItem(false)} className="h-11 rounded-[14px] border border-border bg-white text-[12px] font-black">+ Görsel</button>
+                  <button type="button" onClick={() => addTextItem(false)} className="h-11 rounded-[14px] border border-border bg-white text-[15px] font-black">+ Metin</button>
+                  <button type="button" onClick={() => addImageItem(false)} className="h-11 rounded-[14px] border border-border bg-white text-[15px] font-black">+ Görsel</button>
                 </div>
               </BuilderSection>
             </div>
@@ -1341,24 +1341,24 @@ function StoryBuilderPage() {
           {activePanel === "preview" ? (
             <BuilderSection eyebrow="3 · Önizleme" title="Yayınlamadan önce bir kez yaşa" description="Hikâyeyi ziyaretçi gibi baştan sona kontrol et. Hazırsa tek dokunuşla yayınla.">
               <div className="rounded-[18px] border border-border bg-background p-4">
-                <p className="text-[12px] font-black">Hazırsan sağdaki önizlemeden başlat.</p>
+                <p className="text-[15px] font-black">Hazırsan sağdaki önizlemeden başlat.</p>
                 <p className="mt-1 text-[13px] leading-6 text-muted-foreground">Akışı ve final ekranını ziyaretçinin göreceği haliyle kontrol edeceksin.</p>
               </div>
             </BuilderSection>
           ) : null}
 
           <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-5">
-            <button type="button" disabled={activeStepIndex === 0} onClick={goBack} className="h-11 rounded-full border border-border bg-white px-5 text-[12px] font-black disabled:opacity-25">← Geri</button>
+            <button type="button" disabled={activeStepIndex === 0} onClick={goBack} className="h-11 rounded-full border border-border bg-white px-5 text-[15px] font-black disabled:opacity-25">← Geri</button>
             {activePanel !== "preview" ? (
-              <button type="button" onClick={goNext} className="h-11 rounded-full bg-black px-7 text-[12px] font-black text-white hover:bg-teal-600">Sonraki →</button>
+              <button type="button" onClick={goNext} className="h-11 rounded-full bg-black px-7 text-[15px] font-black text-white hover:bg-teal-600">Sonraki →</button>
             ) : (
-              <button type="button" disabled={!canContinue || publishing} onClick={() => void publishStory()} className="h-11 rounded-full bg-black px-7 text-[12px] font-black text-white enabled:hover:bg-teal-600 disabled:opacity-25">{publishing ? "Yayınlanıyor..." : state.sourceExperienceId ? "Yeni sürümü yayınla" : "Yayınla"}</button>
+              <button type="button" disabled={!canContinue || publishing} onClick={() => void publishStory()} className="h-11 rounded-full bg-black px-7 text-[15px] font-black text-white enabled:hover:bg-teal-600 disabled:opacity-25">{publishing ? "Yayınlanıyor..." : state.sourceExperienceId ? "Yeni sürümü yayınla" : "Yayınla"}</button>
             )}
           </div>
         </section>
 
         <aside className="border-t border-border px-4 py-6 lg:sticky lg:top-[122px] lg:h-[calc(100vh-122px)] lg:self-start lg:overflow-y-auto lg:border-l lg:border-t-0 sm:px-6">
-          <p className="mb-3 text-[12px] font-black uppercase tracking-[0.15em] text-muted-foreground">{activePanel === "preview" ? "Gerçek deneyim" : "Canlı önizleme"}</p>
+          <p className="mb-3 text-[15px] font-black uppercase tracking-[0.15em] text-muted-foreground">{activePanel === "preview" ? "Gerçek deneyim" : "Canlı önizleme"}</p>
           <div className="overflow-hidden rounded-[28px] border border-border bg-white shadow-[0_18px_55px_rgba(22,12,34,0.06)]">
             {activePanel === "preview" ? (
               <div className="p-5">
@@ -1367,18 +1367,18 @@ function StoryBuilderPage() {
                     {state.coverImageUrl ? <img src={state.coverImageUrl} alt="" className="h-52 w-full rounded-[20px] object-cover" /> : <div className="h-52 rounded-[20px] bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500" />}
                     <h2 className="mt-5 text-[26px] font-black tracking-[-0.05em]">{state.title || "Story başlığı"}</h2>
                     <p className="mt-2 text-[13px] leading-6 text-muted-foreground">{state.description}</p>
-                    <button type="button" onClick={previewNext} className="mt-5 h-11 w-full rounded-full bg-black text-[12px] font-black text-white">Başla →</button>
+                    <button type="button" onClick={previewNext} className="mt-5 h-11 w-full rounded-full bg-black text-[15px] font-black text-white">Başla →</button>
                   </div>
                 ) : previewStage === "items" ? (
                   <div>
-                    <p className="text-[11px] font-black text-teal-600">{previewItemIndex + 1}/{cleanFreeItems.length}</p>
+                    <p className="text-[14px] font-black text-teal-600">{previewItemIndex + 1}/{cleanFreeItems.length}</p>
                     {cleanFreeItems[previewItemIndex]?.type === "text" ? <p className="mt-5 whitespace-pre-wrap text-[16px] font-semibold leading-7">{cleanFreeItems[previewItemIndex].text}</p> : cleanFreeItems[previewItemIndex]?.type === "image" ? <div className="mt-5 flex min-h-[280px] items-center justify-center rounded-[18px] bg-[#f3f3f5] p-3"><img src={cleanFreeItems[previewItemIndex].imageUrl} alt="" className="max-h-[420px] max-w-full object-contain" /></div> : null}
-                    <div className="mt-5 flex items-center justify-between"><button type="button" onClick={() => { if (previewItemIndex > 0) setPreviewItemIndex((v) => v - 1); else setPreviewStage("entry"); }} className="h-10 rounded-full border border-border px-4 text-[11px] font-black">←</button><button type="button" onClick={previewNext} className="h-10 rounded-full bg-black px-5 text-[11px] font-black text-white">Devam →</button></div>
+                    <div className="mt-5 flex items-center justify-between"><button type="button" onClick={() => { if (previewItemIndex > 0) setPreviewItemIndex((v) => v - 1); else setPreviewStage("entry"); }} className="h-10 rounded-full border border-border px-4 text-[14px] font-black">←</button><button type="button" onClick={previewNext} className="h-10 rounded-full bg-black px-5 text-[14px] font-black text-white">Devam →</button></div>
                   </div>
                 ) : previewStage === "result" ? (
-                  <div className="py-3 text-center"><p className="text-[11px] font-black uppercase tracking-[0.12em] text-teal-600">Result</p><h2 className="mt-3 text-[27px] font-black tracking-[-0.05em]">{state.resultTitle}</h2><p className="mt-3 text-[11px] leading-6 text-muted-foreground">{state.resultDescription}</p><button type="button" onClick={() => { setPreviewStage("entry"); setPreviewItemIndex(0); }} className="mt-5 h-11 w-full rounded-full border border-border text-[12px] font-black">Baştan dene</button></div>
+                  <div className="py-3 text-center"><p className="text-[14px] font-black uppercase tracking-[0.12em] text-teal-600">Result</p><h2 className="mt-3 text-[27px] font-black tracking-[-0.05em]">{state.resultTitle}</h2><p className="mt-3 text-[14px] leading-6 text-muted-foreground">{state.resultDescription}</p><button type="button" onClick={() => { setPreviewStage("entry"); setPreviewItemIndex(0); }} className="mt-5 h-11 w-full rounded-full border border-border text-[15px] font-black">Baştan dene</button></div>
                 ) : (
-                  <div className="py-3 text-center"><p className="text-[11px] font-black uppercase tracking-[0.12em] text-amber-600">Premium devam</p><h2 className="mt-3 text-[25px] font-black tracking-[-0.05em]">{state.offerTitle}</h2><p className="mt-3 text-[11px] leading-6 text-muted-foreground">{state.offerDescription}</p><div className="mt-4 rounded-[16px] bg-amber-50 p-4 text-[16px] font-black">{STANDARD_OFFER_PRICE} TL</div><button type="button" onClick={() => { setPreviewStage("entry"); setPreviewItemIndex(0); }} className="mt-5 h-11 w-full rounded-full border border-border text-[12px] font-black">Baştan dene</button></div>
+                  <div className="py-3 text-center"><p className="text-[14px] font-black uppercase tracking-[0.12em] text-amber-600">Premium devam</p><h2 className="mt-3 text-[25px] font-black tracking-[-0.05em]">{state.offerTitle}</h2><p className="mt-3 text-[14px] leading-6 text-muted-foreground">{state.offerDescription}</p><div className="mt-4 rounded-[16px] bg-amber-50 p-4 text-[16px] font-black">{STANDARD_OFFER_PRICE} TL</div><button type="button" onClick={() => { setPreviewStage("entry"); setPreviewItemIndex(0); }} className="mt-5 h-11 w-full rounded-full border border-border text-[15px] font-black">Baştan dene</button></div>
                 )}
               </div>
             ) : (
@@ -1386,9 +1386,9 @@ function StoryBuilderPage() {
                 <div className="relative min-h-[220px] overflow-hidden bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500">
                   {state.coverImageUrl ? <img src={state.coverImageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" /> : null}
                   <div className="absolute inset-0 bg-black/15" />
-                  <div className="relative z-10 flex min-h-[220px] flex-col justify-end p-6 text-white"><p className="text-[11px] font-black uppercase tracking-[0.13em] text-white/75">AQRYO Story</p><h2 className="mt-2 text-[28px] font-black leading-[0.98] tracking-[-0.05em]">{state.title || "İçerik başlığı"}</h2>{state.description ? <p className="mt-3 text-[13px] leading-6 text-white/75">{state.description}</p> : null}</div>
+                  <div className="relative z-10 flex min-h-[220px] flex-col justify-end p-6 text-white"><p className="text-[14px] font-black uppercase tracking-[0.13em] text-white/75">AQRYO Story</p><h2 className="mt-2 text-[28px] font-black leading-[0.98] tracking-[-0.05em]">{state.title || "İçerik başlığı"}</h2>{state.description ? <p className="mt-3 text-[13px] leading-6 text-white/75">{state.description}</p> : null}</div>
                 </div>
-                <div className="max-h-[420px] space-y-4 overflow-y-auto p-5">{state.items.map((item, index) => <div key={item.id} className="rounded-[16px] border border-border bg-[#fafafa] p-3"><p className="text-[12px] font-black uppercase tracking-[0.08em] text-teal-600">{index + 1}. {item.type === "text" ? "Metin" : "Görsel"}</p>{item.type === "image" && item.imageUrl ? <div className="mt-2 flex min-h-[120px] items-center justify-center rounded-[12px] bg-[#efeff2] p-2"><img src={item.imageUrl} alt="" className="max-h-[220px] max-w-full object-contain" /></div> : null}{item.type === "text" && item.text ? <p className="mt-2 whitespace-pre-wrap text-left text-[11px] font-semibold leading-5 text-foreground/80">{item.text}</p> : null}</div>)}</div>
+                <div className="max-h-[420px] space-y-4 overflow-y-auto p-5">{state.items.map((item, index) => <div key={item.id} className="rounded-[16px] border border-border bg-[#fafafa] p-3"><p className="text-[15px] font-black uppercase tracking-[0.08em] text-teal-600">{index + 1}. {item.type === "text" ? "Metin" : "Görsel"}</p>{item.type === "image" && item.imageUrl ? <div className="mt-2 flex min-h-[120px] items-center justify-center rounded-[12px] bg-[#efeff2] p-2"><img src={item.imageUrl} alt="" className="max-h-[220px] max-w-full object-contain" /></div> : null}{item.type === "text" && item.text ? <p className="mt-2 whitespace-pre-wrap text-left text-[14px] font-semibold leading-5 text-foreground/80">{item.text}</p> : null}</div>)}</div>
               </>
             )}
           </div>
@@ -1398,10 +1398,10 @@ function StoryBuilderPage() {
       {guide ? (
         <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/45 p-4">
           <div className="w-full max-w-[430px] rounded-[26px] bg-white p-6 shadow-2xl">
-            <p className="text-[11px] font-black uppercase tracking-[0.13em] text-teal-600">AQRYO</p>
+            <p className="text-[14px] font-black uppercase tracking-[0.13em] text-teal-600">AQRYO</p>
             <h2 className="mt-3 text-[24px] font-black tracking-[-0.045em]">{guide.title}</h2>
-            <p className="mt-3 text-[12px] leading-6 text-muted-foreground">{guide.description}</p>
-            <button type="button" onClick={() => { const next = guide.next; setGuide(null); moveToStep(next); }} className="mt-5 h-11 w-full rounded-full bg-black text-[12px] font-black text-white">Tamam, devam et →</button>
+            <p className="mt-3 text-[15px] leading-6 text-muted-foreground">{guide.description}</p>
+            <button type="button" onClick={() => { const next = guide.next; setGuide(null); moveToStep(next); }} className="mt-5 h-11 w-full rounded-full bg-black text-[15px] font-black text-white">Tamam, devam et →</button>
           </div>
         </div>
       ) : null}
@@ -1412,7 +1412,7 @@ function StoryBuilderPage() {
             <div className="max-h-[calc(100vh-2rem)] overflow-y-auto p-5 sm:max-h-[calc(100vh-3rem)]">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[12px] font-black uppercase tracking-[0.12em] text-teal-600">
+                  <p className="text-[15px] font-black uppercase tracking-[0.12em] text-teal-600">
                     Görsel kadrajı
                   </p>
                   <h2 className="mt-2 text-[22px] font-black tracking-[-0.04em]">
@@ -1446,7 +1446,7 @@ function StoryBuilderPage() {
 
               <div className="mt-5 grid gap-4">
                 <label>
-                  <div className="flex items-center justify-between text-[11px] font-black">
+                  <div className="flex items-center justify-between text-[14px] font-black">
                     <span>Görsel boyutu</span>
                     <span>{Math.round(cropDraft.zoom * 100)}%</span>
                   </div>
@@ -1473,7 +1473,7 @@ function StoryBuilderPage() {
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label>
-                    <p className="text-[11px] font-black">Sağa / sola</p>
+                    <p className="text-[14px] font-black">Sağa / sola</p>
                     <input
                       type="range"
                       min="-1"
@@ -1495,7 +1495,7 @@ function StoryBuilderPage() {
                   </label>
 
                   <label>
-                    <p className="text-[11px] font-black">Yukarı / aşağı</p>
+                    <p className="text-[14px] font-black">Yukarı / aşağı</p>
                     <input
                       type="range"
                       min="-1"
@@ -1522,7 +1522,7 @@ function StoryBuilderPage() {
                 <button
                   type="button"
                   onClick={() => void useOriginalCropFile()}
-                  className="h-11 rounded-full border border-border bg-white text-[11px] font-black"
+                  className="h-11 rounded-full border border-border bg-white text-[14px] font-black"
                 >
                   Orijinali kullan
                 </button>
@@ -1530,7 +1530,7 @@ function StoryBuilderPage() {
                 <button
                   type="button"
                   onClick={() => void cropAndUpload()}
-                  className="h-11 rounded-full bg-black text-[11px] font-black text-white"
+                  className="h-11 rounded-full bg-black text-[14px] font-black text-white"
                 >
                   Ayarı kaydet
                 </button>
@@ -1557,7 +1557,7 @@ function BuilderSection({
 }) {
   return (
     <section className="rounded-[26px] border border-border bg-white p-5 shadow-[0_12px_35px_rgba(22,12,34,0.035)] sm:p-6">
-      <p className="text-[11px] font-black uppercase tracking-[0.13em] text-teal-600">
+      <p className="text-[14px] font-black uppercase tracking-[0.13em] text-teal-600">
         {eyebrow}
       </p>
 
@@ -1585,7 +1585,7 @@ function FieldLabel({
 }) {
   return (
     <p
-      className={`text-[12px] font-black ${className}`}
+      className={`text-[15px] font-black ${className}`}
     >
       {children}
     </p>
@@ -1606,7 +1606,7 @@ function SmallButton({
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-[11px] font-black transition enabled:hover:border-teal-200 enabled:hover:text-teal-700 disabled:opacity-25"
+      className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-[14px] font-black transition enabled:hover:border-teal-200 enabled:hover:text-teal-700 disabled:opacity-25"
     >
       {children}
     </button>
