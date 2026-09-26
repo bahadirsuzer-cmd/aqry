@@ -2236,7 +2236,11 @@ function CompletionScreen({
       <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-3xl text-emerald-700" aria-hidden="true">✓</span>
       <p className="mt-5 text-xs font-black uppercase tracking-[0.14em] text-emerald-700">Deneyim tamamlandı</p>
       <h2 className="mt-3 text-[30px] font-black tracking-[-0.05em]">Sonucun senin.</h2>
-      <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">Ücretsiz sonucunu eksiksiz gördün. Dilersen creator’ın sunduğu ek içeriğe göz atabilirsin.</p>
+      <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
+        {experience.offer.enabled
+          ? "Sonucunu gördün. İstersen creator’ın sunduğu ek içeriğe göz atabilirsin."
+          : "Deneyimi tamamladın. Sonucuna geri dönebilir veya paylaşmaya devam edebilirsin."}
+      </p>
       {completionState === "saving" ? <p role="status" className="mt-5 text-sm font-semibold text-muted-foreground">Tamamlanma kaydediliyor…</p> : null}
       {completionState === "failed" ? <div role="alert" className="mt-5 rounded-2xl bg-red-50 p-4 text-sm text-red-800">Bağlantı nedeniyle tamamlanma kaydedilemedi. <button type="button" onClick={onRetry} className="font-black underline">Yeniden dene</button></div> : null}
       {experience.offer.enabled ? (
@@ -2246,7 +2250,9 @@ function CompletionScreen({
         </button>
       ) : null}
       
-      <button type="button" onClick={onBack} className="mt-5 text-sm font-semibold text-muted-foreground underline underline-offset-4">Ücretsiz sonucuma dön</button>
+      <button type="button" onClick={onBack} className="mt-5 text-sm font-semibold text-muted-foreground underline underline-offset-4">
+        {experience.offer.enabled ? "Ücretsiz sonucuma dön" : "Sonucuma dön"}
+      </button>
     </section>
   );
 }
