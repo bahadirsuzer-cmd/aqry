@@ -182,6 +182,10 @@ export const Route =
           rel: "apple-touch-icon",
           href: "/aqryo-q.png",
         },
+        {
+          rel: "manifest",
+          href: "/manifest.webmanifest",
+        },
       ],
     }),
 
