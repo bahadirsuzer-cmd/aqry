@@ -30,6 +30,7 @@ import { Route as CreatorEarningsRouteImport } from './routes/creator-earnings'
 import { Route as CreatorExperiencesRouteImport } from './routes/creator-experiences'
 import { Route as CreatorFollowingRouteImport } from './routes/creator-following'
 import { Route as CreatorGiftsRouteImport } from './routes/creator-gifts'
+import { Route as CreatorInboxRouteImport } from './routes/creator-inbox'
 import { Route as CreatorLegalRouteImport } from './routes/creator-legal'
 import { Route as CreatorPaymentsRouteImport } from './routes/creator-payments'
 import { Route as CreatorPrivacyRouteImport } from './routes/creator-privacy'
@@ -50,6 +51,7 @@ import { Route as PaymentTermsRouteImport } from './routes/payment-terms'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PuzzleBuilderRouteImport } from './routes/puzzle-builder'
+import { Route as QuestionConfessionBuilderRouteImport } from './routes/question-confession-builder'
 import { Route as RecommendationBuilderRouteImport } from './routes/recommendation-builder'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StoryBuilderRouteImport } from './routes/story-builder'
@@ -172,6 +174,11 @@ const CreatorGiftsRoute = CreatorGiftsRouteImport.update({
   path: '/creator-gifts',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreatorInboxRoute = CreatorInboxRouteImport.update({
+  id: '/creator-inbox',
+  path: '/creator-inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreatorLegalRoute = CreatorLegalRouteImport.update({
   id: '/creator-legal',
   path: '/creator-legal',
@@ -272,6 +279,12 @@ const PuzzleBuilderRoute = PuzzleBuilderRouteImport.update({
   path: '/puzzle-builder',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuestionConfessionBuilderRoute =
+  QuestionConfessionBuilderRouteImport.update({
+    id: '/question-confession-builder',
+    path: '/question-confession-builder',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const RecommendationBuilderRoute = RecommendationBuilderRouteImport.update({
   id: '/recommendation-builder',
   path: '/recommendation-builder',
@@ -377,6 +390,7 @@ export interface FileRoutesByFullPath {
   '/creator-experiences': typeof CreatorExperiencesRoute
   '/creator-following': typeof CreatorFollowingRoute
   '/creator-gifts': typeof CreatorGiftsRoute
+  '/creator-inbox': typeof CreatorInboxRoute
   '/creator-legal': typeof CreatorLegalRoute
   '/creator-payments': typeof CreatorPaymentsRoute
   '/creator-privacy': typeof CreatorPrivacyRoute
@@ -397,6 +411,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/puzzle-builder': typeof PuzzleBuilderRoute
+  '/question-confession-builder': typeof QuestionConfessionBuilderRoute
   '/recommendation-builder': typeof RecommendationBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story-builder': typeof StoryBuilderRoute
@@ -436,6 +451,7 @@ export interface FileRoutesByTo {
   '/creator-experiences': typeof CreatorExperiencesRoute
   '/creator-following': typeof CreatorFollowingRoute
   '/creator-gifts': typeof CreatorGiftsRoute
+  '/creator-inbox': typeof CreatorInboxRoute
   '/creator-legal': typeof CreatorLegalRoute
   '/creator-payments': typeof CreatorPaymentsRoute
   '/creator-privacy': typeof CreatorPrivacyRoute
@@ -456,6 +472,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/puzzle-builder': typeof PuzzleBuilderRoute
+  '/question-confession-builder': typeof QuestionConfessionBuilderRoute
   '/recommendation-builder': typeof RecommendationBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story-builder': typeof StoryBuilderRoute
@@ -495,6 +512,7 @@ export interface FileRoutesById {
   '/creator-experiences': typeof CreatorExperiencesRoute
   '/creator-following': typeof CreatorFollowingRoute
   '/creator-gifts': typeof CreatorGiftsRoute
+  '/creator-inbox': typeof CreatorInboxRoute
   '/creator-legal': typeof CreatorLegalRoute
   '/creator-payments': typeof CreatorPaymentsRoute
   '/creator-privacy': typeof CreatorPrivacyRoute
@@ -515,6 +533,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/puzzle-builder': typeof PuzzleBuilderRoute
+  '/question-confession-builder': typeof QuestionConfessionBuilderRoute
   '/recommendation-builder': typeof RecommendationBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story-builder': typeof StoryBuilderRoute
@@ -556,6 +575,7 @@ export interface FileRouteTypes {
     | '/creator-experiences'
     | '/creator-following'
     | '/creator-gifts'
+    | '/creator-inbox'
     | '/creator-legal'
     | '/creator-payments'
     | '/creator-privacy'
@@ -576,6 +596,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/puzzle-builder'
+    | '/question-confession-builder'
     | '/recommendation-builder'
     | '/sitemap.xml'
     | '/story-builder'
@@ -615,6 +636,7 @@ export interface FileRouteTypes {
     | '/creator-experiences'
     | '/creator-following'
     | '/creator-gifts'
+    | '/creator-inbox'
     | '/creator-legal'
     | '/creator-payments'
     | '/creator-privacy'
@@ -635,6 +657,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/puzzle-builder'
+    | '/question-confession-builder'
     | '/recommendation-builder'
     | '/sitemap.xml'
     | '/story-builder'
@@ -673,6 +696,7 @@ export interface FileRouteTypes {
     | '/creator-experiences'
     | '/creator-following'
     | '/creator-gifts'
+    | '/creator-inbox'
     | '/creator-legal'
     | '/creator-payments'
     | '/creator-privacy'
@@ -693,6 +717,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/puzzle-builder'
+    | '/question-confession-builder'
     | '/recommendation-builder'
     | '/sitemap.xml'
     | '/story-builder'
@@ -733,6 +758,7 @@ export interface RootRouteChildren {
   CreatorExperiencesRoute: typeof CreatorExperiencesRoute
   CreatorFollowingRoute: typeof CreatorFollowingRoute
   CreatorGiftsRoute: typeof CreatorGiftsRoute
+  CreatorInboxRoute: typeof CreatorInboxRoute
   CreatorLegalRoute: typeof CreatorLegalRoute
   CreatorPaymentsRoute: typeof CreatorPaymentsRoute
   CreatorPrivacyRoute: typeof CreatorPrivacyRoute
@@ -753,6 +779,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   PuzzleBuilderRoute: typeof PuzzleBuilderRoute
+  QuestionConfessionBuilderRoute: typeof QuestionConfessionBuilderRoute
   RecommendationBuilderRoute: typeof RecommendationBuilderRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StoryBuilderRoute: typeof StoryBuilderRoute
@@ -917,6 +944,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreatorGiftsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creator-inbox': {
+      id: '/creator-inbox'
+      path: '/creator-inbox'
+      fullPath: '/creator-inbox'
+      preLoaderRoute: typeof CreatorInboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/creator-legal': {
       id: '/creator-legal'
       path: '/creator-legal'
@@ -1055,6 +1089,13 @@ declare module '@tanstack/react-router' {
       path: '/puzzle-builder'
       fullPath: '/puzzle-builder'
       preLoaderRoute: typeof PuzzleBuilderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/question-confession-builder': {
+      id: '/question-confession-builder'
+      path: '/question-confession-builder'
+      fullPath: '/question-confession-builder'
+      preLoaderRoute: typeof QuestionConfessionBuilderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/recommendation-builder': {
@@ -1210,6 +1251,7 @@ const rootRouteChildren: RootRouteChildren = {
   CreatorExperiencesRoute: CreatorExperiencesRoute,
   CreatorFollowingRoute: CreatorFollowingRoute,
   CreatorGiftsRoute: CreatorGiftsRoute,
+  CreatorInboxRoute: CreatorInboxRoute,
   CreatorLegalRoute: CreatorLegalRoute,
   CreatorPaymentsRoute: CreatorPaymentsRoute,
   CreatorPrivacyRoute: CreatorPrivacyRoute,
@@ -1230,6 +1272,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   PuzzleBuilderRoute: PuzzleBuilderRoute,
+  QuestionConfessionBuilderRoute: QuestionConfessionBuilderRoute,
   RecommendationBuilderRoute: RecommendationBuilderRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StoryBuilderRoute: StoryBuilderRoute,
