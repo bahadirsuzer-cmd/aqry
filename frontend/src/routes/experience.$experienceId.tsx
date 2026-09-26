@@ -2331,24 +2331,24 @@ function ResultScreen({
   }
 
   function shareOnX() {
-    const shareUrl = new URL("https://x.com/intent/post");
+    const shareUrl = new URL(
+      "https://twitter.com/intent/tweet",
+    );
+
     shareUrl.searchParams.set(
       "text",
       `${shareText}\n\n#AQRYO`,
     );
-    shareUrl.searchParams.set("url", window.location.href);
+    shareUrl.searchParams.set(
+      "url",
+      window.location.href,
+    );
 
-    const opened = window.open(
+    window.open(
       shareUrl.toString(),
       "_blank",
       "noopener,noreferrer",
     );
-
-    if (!opened) {
-      navigator.clipboard
-        .writeText(`${shareText}\n\n${window.location.href}\n#AQRYO`)
-        .catch(() => {});
-    }
   }
   return (
     <article className="overflow-hidden rounded-[30px] border border-border bg-white pb-3 shadow-[0_24px_70px_rgba(35,16,55,0.13)]">     <div className="bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 p-7 text-white">
