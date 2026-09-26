@@ -196,7 +196,7 @@ export function ResultSharePanel({
       `Benim sonucum: ${resultTitle}\n\nSen de çöz`;
 
     const url = new URL(
-      "https://twitter.com/intent/tweet",
+      "https://x.com/intent/post",
     );
 
     url.searchParams.set(
