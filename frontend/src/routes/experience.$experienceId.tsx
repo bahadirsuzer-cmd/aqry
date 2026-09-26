@@ -19,6 +19,7 @@ import {
 import { ReportExperienceDialog } from "@/components/experience/ReportExperienceDialog";
 import { PublicNavigation } from "@/components/home/PublicNavigation";
 import { supabase } from "@/services/supabase";
+import { getPublicShareUrl } from "@/services/shareAssets";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
@@ -2298,7 +2299,7 @@ function ResultScreen({
   const publicShareUrl =
     typeof window === "undefined"
       ? ""
-      : `${window.location.origin}/share/${experienceId}`;
+      : getPublicShareUrl(experienceId);
 
   const shareText =
     isArchetypeTest
