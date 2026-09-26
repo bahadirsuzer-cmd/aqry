@@ -1,7 +1,8 @@
 import { supabase } from "@/services/supabase";
 
 const VAPID_PUBLIC_KEY =
-  import.meta.env.VITE_WEB_PUSH_PUBLIC_KEY as string | undefined;
+  (import.meta.env.VITE_WEB_PUSH_PUBLIC_KEY as string | undefined) ??
+  "BPIAqho6q2tQ0W0jTX2_hJkSBvhi9e1vvriPrX_BeTRkhbhR3DYonjWyd4pKjWm3GHCgnkBhLuDf2QS3Fb7kWFM";
 
 export type PushSupport = {
   supported: boolean;
