@@ -24,6 +24,9 @@ import {
   shareToInstagram,
   type SocialChannel,
 } from "@/services/socialShare";
+import {
+  getExistingPushSubscription,
+} from "@/services/pushNotifications";
 
 interface PublishedExperience {
   id: string;
@@ -66,6 +69,14 @@ function PublishSuccessPage() {
     null,
   );
   const [copied, setCopied] = useState(false);
+  const [
+    showNotificationNudge,
+    setShowNotificationNudge,
+  ] = useState(false);
+  const [
+    notificationNudgeChecked,
+    setNotificationNudgeChecked,
+  ] = useState(false);
   const [
     generatingShare,
     setGeneratingShare,
@@ -403,6 +414,29 @@ useEffect(() => {
     };
   }
 
+  async function maybeShowNotificationNudge() {
+    if (
+      !experience ||
+      experience.type !== "question_confession" ||
+      notificationNudgeChecked
+    ) {
+      return;
+    }
+
+    setNotificationNudgeChecked(true);
+
+    try {
+      const subscription =
+        await getExistingPushSubscription();
+
+      if (!subscription) {
+        setShowNotificationNudge(true);
+      }
+    } catch {
+      setShowNotificationNudge(true);
+    }
+  }
+
   async function downloadSocialCard(
     format:
       | "square"
@@ -424,6 +458,8 @@ useEffect(() => {
         source,
         format,
       );
+
+      void maybeShowNotificationNudge();
     } catch (error) {
       console.error(
         "Paylaşım görseli oluşturulamadı:",
@@ -459,6 +495,7 @@ useEffect(() => {
 
     const url = shareAssetsReady ? publicShareUrl : experienceUrl;
     openSocialShare(channel, getShareText(), url);
+    void maybeShowNotificationNudge();
   }
 
   async function shareOnInstagram() {
@@ -469,6 +506,8 @@ useEffect(() => {
       text: getShareText(),
       shareUrl: url,
     });
+
+    void maybeShowNotificationNudge();
   }
 
   const qrTargetUrl =
@@ -834,6 +873,60 @@ useEffect(() => {
           </div>
         </article>
       </div>
+      {showNotificationNudge ? (
+        <div className="fixed inset-0 z-[220] flex items-end justify-center bg-black/45 p-3 sm:items-center">
+          <section className="w-full max-w-[430px] rounded-[30px] bg-white p-6 shadow-[0_30px_100px_rgba(0,0,0,0.28)]">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-violet-100 text-[21px]">
+                🔔
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowNotificationNudge(false)}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-background text-[18px] font-black text-muted-foreground"
+                aria-label="Kapat"
+              >
+                ×
+              </button>
+            </div>
+
+            <p className="mt-5 text-[12px] font-black uppercase tracking-[0.15em] text-primary">
+              Paylaştın. Şimdi cevapları kaçırma.
+            </p>
+
+            <h2 className="mt-2 text-[28px] font-black leading-[1.02] tracking-[-0.05em]">
+              Yeni soru gelince haber verelim mi?
+            </h2>
+
+            <p className="mt-3 text-[14px] font-semibold leading-6 text-muted-foreground">
+              Takipçin anonim soru veya itiraf bıraktığında AQRYO sana haber versin.
+              Gelen kutusunu tekrar tekrar kontrol etmene gerek kalmasın.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowNotificationNudge(false);
+                navigate({
+                  to: "/creator-notifications",
+                });
+              }}
+              className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-violet-700 px-5 text-[14px] font-black text-white"
+            >
+              Bildirimleri ayarla →
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowNotificationNudge(false)}
+              className="mt-2 flex h-10 w-full items-center justify-center rounded-full text-[12px] font-black text-muted-foreground"
+            >
+              Şimdilik değil
+            </button>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }
