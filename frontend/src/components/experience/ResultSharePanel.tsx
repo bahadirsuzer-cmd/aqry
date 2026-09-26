@@ -32,6 +32,20 @@ export function ResultSharePanel({
   experienceType,
   shareUrl,
 }: ResultSharePanelProps) {
+  const normalizedShareUrl = (() => {
+    try {
+      const url = new URL(shareUrl, window.location.origin);
+      const match = url.pathname.match(/^\/experience\/([^/]+)$/);
+
+      if (!match) {
+        return shareUrl;
+      }
+
+      return `${url.origin}/share/${encodeURIComponent(match[1])}?card=v2`;
+    } catch {
+      return shareUrl;
+    }
+  })();
   const [sharing, setSharing] =
     useState(false);
 
@@ -69,7 +83,7 @@ export function ResultSharePanel({
       coverImageUrl,
       score,
       type: experienceType,
-      shareUrl,
+      shareUrl: normalizedShareUrl,
     };
   }
 
@@ -178,7 +192,7 @@ export function ResultSharePanel({
       setErrorMessage(null);
 
       await navigator.clipboard.writeText(
-        shareUrl,
+        normalizedShareUrl,
       );
 
       setMessage(
@@ -206,7 +220,7 @@ export function ResultSharePanel({
 
     url.searchParams.set(
       "url",
-      shareUrl,
+      normalizedShareUrl,
     );
 
     window.open(
