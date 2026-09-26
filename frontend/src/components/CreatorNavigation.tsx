@@ -12,9 +12,6 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { locale, setLocale, t } = useAqryoLocale();
   const [unreadCount, setUnreadCount] = useState(0);
-  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
-    typeof Notification === "undefined" ? "denied" : Notification.permission,
-  );
   const lastUnreadRef = useRef(0);
   const initializedInboxRef = useRef(false);
 
@@ -75,15 +72,10 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
     };
   }, []);
 
-  async function enableNotifications() {
-    if (typeof Notification === "undefined") return;
-    const permission = await Notification.requestPermission();
-    setNotificationPermission(permission);
-  }
-
   const navigationItems = [
     { label: t("studio"), to: "/creator-studio", badge: 0 },
     { label: t("inbox"), to: "/creator-inbox", badge: unreadCount },
+    { label: "Bildirimler", to: "/creator-notifications", badge: unreadCount },
     { label: t("experiences"), to: "/creator-experiences", badge: 0 },
     { label: t("account"), to: "/creator-account", badge: 0 },
   ];
@@ -125,15 +117,6 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
           </nav>
 
           <div className="flex shrink-0 items-center gap-2">
-            {notificationPermission === "default" ? (
-              <button
-                type="button"
-                onClick={() => void enableNotifications()}
-                className="hidden h-11 items-center justify-center rounded-full border border-violet-200 bg-violet-50 px-3 text-[11px] font-black text-violet-700 lg:flex"
-              >
-                Bildirimleri aç
-              </button>
-            ) : null}
             <label className="hidden sm:block">
               <span className="sr-only">{t("language")}</span>
               <select
@@ -179,16 +162,6 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
                 </Link>
               );
             })}
-
-            {notificationPermission === "default" ? (
-              <button
-                type="button"
-                onClick={() => void enableNotifications()}
-                className="flex h-11 shrink-0 items-center justify-center rounded-full border border-violet-200 bg-violet-50 px-4 text-[12px] font-black text-violet-700"
-              >
-                🔔
-              </button>
-            ) : null}
 
             <select
               aria-label={t("language")}
