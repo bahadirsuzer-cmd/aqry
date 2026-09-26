@@ -4210,6 +4210,8 @@ function QuestionConfessionPublicExperience({
 
     try {
       setSending(true);
+      const notificationNonce = crypto.randomUUID();
+
       await recordExperienceEvent({
         experienceId,
         eventType: "share",
@@ -4218,8 +4220,32 @@ function QuestionConfessionPublicExperience({
           kind: "anonymous_message",
           mode,
           message: clean,
+          notification_nonce: notificationNonce,
         },
       });
+
+      void supabase.functions
+        .invoke("notify-anonymous-message", {
+          body: {
+            experienceId,
+            notificationNonce,
+          },
+        })
+        .then(({ error }) => {
+          if (error) {
+            console.error(
+              "Creator push bildirimi tetiklenemedi:",
+              error,
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(
+            "Creator push bildirimi tetiklenemedi:",
+            error,
+          );
+        });
+
       setMessage("");
       setSent(true);
     } catch (error) {
