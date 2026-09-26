@@ -19,6 +19,11 @@ import {
   ensureExperienceShareAssets,
   getPublicShareUrl,
 } from "@/services/shareAssets";
+import {
+  openSocialShare,
+  shareToInstagram,
+  type SocialChannel,
+} from "@/services/socialShare";
 
 interface PublishedExperience {
   id: string;
@@ -437,59 +442,8 @@ useEffect(() => {
     }
   }
 
-  function shareOnX() {
-    if (!experience) {
-      return;
-    }
-
-    if (!shareAssetsReady) {
-      window.alert(
-        shareAssetsError ??
-          "Paylaşım kartı henüz hazırlanıyor. Birkaç saniye sonra tekrar dene.",
-      );
-      return;
-    }
-
-    const publicShareUrl =
-      getPublicShareUrl(
-        experience.id,
-      );
-
-    const shareText =
-      experience.type === "question_confession"
-        ? `${experience.title}\n\nBana anonim bir soru sor ya da bir itiraf bırak 👀\n\n#AQRYO`
-        : experience.type === "story"
-          ? `${experience.title}\n\nHikâyeye göz at 👀\n\n#AQRYO`
-          : experience.type === "compatibility"
-            ? `${experience.title}\n\nUyumumuz kaç çıkacak? ❤️\n\n#AQRYO`
-            : `${experience.title}\n\nSenin sonucun ne çıkacak?\n\n#AQRYO`;
-
-    const shareUrl =
-      new URL(
-        "https://x.com/intent/tweet",
-      );
-
-    shareUrl.searchParams.set(
-      "text",
-      shareText,
-    );
-
-    shareUrl.searchParams.set(
-      "url",
-      publicShareUrl,
-    );
-
-    window.open(
-      shareUrl.toString(),
-      "_blank",
-      "noopener,noreferrer",
-    );
-  }
-
   function getShareText() {
-    if (!experience) {
-      return "";
-    }
+    if (!experience) return "";
 
     return experience.type === "question_confession"
       ? `${experience.title}\n\nBana anonim bir soru sor ya da bir itiraf bırak 👀\n\n#AQRYO`
@@ -500,61 +454,21 @@ useEffect(() => {
           : `${experience.title}\n\nSenin sonucun ne çıkacak?\n\n#AQRYO`;
   }
 
-  function shareOnWhatsApp() {
-    if (!experience) {
-      return;
-    }
+  function shareOnChannel(channel: Exclude<SocialChannel, "instagram">) {
+    if (!experience) return;
 
-    const url =
-      shareAssetsReady
-        ? publicShareUrl
-        : experienceUrl;
-
-    const shareUrl = new URL(
-      "https://wa.me/",
-    );
-
-    shareUrl.searchParams.set(
-      "text",
-      `${getShareText()}\n\n${url}`,
-    );
-
-    window.open(
-      shareUrl.toString(),
-      "_blank",
-      "noopener,noreferrer",
-    );
+    const url = shareAssetsReady ? publicShareUrl : experienceUrl;
+    openSocialShare(channel, getShareText(), url);
   }
 
-  function shareOnTelegram() {
-    if (!experience) {
-      return;
-    }
+  async function shareOnInstagram() {
+    if (!experience) return;
 
-    const url =
-      shareAssetsReady
-        ? publicShareUrl
-        : experienceUrl;
-
-    const shareUrl = new URL(
-      "https://t.me/share/url",
-    );
-
-    shareUrl.searchParams.set(
-      "url",
-      url,
-    );
-
-    shareUrl.searchParams.set(
-      "text",
-      getShareText(),
-    );
-
-    window.open(
-      shareUrl.toString(),
-      "_blank",
-      "noopener,noreferrer",
-    );
+    const url = shareAssetsReady ? publicShareUrl : experienceUrl;
+    await shareToInstagram({
+      text: getShareText(),
+      shareUrl: url,
+    });
   }
 
   const qrTargetUrl =
@@ -730,36 +644,13 @@ useEffect(() => {
               </button>
             </div>
 
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              <button
-                type="button"
-                disabled={
-                  shareAssetsLoading ||
-                  !shareAssetsReady
-                }
-                onClick={shareOnX}
-                className="flex h-11 items-center justify-center rounded-full bg-black text-xs font-bold text-white transition hover:bg-primary disabled:opacity-50"
-              >
-                {shareAssetsLoading
-                  ? "Hazırlanıyor..."
-                  : "X’te paylaş"}
-              </button>
-
-              <button
-                type="button"
-                onClick={shareOnWhatsApp}
-                className="flex h-11 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-xs font-bold text-emerald-700 transition hover:border-emerald-300"
-              >
-                WhatsApp
-              </button>
-
-              <button
-                type="button"
-                onClick={shareOnTelegram}
-                className="flex h-11 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-xs font-bold text-sky-700 transition hover:border-sky-300"
-              >
-                Telegram
-              </button>
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <button type="button" onClick={() => shareOnChannel("x")} className="flex h-11 items-center justify-center rounded-full bg-black text-xs font-bold text-white transition hover:bg-primary">X</button>
+              <button type="button" onClick={() => shareOnChannel("linkedin")} className="flex h-11 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-xs font-bold text-sky-700">LinkedIn</button>
+              <button type="button" onClick={() => shareOnChannel("whatsapp")} className="flex h-11 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-xs font-bold text-emerald-700">WhatsApp</button>
+              <button type="button" onClick={() => shareOnChannel("facebook")} className="flex h-11 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-xs font-bold text-blue-700">Facebook</button>
+              <button type="button" onClick={() => shareOnChannel("telegram")} className="flex h-11 items-center justify-center rounded-full border border-cyan-200 bg-cyan-50 text-xs font-bold text-cyan-700">Telegram</button>
+              <button type="button" onClick={() => void shareOnInstagram()} className="flex h-11 items-center justify-center rounded-full border border-pink-200 bg-pink-50 text-xs font-bold text-pink-700">Instagram</button>
             </div>
 
 {shareAssetsError ? (
