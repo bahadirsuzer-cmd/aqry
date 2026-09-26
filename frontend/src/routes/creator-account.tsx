@@ -49,20 +49,6 @@ const accountItems = [
     icon: "profile",
   },
   {
-    href: "/creator-purchases",
-    title: "Satın aldıklarım",
-    description:
-      "Satın aldığın Offer ve ücretli içerik geçmişini gör.",
-    icon: "purchase",
-  },
-  {
-    href: "/creator-sent-gifts",
-    title: "Gönderdiğim hediyeler",
-    description:
-      "Hangi creator'a hangi hediyeyi gönderdiğini takip et.",
-    icon: "gift",
-  },
-  {
     href: "/creator-following",
     title: "Takip ettiklerim",
     description:
@@ -236,7 +222,7 @@ function CreatorAccountHubPage() {
 
       <div className="mx-auto max-w-[1380px] px-4 pb-16 pt-7 sm:px-6 lg:px-8">
         <header>
-          <p className="text-[12px] font-black uppercase tracking-[0.14em] text-primary">
+          <p className="text-[15px] font-black uppercase tracking-[0.14em] text-primary">
             Hesabım
           </p>
 
@@ -244,9 +230,8 @@ function CreatorAccountHubPage() {
             Hesabım
           </h1>
 
-          <p className="mt-2 max-w-[720px] text-[15px] leading-6 text-muted-foreground">
-            Profilin, satın aldıkların,
-            hediyelerin, takiplerin ve hesap
+          <p className="mt-2 max-w-[720px] text-[17px] leading-7 text-muted-foreground">
+            Profilin, takiplerin, gizlilik tercihlerin ve hesap
             ayarların burada.
           </p>
         </header>
@@ -276,11 +261,11 @@ function CreatorAccountHubPage() {
                     />
 
                     <div className="min-w-0 flex-1">
-                      <h2 className="text-[16px] font-black tracking-[-0.015em]">
+                      <h2 className="text-[18px] font-black tracking-[-0.015em]">
                         {item.title}
                       </h2>
 
-                      <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
+                      <p className="mt-1 text-[15px] leading-6 text-muted-foreground">
                         {item.description}
                       </p>
                     </div>
@@ -301,11 +286,11 @@ function CreatorAccountHubPage() {
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <h2 className="text-[16px] font-black tracking-[-0.015em] text-red-700">
+                  <h2 className="text-[18px] font-black tracking-[-0.015em] text-red-700">
                     Hesabı sil
                   </h2>
 
-                  <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
+                  <p className="mt-1 text-[15px] leading-6 text-muted-foreground">
                     Hesap silme talebi
                     oluştur ve verilerini
                     yönet.
@@ -359,12 +344,12 @@ function CreatorAccountHubPage() {
                     </h2>
 
                     {profile?.username ? (
-                      <p className="mt-1 text-[13px] font-semibold text-muted-foreground">
+                      <p className="mt-1 text-[15px] font-semibold text-muted-foreground">
                         @{profile.username}
                       </p>
                     ) : null}
 
-                    <p className="mt-3 text-[13px] leading-5 text-muted-foreground">
+                    <p className="mt-3 text-[15px] leading-6 text-muted-foreground">
                       {profile?.bio ||
                         "Profilini tamamlayarak AQRYO'daki görünümünü kişiselleştirebilirsin."}
                     </p>
@@ -373,7 +358,7 @@ function CreatorAccountHubPage() {
 
                 <a
                   href="/creator-profile"
-                  className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-full border border-primary/15 bg-primary/[0.045] px-4 text-[13px] font-black text-primary transition hover:bg-primary/[0.08]"
+                  className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-full border border-primary/15 bg-primary/[0.045] px-4 text-[15px] font-black text-primary transition hover:bg-primary/[0.08]"
                 >
                   Profili düzenle
                 </a>
@@ -385,7 +370,7 @@ function CreatorAccountHubPage() {
                     Son hareketler
                   </h2>
 
-                  <span className="text-[12px] font-bold text-primary">
+                  <span className="text-[14px] font-bold text-primary">
                     Hesap özeti
                   </span>
                 </div>
@@ -396,7 +381,7 @@ function CreatorAccountHubPage() {
                       Henüz hareket yok.
                     </p>
 
-                    <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
+                    <p className="mt-1 text-[14px] leading-6 text-muted-foreground">
                       Gerçek hesap hareketlerin
                       oldukça burada görünecek.
                     </p>
@@ -418,19 +403,19 @@ function CreatorAccountHubPage() {
                           </div>
 
                           <div className="min-w-0 flex-1">
-                            <p className="text-[13px] font-black">
+                            <p className="text-[15px] font-black">
                               {
                                 activity.title
                               }
                             </p>
 
-                            <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
+                            <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
                               {
                                 activity.detail
                               }
                             </p>
 
-                            <p className="mt-2 text-[10px] font-semibold text-muted-foreground/80">
+                            <p className="mt-2 text-[12px] font-semibold text-muted-foreground/80">
                               {formatDate(
                                 activity.createdAt,
                               )}
