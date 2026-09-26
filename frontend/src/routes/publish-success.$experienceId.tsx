@@ -466,7 +466,7 @@ useEffect(() => {
 
     const shareUrl =
       new URL(
-        "https://twitter.com/intent/tweet",
+        "https://x.com/intent/tweet",
       );
 
     shareUrl.searchParams.set(
