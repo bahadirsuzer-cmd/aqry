@@ -198,6 +198,111 @@ export const COUNT_SCENES: CountScene[] = [
       [5, 1, 5, 9],
     ],
   },
+  {
+    id: "seven_point_star",
+    target: "triangles",
+    segments: star(7, 3),
+  },
+  {
+    id: "bow_tie_bridge",
+    target: "triangles",
+    segments: [
+      ...polygon(1, 2, 9, 2, 9, 8, 1, 8),
+      [1, 2, 9, 8], [9, 2, 1, 8], [1, 5, 9, 5],
+    ],
+  },
+  {
+    id: "three_fan_sails",
+    target: "triangles",
+    segments: [
+      ...polygon(5, 0.5, 0.5, 9, 9.5, 9),
+      [5, 0.5, 2.5, 9], [5, 0.5, 5, 9], [5, 0.5, 7.5, 9],
+      [1.5, 7, 8.5, 7],
+    ],
+  },
+  {
+    id: "crossed_trapezoid",
+    target: "triangles",
+    segments: [
+      ...polygon(3, 1, 7, 1, 9, 9, 1, 9),
+      [3, 1, 9, 9], [7, 1, 1, 9], [3, 1, 1, 9],
+      [3, 5, 8, 5],
+    ],
+  },
+  {
+    id: "split_hourglass",
+    target: "triangles",
+    segments: [
+      ...polygon(1, 1, 9, 1, 1, 9, 9, 9),
+      [1, 1, 9, 9], [9, 1, 1, 9], [5, 1, 5, 9],
+    ],
+  },
+  {
+    id: "roof_and_crossbeams",
+    target: "triangles",
+    segments: [
+      ...polygon(1, 4, 5, 0.5, 9, 4, 9, 9, 1, 9),
+      [1, 4, 9, 4], [5, 0.5, 5, 9], [1, 4, 9, 9],
+      [9, 4, 1, 9],
+    ],
+  },
+  {
+    id: "diamond_fan",
+    target: "triangles",
+    segments: [
+      ...polygon(5, 0.5, 9.5, 5, 5, 9.5, 0.5, 5),
+      [5, 0.5, 5, 9.5], [0.5, 5, 9.5, 5],
+      [5, 0.5, 7.25, 7.25], [5, 0.5, 2.75, 7.25],
+    ],
+  },
+  {
+    id: "crossed_pennant",
+    target: "triangles",
+    segments: [
+      ...polygon(0.5, 1, 9.5, 1, 5, 9),
+      [0.5, 1, 7.25, 5], [9.5, 1, 2.75, 5],
+      [2.75, 5, 7.25, 5], [5, 1, 5, 9],
+    ],
+  },
+  {
+    id: "offset_triple_square",
+    target: "squares",
+    segments: [
+      ...polygon(0.5, 0.5, 6.5, 0.5, 6.5, 6.5, 0.5, 6.5),
+      ...polygon(2, 2, 8, 2, 8, 8, 2, 8),
+      ...polygon(3.5, 3.5, 9.5, 3.5, 9.5, 9.5, 3.5, 9.5),
+    ],
+  },
+  {
+    id: "square_diamond_interlock",
+    target: "squares",
+    segments: [
+      ...polygon(1, 1, 9, 1, 9, 9, 1, 9),
+      ...polygon(2, 2, 8, 2, 8, 8, 2, 8),
+      ...polygon(5, 1, 9, 5, 5, 9, 1, 5),
+      [1, 5, 9, 5], [5, 1, 5, 9],
+    ],
+  },
+  {
+    id: "two_diamonds_in_frame",
+    target: "squares",
+    segments: [
+      ...polygon(1, 1, 9, 1, 9, 9, 1, 9),
+      ...polygon(5, 1, 9, 5, 5, 9, 1, 5),
+      ...polygon(5, 3, 7, 5, 5, 7, 3, 5),
+      [1, 5, 9, 5], [5, 1, 5, 9],
+    ],
+  },
+  {
+    id: "stepped_square_overlay",
+    target: "squares",
+    segments: [
+      ...polygon(1, 1, 9, 1, 9, 9, 1, 9),
+      ...polygon(1, 1, 6, 1, 6, 6, 1, 6),
+      ...polygon(4, 4, 9, 4, 9, 9, 4, 9),
+      ...polygon(5, 2, 8, 5, 5, 8, 2, 5),
+    ],
+  },
 ];
 
 export function countSceneSvg(scene: CountScene): string {

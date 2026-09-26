@@ -1,5 +1,6 @@
 import { COUNT_SCENES, countSceneSvg, countVisibleShapeGroups } from "./countPuzzleBank";
 import { GEOMETRY_FAMILIES } from "./viralGeometryBank";
+import { AREA_FAMILIES } from "./viralAreaBank";
 
 export type ViralKind = "math" | "geometry" | "count" | "algebra" | "area";
 export type ViralPuzzle = {
@@ -11,6 +12,7 @@ export type ViralPuzzle = {
   steps: string[];
   answerKey?: "undetermined";
   countTarget?: "triangles" | "squares";
+  areaTarget?: "area" | "perimeter" | "length";
 };
 export type Family = {
   id: string;
@@ -28,12 +30,6 @@ const rowDiagram = (...rows: string[]) =>
         `<rect x="28" y="${28 + i * 65}" width="304" height="53" rx="15" fill="${i % 2 ? "#fff0e9" : "#f1edff"}"/>${text(180, 54 + i * 65, s, s.length > 23 ? 18 : s.length > 17 ? 22 : 27)}`,
     )
     .join("");
-const svgPath = (d: string, fill = "#ddd3ff") =>
-  `<path d="${d}" fill="${fill}" stroke="#211638" stroke-width="4" stroke-linejoin="round"/>`;
-const rect = (x: number, y: number, w: number, h: number, fill = "#ddd3ff") =>
-  `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#211638" stroke-width="3"/>`;
-const line = (x1: number, y1: number, x2: number, y2: number, color = "#211638") =>
-  `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="3"/>`;
 const value = (
   answer: number | string,
   wrong: number | string,
@@ -287,201 +283,6 @@ const algebra: Family[] = [
   },
 ];
 
-const area: Family[] = [
-  {
-    id: "corner_cut",
-    kind: "area",
-    make: (r) => {
-      const w = choose(r, [10, 12, 14]),
-        h = choose(r, [8, 10]),
-        cw = choose(r, [3, 4]),
-        ch = choose(r, [2, 3]);
-      const sx = Math.min(245 / w, 190 / h),
-        sy = sx,
-        x = 55,
-        y = 35;
-      const diagram =
-        svgPath(
-          `M${x} ${y}H${x + w * sx}V${y + (h - ch) * sy}H${x + (w - cw) * sx}V${y + h * sy}H${x}Z`,
-        ) +
-        text(180, 20, `${w}`) +
-        text(30, 135, `${h}`) +
-        text(x + (w - cw / 2) * sx, y + (h - ch) * sy - 13, `${cw}`, 18) +
-        text(320, y + (h - ch / 2) * sy, `${ch}`, 18);
-      return value(w * h - cw * ch, w * h, diagram, [
-        `${w}×${h}−${cw}×${ch}`,
-        `${w * h}−${cw * ch}=${w * h - cw * ch}`,
-      ]);
-    },
-  },
-  {
-    id: "uniform_frame",
-    kind: "area",
-    make: (r) => {
-      const w = choose(r, [12, 14, 16]),
-        h = choose(r, [10, 12]),
-        t = choose(r, [2, 3]),
-        s = Math.min(240 / w, 175 / h),
-        x = 180 - (w * s) / 2,
-        y = 35;
-      const diagram =
-        rect(x, y, w * s, h * s) +
-        rect(x + t * s, y + t * s, (w - 2 * t) * s, (h - 2 * t) * s, "#fff") +
-        text(180, 245, `${w} × ${h}; t=${t}`, 19);
-      return value(w * h - (w - 2 * t) * (h - 2 * t), w * h - (w - t) * (h - t), diagram, [
-        `${w}×${h}−(${w - 2 * t})×(${h - 2 * t})`,
-        `${w * h}−${(w - 2 * t) * (h - 2 * t)}`,
-      ]);
-    },
-  },
-  {
-    id: "overlap_union",
-    kind: "area",
-    make: (r) => {
-      const a = choose(r, [6, 8, 10]),
-        b = choose(r, [4, 5]),
-        o = choose(r, [2, 3]),
-        s = 16,
-        x = 45 + (a - o) * s,
-        y = 35 + (a - o) * s;
-      const diagram =
-        rect(45, 35, a * s, a * s, "#d8cbff") +
-        rect(x, y, b * s, b * s, "#ffc9b4") +
-        text(45 + (a * s) / 2, 55, `${a} × ${a}`, 16) +
-        text(x + (b * s) / 2, y + (b * s) / 2, `${b} × ${b}`, 16) +
-        text(180, 244, `∩: ${o} × ${o}`, 17);
-      return value(a * a + b * b - o * o, a * a + b * b, diagram, [
-        `${a}²+${b}²−${o}²`,
-        `${a * a}+${b * b}−${o * o}=${a * a + b * b - o * o}`,
-      ]);
-    },
-  },
-  {
-    id: "triangle_missing",
-    kind: "area",
-    make: (r) => {
-      const w = choose(r, [10, 12, 14]),
-        h = choose(r, [8, 10]),
-        base = choose(r, [4, 6]);
-      const scale = Math.min(250 / w, 185 / h),
-        width = w * scale,
-        height = h * scale,
-        left = 180 - width / 2,
-        bottom = 35 + height;
-      const diagram =
-        rect(left, 35, width, height) +
-        svgPath(`M${left + width - base * scale} ${bottom}H${left + width}V35Z`, "#fff") +
-        text(180, 247, `${w} × ${h}; △ ${base} × ${h}`, 17);
-      return value(w * h - (base * h) / 2, w * h - base * h, diagram, [
-        `${w}×${h}−(${base}×${h})÷2`,
-        `${w * h}−${(base * h) / 2}`,
-      ]);
-    },
-  },
-  {
-    id: "t_union",
-    kind: "area",
-    make: (r) => {
-      const top = choose(r, [10, 12, 14]),
-        bar = choose(r, [2, 3]),
-        stem = choose(r, [3, 4]),
-        down = choose(r, [6, 8]);
-      const s = 16,
-        x = 180 - (top * s) / 2;
-      const diagram =
-        rect(x, 35, top * s, bar * s) +
-        rect(180 - (stem * s) / 2, 35 + bar * s, stem * s, down * s) +
-        text(180, 23, `${top}`, 18) +
-        text(x - 20, 55, `${bar}`, 18) +
-        text(180, 255, `${stem} × ${down}`, 17);
-      return value(top * bar + stem * down, top * (bar + down), diagram, [
-        `${top}×${bar}+${stem}×${down}`,
-        `${top * bar}+${stem * down}`,
-      ]);
-    },
-  },
-  {
-    id: "staircase_perimeter",
-    kind: "area",
-    make: (r) => {
-      const w = choose(r, [10, 12, 14]),
-        h = choose(r, [8, 10]),
-        cw = choose(r, [3, 4]),
-        ch = choose(r, [2, 3]);
-      const s = Math.min(230 / w, 175 / h),
-        x = 55,
-        y = 35;
-      const diagram =
-        svgPath(
-          `M${x} ${y}H${x + w * s}V${y + (h - ch) * s}H${x + (w - cw) * s}V${y + h * s}H${x}Z`,
-          "#d8f4ef",
-        ) +
-        text(180, 22, `${w}`, 18) +
-        text(38, 130, `${h}`, 18) +
-        text(180, 245, `P = ?`, 26);
-      return value(2 * (w + h), 2 * (w + h) - 2 * (cw + ch), diagram, [
-        `${w - cw}+${cw}=${w}`,
-        `${h - ch}+${ch}=${h}`,
-        `P=2(${w}+${h})=${2 * (w + h)}`,
-      ]);
-    },
-  },
-  {
-    id: "pythagoras_extension",
-    kind: "area",
-    make: (r) => {
-      const [a, b, c] = choose(r, [
-          [3, 4, 5],
-          [5, 12, 13],
-          [8, 15, 17],
-        ] as const),
-        e = choose(r, [2, 4, 6]),
-        s = Math.min(185 / a, 190 / b),
-        w = b * s,
-        h = a * s,
-        x = 60,
-        y = 230;
-      const diagram =
-        line(x, y, x, y - h) +
-        line(x, y, x + w, y) +
-        line(x, y - h, x + w, y) +
-        line(x + w, y, x + w + 47, y) +
-        `<path d="M${x + 13} ${y}v-13h-13" fill="none" stroke="#7c3aed" stroke-width="3"/>` +
-        text(x - 20, y - h / 2, `${a}`, 20) +
-        text(x + w / 2, y + 21, `${b}`, 20) +
-        text(x + w + 25, y + 21, `${e}`, 20) +
-        text(180, 25, "x = ?", 27, "#e0524d") +
-        line(x, y - h, x + w, y, "#e0524d") +
-        line(x + w, y, x + w + 47, y, "#e0524d");
-      return value(c + e, a + b + e, diagram, [`√(${a}²+${b}²)=${c}`, `${c}+${e}=${c + e}`]);
-    },
-  },
-  {
-    id: "diagonal_remainder",
-    kind: "area",
-    make: (r) => {
-      const [a, b, c] = choose(r, [
-          [3, 4, 5],
-          [5, 12, 13],
-          [8, 15, 17],
-        ] as const),
-        k = choose(r, [1, 2, 3]),
-        s = Math.min(210 / b, 170 / a),
-        w = b * s,
-        h = a * s,
-        x = 180 - w / 2,
-        y = 215;
-      const diagram =
-        rect(x, y - h, w, h, "none") +
-        line(x, y, x + w, y - h) +
-        text(x - 24, y - h / 2, `${a}`, 20) +
-        text(180, 238, `${b}`, 20) +
-        text(180, y - h / 2, `x + ${k}`, 23);
-      return value(c - k, c + k, diagram, [`√(${a}²+${b}²)=${c}`, `x=${c}−${k}=${c - k}`]);
-    },
-  },
-];
-
 const count: Family[] = COUNT_SCENES.map((scene) => ({
   id: scene.id,
   kind: "count" as const,
@@ -506,7 +307,7 @@ export const VIRAL_FAMILIES: Family[] = [
   ...GEOMETRY_FAMILIES,
   ...count,
   ...algebra,
-  ...area,
+  ...AREA_FAMILIES,
 ];
 export function makeViralPuzzle(
   kind: ViralKind,

@@ -24,6 +24,22 @@ type PuzzleCopy = {
 };
 
 const RECENT_LIMIT = 40;
+const ROTATION_STORAGE_KEY = "aqryo-puzzle-rotation-v2";
+type RecentFamilies = Record<PuzzleKind, string[]>;
+const emptyRecent = (): RecentFamilies => ({math:[],geometry:[],count:[],algebra:[],area:[]});
+
+function readRecent(): RecentFamilies {
+  if(typeof window==="undefined") return emptyRecent();
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(ROTATION_STORAGE_KEY) ?? "null");
+    const recent = emptyRecent();
+    for(const kind of Object.keys(recent) as PuzzleKind[]) {
+      const valid = new Set(VIRAL_FAMILIES.filter((family)=>family.kind===kind).map((family)=>family.id));
+      if(Array.isArray(saved?.[kind])) recent[kind] = [...new Set(saved[kind].filter((id: unknown)=>typeof id==="string" && valid.has(id as string)))].slice(0,RECENT_LIMIT) as string[];
+    }
+    return recent;
+  } catch { return emptyRecent(); }
+}
 
 const COPY: Record<AqryoLocale, PuzzleCopy> = {
   tr: {
@@ -193,10 +209,28 @@ const COUNT_TITLES: Record<AqryoLocale, {triangles:string;squares:string}> = {
   fil:{triangles:"Ilang tatsulok?",squares:"Ilang parisukat?"},
 };
 
+const AREA_TITLES: Record<AqryoLocale, {area:string;perimeter:string;length:string}> = {
+  tr:{area:"Taralı alan kaç birimkare?",perimeter:"Şeklin çevresi kaç birim?",length:"x uzunluğu kaç birim?"},
+  en:{area:"What is the shaded area?",perimeter:"What is the perimeter?",length:"What is the value of x?"},
+  es:{area:"¿Cuánto mide el área sombreada?",perimeter:"¿Cuál es el perímetro?",length:"¿Cuánto vale x?"},
+  pt:{area:"Qual é a área sombreada?",perimeter:"Qual é o perímetro?",length:"Quanto mede x?"},
+  fr:{area:"Quelle est l’aire colorée ?",perimeter:"Quel est le périmètre ?",length:"Quelle est la longueur x ?"},
+  de:{area:"Wie groß ist die gefärbte Fläche?",perimeter:"Wie groß ist der Umfang?",length:"Wie lang ist x?"},
+  it:{area:"Quanto misura l’area colorata?",perimeter:"Qual è il perimetro?",length:"Quanto misura x?"},
+  ar:{area:"ما مساحة المنطقة المظللة؟",perimeter:"ما محيط الشكل؟",length:"ما طول x؟"},
+  hi:{area:"रंगे हुए भाग का क्षेत्रफल कितना है?",perimeter:"आकृति का परिमाप कितना है?",length:"x की लंबाई कितनी है?"},
+  id:{area:"Berapa luas daerah berwarna?",perimeter:"Berapa keliling bangun ini?",length:"Berapa panjang x?"},
+  ru:{area:"Какова площадь закрашенной части?",perimeter:"Каков периметр фигуры?",length:"Чему равна длина x?"},
+  bn:{area:"রঙিন অংশের ক্ষেত্রফল কত?",perimeter:"আকৃতির পরিসীমা কত?",length:"x-এর দৈর্ঘ্য কত?"},
+  ur:{area:"رنگین حصے کا رقبہ کتنا ہے؟",perimeter:"شکل کا محیط کتنا ہے؟",length:"x کی لمبائی کتنی ہے؟"},
+  vi:{area:"Diện tích phần tô màu là bao nhiêu?",perimeter:"Chu vi hình này là bao nhiêu?",length:"Độ dài x là bao nhiêu?"},
+  fil:{area:"Ano ang lawak ng may kulay?",perimeter:"Ano ang perimeter ng hugis?",length:"Gaano kahaba ang x?"},
+};
+
 function headlineFor(locale:AqryoLocale,puzzle:Puzzle) {
-  return puzzle.kind==="count" && puzzle.countTarget
-    ? COUNT_TITLES[locale][puzzle.countTarget]
-    : COPY[locale].titles[puzzle.kind];
+  if(puzzle.kind==="count" && puzzle.countTarget) return COUNT_TITLES[locale][puzzle.countTarget];
+  if(puzzle.kind==="area" && puzzle.areaTarget) return AREA_TITLES[locale][puzzle.areaTarget];
+  return COPY[locale].titles[puzzle.kind];
 }
 
 function generate(kind: PuzzleKind, recent: string[]): Puzzle {
@@ -218,7 +252,7 @@ function PuzzleBuilderPage() {
   const [loading,setLoading]=useState(true);
   const [kind,setKind]=useState<PuzzleKind>("math");
   const [presentation,setPresentation]=useState<Presentation>("clean");
-  const [recent,setRecent]=useState<string[]>([]);
+  const [recent,setRecent]=useState<RecentFamilies>(readRecent);
   const [puzzle,setPuzzle]=useState<Puzzle>(()=>generate("math", []));
   const [socialText,setSocialText]=useState("");
   const [copied,setCopied]=useState(false);
@@ -239,20 +273,29 @@ function PuzzleBuilderPage() {
     setSocialText(ctaFor(locale,puzzle));
   },[locale,puzzle]);
 
+  useEffect(()=>{
+    try { window.localStorage.setItem(ROTATION_STORAGE_KEY,JSON.stringify(recent)); } catch { /* Storage may be unavailable. */ }
+  },[recent]);
+
   function remember(next:Puzzle){
-    setRecent((old)=>[next.family,...old.filter((value)=>value!==next.family)].slice(0,RECENT_LIMIT));
+    setRecent((old)=>{
+      const familyCount=VIRAL_FAMILIES.filter((family)=>family.kind===next.kind).length;
+      const prior=old[next.kind];
+      const cycle=prior.length>=familyCount ? [] : prior;
+      return {...old,[next.kind]:[next.family,...cycle.filter((value)=>value!==next.family)].slice(0,RECENT_LIMIT)};
+    });
   }
 
   function chooseKind(next:PuzzleKind){
     setKind(next);
-    const fresh=generate(next,recent);
+    const fresh=generate(next,recent[next]);
     setPuzzle(fresh);
     setPresentation("clean");
     remember(fresh);
   }
 
   function regenerate(){
-    const fresh=generate(kind,recent);
+    const fresh=generate(kind,recent[kind]);
     setPuzzle(fresh);
     remember(fresh);
     setCopied(false);
@@ -395,13 +438,15 @@ const PuzzleSvg=React.forwardRef<
   {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale}
 >(function PuzzleSvg({puzzle,presentation,copy,locale},ref){
   const answer = puzzle.answerKey ? UNDETERMINED_SHORT[locale] : puzzle.answer;
+  const headline = headlineFor(locale,puzzle);
+  const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
   return (
     <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" className="w-full rounded-[24px]">
       <rect width="360" height="480" rx="28" fill="#fbfafc"/>
       <circle cx="48" cy="45" r="20" fill="#74f0de"/>
       <text x="48" y="52" textAnchor="middle" fontSize="19" fontWeight="900" fill="#17101f">Q</text>
       <text x="78" y="51" fontSize="14" fontWeight="900" fill="#17101f">AQRYO</text>
-      <text x="180" y="95" textAnchor="middle" fontSize="20" fontWeight="900" fill="#17101f">{headlineFor(locale,puzzle)}</text>
+      <text x="180" y="95" textAnchor="middle" fontSize={headlineSize} fontWeight="900" fill="#17101f">{headline}</text>
       <g transform="translate(0 120)" dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
       {presentation==="debate" ? (
         <>

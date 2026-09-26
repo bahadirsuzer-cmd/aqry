@@ -367,6 +367,18 @@ const STEP_REASONS: Record<string, readonly Reason[]> = {
   window_cross: ["count"],
   overlap_squares: ["count"],
   diamond_overlay: ["count"],
+  seven_point_star: ["count"],
+  bow_tie_bridge: ["count"],
+  three_fan_sails: ["count"],
+  crossed_trapezoid: ["count"],
+  split_hourglass: ["count"],
+  roof_and_crossbeams: ["count"],
+  diamond_fan: ["count"],
+  crossed_pennant: ["count"],
+  offset_triple_square: ["count"],
+  square_diamond_interlock: ["count"],
+  two_diamonds_in_frame: ["count"],
+  stepped_square_overlay: ["count"],
   symbol_balance: ["relation", "substitution", "final"],
   square_sum_identity: ["identity", "final"],
   cube_sum_identity: ["identity", "final"],
@@ -383,6 +395,8 @@ const STEP_REASONS: Record<string, readonly Reason[]> = {
   staircase_perimeter: ["perimeter", "perimeter", "final"],
   pythagoras_extension: ["pythagoras", "add"],
   diagonal_remainder: ["pythagoras", "subtract"],
+  corridor_difference: ["subtract", "final"],
+  trapezoid_split: ["add", "final"],
 };
 
 export function localizedPuzzleSteps(locale: AqryoLocale, puzzle: ViralPuzzle): string[] {
