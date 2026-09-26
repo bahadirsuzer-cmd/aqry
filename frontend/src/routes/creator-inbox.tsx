@@ -229,7 +229,7 @@ function CreatorInboxPage() {
     });
   }
 
-  async function answerOnX(item: InboxItem) {
+  async function shareAnswerImage(item: InboxItem) {
     if (sharingId) return;
 
     try {
@@ -243,7 +243,6 @@ function CreatorInboxPage() {
         await navigator.share({
           files: [file],
           title: "AQRYO",
-          text: isTr ? "Cevabım:" : "My answer:",
         });
         return;
       }
@@ -257,9 +256,11 @@ function CreatorInboxPage() {
       anchor.remove();
       URL.revokeObjectURL(fileUrl);
 
-      const url = new URL("https://twitter.com/intent/tweet");
-      url.searchParams.set("text", isTr ? "Cevabım:" : "My answer:");
-      window.open(url.toString(), "_blank", "noopener,noreferrer");
+      window.alert(
+        isTr
+          ? "PNG kaydedildi. Instagram Story, WhatsApp Durum veya istediğin uygulamada paylaşabilirsin."
+          : "PNG saved. You can share it to Instagram Story, WhatsApp Status, or any app.",
+      );
     } catch (shareError) {
       if (shareError instanceof DOMException && shareError.name === "AbortError") return;
       console.error("AQRYO cevap kartı paylaşılamadı:", shareError);
@@ -273,6 +274,44 @@ function CreatorInboxPage() {
     } finally {
       setSharingId(null);
     }
+  }
+
+  function shareAnswerLink(
+    item: InboxItem,
+    channel: "x" | "facebook" | "linkedin" | "telegram",
+  ) {
+    const shareUrl = `${window.location.origin}/experience/${item.experienceId}`;
+    const text = isTr
+      ? "Cevabım 👇\n\n#AQRYO"
+      : "My answer 👇\n\n#AQRYO";
+
+    if (channel === "x") {
+      const url = new URL("https://x.com/intent/tweet");
+      url.searchParams.set("text", text);
+      url.searchParams.set("url", shareUrl);
+      window.open(url.toString(), "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    if (channel === "facebook") {
+      const url = new URL("https://www.facebook.com/sharer/sharer.php");
+      url.searchParams.set("u", shareUrl);
+      window.open(url.toString(), "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    if (channel === "telegram") {
+      const url = new URL("https://t.me/share/url");
+      url.searchParams.set("url", shareUrl);
+      url.searchParams.set("text", text);
+      window.open(url.toString(), "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    void navigator.clipboard?.writeText(text).catch(() => {});
+    const url = new URL("https://www.linkedin.com/sharing/share-offsite/");
+    url.searchParams.set("url", shareUrl);
+    window.open(url.toString(), "_blank", "noopener,noreferrer");
   }
 
   if (loading) {
@@ -311,8 +350,8 @@ function CreatorInboxPage() {
             </h1>
             <p className="mt-3 max-w-[650px] text-[16px] font-medium leading-7 text-muted-foreground">
               {isTr
-                ? "Takipçilerin sana anonim soru veya itiraf bırakır. İstediğini seç, X’te cevapla."
-                : "Followers leave anonymous questions or confessions. Pick one and answer it on X."}
+                ? "Takipçilerin sana anonim soru veya itiraf bırakır. Cevabını PNG olarak paylaş veya bağlantıyı istediğin sosyal ağa gönder."
+                : "Followers leave anonymous questions or confessions. Share your answer as a PNG or send the link to any social network."}
             </p>
           </div>
 
@@ -384,23 +423,61 @@ function CreatorInboxPage() {
                   {item.message}
                 </p>
 
-                <div className="mt-6 flex gap-2">
+                <div className="mt-6">
                   <button
                     type="button"
                     disabled={sharingId === item.id}
-                    onClick={() => void answerOnX(item)}
-                    className="h-12 flex-1 rounded-full bg-black px-5 text-[14px] font-black text-white disabled:opacity-50"
+                    onClick={() => void shareAnswerImage(item)}
+                    className="h-12 w-full rounded-full bg-black px-5 text-[14px] font-black text-white disabled:opacity-50"
                   >
                     {sharingId === item.id
-                      ? isTr ? "Kart hazırlanıyor..." : "Preparing..."
-                      : isTr ? "X’te cevapla →" : "Answer on X →"}
+                      ? isTr ? "PNG hazırlanıyor..." : "Preparing PNG..."
+                      : isTr ? "Görseli paylaş →" : "Share image →"}
                   </button>
+
+                  <p className="mt-2 text-center text-[11px] font-bold text-muted-foreground">
+                    {isTr
+                      ? "Instagram Story · WhatsApp Durum · X · diğer uygulamalar"
+                      : "Instagram Story · WhatsApp Status · X · other apps"}
+                  </p>
+
+                  <div className="mt-3 grid grid-cols-4 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => shareAnswerLink(item, "x")}
+                      className="h-10 rounded-full bg-black px-2 text-[11px] font-black text-white"
+                    >
+                      X
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => shareAnswerLink(item, "facebook")}
+                      className="h-10 rounded-full border border-blue-200 bg-blue-50 px-2 text-[11px] font-black text-blue-700"
+                    >
+                      Facebook
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => shareAnswerLink(item, "linkedin")}
+                      className="h-10 rounded-full border border-sky-200 bg-sky-50 px-2 text-[11px] font-black text-sky-700"
+                    >
+                      LinkedIn
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => shareAnswerLink(item, "telegram")}
+                      className="h-10 rounded-full border border-cyan-200 bg-cyan-50 px-2 text-[11px] font-black text-cyan-700"
+                    >
+                      Telegram
+                    </button>
+                  </div>
+
                   <button
                     type="button"
                     onClick={() => void copyMessage(item)}
-                    className="h-12 rounded-full border border-border bg-white px-4 text-[14px] font-black"
+                    className="mt-2 h-10 w-full rounded-full border border-border bg-white px-4 text-[12px] font-black"
                   >
-                    {copiedId === item.id ? "✓" : isTr ? "Kopyala" : "Copy"}
+                    {copiedId === item.id ? "✓" : isTr ? "Mesajı kopyala" : "Copy message"}
                   </button>
                 </div>
 
