@@ -1,6 +1,6 @@
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
-import { useAqryoLocale } from "@/lib/i18n";
+import { getQuestionConfessionDefaults, useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -19,9 +19,42 @@ type ProductCardProps = {
   cta: string;
 };
 
+type StudioPreviewCopy = {
+  featured: string;
+  anonymous: string;
+  anonymousInbox: string;
+  identityHidden: string;
+  match: string;
+  image: string;
+  challenge: string;
+  matchLabel: string;
+  storyLabel: string;
+  challengeLabel: string;
+};
+
+const PREVIEW_COPY: Record<AqryoLocale, StudioPreviewCopy> = {
+  tr: { featured: "ÖNE ÇIKAN", anonymous: "Anonim", anonymousInbox: "Anonim gelen kutusu", identityHidden: "Kimliğin gizli kalır.", match: "uyum", image: "+ görsel", challenge: "5 saniyelik meydan okuma", matchLabel: "UYUM", storyLabel: "HİKAYE", challengeLabel: "MEYDAN OKUMA" },
+  en: { featured: "FEATURED", anonymous: "Anonymous", anonymousInbox: "Anonymous inbox", identityHidden: "Your identity stays hidden.", match: "match", image: "+ image", challenge: "5 sec challenge", matchLabel: "MATCH", storyLabel: "STORY", challengeLabel: "CHALLENGE" },
+  es: { featured: "DESTACADO", anonymous: "Anónimo", anonymousInbox: "Bandeja anónima", identityHidden: "Tu identidad permanece oculta.", match: "afinidad", image: "+ imagen", challenge: "Reto de 5 segundos", matchLabel: "AFINIDAD", storyLabel: "HISTORIA", challengeLabel: "RETO" },
+  pt: { featured: "DESTAQUE", anonymous: "Anônimo", anonymousInbox: "Caixa anônima", identityHidden: "Sua identidade fica oculta.", match: "combinação", image: "+ imagem", challenge: "Desafio de 5 segundos", matchLabel: "COMBINAÇÃO", storyLabel: "HISTÓRIA", challengeLabel: "DESAFIO" },
+  fr: { featured: "À LA UNE", anonymous: "Anonyme", anonymousInbox: "Boîte anonyme", identityHidden: "Ton identité reste cachée.", match: "affinité", image: "+ image", challenge: "Défi de 5 secondes", matchLabel: "AFFINITÉ", storyLabel: "HISTOIRE", challengeLabel: "DÉFI" },
+  de: { featured: "HIGHLIGHT", anonymous: "Anonym", anonymousInbox: "Anonymer Posteingang", identityHidden: "Deine Identität bleibt verborgen.", match: "Übereinstimmung", image: "+ Bild", challenge: "5-Sekunden-Challenge", matchLabel: "MATCH", storyLabel: "STORY", challengeLabel: "CHALLENGE" },
+  it: { featured: "IN EVIDENZA", anonymous: "Anonimo", anonymousInbox: "Posta anonima", identityHidden: "La tua identità resta nascosta.", match: "affinità", image: "+ immagine", challenge: "Sfida di 5 secondi", matchLabel: "AFFINITÀ", storyLabel: "STORIA", challengeLabel: "SFIDA" },
+  ar: { featured: "مميّز", anonymous: "مجهول", anonymousInbox: "صندوق رسائل مجهول", identityHidden: "ستبقى هويتك مخفية.", match: "توافق", image: "+ صورة", challenge: "تحدي ٥ ثوانٍ", matchLabel: "توافق", storyLabel: "قصة", challengeLabel: "تحدي" },
+  hi: { featured: "खास", anonymous: "गुमनाम", anonymousInbox: "गुमनाम इनबॉक्स", identityHidden: "आपकी पहचान गुप्त रहेगी।", match: "मेल", image: "+ तस्वीर", challenge: "5 सेकंड की चुनौती", matchLabel: "मेल", storyLabel: "कहानी", challengeLabel: "चुनौती" },
+  id: { featured: "UNGGULAN", anonymous: "Anonim", anonymousInbox: "Kotak masuk anonim", identityHidden: "Identitasmu tetap tersembunyi.", match: "kecocokan", image: "+ gambar", challenge: "Tantangan 5 detik", matchLabel: "COCOK", storyLabel: "CERITA", challengeLabel: "TANTANGAN" },
+  ru: { featured: "ИЗБРАННОЕ", anonymous: "Анонимно", anonymousInbox: "Анонимные сообщения", identityHidden: "Твоя личность останется скрытой.", match: "совпадение", image: "+ изображение", challenge: "Задача на 5 секунд", matchLabel: "СОВПАДЕНИЕ", storyLabel: "ИСТОРИЯ", challengeLabel: "ЗАДАЧА" },
+  bn: { featured: "বিশেষ", anonymous: "বেনামী", anonymousInbox: "বেনামী ইনবক্স", identityHidden: "আপনার পরিচয় গোপন থাকবে।", match: "মিল", image: "+ ছবি", challenge: "৫ সেকেন্ডের চ্যালেঞ্জ", matchLabel: "মিল", storyLabel: "গল্প", challengeLabel: "চ্যালেঞ্জ" },
+  ur: { featured: "نمایاں", anonymous: "گمنام", anonymousInbox: "گمنام ان باکس", identityHidden: "آپ کی شناخت پوشیدہ رہے گی۔", match: "مطابقت", image: "+ تصویر", challenge: "۵ سیکنڈ کا چیلنج", matchLabel: "مطابقت", storyLabel: "کہانی", challengeLabel: "چیلنج" },
+  vi: { featured: "NỔI BẬT", anonymous: "Ẩn danh", anonymousInbox: "Hộp thư ẩn danh", identityHidden: "Danh tính của bạn được giấu kín.", match: "hợp nhau", image: "+ hình ảnh", challenge: "Thử thách 5 giây", matchLabel: "ĐỘ HỢP", storyLabel: "CÂU CHUYỆN", challengeLabel: "THỬ THÁCH" },
+  fil: { featured: "TAMPOK", anonymous: "Anonymous", anonymousInbox: "Anonymous na inbox", identityHidden: "Mananatiling lihim ang pagkakakilanlan mo.", match: "tugma", image: "+ larawan", challenge: "5 segundong hamon", matchLabel: "TUGMA", storyLabel: "KUWENTO", challengeLabel: "HAMON" },
+};
+
 function CreatorStudioPage() {
   const [loading, setLoading] = useState(true);
-  const { t } = useAqryoLocale();
+  const { locale, t } = useAqryoLocale();
+  const preview = PREVIEW_COPY[locale];
+  const questionConfession = getQuestionConfessionDefaults(locale);
 
   useEffect(() => {
     let cancelled = false;
@@ -72,10 +105,10 @@ function CreatorStudioPage() {
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full bg-white px-3.5 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-[#17101f]">
-                  MAIN
+                  {preview.featured}
                 </span>
                 <span className="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-[11px] font-extrabold text-white/85">
-                  Anonymous
+                  {preview.anonymous}
                 </span>
               </div>
 
@@ -90,39 +123,39 @@ function CreatorStudioPage() {
               </span>
             </div>
 
-            <QuestionConfessionPreview />
+            <QuestionConfessionPreview copy={preview} defaults={questionConfession} />
           </div>
         </Link>
 
         <div className="mt-6 grid gap-5 md:grid-cols-3">
           <ProductCard
-            eyebrow="MATCH"
+            eyebrow={preview.matchLabel}
             title={t("loveMeter")}
             description={t("loveMeterDesc")}
             href="/compatibility-builder"
             accent="rose"
             badge={t("ready")}
-            visual={<LoveVisual />}
+            visual={<LoveVisual copy={preview} />}
             cta={t("create")}
           />
           <ProductCard
-            eyebrow="STORY"
+            eyebrow={preview.storyLabel}
             title={t("story")}
             description={t("storyDesc")}
             href="/story-builder"
             accent="sky"
             badge={t("ownImage")}
-            visual={<StoryVisual />}
+            visual={<StoryVisual copy={preview} />}
             cta={t("create")}
           />
           <ProductCard
-            eyebrow="CHALLENGE"
+            eyebrow={preview.challengeLabel}
             title={t("puzzle")}
             description={t("puzzleDesc")}
             href="/puzzle-builder"
             accent="violet"
             badge={t("freeSvg")}
-            visual={<PuzzleVisual />}
+            visual={<PuzzleVisual copy={preview} />}
             cta={t("create")}
           />
         </div>
@@ -158,7 +191,7 @@ function ProductCard({ eyebrow, title, description, href, badge, accent, visual,
   );
 }
 
-function QuestionConfessionPreview() {
+function QuestionConfessionPreview({ copy, defaults }: { copy: StudioPreviewCopy; defaults: ReturnType<typeof getQuestionConfessionDefaults> }) {
   return (
     <div className="rounded-[30px] border border-white/15 bg-white/10 p-3 backdrop-blur">
       <div className="rounded-[25px] bg-white p-5 text-[#17101f] shadow-2xl">
@@ -166,36 +199,36 @@ function QuestionConfessionPreview() {
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#74f0de] text-[21px] font-black">Q</div>
           <div>
             <p className="text-[13px] font-black">@creator</p>
-            <p className="text-[11px] font-semibold text-muted-foreground">Anonymous inbox</p>
+            <p className="text-[11px] font-semibold text-muted-foreground">{copy.anonymousInbox}</p>
           </div>
         </div>
-        <p className="mt-6 text-[25px] font-black leading-tight tracking-[-0.05em]">Question or confession?</p>
+        <p className="mt-6 text-[25px] font-black leading-tight tracking-[-0.05em]">{defaults.title}</p>
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div className="rounded-[20px] bg-violet-100 px-4 py-5">
             <p className="text-[22px] font-black">?</p>
-            <p className="mt-3 text-[13px] font-black">Ask</p>
+            <p className="mt-3 text-[13px] font-black">{defaults.questionLabel}</p>
           </div>
           <div className="rounded-[20px] bg-rose-100 px-4 py-5">
             <p className="text-[22px]">♡</p>
-            <p className="mt-3 text-[13px] font-black">Confess</p>
+            <p className="mt-3 text-[13px] font-black">{defaults.confessionLabel}</p>
           </div>
         </div>
         <div className="mt-3 rounded-[18px] border border-border bg-background px-4 py-4 text-[12px] font-semibold text-muted-foreground">
-          Write here... Your identity stays hidden.
+          {defaults.placeholder} {copy.identityHidden}
         </div>
       </div>
     </div>
   );
 }
 
-function LoveVisual() {
+function LoveVisual({ copy }: { copy: StudioPreviewCopy }) {
   return (
     <div className="relative h-[210px] overflow-hidden rounded-[24px] bg-gradient-to-br from-rose-100 via-fuchsia-50 to-white">
-      <div className="absolute left-5 top-5 rounded-full bg-white/90 px-3 py-1.5 text-[12px] font-black text-rose-600">LOVE METER</div>
+      <div className="absolute left-5 top-5 rounded-full bg-white/90 px-3 py-1.5 text-[12px] font-black text-rose-600">{copy.matchLabel}</div>
       <div className="absolute inset-x-5 bottom-6 flex items-end justify-between">
         <div>
           <p className="text-[46px] font-black leading-none text-rose-600">87%</p>
-          <p className="mt-2 text-[12px] font-extrabold text-rose-900/60">match</p>
+          <p className="mt-2 text-[12px] font-extrabold text-rose-900/60">{copy.match}</p>
         </div>
         <svg viewBox="0 0 120 90" className="h-[100px] w-[128px]" aria-hidden="true">
           <circle cx="33" cy="38" r="22" fill="#fecdd3" />
@@ -207,7 +240,7 @@ function LoveVisual() {
   );
 }
 
-function StoryVisual() {
+function StoryVisual({ copy }: { copy: StudioPreviewCopy }) {
   return (
     <div className="relative h-[210px] overflow-hidden rounded-[24px] bg-gradient-to-br from-sky-50 to-indigo-50">
       <div className="absolute left-7 top-8 h-[130px] w-[96px] -rotate-6 rounded-[20px] border border-sky-200 bg-white shadow-sm" />
@@ -216,19 +249,19 @@ function StoryVisual() {
         <div className="mx-3 mt-3 h-2.5 rounded-full bg-indigo-200" />
         <div className="mx-3 mt-2 h-2.5 w-12 rounded-full bg-indigo-100" />
       </div>
-      <div className="absolute bottom-5 right-5 rounded-full bg-sky-500 px-4 py-2.5 text-[11px] font-black text-white">+ image</div>
+      <div className="absolute bottom-5 right-5 rounded-full bg-sky-500 px-4 py-2.5 text-[11px] font-black text-white">{copy.image}</div>
     </div>
   );
 }
 
-function PuzzleVisual() {
+function PuzzleVisual({ copy }: { copy: StudioPreviewCopy }) {
   return (
     <div className="relative h-[210px] overflow-hidden rounded-[24px] bg-gradient-to-br from-violet-50 via-white to-fuchsia-50">
       <svg viewBox="0 0 320 190" className="h-full w-full" aria-hidden="true">
         <path d="M46 145L92 48L138 145H46Z" fill="#ddd6fe" stroke="#7c3aed" strokeWidth="6" />
         <path d="M69 96H116" stroke="#7c3aed" strokeWidth="5" />
         <text x="166" y="80" fontSize="35" fontWeight="900" fill="#17101f">x = ?</text>
-        <text x="166" y="123" fontSize="18" fontWeight="800" fill="#7c3aed">5 sec challenge</text>
+        <text x="166" y="123" fontSize="18" fontWeight="800" fill="#7c3aed">{copy.challenge}</text>
       </svg>
     </div>
   );
