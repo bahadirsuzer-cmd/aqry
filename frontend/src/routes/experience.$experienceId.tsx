@@ -2307,7 +2307,7 @@ function ResultScreen({
       : isSpectrumTest
         ? `“${experienceTitle}” sonucum %${score} çıktı. Seninki kaç? 👀`
         : experienceType === "compatibility"
-          ? `Uyum sonucum %${score} çıktı 👀 Sen benimle kaç yaparsın?`
+          ? "Benim red flaglerim bunlar. Sence ne kadar uyumluyuz? 👀\n\nSen de kendi red flaglerini paylaş ❤️"
           : `“${experienceTitle}” testinde %${score} yaptım. Beni geçebilir misin? 👀`;
 
   function copyResultLink() {
