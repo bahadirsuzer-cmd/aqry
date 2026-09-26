@@ -75,7 +75,7 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
   const navigationItems = [
     { label: t("studio"), to: "/creator-studio", badge: 0 },
     { label: t("inbox"), to: "/creator-inbox", badge: unreadCount },
-    { label: "Bildirimler", to: "/creator-notifications", badge: unreadCount },
+    { label: t("notifications"), to: "/creator-notifications", badge: unreadCount },
     { label: t("experiences"), to: "/creator-experiences", badge: 0 },
     { label: t("account"), to: "/creator-account", badge: 0 },
   ];
