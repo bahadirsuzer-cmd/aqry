@@ -1889,7 +1889,7 @@ function GuessAnswerScreen({
 
       <div className="p-5 sm:p-6">
         <p className="text-[9px] font-black uppercase tracking-[0.13em] text-orange-600">
-          Tahmin et
+          {experience.cover.label.startsWith("Puzzle") ? "Puzzle" : "Tahmin et"}
         </p>
 
         <h2 className="mt-3 text-[26px] font-black leading-[1.02] tracking-[-0.045em]">

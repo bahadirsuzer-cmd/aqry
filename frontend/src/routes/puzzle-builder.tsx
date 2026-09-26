@@ -1,575 +1,308 @@
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
-import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
-import { makeVettedGeometryPuzzle } from "@/lib/geometryPuzzleTemplates";
-import { GeometryTemplateVisual } from "@/components/puzzle/GeometryTemplateVisual";
-import { makeSocialPuzzle } from "@/lib/socialPuzzleTemplates";
-import { SocialPuzzleVisual } from "@/components/puzzle/SocialPuzzleVisual";
-import React, { useEffect, useRef, useState } from "react";
+import { savePublishedExperience } from "@/services/experiences";
+import { uploadExperienceImage } from "@/services/media";
+import {
+  generatePuzzle,
+  puzzleFamilyIds,
+  PUZZLE_CATEGORIES,
+  PUZZLE_FAMILY_COUNT,
+  type Puzzle,
+  type PuzzleCategory,
+} from "@/services/puzzleTemplates";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/puzzle-builder")({
-  component: PuzzleBuilderPage,
-});
+export const Route = createFileRoute("/puzzle-builder")({ component: PuzzleBuilder });
+const SESSION_KEY = "aqry-puzzle-recent-families";
 
-type PuzzleKind = "math" | "geometry" | "count" | "algebra" | "area";
-type Presentation = "clean" | "debate";
-
-type Puzzle = {
-  id: string;
-  kind: PuzzleKind;
-  family: string;
-  answer: string;
-  commonWrong: string;
-  data: Record<string, number | string>;
-};
-
-type PuzzleCopy = {
-  descriptions: Record<PuzzleKind, string>;
-  titles: Record<PuzzleKind, string>;
-  subtitles: Record<PuzzleKind, string>;
-  cleanDesc: string;
-  debateDesc: string;
-  debateQuestion: string;
-};
-
-const RECENT_LIMIT = 30;
-const RECENT_FAMILY_WINDOW = 5;
-
-const COPY: Record<AqryoLocale, PuzzleCopy> = {
-  tr: {
-    descriptions: {
-      math: "İşlem önceliği, parantez, yüzde ve üs tuzakları",
-      geometry: "Kontrollü şablonlardan üretilen çok adımlı açı problemleri",
-      count: "Kare, dikdörtgen, çizgi ve üçgen sayma",
-      algebra: "Lineer denklem, oran, sistem ve ardışık sayılar",
-      area: "Alan, çevre, Pisagor ve bileşik şekiller",
-    },
-    titles: {
-      math: "Sonuç kaç?",
-      geometry: "x açısını bul",
-      count: "Toplam kaç tane?",
-      algebra: "x kaç?",
-      area: "Eksik değeri bul",
-    },
-    subtitles: {
-      math: "İlk gördüğün işlemi yapma 👀",
-      geometry: "Şekle bir kez daha bak",
-      count: "Küçük parçalar sadece başlangıç",
-      algebra: "Kısa görünüyor, dikkat istiyor",
-      area: "Doğru formülü seç",
-    },
-    cleanDesc: "Tek soru · temiz kart",
-    debateDesc: "İki cevap · yorumlarda tartışma",
-    debateQuestion: "Kim haklı?",
-  },
-  en: {
-    descriptions: {
-      math: "Order of operations, brackets, percentages and powers",
-      geometry: "Angles, parallel lines, vertical angles and polygons",
-      count: "Count squares, rectangles, segments and triangles",
-      algebra: "Linear equations, ratios, systems and sequences",
-      area: "Area, perimeter, Pythagoras and composite shapes",
-    },
-    titles: {
-      math: "What is the result?",
-      geometry: "Find angle x",
-      count: "How many in total?",
-      algebra: "Solve for x",
-      area: "Find the missing value",
-    },
-    subtitles: {
-      math: "Don’t do the first operation you see 👀",
-      geometry: "Look at the diagram one more time",
-      count: "The small shapes are only the start",
-      algebra: "Looks short. Think carefully.",
-      area: "Choose the right formula",
-    },
-    cleanDesc: "One question · clean card",
-    debateDesc: "Two answers · built for comments",
-    debateQuestion: "Who is right?",
-  },
-  es: {
-    descriptions:{math:"Prioridad, paréntesis, porcentajes y potencias",geometry:"Ángulos, paralelas, opuestos y polígonos",count:"Cuenta cuadrados, rectángulos, segmentos y triángulos",algebra:"Ecuaciones, razones, sistemas y consecutivos",area:"Área, perímetro, Pitágoras y figuras compuestas"},
-    titles:{math:"¿Cuál es el resultado?",geometry:"Halla el ángulo x",count:"¿Cuántos hay en total?",algebra:"Halla x",area:"Halla el valor que falta"},
-    subtitles:{math:"No hagas primero lo que ves primero 👀",geometry:"Mira el dibujo otra vez",count:"Las figuras pequeñas son solo el inicio",algebra:"Parece corto. Piénsalo bien.",area:"Elige la fórmula correcta"},
-    cleanDesc:"Una pregunta · tarjeta limpia",debateDesc:"Dos respuestas · para debatir",debateQuestion:"¿Quién tiene razón?",
-  },
-  pt: {
-    descriptions:{math:"Ordem, parênteses, porcentagens e potências",geometry:"Ângulos, paralelas, opostos e polígonos",count:"Conte quadrados, retângulos, segmentos e triângulos",algebra:"Equações, razões, sistemas e consecutivos",area:"Área, perímetro, Pitágoras e formas compostas"},
-    titles:{math:"Qual é o resultado?",geometry:"Encontre o ângulo x",count:"Quantos há no total?",algebra:"Encontre x",area:"Encontre o valor que falta"},
-    subtitles:{math:"Não faça primeiro o que aparece primeiro 👀",geometry:"Olhe o desenho mais uma vez",count:"As formas pequenas são só o começo",algebra:"Parece curto. Pense bem.",area:"Escolha a fórmula certa"},
-    cleanDesc:"Uma pergunta · cartão limpo",debateDesc:"Duas respostas · feito para comentários",debateQuestion:"Quem está certo?",
-  },
-  fr: {
-    descriptions:{math:"Priorités, parenthèses, pourcentages et puissances",geometry:"Angles, parallèles, opposés et polygones",count:"Compter carrés, rectangles, segments et triangles",algebra:"Équations, rapports, systèmes et nombres consécutifs",area:"Aire, périmètre, Pythagore et formes composées"},
-    titles:{math:"Quel est le résultat ?",geometry:"Trouve l’angle x",count:"Combien au total ?",algebra:"Trouve x",area:"Trouve la valeur manquante"},
-    subtitles:{math:"Ne fais pas d’abord ce que tu vois d’abord 👀",geometry:"Regarde encore une fois le schéma",count:"Les petites formes ne sont que le début",algebra:"Ça paraît court. Réfléchis bien.",area:"Choisis la bonne formule"},
-    cleanDesc:"Une question · carte propre",debateDesc:"Deux réponses · pour débattre",debateQuestion:"Qui a raison ?",
-  },
-  de: {
-    descriptions:{math:"Reihenfolge, Klammern, Prozent und Potenzen",geometry:"Winkel, Parallelen, Scheitelwinkel und Polygone",count:"Quadrate, Rechtecke, Strecken und Dreiecke zählen",algebra:"Gleichungen, Verhältnisse, Systeme und Folgen",area:"Fläche, Umfang, Pythagoras und zusammengesetzte Formen"},
-    titles:{math:"Was ist das Ergebnis?",geometry:"Finde den Winkel x",count:"Wie viele insgesamt?",algebra:"Löse nach x",area:"Finde den fehlenden Wert"},
-    subtitles:{math:"Nicht einfach von links nach rechts 👀",geometry:"Schau noch einmal auf die Zeichnung",count:"Die kleinen Formen sind nur der Anfang",algebra:"Sieht kurz aus. Denk genau nach.",area:"Wähle die richtige Formel"},
-    cleanDesc:"Eine Frage · saubere Karte",debateDesc:"Zwei Antworten · für Kommentare",debateQuestion:"Wer hat recht?",
-  },
-  it: {
-    descriptions:{math:"Priorità, parentesi, percentuali e potenze",geometry:"Angoli, parallele, opposti e poligoni",count:"Conta quadrati, rettangoli, segmenti e triangoli",algebra:"Equazioni, rapporti, sistemi e consecutivi",area:"Area, perimetro, Pitagora e figure composte"},
-    titles:{math:"Qual è il risultato?",geometry:"Trova l’angolo x",count:"Quanti sono in totale?",algebra:"Trova x",area:"Trova il valore mancante"},
-    subtitles:{math:"Non fare per prima l’operazione che vedi 👀",geometry:"Guarda il disegno ancora una volta",count:"Le forme piccole sono solo l’inizio",algebra:"Sembra breve. Pensaci bene.",area:"Scegli la formula giusta"},
-    cleanDesc:"Una domanda · card pulita",debateDesc:"Due risposte · fatta per i commenti",debateQuestion:"Chi ha ragione?",
-  },
-  ar: {
-    descriptions:{math:"ترتيب العمليات والأقواس والنسب والأسس",geometry:"الزوايا والمتوازيات والزوايا المتقابلة والمضلعات",count:"عد المربعات والمستطيلات والقطع والمثلثات",algebra:"معادلات ونسب وأنظمة وأعداد متتالية",area:"مساحة ومحيط وفيثاغورس وأشكال مركبة"},
-    titles:{math:"ما النتيجة؟",geometry:"أوجد الزاوية x",count:"كم العدد الكلي؟",algebra:"أوجد x",area:"أوجد القيمة الناقصة"},
-    subtitles:{math:"لا تبدأ بأول عملية تراها 👀",geometry:"انظر إلى الشكل مرة أخرى",count:"الأشكال الصغيرة ليست كل شيء",algebra:"يبدو قصيرًا. فكّر جيدًا.",area:"اختر القانون الصحيح"},
-    cleanDesc:"سؤال واحد · بطاقة نظيفة",debateDesc:"إجابتان · للنقاش",debateQuestion:"من الصحيح؟",
-  },
-  hi: {
-    descriptions:{math:"ऑपरेशन क्रम, ब्रैकेट, प्रतिशत और घात",geometry:"कोण, समानांतर रेखाएँ, विपरीत कोण और बहुभुज",count:"वर्ग, आयत, रेखाखंड और त्रिभुज गिनें",algebra:"रेखीय समीकरण, अनुपात, सिस्टम और क्रमिक संख्याएँ",area:"क्षेत्रफल, परिमाप, पाइथागोरस और संयुक्त आकृतियाँ"},
-    titles:{math:"उत्तर क्या है?",geometry:"कोण x ज्ञात करें",count:"कुल कितने हैं?",algebra:"x ज्ञात करें",area:"लापता मान ज्ञात करें"},
-    subtitles:{math:"जो पहले दिखे वही पहले मत करो 👀",geometry:"चित्र को एक बार फिर देखें",count:"छोटी आकृतियाँ सिर्फ शुरुआत हैं",algebra:"छोटा है, पर ध्यान चाहिए",area:"सही सूत्र चुनें"},
-    cleanDesc:"एक सवाल · साफ कार्ड",debateDesc:"दो जवाब · चर्चा के लिए",debateQuestion:"कौन सही है?",
-  },
-  id: {
-    descriptions:{math:"Urutan operasi, kurung, persen dan pangkat",geometry:"Sudut, garis sejajar, sudut berlawanan dan poligon",count:"Hitung persegi, persegi panjang, ruas dan segitiga",algebra:"Persamaan linear, rasio, sistem dan bilangan berurutan",area:"Luas, keliling, Pythagoras dan bangun gabungan"},
-    titles:{math:"Berapa hasilnya?",geometry:"Cari sudut x",count:"Berapa jumlah semuanya?",algebra:"Cari x",area:"Cari nilai yang hilang"},
-    subtitles:{math:"Jangan kerjakan yang pertama terlihat 👀",geometry:"Lihat diagram sekali lagi",count:"Bangun kecil baru permulaan",algebra:"Terlihat singkat. Pikirkan baik-baik.",area:"Pilih rumus yang tepat"},
-    cleanDesc:"Satu soal · kartu bersih",debateDesc:"Dua jawaban · untuk diskusi",debateQuestion:"Siapa yang benar?",
-  },
-  ru: {
-    descriptions:{math:"Порядок действий, скобки, проценты и степени",geometry:"Углы, параллельные, вертикальные углы и многоугольники",count:"Считай квадраты, прямоугольники, отрезки и треугольники",algebra:"Уравнения, отношения, системы и последовательные числа",area:"Площадь, периметр, Пифагор и составные фигуры"},
-    titles:{math:"Какой результат?",geometry:"Найди угол x",count:"Сколько всего?",algebra:"Найди x",area:"Найди неизвестное"},
-    subtitles:{math:"Не спеши считать слева направо 👀",geometry:"Посмотри на рисунок ещё раз",count:"Маленькие фигуры — только начало",algebra:"Коротко, но нужна внимательность",area:"Выбери правильную формулу"},
-    cleanDesc:"Один вопрос · чистая карточка",debateDesc:"Два ответа · для обсуждения",debateQuestion:"Кто прав?",
-  },
-  bn: {
-    descriptions:{math:"অপারেশন ক্রম, বন্ধনী, শতাংশ ও ঘাত",geometry:"কোণ, সমান্তরাল রেখা, বিপ্রতীপ কোণ ও বহুভুজ",count:"বর্গ, আয়তক্ষেত্র, রেখাংশ ও ত্রিভুজ গুনুন",algebra:"সমীকরণ, অনুপাত, সিস্টেম ও ধারাবাহিক সংখ্যা",area:"ক্ষেত্রফল, পরিসীমা, পিথাগোরাস ও যৌগিক আকৃতি"},
-    titles:{math:"ফল কত?",geometry:"x কোণ বের করুন",count:"মোট কতটি?",algebra:"x বের করুন",area:"অনুপস্থিত মান বের করুন"},
-    subtitles:{math:"যেটা আগে দেখছেন সেটাই আগে করবেন না 👀",geometry:"চিত্রটি আরেকবার দেখুন",count:"ছোট আকৃতিগুলো শুধু শুরু",algebra:"ছোট দেখায়, মনোযোগ দরকার",area:"সঠিক সূত্র বেছে নিন"},
-    cleanDesc:"একটি প্রশ্ন · পরিষ্কার কার্ড",debateDesc:"দুটি উত্তর · আলোচনার জন্য",debateQuestion:"কে ঠিক?",
-  },
-  ur: {
-    descriptions:{math:"عملی ترتیب، قوسین، فیصد اور قوتیں",geometry:"زاویے، متوازی لکیریں، مقابل زاویے اور کثیرالاضلاع",count:"مربع، مستطیل، خط اور مثلث گنیں",algebra:"مساوات، نسبت، نظام اور متواتر اعداد",area:"رقبہ، محیط، فیثاغورث اور مرکب اشکال"},
-    titles:{math:"نتیجہ کیا ہے؟",geometry:"زاویہ x معلوم کریں",count:"کل کتنے ہیں؟",algebra:"x معلوم کریں",area:"نامعلوم قدر معلوم کریں"},
-    subtitles:{math:"جو پہلے نظر آئے اسے پہلے نہ کریں 👀",geometry:"شکل کو ایک بار پھر دیکھیں",count:"چھوٹی شکلیں صرف ابتدا ہیں",algebra:"مختصر ہے، مگر غور چاہیے",area:"درست فارمولا منتخب کریں"},
-    cleanDesc:"ایک سوال · صاف کارڈ",debateDesc:"دو جواب · بحث کے لیے",debateQuestion:"کون درست ہے؟",
-  },
-  vi: {
-    descriptions:{math:"Thứ tự phép tính, ngoặc, phần trăm và lũy thừa",geometry:"Góc, song song, góc đối đỉnh và đa giác",count:"Đếm hình vuông, chữ nhật, đoạn thẳng và tam giác",algebra:"Phương trình, tỉ lệ, hệ và số liên tiếp",area:"Diện tích, chu vi, Pythagore và hình ghép"},
-    titles:{math:"Kết quả là bao nhiêu?",geometry:"Tìm góc x",count:"Tổng cộng có bao nhiêu?",algebra:"Tìm x",area:"Tìm giá trị còn thiếu"},
-    subtitles:{math:"Đừng làm phép tính đầu tiên bạn thấy 👀",geometry:"Nhìn hình thêm một lần nữa",count:"Các hình nhỏ chỉ là khởi đầu",algebra:"Trông ngắn nhưng cần cẩn thận",area:"Chọn đúng công thức"},
-    cleanDesc:"Một câu hỏi · thẻ sạch",debateDesc:"Hai đáp án · để tranh luận",debateQuestion:"Ai đúng?",
-  },
-  fil: {
-    descriptions:{math:"Order of operations, brackets, percent at powers",geometry:"Angles, parallel lines, vertical angles at polygons",count:"Bilangin ang squares, rectangles, segments at triangles",algebra:"Equations, ratios, systems at consecutive numbers",area:"Area, perimeter, Pythagoras at composite shapes"},
-    titles:{math:"Ano ang sagot?",geometry:"Hanapin ang angle x",count:"Ilan lahat?",algebra:"Hanapin ang x",area:"Hanapin ang nawawalang value"},
-    subtitles:{math:"Huwag unahin agad ang unang nakikita 👀",geometry:"Tingnan ulit ang diagram",count:"Simula pa lang ang maliliit na hugis",algebra:"Maikli pero kailangan ng ingat",area:"Piliin ang tamang formula"},
-    cleanDesc:"Isang tanong · malinis na card",debateDesc:"Dalawang sagot · para sa comments",debateQuestion:"Sino ang tama?",
-  },
-};
-
-function randomInt(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function pick<T>(items: T[]): T {
-  return items[randomInt(0, items.length - 1)];
-}
-
-function signature(puzzle: Puzzle) {
-  return `${puzzle.kind}:${puzzle.family}:${Object.entries(puzzle.data)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("|")}`;
-}
-
-function makeCurated(kind: "math" | "count" | "algebra" | "area", recentFamilies: string[] = []): Puzzle {
-  const curated = makeSocialPuzzle(kind, recentFamilies);
-  return {
-    id: crypto.randomUUID(),
-    kind,
-    family: curated.family,
-    answer: curated.answer,
-    commonWrong: curated.commonWrong,
-    data: {
-      ...curated.data,
-      titleKey: curated.titleKey,
-      subtitleKey: curated.subtitleKey,
-    },
-  };
-}
-
-function makeMath(recentFamilies: string[] = []) {
-  return makeCurated("math", recentFamilies);
-}
-
-
-function makeGeometry(recentFamilies: string[] = []): Puzzle {
-  const vetted = makeVettedGeometryPuzzle(recentFamilies);
-  return {
-    id: crypto.randomUUID(),
-    kind: "geometry",
-    family: vetted.family,
-    answer: vetted.answer,
-    commonWrong: vetted.commonWrong,
-    data: vetted.data,
-  };
-}
-
-function generate(kind: PuzzleKind, recent: string[]): Puzzle {
-  const recentFamilyIds = recent
-    .slice(0, RECENT_FAMILY_WINDOW)
-    .filter((item) => item.startsWith(`${kind}:`))
-    .map((item) => item.split(":")[1]);
-
-  for (let attempt = 0; attempt < 40; attempt += 1) {
-    const next =
-      kind === "geometry"
-        ? makeGeometry(recentFamilyIds)
-        : makeCurated(kind, recentFamilyIds);
-
-    if (!recent.includes(signature(next))) return next;
-  }
-
-  return kind === "geometry" ? makeGeometry([]) : makeCurated(kind, []);
-}
-
-const TEMPLATE_TEXT: Partial<Record<AqryoLocale, Record<string,string>>> = {
-  tr: {
-    calc:"Sonucu bul",
-    dontRush:"İlk gördüğün işlemi yapma",
-    bracketsMatter:"Parantezi atlayan kaybediyor",
-    powerTrap:"Üs işaretini kaçırma",
-    countSquares:"Kaç kare görüyorsun?",
-    notJustSmall:"Sadece küçük kareleri sayma",
-    countRectangles:"Kaç dikdörtgen var?",
-    countAllSizes:"Her boyutu dahil et",
-    countTriangles:"Kaç üçgen görüyorsun?",
-    combineThem:"Büyük üçgenleri de unutma",
-    findValue:"İstenen değeri bul",
-    identityTrap:"Direkt sayıları aramaya çalışma",
-    findX:"x kaç?",
-    twoLines:"İki satır birlikte yeterli",
-    symbolPuzzle:"Sembollerin değerini çöz",
-    sameSymbols:"Aynı sembol aynı değerde",
-    shadedArea:"Boyalı alan kaç?",
-    subtractCorrectly:"Büyük alandan doğru parçayı çıkar",
-    findArea:"Boyalı şeklin alanı kaç?",
-    missingCorner:"Eksik köşeyi hesaba kat",
-    findLength:"Kırmızı yolun toplamı kaç?",
-    twoStepLength:"Önce eğik kenarı bul",
-  },
-  en: {
-    calc:"Find the result",
-    dontRush:"Don’t rush the first operation",
-    bracketsMatter:"Miss the brackets, lose the puzzle",
-    powerTrap:"Don’t miss the exponent",
-    countSquares:"How many squares can you see?",
-    notJustSmall:"Don’t count only the small squares",
-    countRectangles:"How many rectangles are there?",
-    countAllSizes:"Include every size",
-    countTriangles:"How many triangles can you see?",
-    combineThem:"Don’t forget the larger triangles",
-    findValue:"Find the requested value",
-    identityTrap:"Don’t search for the numbers directly",
-    findX:"Find x",
-    twoLines:"Both lines are enough",
-    symbolPuzzle:"Solve the symbol values",
-    sameSymbols:"Same symbol, same value",
-    shadedArea:"What is the shaded area?",
-    subtractCorrectly:"Subtract the right region",
-    findArea:"What is the area of the shape?",
-    missingCorner:"Account for the missing corner",
-    findLength:"What is the total red length?",
-    twoStepLength:"Find the slanted side first",
-  },
-};
-
-function templateText(locale:AqryoLocale,key:string,fallback:string){
-  return TEMPLATE_TEXT[locale]?.[key] ?? TEMPLATE_TEXT.en?.[key] ?? fallback;
-}
-
-function ctaFor(locale: AqryoLocale, puzzle: Puzzle) {
-  const copy = COPY[locale] ?? COPY.en;
-
-  if (puzzle.kind !== "geometry") {
-    const title = templateText(
-      locale,
-      String(puzzle.data.titleKey ?? ""),
-      copy.titles[puzzle.kind],
+async function pngFromSvg(svg: string): Promise<File> {
+  const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
+  try {
+    const image = new Image();
+    image.src = url;
+    await image.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = 960;
+    canvas.height = 720;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Görsel hazırlanamadı.");
+    context.drawImage(image, 0, 0, 960, 720);
+    const blob = await new Promise<Blob>((resolve, reject) =>
+      canvas.toBlob(
+        (output) => (output ? resolve(output) : reject(new Error("Görsel hazırlanamadı."))),
+        "image/png",
+      ),
     );
-    const subtitle = templateText(
-      locale,
-      String(puzzle.data.subtitleKey ?? ""),
-      copy.subtitles[puzzle.kind],
-    );
-    return pick([`${title} 👇`, subtitle, `${title} · cevabını yaz 👀`]);
-  }
-
-  return pick([
-    copy.subtitles.geometry,
-    copy.titles.geometry,
-    `${copy.titles.geometry} 👇`,
-  ]);
-}
-
-function PuzzleBuilderPage() {
-  const { locale, t } = useAqryoLocale();
-  const copy = COPY[locale] ?? COPY.en;
-  const [loading,setLoading]=useState(true);
-  const [kind,setKind]=useState<PuzzleKind>("math");
-  const [presentation,setPresentation]=useState<Presentation>("clean");
-  const [recent,setRecent]=useState<string[]>([]);
-  const [puzzle,setPuzzle]=useState<Puzzle>(()=>makeMath([]));
-  const [socialText,setSocialText]=useState("");
-  const [copied,setCopied]=useState(false);
-  const [sharing,setSharing]=useState(false);
-  const previewRef=useRef<HTMLDivElement|null>(null);
-  const svgRef=useRef<SVGSVGElement|null>(null);
-
-  useEffect(()=>{
-    let cancelled=false;
-    void getCurrentCreator().then((creator)=>{
-      if(!creator){ window.location.href="/creator-auth"; return; }
-      if(!cancelled) setLoading(false);
-    });
-    return()=>{cancelled=true};
-  },[]);
-
-  useEffect(()=>{
-    setSocialText(ctaFor(locale,puzzle));
-  },[locale,puzzle]);
-
-  function remember(next:Puzzle){
-    const sig=signature(next);
-    setRecent((old)=>[sig,...old.filter((value)=>value!==sig)].slice(0,RECENT_LIMIT));
-  }
-
-  function chooseKind(next:PuzzleKind){
-    setKind(next);
-    const fresh=generate(next,recent);
-    setPuzzle(fresh);
-    setPresentation("clean");
-    remember(fresh);
-  }
-
-  function regenerate(){
-    const fresh=generate(kind,recent);
-    setPuzzle(fresh);
-    remember(fresh);
-    setCopied(false);
-    window.setTimeout(()=>previewRef.current?.scrollIntoView({behavior:"smooth",block:"start"}),80);
-  }
-
-  function serializeSvg(){
-    if(!svgRef.current) return null;
-    return new XMLSerializer().serializeToString(svgRef.current);
-  }
-
-  function downloadSvg(){
-    const source=serializeSvg();
-    if(!source) return;
-    const blob=new Blob([source],{type:"image/svg+xml;charset=utf-8"});
-    const url=URL.createObjectURL(blob);
-    const anchor=document.createElement("a");
-    anchor.href=url;
-    anchor.download=`aqryo-${puzzle.kind}-${puzzle.family}.svg`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
+    return new File([blob], "puzzle.png", { type: "image/png" });
+  } finally {
     URL.revokeObjectURL(url);
   }
+}
 
-  async function copyText(){
-    await navigator.clipboard.writeText(socialText);
-    setCopied(true);
-    window.setTimeout(()=>setCopied(false),1200);
+function PuzzleBuilder() {
+  const [creatorId, setCreatorId] = useState<string | null>(null);
+  const [category, setCategory] = useState<PuzzleCategory | "Tümü">("Tümü");
+  const [puzzle, setPuzzle] = useState<Puzzle | null>(null);
+  const [recent, setRecent] = useState<string[]>([]);
+  const [publishing, setPublishing] = useState(false);
+  const [error, setError] = useState("");
+  const [publishedUrl, setPublishedUrl] = useState("");
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [duelMode, setDuelMode] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    void getCurrentCreator().then((creator) => {
+      if (!active) return;
+      if (!creator) {
+        window.location.href = "/creator-auth";
+        return;
+      }
+      setCreatorId(creator.id);
+      let history: string[] = [];
+      try {
+        history = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "[]") as string[];
+      } catch {
+        /* corrupt session history */
+      }
+      const next = generatePuzzle("Tümü", history);
+      const updated = [...history.filter((id) => id !== next.family), next.family].slice(
+        -PUZZLE_FAMILY_COUNT,
+      );
+      setPuzzle(next);
+      setRecent(updated);
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(updated));
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  function nextPuzzle(nextCategory = category) {
+    const ids = puzzleFamilyIds(nextCategory);
+    const relevant = recent.filter((id) => ids.includes(id));
+    // When the pool is exhausted, start another pass, but avoid the immediately preceding family.
+    const exhausted = relevant.length >= ids.length;
+    const blocked = exhausted ? (puzzle && ids.length > 1 ? [puzzle.family] : []) : relevant;
+    const next = generatePuzzle(nextCategory, blocked);
+    const updated = [
+      ...(exhausted ? [] : recent).filter((id) => id !== next.family),
+      next.family,
+    ].slice(-PUZZLE_FAMILY_COUNT);
+    setPuzzle(next);
+    setRecent(updated);
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(updated));
+    setPublishedUrl("");
+    setShowAnswer(false);
+    setDuelMode(false);
+    setError("");
   }
 
-  async function share(){
-    if(sharing) return;
-    try{
-      setSharing(true);
-      const source=serializeSvg();
-      if(!source) throw new Error("Visual unavailable");
-      const blob=new Blob([source],{type:"image/svg+xml"});
-      const file=new File([blob],`aqryo-${puzzle.kind}.svg`,{type:"image/svg+xml"});
-      if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
-        await navigator.share({files:[file],text:socialText,title:"AQRYO"});
-      } else {
-        downloadSvg();
-        const x=new URL("https://twitter.com/intent/tweet");
-        x.searchParams.set("text",`${socialText}\n\n#AQRYO`);
-        window.open(x.toString(),"_blank","noopener,noreferrer");
-      }
-    }catch(error){
-      if(!(error instanceof DOMException && error.name==="AbortError")) console.error(error);
-    }finally{
-      setSharing(false);
+  async function publish() {
+    if (!puzzle || !creatorId || publishing) return;
+    setPublishing(true);
+    setError("");
+    try {
+      const image = await uploadExperienceImage(creatorId, await pngFromSvg(puzzle.svg));
+      const id = crypto.randomUUID();
+      await savePublishedExperience({
+        id,
+        creatorId,
+        type: "guess",
+        status: "published",
+        publishedAt: new Date().toISOString(),
+        title: puzzle.title,
+        description: duelMode ? puzzle.duel : puzzle.cta,
+        cover: { style: "purple", label: `Puzzle · ${puzzle.category}`, imageUrl: image.publicUrl },
+        questions: [],
+        results: [
+          { id: "correct", title: `${puzzle.answer} · Doğru!`, description: puzzle.explanation },
+        ],
+        offer: { enabled: false, title: "", description: "", price: 0 },
+        guess: {
+          prompt: duelMode ? puzzle.duel : puzzle.question,
+          acceptedAnswers: [String(puzzle.answer)],
+          successTitle: `${puzzle.answer} · Doğru!`,
+          successDescription: puzzle.explanation,
+          retryEnabled: true,
+        },
+      });
+      setPublishedUrl(`${window.location.origin}/experience/${id}`);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Yayınlama başarısız oldu.");
+    } finally {
+      setPublishing(false);
     }
   }
 
-  if(loading) return <LoadingScreen/>;
-
-  const kinds:Array<[PuzzleKind,string,string]> = [
-    ["math",t("math"),copy.descriptions.math],
-    ["geometry",t("geometry"),copy.descriptions.geometry],
-    ["count",t("count"),"Kare, dikdörtgen ve üçgenleri tüm boyutlarıyla say"],
-    ["algebra",t("algebra"),"Sistem, özdeşlik ve sembol denklemleri"],
-    ["area",t("area"),"Gölgeli alan, bileşik şekil ve iki adımlı uzunluk"],
-  ];
-
   return (
-    <main className="min-h-screen bg-[#f7f5fb] text-foreground">
-      <CreatorNavigation onSignOut={async()=>{await signOutCreator();window.location.href="/creator-auth";}}/>
-
-      <header className="border-b border-border bg-white">
-        <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-4 py-5 sm:px-6">
+    <main className="min-h-screen bg-[#faf8fb] text-[#201932]">
+      <CreatorNavigation
+        onSignOut={async () => {
+          await signOutCreator();
+          window.location.href = "/creator-auth";
+        }}
+      />
+      <div className="mx-auto max-w-[1180px] px-4 py-8 sm:px-7">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-violet-600">{t("puzzleEngine")}</p>
-            <h1 className="mt-1 text-[30px] font-black tracking-[-0.055em]">{t("puzzle")}</h1>
+            <p className="text-xs font-black uppercase tracking-[.18em] text-violet-600">
+              AQRYO STUDIO / PUZZLE
+            </p>
+            <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-5xl">
+              Bir soru. İki iddia. Bol yorum.
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm text-slate-600">
+              {PUZZLE_FAMILY_COUNT} ayrı problem ailesinden gerçek sayma, geometri ve işlem
+              bulmacaları. Her sorunun çözümü ve yaygın bir yanlış cevabı hazır.
+            </p>
           </div>
-          <Link to="/creator-studio" className="rounded-full border border-border bg-white px-5 py-3 text-[12px] font-black text-muted-foreground">{t("backToStudio")}</Link>
+          <Link
+            to="/creator-studio"
+            className="rounded-full border border-slate-200 bg-white px-5 py-3 text-xs font-bold"
+          >
+            ← Stüdyoya dön
+          </Link>
         </div>
-      </header>
-
-      <div className="mx-auto grid max-w-[1280px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_460px] lg:py-9">
-        <section className="space-y-5">
-          <div className="rounded-[30px] border border-border bg-white p-5 sm:p-7">
-            <p className="text-[11px] font-black uppercase tracking-[0.15em] text-violet-600">1 · {t("questionType")}</p>
-            <h2 className="mt-3 text-[31px] font-black leading-tight tracking-[-0.055em]">{t("viralInFive")}</h2>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {kinds.map(([value,title,description])=>(
-                <PuzzleTypeButton key={value} active={kind===value} title={title} description={description} onClick={()=>chooseKind(value)}/>
-              ))}
-            </div>
-
-            <p className="mt-6 text-[12px] font-black">{t("presentation")}</p>
-            <div className="mt-2 grid grid-cols-2 gap-3">
-              <Choice active={presentation==="clean"} title={t("clean")} description={copy.cleanDesc} onClick={()=>setPresentation("clean")}/>
-              <Choice active={presentation==="debate"} title={t("debate")} description={copy.debateDesc} onClick={()=>setPresentation("debate")}/>
-            </div>
-
-            <button type="button" onClick={regenerate} className="mt-6 h-13 rounded-full bg-black px-7 py-3.5 text-[13px] font-black text-white">
-              {t("newQuestion")} ↻
+        <div className="mt-8 flex flex-wrap gap-2" aria-label="Puzzle türü">
+          {(["Tümü", ...PUZZLE_CATEGORIES] as const).map((item) => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => {
+                setCategory(item);
+                nextPuzzle(item);
+              }}
+              aria-pressed={category === item}
+              className={`rounded-full px-4 py-2.5 text-xs font-bold transition ${category === item ? "bg-violet-700 text-white" : "border border-slate-200 bg-white hover:border-violet-400"}`}
+            >
+              {item}
             </button>
+          ))}
+        </div>
+        {puzzle ? (
+          <div className="mt-7 grid gap-7 lg:grid-cols-[minmax(0,1fr)_370px]">
+            <section className="overflow-hidden rounded-[28px] border border-violet-100 bg-white shadow-xl shadow-violet-100/40">
+              <div className="flex items-center justify-between px-5 py-4">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[.16em] text-violet-600">
+                    {puzzle.category}
+                  </p>
+                  <h2 className="mt-1 text-xl font-black">{puzzle.title}</h2>
+                </div>
+                <span className="rounded-full bg-violet-50 px-3 py-2 text-[10px] font-bold text-violet-700">
+                  ✓ Çözümü doğrulandı
+                </span>
+              </div>
+              <img
+                src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(puzzle.svg)}`}
+                alt={`${puzzle.title} sorusunun işaretli geometrik veya matematiksel çizimi`}
+                className="aspect-[4/3] w-full object-contain"
+              />
+              <div className="p-5">
+                <p className="text-lg font-black">{duelMode ? puzzle.duel : puzzle.question}</p>
+                <p className="mt-2 text-sm text-slate-600">{puzzle.cta}</p>
+              </div>
+            </section>
+            <aside className="space-y-4">
+              <div className="rounded-[24px] border border-slate-200 bg-white p-5">
+                <p className="text-xs font-black uppercase tracking-widest text-slate-500">
+                  Paylaşım kurgusu
+                </p>
+                <button
+                  type="button"
+                  disabled={Boolean(publishedUrl)}
+                  onClick={() => setDuelMode(!duelMode)}
+                  aria-pressed={duelMode}
+                  className={`mt-4 w-full rounded-2xl border px-4 py-3 text-left text-sm font-bold disabled:opacity-60 ${duelMode ? "border-violet-500 bg-violet-50" : "border-slate-200"}`}
+                >
+                  ⚖ Kim haklı? versiyonu {duelMode ? "✓" : ""}
+                </button>
+                <p className="mt-3 rounded-xl bg-slate-50 p-3 text-sm">{puzzle.duel}</p>
+              </div>
+              <div className="rounded-[24px] border border-slate-200 bg-white p-5">
+                <button
+                  type="button"
+                  onClick={() => setShowAnswer(!showAnswer)}
+                  className="text-sm font-black text-violet-700"
+                >
+                  {showAnswer ? "Çözümü gizle ↑" : "Çözümü ve yaygın yanlışı göster ↓"}
+                </button>
+                {showAnswer ? (
+                  <div className="mt-4 space-y-2 text-sm">
+                    <p>
+                      <b>Doğru cevap:</b> {puzzle.answer}
+                    </p>
+                    <p>
+                      <b>Yaygın yanlış:</b> {puzzle.commonWrong}
+                    </p>
+                    <p className="leading-6 text-slate-600">{puzzle.explanation}</p>
+                  </div>
+                ) : null}
+              </div>
+              <button
+                type="button"
+                onClick={() => nextPuzzle()}
+                className="w-full rounded-2xl border-2 border-violet-300 bg-white px-5 py-4 text-sm font-black text-violet-800 hover:bg-violet-50"
+              >
+                ↻ Yeni soru üret
+              </button>
+              <button
+                type="button"
+                disabled={!creatorId || publishing}
+                onClick={() => void publish()}
+                className="w-full rounded-2xl bg-[#211638] px-5 py-4 text-sm font-black text-white disabled:opacity-50"
+              >
+                {publishing ? "Görsel yükleniyor ve yayınlanıyor..." : "Puzzle'ı yayınla →"}
+              </button>
+              {error ? (
+                <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+                  {error}
+                </p>
+              ) : null}
+              {publishedUrl ? (
+                <div className="rounded-2xl bg-emerald-50 p-4 text-sm">
+                  <b>Yayında!</b>
+                  <a
+                    href={publishedUrl}
+                    className="mt-2 block break-all font-bold text-emerald-700 underline"
+                  >
+                    {publishedUrl}
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => void navigator.clipboard.writeText(publishedUrl)}
+                    className="mt-3 rounded-full bg-emerald-700 px-4 py-2 text-xs font-bold text-white"
+                  >
+                    Linki kopyala
+                  </button>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <a
+                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`${duelMode ? puzzle.duel : puzzle.cta} ${publishedUrl}`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-full border border-emerald-300 px-4 py-2 text-xs font-bold"
+                    >
+                      X'te paylaş ↗
+                    </a>
+                    <a
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(publishedUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-full border border-emerald-300 px-4 py-2 text-xs font-bold"
+                    >
+                      Facebook'ta paylaş ↗
+                    </a>
+                  </div>
+                </div>
+              ) : null}
+            </aside>
           </div>
-
-          <div className="rounded-[30px] border border-border bg-white p-5 sm:p-7">
-            <p className="text-[11px] font-black uppercase tracking-[0.15em] text-violet-600">2 · {t("cta")}</p>
-            <textarea
-              rows={4}
-              value={socialText}
-              onChange={(event)=>setSocialText(event.target.value)}
-              className="mt-4 w-full resize-none rounded-[20px] border border-border bg-background px-5 py-4 text-[15px] font-bold leading-7 outline-none focus:border-violet-400"
-            />
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button disabled={sharing} onClick={()=>void share()} className="rounded-full bg-violet-600 px-6 py-3 text-[13px] font-black text-white">{sharing?"...":t("share")} →</button>
-              <button onClick={()=>void copyText()} className="rounded-full border border-border bg-white px-6 py-3 text-[13px] font-black">{copied?"✓":t("copyText")}</button>
-              <button onClick={downloadSvg} className="rounded-full border border-border bg-white px-6 py-3 text-[13px] font-black">{t("downloadSvg")}</button>
-            </div>
-          </div>
-
-          <div className="grid gap-3 rounded-[26px] border border-violet-100 bg-violet-50/70 p-5 sm:grid-cols-2">
-            <div><p className="text-[11px] font-black text-violet-950">{t("correctAnswer")}</p><p className="mt-2 text-[28px] font-black text-violet-800">{puzzle.answer}</p></div>
-            <div><p className="text-[11px] font-black text-violet-950">{t("commonWrong")}</p><p className="mt-2 text-[28px] font-black text-rose-600">{puzzle.commonWrong}</p></div>
-          </div>
-        </section>
-
-        <aside ref={previewRef} className="scroll-mt-40 lg:sticky lg:top-[110px] lg:self-start">
-          <p className="mb-3 text-[11px] font-black uppercase tracking-[0.16em] text-muted-foreground">{t("shareVisual")}</p>
-          <div className="overflow-hidden rounded-[32px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)]">
-            <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale}/>
-          </div>
-        </aside>
+        ) : (
+          <p className="mt-10">Puzzle hazırlanıyor...</p>
+        )}
       </div>
     </main>
   );
-}
-
-const PuzzleSvg=React.forwardRef<
-  SVGSVGElement,
-  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale}
->(function PuzzleSvg({puzzle,presentation,copy,locale},ref){
-  const title = templateText(locale,String(puzzle.data.titleKey ?? ""),copy.titles[puzzle.kind]);
-  const subtitle = templateText(locale,String(puzzle.data.subtitleKey ?? ""),copy.subtitles[puzzle.kind]);
-
-  return (
-    <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" className="w-full rounded-[24px]">
-      <rect width="360" height="480" rx="28" fill="#fbfafc"/>
-      <circle cx="48" cy="45" r="20" fill="#74f0de"/>
-      <text x="48" y="52" textAnchor="middle" fontSize="19" fontWeight="900" fill="#17101f">Q</text>
-      <text x="78" y="51" fontSize="14" fontWeight="900" fill="#17101f">AQRYO</text>
-      {puzzle.kind === "geometry" ? (
-        <>
-          <text x="180" y="95" textAnchor="middle" fontSize="20" fontWeight="900" fill="#17101f">{copy.titles.geometry}</text>
-          <GeometryTemplateVisual family={puzzle.family} data={puzzle.data} />
-        </>
-      ) : (
-        <SocialPuzzleVisual
-          kind={puzzle.kind}
-          family={puzzle.family}
-          data={puzzle.data}
-          title={title}
-          subtitle={presentation === "debate" ? "" : subtitle}
-        />
-      )}
-
-      {presentation==="debate" ? (
-        <>
-          <rect x="24" y="370" width="146" height="66" rx="22" fill="#ede9fe"/>
-          <circle cx="49" cy="403" r="14" fill="#7c3aed"/>
-          <text x="49" y="409" textAnchor="middle" fontSize="14" fontWeight="900" fill="white">A</text>
-          <text x="75" y="410" fontSize="20" fontWeight="900" fill="#17101f">{puzzle.answer}</text>
-
-          <rect x="190" y="370" width="146" height="66" rx="22" fill="#ffe4e6"/>
-          <circle cx="215" cy="403" r="14" fill="#e11d48"/>
-          <text x="215" y="409" textAnchor="middle" fontSize="14" fontWeight="900" fill="white">B</text>
-          <text x="241" y="410" fontSize="20" fontWeight="900" fill="#17101f">{puzzle.commonWrong}</text>
-          <text x="180" y="462" textAnchor="middle" fontSize="18" fontWeight="900" fill="#6d28d9">{copy.debateQuestion}</text>
-        </>
-      ) : (
-        puzzle.kind === "geometry" ? (
-          <text x="180" y="440" textAnchor="middle" fontSize="17" fontWeight="900" fill="#6b7280">{copy.subtitles.geometry}</text>
-        ) : null
-      )}
-    </svg>
-  );
-});
-
-function PuzzleTypeButton({
-  active,title,description,onClick,
-}:{
-  active:boolean;
-  title:string;
-  description:string;
-  onClick:()=>void;
-}){
-  return (
-    <button type="button" onClick={onClick} className={`rounded-[22px] border p-4 text-left transition ${active?"border-violet-500 bg-violet-50 shadow-[0_12px_30px_rgba(124,58,237,.1)]":"border-border bg-white"}`}>
-      <p className="text-[15px] font-black">{title}</p>
-      <p className="mt-1 text-[12px] font-semibold leading-5 text-muted-foreground">{description}</p>
-    </button>
-  );
-}
-
-function Choice({
-  active,title,description,onClick,
-}:{
-  active:boolean;
-  title:string;
-  description:string;
-  onClick:()=>void;
-}){
-  return (
-    <button type="button" onClick={onClick} className={`rounded-[20px] border px-4 py-4 text-left ${active?"border-violet-500 bg-violet-50":"border-border bg-white"}`}>
-      <p className="text-[14px] font-black">{title}</p>
-      <p className="mt-1 text-[12px] font-semibold text-muted-foreground">{description}</p>
-    </button>
-  );
-}
-
-function LoadingScreen(){
-  return <main className="min-h-screen bg-[#f7f5fb]"><div className="mx-auto max-w-[1280px] px-4 py-10"><div className="h-[360px] animate-pulse rounded-[30px] bg-white"/></div></main>;
 }

@@ -49,6 +49,7 @@ import { Route as InternettenParaKazanmaRouteImport } from './routes/internetten
 import { Route as PaymentTermsRouteImport } from './routes/payment-terms'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PuzzleBuilderRouteImport } from './routes/puzzle-builder'
 import { Route as RecommendationBuilderRouteImport } from './routes/recommendation-builder'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StoryBuilderRouteImport } from './routes/story-builder'
@@ -266,6 +267,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PuzzleBuilderRoute = PuzzleBuilderRouteImport.update({
+  id: '/puzzle-builder',
+  path: '/puzzle-builder',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RecommendationBuilderRoute = RecommendationBuilderRouteImport.update({
   id: '/recommendation-builder',
   path: '/recommendation-builder',
@@ -390,6 +396,7 @@ export interface FileRoutesByFullPath {
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/puzzle-builder': typeof PuzzleBuilderRoute
   '/recommendation-builder': typeof RecommendationBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story-builder': typeof StoryBuilderRoute
@@ -448,6 +455,7 @@ export interface FileRoutesByTo {
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/puzzle-builder': typeof PuzzleBuilderRoute
   '/recommendation-builder': typeof RecommendationBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story-builder': typeof StoryBuilderRoute
@@ -506,6 +514,7 @@ export interface FileRoutesById {
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/puzzle-builder': typeof PuzzleBuilderRoute
   '/recommendation-builder': typeof RecommendationBuilderRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/story-builder': typeof StoryBuilderRoute
@@ -566,6 +575,7 @@ export interface FileRouteTypes {
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
+    | '/puzzle-builder'
     | '/recommendation-builder'
     | '/sitemap.xml'
     | '/story-builder'
@@ -624,6 +634,7 @@ export interface FileRouteTypes {
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
+    | '/puzzle-builder'
     | '/recommendation-builder'
     | '/sitemap.xml'
     | '/story-builder'
@@ -681,6 +692,7 @@ export interface FileRouteTypes {
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
+    | '/puzzle-builder'
     | '/recommendation-builder'
     | '/sitemap.xml'
     | '/story-builder'
@@ -740,6 +752,7 @@ export interface RootRouteChildren {
   PaymentTermsRoute: typeof PaymentTermsRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  PuzzleBuilderRoute: typeof PuzzleBuilderRoute
   RecommendationBuilderRoute: typeof RecommendationBuilderRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StoryBuilderRoute: typeof StoryBuilderRoute
@@ -1037,6 +1050,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/puzzle-builder': {
+      id: '/puzzle-builder'
+      path: '/puzzle-builder'
+      fullPath: '/puzzle-builder'
+      preLoaderRoute: typeof PuzzleBuilderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/recommendation-builder': {
       id: '/recommendation-builder'
       path: '/recommendation-builder'
@@ -1209,6 +1229,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentTermsRoute: PaymentTermsRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  PuzzleBuilderRoute: PuzzleBuilderRoute,
   RecommendationBuilderRoute: RecommendationBuilderRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StoryBuilderRoute: StoryBuilderRoute,
