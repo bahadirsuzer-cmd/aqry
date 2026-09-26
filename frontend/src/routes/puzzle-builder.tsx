@@ -374,11 +374,27 @@ function PuzzleBuilderPage() {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1280px] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_460px] lg:py-9">
+      <div className="mx-auto max-w-[980px] px-4 py-6 sm:px-6 lg:py-9">
         <section className="space-y-5">
-          <div className="rounded-[30px] border border-border bg-white p-5 sm:p-7">
-            <p className="text-[11px] font-black uppercase tracking-[0.15em] text-violet-600">1 · {t("questionType")}</p>
-            <h2 className="mt-3 text-[31px] font-black leading-tight tracking-[-0.055em]">{t("viralInFive")}</h2>
+          <div ref={previewRef} className="scroll-mt-32">
+            <p className="mb-3 text-[12px] font-black uppercase tracking-[0.16em] text-muted-foreground">{t("shareVisual")}</p>
+            <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
+              <button
+                type="button"
+                onClick={regenerate}
+                className="absolute left-6 top-6 z-20 rounded-full bg-black/88 px-4 py-2 text-[12px] font-black text-white shadow-lg backdrop-blur transition hover:bg-violet-700 sm:left-7 sm:top-7 sm:text-[13px]"
+              >
+                {locale === "tr" ? "Görseli değiştir" : t("newQuestion")} ↻
+              </button>
+              <div className="mx-auto max-w-[620px]">
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale}/>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[30px] border border-border bg-white p-5 sm:p-8">
+            <p className="text-[12px] font-black uppercase tracking-[0.15em] text-violet-600">1 · {t("questionType")}</p>
+            <h2 className="mt-3 text-[34px] font-black leading-tight tracking-[-0.055em] sm:text-[42px]">{t("viralInFive")}</h2>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               {kinds.map(([value,title,description])=>(
@@ -386,48 +402,42 @@ function PuzzleBuilderPage() {
               ))}
             </div>
 
-            <p className="mt-6 text-[12px] font-black">{t("presentation")}</p>
+            <p className="mt-7 text-[14px] font-black">{t("presentation")}</p>
             <div className="mt-2 grid grid-cols-2 gap-3">
               <Choice active={presentation==="clean"} title={t("clean")} description={copy.cleanDesc} onClick={()=>setPresentation("clean")}/>
               <Choice active={presentation==="debate"} title={t("debate")} description={copy.debateDesc} onClick={()=>setPresentation("debate")}/>
             </div>
 
-            <button type="button" onClick={regenerate} className="mt-6 h-13 rounded-full bg-black px-7 py-3.5 text-[13px] font-black text-white">
+            <button type="button" onClick={regenerate} className="mt-6 rounded-full bg-black px-7 py-4 text-[15px] font-black text-white">
               {t("newQuestion")} ↻
             </button>
           </div>
 
-          <div className="rounded-[30px] border border-border bg-white p-5 sm:p-7">
-            <p className="text-[11px] font-black uppercase tracking-[0.15em] text-violet-600">2 · {t("cta")}</p>
+          <div className="rounded-[30px] border border-border bg-white p-5 sm:p-8">
+            <p className="text-[12px] font-black uppercase tracking-[0.15em] text-violet-600">2 · {t("cta")}</p>
+            <h3 className="mt-2 text-[24px] font-black tracking-[-0.04em]">{locale === "tr" ? "Paylaşım metni" : t("cta")}</h3>
             <textarea
               rows={4}
               value={socialText}
               onChange={(event)=>setSocialText(event.target.value)}
-              className="mt-4 w-full resize-none rounded-[20px] border border-border bg-background px-5 py-4 text-[15px] font-bold leading-7 outline-none focus:border-violet-400"
+              className="mt-4 w-full resize-none rounded-[20px] border border-border bg-background px-5 py-5 text-[17px] font-bold leading-8 outline-none focus:border-violet-400 sm:text-[18px]"
             />
             <div className="mt-4 flex flex-wrap gap-2">
-              <button disabled={sharing} onClick={()=>void share()} className="rounded-full bg-violet-600 px-6 py-3 text-[13px] font-black text-white">{sharing?"...":t("share")} →</button>
-              <button onClick={()=>void copyText()} className="rounded-full border border-border bg-white px-6 py-3 text-[13px] font-black">{copied?"✓":t("copyText")}</button>
-              <button onClick={downloadSvg} className="rounded-full border border-border bg-white px-6 py-3 text-[13px] font-black">{t("downloadSvg")}</button>
+              <button disabled={sharing} onClick={()=>void share()} className="rounded-full bg-violet-600 px-6 py-3.5 text-[14px] font-black text-white">{sharing?"...":t("share")} →</button>
+              <button onClick={()=>void copyText()} className="rounded-full border border-border bg-white px-6 py-3.5 text-[14px] font-black">{copied?"✓":t("copyText")}</button>
+              <button onClick={downloadSvg} className="rounded-full border border-border bg-white px-6 py-3.5 text-[14px] font-black">{t("downloadSvg")}</button>
             </div>
           </div>
 
-          <div className="grid gap-3 rounded-[26px] border border-violet-100 bg-violet-50/70 p-5 sm:grid-cols-2">
-            <div><p className="text-[11px] font-black text-violet-950">{t("correctAnswer")}</p><p className="mt-2 text-[28px] font-black text-violet-800">{puzzle.answerKey ? UNDETERMINED[locale] : puzzle.answer}</p></div>
-            <div><p className="text-[11px] font-black text-violet-950">{t("commonWrong")}</p><p className="mt-2 text-[28px] font-black text-rose-600">{puzzle.commonWrong}</p></div>
+          <div className="grid gap-3 rounded-[26px] border border-violet-100 bg-violet-50/70 p-5 sm:grid-cols-2 sm:p-6">
+            <div><p className="text-[12px] font-black text-violet-950">{t("correctAnswer")}</p><p className="mt-2 text-[30px] font-black text-violet-800">{puzzle.answerKey ? UNDETERMINED[locale] : puzzle.answer}</p></div>
+            <div><p className="text-[12px] font-black text-violet-950">{t("commonWrong")}</p><p className="mt-2 text-[30px] font-black text-rose-600">{puzzle.commonWrong}</p></div>
           </div>
-          <details className="rounded-[24px] border border-border bg-white p-5 text-[13px] font-semibold">
-            <summary className="cursor-pointer font-black">{SOLUTION_TITLE[locale]}</summary>
+          <details className="rounded-[24px] border border-border bg-white p-5 text-[15px] font-semibold leading-7 sm:p-6">
+            <summary className="cursor-pointer text-[16px] font-black">{SOLUTION_TITLE[locale]}</summary>
             <ol className="mt-3 list-inside list-decimal space-y-1">{localizedPuzzleSteps(locale,puzzle).map((step,index)=><li key={`${puzzle.id}-${index}`}>{step}</li>)}</ol>
           </details>
         </section>
-
-        <aside ref={previewRef} className="scroll-mt-40 lg:sticky lg:top-[110px] lg:self-start">
-          <p className="mb-3 text-[11px] font-black uppercase tracking-[0.16em] text-muted-foreground">{t("shareVisual")}</p>
-          <div className="overflow-hidden rounded-[32px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)]">
-            <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale}/>
-          </div>
-        </aside>
       </div>
     </main>
   );
@@ -475,8 +485,8 @@ function PuzzleTypeButton({
 }){
   return (
     <button type="button" onClick={onClick} className={`rounded-[22px] border p-4 text-left transition ${active?"border-violet-500 bg-violet-50 shadow-[0_12px_30px_rgba(124,58,237,.1)]":"border-border bg-white"}`}>
-      <p className="text-[15px] font-black">{title}</p>
-      <p className="mt-1 text-[12px] font-semibold leading-5 text-muted-foreground">{description}</p>
+      <p className="text-[17px] font-black">{title}</p>
+      <p className="mt-1 text-[14px] font-semibold leading-6 text-muted-foreground">{description}</p>
     </button>
   );
 }
@@ -491,8 +501,8 @@ function Choice({
 }){
   return (
     <button type="button" onClick={onClick} className={`rounded-[20px] border px-4 py-4 text-left ${active?"border-violet-500 bg-violet-50":"border-border bg-white"}`}>
-      <p className="text-[14px] font-black">{title}</p>
-      <p className="mt-1 text-[12px] font-semibold text-muted-foreground">{description}</p>
+      <p className="text-[16px] font-black">{title}</p>
+      <p className="mt-1 text-[13px] font-semibold leading-5 text-muted-foreground">{description}</p>
     </button>
   );
 }
