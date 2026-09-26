@@ -8,6 +8,11 @@ import {
   useEffect,
   useState,
 } from "react";
+import {
+  openSocialShare,
+  shareToInstagram,
+  type SocialChannel,
+} from "@/services/socialShare";
 
 interface ResultSharePanelProps {
   experienceTitle: string;
@@ -205,29 +210,33 @@ export function ResultSharePanel({
     }
   }
 
-  function handleShareOnX() {
-    const shareText =
-      `Benim sonucum: ${resultTitle}\n\nSen de çöz`;
+  function getSocialText() {
+    return `Benim sonucum: ${resultTitle}\n\nSen de çöz\n\n#AQRYO`;
+  }
 
-    const url = new URL(
-      "https://x.com/intent/tweet",
-    );
-
-    url.searchParams.set(
-      "text",
-      shareText,
-    );
-
-    url.searchParams.set(
-      "url",
+  function handleShareChannel(
+    channel: Exclude<SocialChannel, "instagram">,
+  ) {
+    openSocialShare(
+      channel,
+      getSocialText(),
       normalizedShareUrl,
     );
+  }
 
-    window.open(
-      url.toString(),
-      "_blank",
-      "noopener,noreferrer",
-    );
+  async function handleInstagramShare() {
+    let shareAsset = asset;
+
+    if (!shareAsset) {
+      shareAsset = await createResultShareAsset(getSource());
+      setAsset(shareAsset);
+    }
+
+    await shareToInstagram({
+      file: shareAsset.file,
+      text: getSocialText(),
+      shareUrl: normalizedShareUrl,
+    });
   }
 
   return (
@@ -322,25 +331,22 @@ export function ResultSharePanel({
         </button>
       </div>
 
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          onClick={handleShareOnX}
-          className="flex h-10 items-center justify-center rounded-full bg-black px-3 text-[11px] font-black text-white"
-        >
-          X'te paylaş
-        </button>
-
-        <button
-          type="button"
-          onClick={() =>
-            void handleCopyLink()
-          }
-          className="flex h-10 items-center justify-center rounded-full border border-border bg-white px-3 text-[11px] font-black text-muted-foreground"
-        >
-          Bağlantıyı kopyala
-        </button>
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <button type="button" onClick={() => handleShareChannel("x")} className="flex h-10 items-center justify-center rounded-full bg-black px-3 text-[11px] font-black text-white">X</button>
+        <button type="button" onClick={() => handleShareChannel("linkedin")} className="flex h-10 items-center justify-center rounded-full border border-sky-200 bg-sky-50 px-3 text-[11px] font-black text-sky-700">LinkedIn</button>
+        <button type="button" onClick={() => handleShareChannel("whatsapp")} className="flex h-10 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 px-3 text-[11px] font-black text-emerald-700">WhatsApp</button>
+        <button type="button" onClick={() => handleShareChannel("facebook")} className="flex h-10 items-center justify-center rounded-full border border-blue-200 bg-blue-50 px-3 text-[11px] font-black text-blue-700">Facebook</button>
+        <button type="button" onClick={() => handleShareChannel("telegram")} className="flex h-10 items-center justify-center rounded-full border border-cyan-200 bg-cyan-50 px-3 text-[11px] font-black text-cyan-700">Telegram</button>
+        <button type="button" onClick={() => void handleInstagramShare()} className="flex h-10 items-center justify-center rounded-full border border-pink-200 bg-pink-50 px-3 text-[11px] font-black text-pink-700">Instagram</button>
       </div>
+
+      <button
+        type="button"
+        onClick={() => void handleCopyLink()}
+        className="mt-2 flex h-10 w-full items-center justify-center rounded-full border border-border bg-white px-3 text-[11px] font-black text-muted-foreground"
+      >
+        Bağlantıyı kopyala
+      </button>
     </section>
   );
 }
