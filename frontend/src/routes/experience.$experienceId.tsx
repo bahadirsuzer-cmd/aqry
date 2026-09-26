@@ -2251,6 +2251,32 @@ function CompletionScreen({
   );
 }
 
+function getCompatibilityShareText(experienceTitle: string) {
+  const normalized = experienceTitle.trim().toLocaleLowerCase("tr-TR");
+
+  if (normalized === "red flag radarım senden geçecek mi?") {
+    return "Benim red flaglerim bunlar. Sence ne kadar uyumluyuz? 👀\n\nSen de kendi red flaglerini paylaş ❤️";
+  }
+
+  if (normalized === "benimle ne kadar uyumlusun?") {
+    return "Benim flört ayarlarım böyle 😏 Sence ne kadar uyumluyuz?\n\nSen de cevapla, bakalım aynı frekansta mıyız ✨";
+  }
+
+  if (normalized === "ilk buluşmada anlaşır mıydık?") {
+    return "İlk buluşmada anlaşır mıydık? 👀 Ben seçimlerimi yaptım.\n\nSen de cevapla, uyumumuz kaç çıkacak görelim ☕️";
+  }
+
+  if (normalized === "gece 02:00 uyum testi") {
+    return "Gece 02:00 cevaplarım bunlar 🌙 Sen olsan ne seçerdin?\n\nCevapla, gece modu uyumumuz kaç görelim 👀";
+  }
+
+  if (normalized === "green flag uyumumuz kaç?") {
+    return "Benim green flaglerim bunlar 💚 Sence ilişkide aynı şeylere mi önem veriyoruz?\n\nSen de kendi green flaglerini paylaş ✨";
+  }
+
+  return "Ben seçimlerimi yaptım. Sence ne kadar uyumluyuz? 👀\n\nSen de cevapla, uyumumuz kaç çıkacak görelim ❤️";
+}
+
 function ResultScreen({
   experienceId,
   score,
@@ -2307,7 +2333,7 @@ function ResultScreen({
       : isSpectrumTest
         ? `“${experienceTitle}” sonucum %${score} çıktı. Seninki kaç? 👀`
         : experienceType === "compatibility"
-          ? "Benim red flaglerim bunlar. Sence ne kadar uyumluyuz? 👀\n\nSen de kendi red flaglerini paylaş ❤️"
+          ? getCompatibilityShareText(experienceTitle)
           : `“${experienceTitle}” testinde %${score} yaptım. Beni geçebilir misin? 👀`;
 
   function copyResultLink() {
