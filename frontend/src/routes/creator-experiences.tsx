@@ -813,11 +813,6 @@ function ExperienceListItem({
       {formatMoney(
         experience.revenue.giftAmountMinor,
         experience.revenue.currency,
-      )}{" "}
-      · Offer{" "}
-      {formatMoney(
-        experience.revenue.offerAmountMinor,
-        experience.revenue.currency,
       )}
     </p>
   </div>
