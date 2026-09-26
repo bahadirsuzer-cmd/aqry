@@ -11,6 +11,10 @@ import {
   loadAnonymousInbox,
   type AnonymousInboxItem,
 } from "@/services/anonymousInbox";
+import {
+  getCreatorNotificationPreferences,
+  updateCreatorNotificationPreferences,
+} from "@/services/notificationPreferences";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
@@ -23,6 +27,7 @@ function CreatorNotificationsPage() {
   const [creatorId, setCreatorId] = useState<string | null>(null);
   const [items, setItems] = useState<AnonymousInboxItem[]>([]);
   const [enabled, setEnabled] = useState(false);
+  const [emailEnabled, setEmailEnabled] = useState(true);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -41,15 +46,17 @@ function CreatorNotificationsPage() {
           return;
         }
 
-        const [subscription, inbox] = await Promise.all([
+        const [subscription, inbox, preferences] = await Promise.all([
           getExistingPushSubscription().catch(() => null),
           loadAnonymousInbox(creator.id),
+          getCreatorNotificationPreferences(creator.id),
         ]);
 
         if (cancelled) return;
 
         setCreatorId(creator.id);
         setEnabled(Boolean(subscription));
+        setEmailEnabled(preferences.emailEnabled);
         setItems(inbox);
         setSupport(getPushSupport());
       } catch (loadError) {
@@ -81,6 +88,10 @@ function CreatorNotificationsPage() {
       setMessage(null);
 
       await enableCreatorPushNotifications(creatorId);
+      await updateCreatorNotificationPreferences(
+        creatorId,
+        { pushEnabled: true },
+      );
       setEnabled(true);
       setSupport(getPushSupport());
       setMessage("Bildirimler açık. Yeni anonim soru ve itiraflar cihazına gelecek.");
@@ -105,6 +116,12 @@ function CreatorNotificationsPage() {
       setMessage(null);
 
       await disableCreatorPushNotifications();
+      if (creatorId) {
+        await updateCreatorNotificationPreferences(
+          creatorId,
+          { pushEnabled: false },
+        );
+      }
       setEnabled(false);
       setMessage("Bu cihaz için push bildirimleri kapatıldı.");
     } catch (disableError) {
@@ -112,6 +129,36 @@ function CreatorNotificationsPage() {
         disableError instanceof Error
           ? disableError.message
           : "Bildirimler kapatılamadı.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function toggleEmail() {
+    if (!creatorId || busy) return;
+
+    try {
+      setBusy(true);
+      setError(null);
+      setMessage(null);
+
+      const next = !emailEnabled;
+      await updateCreatorNotificationPreferences(
+        creatorId,
+        { emailEnabled: next },
+      );
+      setEmailEnabled(next);
+      setMessage(
+        next
+          ? "E-posta yedeği açık. Push ulaşmazsa AQRYO sana e-posta ile haber verecek."
+          : "E-posta bildirimleri kapatıldı.",
+      );
+    } catch (toggleError) {
+      setError(
+        toggleError instanceof Error
+          ? toggleError.message
+          : "E-posta ayarı güncellenemedi.",
       );
     } finally {
       setBusy(false);
@@ -258,10 +305,48 @@ function CreatorNotificationsPage() {
         </div>
 
         <section className="mt-5 rounded-[28px] border border-border bg-white p-6 sm:p-8">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-[13px] font-black">E-posta yedeği</p>
+              <p className="mt-2 max-w-[620px] text-[13px] leading-6 text-muted-foreground">
+                Push bildirimi bu cihazda çalışmıyorsa AQRYO hesabındaki e-posta adresine haber verir.
+                Kısa sürede gelen birden fazla mesaj tek tek e-posta yağmuruna dönüşmez.
+              </p>
+            </div>
+
+            <span
+              className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-black ${
+                emailEnabled
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-zinc-100 text-zinc-600"
+              }`}
+            >
+              {emailEnabled ? "AÇIK" : "KAPALI"}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void toggleEmail()}
+            className="mt-5 h-11 w-full rounded-full border border-border bg-white px-5 text-[13px] font-black disabled:opacity-40 sm:w-auto"
+          >
+            {emailEnabled
+              ? "E-posta bildirimlerini kapat"
+              : "E-posta bildirimlerini aç"}
+          </button>
+
+          <p className="mt-3 text-[11px] font-semibold leading-5 text-muted-foreground">
+            İlk yeni mesajda e-posta gider. Sonraki 15 dakika içindeki mesajlar gruplanır;
+            yeni bir tetikleyici geldiğinde toplu sayı ile haber verilir.
+          </p>
+        </section>
+
+        <section className="mt-5 rounded-[28px] border border-border bg-white p-6 sm:p-8">
           <p className="text-[13px] font-black">Nasıl çalışıyor?</p>
           <div className="mt-5 grid gap-3 sm:grid-cols-3">
             <InfoCard number="1" title="Takipçi yazar" text="Anonim soru veya itiraf gönderilir." />
-            <InfoCard number="2" title="AQRYO haber verir" text="Creator’ın kayıtlı cihazına push gider." />
+            <InfoCard number="2" title="AQRYO haber verir" text="Önce push dener; push yoksa e-posta yedeği devreye girer." />
             <InfoCard number="3" title="Creator cevaplar" text="Bildirime dokunur, cevabı görsel olarak paylaşır." />
           </div>
         </section>
