@@ -520,7 +520,7 @@ const totalStarts = useMemo(
             Experience’larım
           </h1>
 
-          <p className="text-[10px] font-black uppercase tracking-[0.09em] text-muted-foreground">
+          <p className="text-[14px] font-black uppercase tracking-[0.09em] text-muted-foreground">
             Aktif:{" "}
             <span className="text-foreground">
               {activeExperienceCount}
@@ -560,11 +560,11 @@ const totalStarts = useMemo(
         <section className="mt-4 overflow-hidden rounded-[22px] border border-border bg-white shadow-[0_14px_45px_rgba(22,12,34,0.045)]">
           <div className="flex flex-col gap-2 border-b border-border p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
             <div className="flex min-w-0 items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-[0.08em]">
+              <span className="text-[14px] font-black uppercase tracking-[0.08em]">
                 Tüm Experience’lar
               </span>
 
-              <span className="rounded-full bg-background px-2 py-1 text-[8px] font-black text-muted-foreground">
+              <span className="rounded-full bg-background px-2 py-1 text-[12px] font-black text-muted-foreground">
                 {filteredExperiences.length}
               </span>
             </div>
@@ -579,7 +579,7 @@ const totalStarts = useMemo(
                   )
                 }
                 placeholder="Experience ara"
-                className="col-span-2 h-9 min-w-0 rounded-[11px] border border-border bg-background px-3 text-[10px] font-semibold outline-none transition placeholder:text-muted-foreground focus:border-primary sm:col-span-1 sm:w-52"
+                className="col-span-2 h-9 min-w-0 rounded-[11px] border border-border bg-background px-3 text-[14px] font-semibold outline-none transition placeholder:text-muted-foreground focus:border-primary sm:col-span-1 sm:w-52"
               />
 
               <select
@@ -591,7 +591,7 @@ const totalStarts = useMemo(
                   )
                 }
                 aria-label="Experience durum filtresi"
-                className="h-9 rounded-[11px] border border-border bg-background px-3 text-[9px] font-bold outline-none transition focus:border-primary"
+                className="h-9 rounded-[11px] border border-border bg-background px-3 text-[13px] font-bold outline-none transition focus:border-primary"
               >
                 <option value="all">
                   Tüm durumlar
@@ -619,7 +619,7 @@ const totalStarts = useMemo(
                   )
                 }
                 aria-label="Experience sıralaması"
-                className="h-9 rounded-[11px] border border-border bg-background px-3 text-[9px] font-bold outline-none transition focus:border-primary"
+                className="h-9 rounded-[11px] border border-border bg-background px-3 text-[13px] font-bold outline-none transition focus:border-primary"
               >
                 <option value="newest">
                   En yeni
@@ -674,7 +674,7 @@ const totalStarts = useMemo(
             !errorMessage &&
             experiences.length > 0 && (
               <div>
-                <div className="hidden grid-cols-[minmax(220px,1fr)_82px_78px_78px_78px_110px_108px_24px] items-center gap-3 border-b border-border bg-[#fafafa] px-4 py-2.5 text-[7px] font-black uppercase tracking-[0.06em] text-muted-foreground lg:grid">
+                <div className="hidden grid-cols-[minmax(220px,1fr)_82px_78px_78px_78px_110px_108px_24px] items-center gap-3 border-b border-border bg-[#fafafa] px-4 py-2.5 text-[11px] font-black uppercase tracking-[0.06em] text-muted-foreground lg:grid">
                   <span>Experience</span>
                   <span>Durum</span>
                   <span>Görüntüleme</span>
@@ -687,7 +687,7 @@ const totalStarts = useMemo(
 
                 {filteredExperiences.length === 0 && (
                   <div className="p-12 text-center">
-                    <p className="text-xs font-black">
+                    <p className="text-[16px] font-black">
                       Sonuç bulunamadı
                     </p>
 
@@ -749,18 +749,18 @@ function ExperienceListItem({
         <div className="flex items-center justify-between gap-3 px-3 py-3.5 sm:px-4 lg:grid lg:grid-cols-[minmax(220px,1fr)_82px_78px_78px_78px_110px_108px_24px] lg:gap-3 lg:py-3">
   <div className="min-w-0">
     <div className="flex items-center gap-2.5">
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px] bg-foreground text-[9px] font-black text-background">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px] bg-foreground text-[13px] font-black text-background">
         {getExperienceInitials(
           experience.title,
         )}
       </span>
 
       <div className="min-w-0">
-        <p className="truncate text-xs font-black sm:text-[13px]">
+        <p className="truncate text-[16px] font-black sm:text-[13px]">
           {experience.title}
         </p>
 
-        <p className="mt-0.5 truncate text-[7px] font-black uppercase tracking-[0.08em] text-muted-foreground">
+        <p className="mt-0.5 truncate text-[11px] font-black uppercase tracking-[0.08em] text-muted-foreground">
           {formatExperienceType(
             experience.type,
             experience.testMode,
@@ -793,7 +793,7 @@ function ExperienceListItem({
     {experience.stats.totalCompletions}
   </p>
 
-  <p className="hidden text-[8px] font-bold text-muted-foreground lg:block">
+  <p className="hidden text-[12px] font-bold text-muted-foreground lg:block">
     {experience.stats.latestCompletionAt
       ? formatShortDate(
           experience.stats.latestCompletionAt,
@@ -818,7 +818,7 @@ function ExperienceListItem({
   </div>
 
   <span
-    className={`text-sm font-black transition ${
+    className={`text-[17px] font-black transition ${
       selected
         ? "rotate-180 text-primary"
         : "text-muted-foreground"
@@ -1840,21 +1840,21 @@ async function toggleExperienceStatus() {
         <>
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-start gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[13px] bg-foreground text-[10px] font-black text-background">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[13px] bg-foreground text-[14px] font-black text-background">
                 {getExperienceInitials(
                   experience.title,
                 )}
               </div>
 
               <div className="min-w-0">
-                <p className="text-[7px] font-black uppercase tracking-[0.09em] text-primary">
+                <p className="text-[11px] font-black uppercase tracking-[0.09em] text-primary">
                   {formatExperienceType(
                     experience.type,
                     experience.testMode,
                   )}
                 </p>
 
-                <h2 className="mt-1 text-sm font-black leading-5 sm:text-base">
+                <h2 className="mt-1 text-[17px] font-black leading-5 sm:text-base">
                   {experience.title}
                 </h2>
               </div>
@@ -1902,7 +1902,7 @@ async function toggleExperienceStatus() {
       {(experience.paused_by === "moderation" ||
         experience.moderated_at) && (
         <div className="mt-4 rounded-[14px] border border-red-200 bg-red-50 px-4 py-3">
-          <p className="text-[9px] font-black text-red-700">
+          <p className="text-[13px] font-black text-red-700">
             Bu Experience AQRYO moderasyonu tarafından durduruldu.
           </p>
 
@@ -1920,7 +1920,7 @@ async function toggleExperienceStatus() {
           href={experienceUrl}
           target="_blank"
           rel="noreferrer"
-          className="flex h-10 items-center justify-center rounded-full border border-border bg-white px-4 text-[9px] font-black text-foreground transition hover:border-primary hover:text-primary"
+          className="flex h-10 items-center justify-center rounded-full border border-border bg-white px-4 text-[13px] font-black text-foreground transition hover:border-primary hover:text-primary"
         >
           Gör ↗
         </a>
@@ -1929,7 +1929,7 @@ async function toggleExperienceStatus() {
           type="button"
           disabled={editLoading}
           onClick={editExperience}
-          className="flex h-10 items-center justify-center rounded-full border border-border bg-white px-4 text-[9px] font-black text-foreground transition enabled:hover:border-primary enabled:hover:text-primary disabled:cursor-wait disabled:opacity-60"
+          className="flex h-10 items-center justify-center rounded-full border border-border bg-white px-4 text-[13px] font-black text-foreground transition enabled:hover:border-primary enabled:hover:text-primary disabled:cursor-wait disabled:opacity-60"
         >
           {editLoading
             ? "İçerik açılıyor..."
@@ -1939,7 +1939,7 @@ async function toggleExperienceStatus() {
         <button
           type="button"
           onClick={openParticipants}
-          className={`flex h-10 items-center justify-center rounded-full border px-4 text-[9px] font-black transition ${
+          className={`flex h-10 items-center justify-center rounded-full border px-4 text-[13px] font-black transition ${
             panel === "participants"
               ? "border-primary bg-primary text-white"
               : "border-border bg-white text-foreground hover:border-primary hover:text-primary"
@@ -1962,7 +1962,7 @@ async function toggleExperienceStatus() {
               Boolean(experience.moderated_at)
             }
             onClick={toggleExperienceStatus}
-            className={`flex h-10 items-center justify-center rounded-full border px-4 text-[9px] font-black transition disabled:cursor-not-allowed disabled:opacity-45 ${
+            className={`flex h-10 items-center justify-center rounded-full border px-4 text-[13px] font-black transition disabled:cursor-not-allowed disabled:opacity-45 ${
               experience.paused_by === "moderation" ||
               experience.moderated_at
                 ? "border-red-200 bg-red-50 text-red-700"
@@ -1988,7 +1988,7 @@ async function toggleExperienceStatus() {
             experience.status !== "published"
           }
           onClick={openSharePanel}
-          className={`flex h-10 items-center justify-center rounded-full px-4 text-[9px] font-black transition disabled:cursor-not-allowed disabled:opacity-35 ${
+          className={`flex h-10 items-center justify-center rounded-full px-4 text-[13px] font-black transition disabled:cursor-not-allowed disabled:opacity-35 ${
             panel === "share"
               ? "bg-primary text-white"
               : "bg-black text-white hover:bg-primary"
@@ -2004,7 +2004,7 @@ async function toggleExperienceStatus() {
         <div className="mt-3 rounded-[18px] border border-primary/15 bg-white p-4">
           <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:items-start">
             <div>
-              <p className="text-[8px] font-black uppercase tracking-[0.09em] text-primary">
+              <p className="text-[12px] font-black uppercase tracking-[0.09em] text-primary">
                 Paylaş
               </p>
 
@@ -2029,7 +2029,7 @@ async function toggleExperienceStatus() {
                   onClick={() => {
                     void copyExperienceLink();
                   }}
-                  className="h-9 shrink-0 rounded-full bg-black px-4 text-[8px] font-black text-white transition hover:bg-primary"
+                  className="h-9 shrink-0 rounded-full bg-black px-4 text-[12px] font-black text-white transition hover:bg-primary"
                 >
                   {linkCopied
                     ? "Kopyalandı ✓"
@@ -2041,7 +2041,7 @@ async function toggleExperienceStatus() {
                 <button
                   type="button"
                   onClick={shareOnX}
-                  className="flex h-10 items-center justify-center rounded-full bg-black px-4 text-[9px] font-black text-white transition hover:bg-primary"
+                  className="flex h-10 items-center justify-center rounded-full bg-black px-4 text-[13px] font-black text-white transition hover:bg-primary"
                 >
                   X’te paylaş
                 </button>
@@ -2049,7 +2049,7 @@ async function toggleExperienceStatus() {
                 <button
                   type="button"
                   onClick={shareOnWhatsApp}
-                  className="flex h-10 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 px-4 text-[9px] font-black text-emerald-700 transition hover:border-emerald-300"
+                  className="flex h-10 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 px-4 text-[13px] font-black text-emerald-700 transition hover:border-emerald-300"
                 >
                   WhatsApp
                 </button>
@@ -2057,7 +2057,7 @@ async function toggleExperienceStatus() {
                 <button
                   type="button"
                   onClick={shareOnTelegram}
-                  className="flex h-10 items-center justify-center rounded-full border border-sky-200 bg-sky-50 px-4 text-[9px] font-black text-sky-700 transition hover:border-sky-300"
+                  className="flex h-10 items-center justify-center rounded-full border border-sky-200 bg-sky-50 px-4 text-[13px] font-black text-sky-700 transition hover:border-sky-300"
                 >
                   Telegram
                 </button>
@@ -2065,7 +2065,7 @@ async function toggleExperienceStatus() {
             </div>
 
             <div className="rounded-[16px] border border-border bg-[#fafafa] p-4 text-center">
-              <p className="text-[8px] font-black uppercase tracking-[0.08em] text-muted-foreground">
+              <p className="text-[12px] font-black uppercase tracking-[0.08em] text-muted-foreground">
                 QR kod
               </p>
 
@@ -2085,7 +2085,7 @@ async function toggleExperienceStatus() {
                 href={qrImageUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-3 inline-flex h-9 items-center justify-center rounded-full border border-border bg-white px-4 text-[8px] font-black transition hover:border-primary hover:text-primary"
+                className="mt-3 inline-flex h-9 items-center justify-center rounded-full border border-border bg-white px-4 text-[12px] font-black transition hover:border-primary hover:text-primary"
               >
                 QR’ı aç ↗
               </a>
@@ -2098,25 +2098,25 @@ async function toggleExperienceStatus() {
         <div className="mt-3 rounded-[16px] border border-border bg-[#fafafa] p-3 sm:p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[10px] font-black">
+              <p className="text-[14px] font-black">
                 Katılımcılar
               </p>
 
-              <p className="mt-1 text-[8px] text-muted-foreground">
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 En yeni tamamlamalar önce gösterilir.
               </p>
             </div>
 
             {!participantsLoading &&
               !participantsError && (
-                <span className="rounded-full bg-white px-3 py-1 text-[8px] font-black text-primary">
+                <span className="rounded-full bg-white px-3 py-1 text-[12px] font-black text-primary">
                   {participants.length}
                 </span>
               )}
           </div>
 
           {participantsLoading && (
-            <p className="py-8 text-center text-[9px] font-bold text-muted-foreground">
+            <p className="py-8 text-center text-[13px] font-bold text-muted-foreground">
               Katılımcılar yükleniyor...
             </p>
           )}
@@ -2124,7 +2124,7 @@ async function toggleExperienceStatus() {
           {!participantsLoading &&
             participantsError && (
               <div className="mt-3 rounded-[13px] border border-red-200 bg-red-50 p-3">
-                <p className="text-[9px] font-bold text-red-700">
+                <p className="text-[13px] font-bold text-red-700">
                   {participantsError}
                 </p>
               </div>
@@ -2133,7 +2133,7 @@ async function toggleExperienceStatus() {
           {!participantsLoading &&
             !participantsError &&
             participants.length === 0 && (
-              <p className="py-8 text-center text-[9px] font-bold text-muted-foreground">
+              <p className="py-8 text-center text-[13px] font-bold text-muted-foreground">
                 Henüz tamamlayan yok.
               </p>
             )}
@@ -2165,20 +2165,20 @@ async function toggleExperienceStatus() {
                           className="grid w-full grid-cols-[minmax(0,1fr)_70px_100px_24px] items-center gap-2 px-3 py-3 text-left"
                         >
                           <div className="min-w-0">
-                            <p className="truncate text-[10px] font-black">
+                            <p className="truncate text-[14px] font-black">
                               Anonim #
                               {participant.participant_key
                                 .slice(0, 6)
                                 .toUpperCase()}
                             </p>
 
-                            <p className="mt-0.5 truncate text-[8px] text-muted-foreground">
+                            <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
                               {participant.result_key ??
                                 "Sonuç"}
                             </p>
                           </div>
 
-                          <p className="text-sm font-black">
+                          <p className="text-[17px] font-black">
                             {experience.type ===
                             "story"
                               ? "Tamamlandı"
@@ -2191,14 +2191,14 @@ async function toggleExperienceStatus() {
                                   : `%${participant.score}`}
                           </p>
 
-                          <p className="text-right text-[8px] font-bold text-muted-foreground">
+                          <p className="text-right text-[12px] font-bold text-muted-foreground">
                             {formatFullDate(
                               participant.completed_at,
                             )}
                           </p>
 
                           <span
-                            className={`text-xs font-black transition ${
+                            className={`text-[16px] font-black transition ${
                               open
                                 ? "rotate-180 text-primary"
                                 : "text-muted-foreground"
@@ -2210,7 +2210,7 @@ async function toggleExperienceStatus() {
 
                         {open && (
                           <div className="border-t border-border bg-[#fafafa] p-3">
-                            <p className="text-[8px] font-black uppercase tracking-[0.07em] text-primary">
+                            <p className="text-[12px] font-black uppercase tracking-[0.07em] text-primary">
                               Verilen cevaplar
                             </p>
 
@@ -2247,19 +2247,19 @@ async function toggleExperienceStatus() {
                                       key={`${participant.participant_key}-${answerIndex}`}
                                       className="rounded-[11px] border border-border bg-white px-3 py-3"
                                     >
-                                      <p className="text-[7px] font-black uppercase tracking-[0.06em] text-muted-foreground">
+                                      <p className="text-[11px] font-black uppercase tracking-[0.06em] text-muted-foreground">
                                         Soru{" "}
                                         {answerIndex +
                                           1}
                                       </p>
 
-                                      <p className="mt-1.5 text-[10px] font-black leading-4 text-foreground">
+                                      <p className="mt-1.5 text-[14px] font-black leading-4 text-foreground">
                                         {question?.text ??
                                           `Soru ${answerIndex + 1}`}
                                       </p>
 
                                       <div className="mt-2 rounded-[9px] bg-primary/[0.055] px-3 py-2">
-                                        <p className="text-[7px] font-black uppercase tracking-[0.06em] text-primary">
+                                        <p className="text-[11px] font-black uppercase tracking-[0.06em] text-primary">
                                           Katılımcının cevabı
                                         </p>
 
@@ -2309,7 +2309,7 @@ function SummaryMetric({
 }) {
   return (
     <article className="flex min-w-0 flex-col items-center justify-center rounded-[13px] border border-border bg-white px-1 py-3 text-center shadow-[0_5px_16px_rgba(22,12,34,0.025)] sm:min-h-[72px] sm:px-3">
-      <p className="w-full truncate text-[6px] font-black uppercase tracking-[0.04em] text-muted-foreground sm:text-[7px]">
+      <p className="w-full truncate text-[14px] font-black uppercase tracking-[0.04em] text-muted-foreground sm:text-[11px]">
         {label}
       </p>
 
@@ -2354,7 +2354,7 @@ function StatusBadge({
 
   return (
     <span
-      className={`w-fit shrink-0 rounded-full px-2.5 py-1 text-[7px] font-black ${className}`}
+      className={`w-fit shrink-0 rounded-full px-2.5 py-1 text-[11px] font-black ${className}`}
     >
       {label}
     </span>
@@ -2369,11 +2369,11 @@ function MobileMetric({
 }) {
   return (
     <div className="rounded-[11px] border border-border bg-white px-2 py-2 text-center">
-      <p className="text-[6px] font-black uppercase tracking-[0.05em] text-muted-foreground">
+      <p className="text-[14px] font-black uppercase tracking-[0.05em] text-muted-foreground">
         {label}
       </p>
 
-      <p className="mt-1 text-xs font-black">
+      <p className="mt-1 text-[16px] font-black">
         {value}
       </p>
     </div>
@@ -2389,11 +2389,11 @@ function DetailMetric({
 }) {
   return (
     <div className="rounded-[11px] border border-border bg-[#fafafa] px-2 py-2.5 text-center">
-      <p className="text-[6px] font-black uppercase tracking-[0.05em] text-muted-foreground">
+      <p className="text-[14px] font-black uppercase tracking-[0.05em] text-muted-foreground">
         {label}
       </p>
 
-      <p className="mt-1 text-sm font-black">
+      <p className="mt-1 text-[17px] font-black">
         {value}
       </p>
     </div>
@@ -2411,7 +2411,7 @@ function EmptyExperiences() {
         Henüz Experience yok
       </h2>
 
-      <p className="mx-auto mt-1 max-w-sm text-[10px] leading-5 text-muted-foreground">
+      <p className="mx-auto mt-1 max-w-sm text-[14px] leading-6 text-muted-foreground">
         İlk Experience’ını
         yayınladığında burada
         görünecek.
@@ -2419,7 +2419,7 @@ function EmptyExperiences() {
 
       <Link
         to="/creator-studio"
-        className="mx-auto mt-4 flex h-10 w-full max-w-[210px] items-center justify-center rounded-full bg-black text-[10px] font-black text-white transition hover:bg-primary"
+        className="mx-auto mt-4 flex h-10 w-full max-w-[210px] items-center justify-center rounded-full bg-black text-[14px] font-black text-white transition hover:bg-primary"
       >
         Yeni Experience
       </Link>
