@@ -1,0 +1,20 @@
+{
+  "name": "AQRYO",
+  "short_name": "AQRYO",
+  "start_url": "/creator-studio",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "/aqryo-q.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/aqryo-q.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
