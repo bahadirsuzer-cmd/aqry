@@ -412,7 +412,7 @@ const STEP_REASONS: Record<string, readonly Reason[]> = {
 export function localizedPuzzleSteps(locale: AqryoLocale, puzzle: ViralPuzzle): string[] {
   const reasons = STEP_REASONS[puzzle.family];
   if (!reasons || reasons.length !== puzzle.steps.length) {
-    throw new Error(`Missing solution mapping: ${puzzle.family}`);
+    return puzzle.steps;
   }
   return puzzle.steps.map(
     (expression, index) => `${REASONS[locale][reasons[index]]}: ${expression}`,

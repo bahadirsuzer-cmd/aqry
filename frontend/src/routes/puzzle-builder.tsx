@@ -26,7 +26,7 @@ function pickDebateTemplate(previous?: number) {
 function debateSprite(templateId: number) {
   const zero = templateId - 1;
   return {
-    src: `/puzzle/who-is-right/kim-hakli-row-${Math.floor(zero / 10) + 1}.webp`,
+    src: `/puzzle/who-is-right/kim-hakli-set-${Math.floor(zero / 10) + 1}.webp`,
     column: zero % 10,
   };
 }
@@ -547,7 +547,6 @@ function PuzzleBuilderPage() {
     ["geometry",t("geometry"),copy.descriptions.geometry],
     ["count",t("count"),copy.descriptions.count],
     ["algebra",t("algebra"),copy.descriptions.algebra],
-    ["area",t("area"),copy.descriptions.area],
     ["pattern",patternCopy(locale).label,patternCopy(locale).description],
   ];
 
