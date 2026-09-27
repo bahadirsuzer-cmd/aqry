@@ -14,7 +14,54 @@ type PuzzleKind = ViralKind;
 type Presentation = "clean" | "debate";
 type Puzzle = ViralPuzzle & { id: string };
 
-async function puzzlePng(source: string, name: string): Promise<File> {
+const DEBATE_TEMPLATE_IDS = Array.from({ length: 38 }, (_, index) => index + 1)
+  .filter((id) => id !== 34);
+const COMPACT_DEBATE_TEMPLATES = new Set([7,8,10,13,14,15,16,17,18,19,25]);
+
+function pickDebateTemplate(previous?: number) {
+  const pool = DEBATE_TEMPLATE_IDS.filter((id) => id !== previous);
+  return pool[Math.floor(Math.random() * pool.length)] ?? 1;
+}
+
+function debateSprite(templateId: number) {
+  const zero = templateId - 1;
+  return {
+    src: `/puzzle/who-is-right/kim-hakli-row-${Math.floor(zero / 10) + 1}.webp`,
+    column: zero % 10,
+  };
+}
+
+async function loadDebateTemplate(templateId: number) {
+  const { src, column } = debateSprite(templateId);
+  const image = new Image();
+  await new Promise<void>((resolve, reject) => {
+    image.onload = () => resolve();
+    image.onerror = () => reject(new Error("Debate template could not be loaded"));
+    image.src = src;
+  });
+  const canvas = document.createElement("canvas");
+  canvas.width = 1080;
+  canvas.height = 1350;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("Canvas unavailable");
+  context.drawImage(image, column * 432, 0, 432, 540, 0, 0, 1080, 1350);
+  return canvas.toDataURL("image/jpeg", 0.94);
+}
+
+function puzzleQuestionRows(diagram: string) {
+  const decode = (value: string) => value
+    .replaceAll("&amp;", "&")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&#39;", "'")
+    .replaceAll("&quot;", '"');
+  return [...diagram.matchAll(/<text[^>]*>(.*?)<\/text>/g)]
+    .map((match) => decode(match[1].replace(/<[^>]+>/g, "").trim()))
+    .filter(Boolean)
+    .slice(0, 4);
+}
+
+async function puzzlePng(source: string, name: string, fourByFive = false): Promise<File> {
   const svgUrl = URL.createObjectURL(new Blob([source], { type: "image/svg+xml;charset=utf-8" }));
   try {
     const image = new Image();
@@ -25,7 +72,7 @@ async function puzzlePng(source: string, name: string): Promise<File> {
     });
     const canvas = document.createElement("canvas");
     canvas.width = 1080;
-    canvas.height = 1440;
+    canvas.height = fourByFive ? 1350 : 1440;
     const context = canvas.getContext("2d");
     if (!context) throw new Error("Canvas unavailable");
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
@@ -293,6 +340,8 @@ function PuzzleBuilderPage() {
   const [copied,setCopied]=useState(false);
   const [sharing,setSharing]=useState(false);
   const [shareImage,setShareImage]=useState<{key:string;file:File}|null>(null);
+  const [debateTemplate,setDebateTemplate]=useState(()=>pickDebateTemplate());
+  const [debateImage,setDebateImage]=useState<string|null>(null);
   const previewRef=useRef<HTMLDivElement|null>(null);
   const svgRef=useRef<SVGSVGElement|null>(null);
 
@@ -313,6 +362,18 @@ function PuzzleBuilderPage() {
     try { window.localStorage.setItem(ROTATION_STORAGE_KEY,JSON.stringify(recent)); } catch { /* Storage may be unavailable. */ }
   },[recent]);
 
+  useEffect(()=>{
+    if(presentation!=="debate" || (kind!=="math" && kind!=="algebra")){
+      setDebateImage(null);
+      return;
+    }
+    let cancelled=false;
+    void loadDebateTemplate(debateTemplate)
+      .then((dataUrl)=>{ if(!cancelled) setDebateImage(dataUrl); })
+      .catch((error)=>{ if(!cancelled) console.error(error); });
+    return()=>{cancelled=true};
+  },[presentation,kind,debateTemplate]);
+
   function remember(next:Puzzle){
     setRecent((old)=>{
       const familyCount=VIRAL_FAMILIES.filter((family)=>family.kind===next.kind).length;
@@ -332,6 +393,7 @@ function PuzzleBuilderPage() {
 
   function regenerate(){
     const fresh=generate(kind,recent[kind]);
+    if(presentation==="debate") setDebateTemplate((current)=>pickDebateTemplate(current));
     setPuzzle(fresh);
     remember(fresh);
     setCopied(false);
@@ -343,12 +405,13 @@ function PuzzleBuilderPage() {
     return new XMLSerializer().serializeToString(svgRef.current);
   }
 
-  const shareImageKey = `${puzzle.id}:${presentation}:${locale}`;
+  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImage?"ready":"loading"}`;
   useEffect(() => {
     let cancelled = false;
+    if(presentation==="debate" && !debateImage) return;
     const source = serializeSvg();
     if (source) {
-      void puzzlePng(source, `aqryo-${puzzle.kind}-${puzzle.family}.png`)
+      void puzzlePng(source, `aqryo-${puzzle.kind}-${puzzle.family}.png`, presentation==="debate")
         .then((file) => { if (!cancelled) setShareImage({key:shareImageKey,file}); })
         .catch((error) => { if (!cancelled) console.error(error); });
     }
@@ -433,7 +496,7 @@ function PuzzleBuilderPage() {
                 {locale === "tr" ? "Görseli değiştir" : t("newQuestion")} ↻
               </button>
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate}/>
               </div>
             </div>
           </div>
@@ -449,9 +512,19 @@ function PuzzleBuilderPage() {
             </div>
 
             <p className="mt-7 text-[14px] font-black">{t("presentation")}</p>
-            <div className="mt-2 grid grid-cols-2 gap-3">
+            <div className={`mt-2 grid gap-3 ${kind==="math"||kind==="algebra"?"grid-cols-2":"grid-cols-1"}`}>
               <Choice active={presentation==="clean"} title={t("clean")} description={copy.cleanDesc} onClick={()=>setPresentation("clean")}/>
-              <Choice active={presentation==="debate"} title={t("debate")} description={copy.debateDesc} onClick={()=>setPresentation("debate")}/>
+              {kind==="math"||kind==="algebra" ? (
+                <Choice
+                  active={presentation==="debate"}
+                  title={t("debate")}
+                  description={copy.debateDesc}
+                  onClick={()=>{
+                    setDebateTemplate((current)=>pickDebateTemplate(current));
+                    setPresentation("debate");
+                  }}
+                />
+              ) : null}
             </div>
 
             <button type="button" onClick={regenerate} className="mt-6 rounded-full bg-black px-7 py-4 text-[15px] font-black text-white">
@@ -491,11 +564,31 @@ function PuzzleBuilderPage() {
 
 const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
-  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale}
->(function PuzzleSvg({puzzle,presentation,copy,locale},ref){
+  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number}
+>(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate},ref){
   const answer = puzzle.answerKey ? UNDETERMINED_SHORT[locale] : puzzle.answer;
   const headline = headlineFor(locale,puzzle);
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
+  const questionRows = puzzleQuestionRows(puzzle.diagram);
+  const compactDebate = COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
+  if (presentation==="debate" && debateImage && (puzzle.kind==="math" || puzzle.kind==="algebra")) {
+    const longest = Math.max(...questionRows.map((row)=>row.length), 1);
+    const questionSize = longest > 28 ? 10 : longest > 20 ? 12 : 15;
+    const questionY = compactDebate ? 104 : 176;
+    const answerY = compactDebate ? 157 : 118;
+    return (
+      <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
+        <image href={debateImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
+        <text x="180" y={questionY - ((questionRows.length-1)*8)} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900" fill="#17101f">
+          {questionRows.map((row,index)=>(
+            <tspan key={index} x="180" dy={index===0?0:17}>{row}</tspan>
+          ))}
+        </text>
+        <text x="78" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={answer.length>10?11:19} fontWeight="900" fill="#17101f">{answer}</text>
+        <text x="282" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={puzzle.commonWrong.length>10?11:19} fontWeight="900" fill="#17101f">{puzzle.commonWrong}</text>
+      </svg>
+    );
+  }
   return (
     <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" className="w-full rounded-[24px]">
       <rect width="360" height="480" rx="28" fill="#fbfafc"/>

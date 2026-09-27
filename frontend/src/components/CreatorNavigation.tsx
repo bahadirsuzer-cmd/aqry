@@ -3,6 +3,7 @@ import { AQRYO_LANGUAGES, useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
 import { getCurrentCreator } from "@/services/auth";
 import { getUnreadAnonymousCount, getUnreadAnonymousItems, loadAnonymousInbox } from "@/services/anonymousInbox";
 import { useEffect, useRef, useState } from "react";
+import { updateCreatorNotificationPreferences } from "@/services/notificationPreferences";
 
 interface CreatorNavigationProps {
   onSignOut: () => void | Promise<void>;
@@ -12,8 +13,30 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { locale, setLocale, t } = useAqryoLocale();
   const [unreadCount, setUnreadCount] = useState(0);
+  const notificationCopy = locale === "tr"
+    ? {
+        questionTitle: "AQRYO · Yeni soru geldi",
+        confessionTitle: "AQRYO · Yeni itiraf geldi",
+        questionBody: "Gelen kutunda yeni bir anonim soru var.",
+        confessionBody: "Gelen kutunda yeni bir anonim itiraf var.",
+      }
+    : {
+        questionTitle: "AQRYO · New question",
+        confessionTitle: "AQRYO · New confession",
+        questionBody: "You have a new anonymous question in your inbox.",
+        confessionBody: "You have a new anonymous confession in your inbox.",
+      };
   const lastUnreadRef = useRef(0);
   const initializedInboxRef = useRef(false);
+
+  useEffect(() => {
+    void getCurrentCreator().then((creator) => {
+      if (!creator) return;
+      void updateCreatorNotificationPreferences(creator.id, { locale }).catch((error) => {
+        console.error("AQRYO notification locale could not be saved:", error);
+      });
+    });
+  }, [locale]);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,11 +60,13 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
         ) {
           const newest = unreadItems[0];
           new Notification(
-            newest.mode === "question" ? "AQRYO · Yeni soru geldi" : "AQRYO · Yeni itiraf geldi",
+            newest.mode === "question"
+              ? notificationCopy.questionTitle
+              : notificationCopy.confessionTitle,
             {
               body: newest.mode === "question"
-                ? "Gelen kutunda yeni bir anonim soru var."
-                : "Gelen kutunda yeni bir anonim itiraf var.",
+                ? notificationCopy.questionBody
+                : notificationCopy.confessionBody,
               icon: "/aqryo-logo.png",
             },
           );

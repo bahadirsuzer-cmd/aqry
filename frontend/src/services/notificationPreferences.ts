@@ -4,6 +4,7 @@ export type CreatorNotificationPreferences = {
   emailEnabled: boolean;
   pushEnabled: boolean;
   emailCooldownMinutes: number;
+  locale: string;
 };
 
 export async function getCreatorNotificationPreferences(
@@ -12,7 +13,7 @@ export async function getCreatorNotificationPreferences(
   const { data, error } = await supabase
     .from("creator_notification_preferences")
     .select(
-      "email_enabled,push_enabled,email_cooldown_minutes",
+      "email_enabled,push_enabled,email_cooldown_minutes,locale",
     )
     .eq("creator_id", creatorId)
     .maybeSingle();
@@ -27,6 +28,7 @@ export async function getCreatorNotificationPreferences(
       email_enabled: true,
       push_enabled: true,
       email_cooldown_minutes: 15,
+      locale: "en",
     };
 
     const { error: insertError } = await supabase
@@ -41,6 +43,7 @@ export async function getCreatorNotificationPreferences(
       emailEnabled: true,
       pushEnabled: true,
       emailCooldownMinutes: 15,
+      locale: "en",
     };
   }
 
@@ -51,6 +54,7 @@ export async function getCreatorNotificationPreferences(
       typeof data.email_cooldown_minutes === "number"
         ? data.email_cooldown_minutes
         : 15,
+    locale: typeof data.locale === "string" && data.locale ? data.locale : "en",
   };
 }
 
@@ -74,6 +78,10 @@ export async function updateCreatorNotificationPreferences(
   if (typeof updates.emailCooldownMinutes === "number") {
     payload.email_cooldown_minutes =
       updates.emailCooldownMinutes;
+  }
+
+  if (typeof updates.locale === "string" && updates.locale) {
+    payload.locale = updates.locale;
   }
 
   const { error } = await supabase

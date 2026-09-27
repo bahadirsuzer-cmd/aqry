@@ -38,20 +38,6 @@ Deno.serve(async (request) => {
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
-    const { data: vapidPrivateKey, error: vapidSecretError } =
-      await admin.rpc("get_aqryo_push_secret", {
-        secret_name: "VAPID_PRIVATE_KEY",
-      });
-
-    if (
-      vapidSecretError ||
-      typeof vapidPrivateKey !== "string" ||
-      !vapidPrivateKey
-    ) {
-      console.error("VAPID secret alınamadı:", vapidSecretError);
-      return json({ error: "push_not_configured" }, 503);
-    }
-
     const { data: event, error: eventError } = await admin
       .from("experience_events")
       .select("id,experience_id,metadata,created_at")
@@ -107,63 +93,117 @@ Deno.serve(async (request) => {
       throw subscriptionsError;
     }
 
-    if (!subscriptions?.length) {
-      return json({ delivered: false, subscriptions: 0 });
-    }
-
-    webpush.setVapidDetails(
-      vapidSubject,
-      vapidPublicKey,
-      vapidPrivateKey,
-    );
-
-    const payload = JSON.stringify({
-      title:
-        mode === "question"
-          ? "AQRYO · Yeni soru geldi"
-          : "AQRYO · Yeni itiraf geldi",
-      body:
-        mode === "question"
-          ? "Anonim gelen kutunda yeni bir soru var."
-          : "Anonim gelen kutunda yeni bir itiraf var.",
-      icon: "/aqryo-q.png",
-      badge: "/aqryo-q.png",
-      tag: `aqryo-anonymous-${event.id}`,
-      url: "/creator-inbox",
-    });
-
     let sent = 0;
 
-    for (const subscription of subscriptions) {
-      try {
-        await webpush.sendNotification(
-          {
-            endpoint: subscription.endpoint,
-            keys: {
-              p256dh: subscription.p256dh,
-              auth: subscription.auth,
-            },
-          },
-          payload,
-        );
-        sent += 1;
-      } catch (error) {
-        const statusCode =
-          typeof error === "object" &&
-          error &&
-          "statusCode" in error
-            ? Number((error as { statusCode?: unknown }).statusCode)
-            : 0;
+    const { data: preferenceRow } = await admin
+      .from("creator_notification_preferences")
+      .select(
+        "email_enabled,email_cooldown_minutes,last_email_sent_at,suppressed_email_count,locale",
+      )
+      .eq("creator_id", experience.creator_id)
+      .maybeSingle();
 
-        if (statusCode === 404 || statusCode === 410) {
-          await admin
-            .from("creator_push_subscriptions")
-            .delete()
-            .eq("endpoint", subscription.endpoint);
-          continue;
+    const preferences = preferenceRow ?? {
+      email_enabled: true,
+      email_cooldown_minutes: 15,
+      last_email_sent_at: null,
+      suppressed_email_count: 0,
+      locale: "en",
+    };
+
+    const locale = preferences.locale === "tr" ? "tr" : "en";
+    const copy = locale === "tr"
+      ? {
+          questionTitle: "AQRYO · Yeni soru geldi",
+          confessionTitle: "AQRYO · Yeni itiraf geldi",
+          questionBody: "Anonim gelen kutunda yeni bir soru var.",
+          confessionBody: "Anonim gelen kutunda yeni bir itiraf var.",
+          groupedSubject: (count: number) => `AQRYO’da ${count} yeni anonim mesajın var 👀`,
+          questionSubject: "AQRYO’da yeni anonim sorun var 👀",
+          confessionSubject: "AQRYO’da yeni anonim itirafın var 👀",
+          eyebrow: "Yeni anonim mesaj",
+          singleHeading: "Biri sana anonim bir mesaj bıraktı.",
+          groupedHeading: (count: number) => `${count} yeni mesajın var.`,
+          emailText: "Mesaj içeriğini e-postada göstermiyoruz. Gelen kutunu açıp istediğin cevabı görsel olarak paylaşabilirsin.",
+          openInbox: "Gelen kutusunu aç →",
+          footer: "AQRYO bildirim tercihlerini hesabındaki Bildirimler ekranından değiştirebilirsin.",
         }
+      : {
+          questionTitle: "AQRYO · New question",
+          confessionTitle: "AQRYO · New confession",
+          questionBody: "You have a new anonymous question in your inbox.",
+          confessionBody: "You have a new anonymous confession in your inbox.",
+          groupedSubject: (count: number) => `You have ${count} new anonymous messages on AQRYO 👀`,
+          questionSubject: "You have a new anonymous question on AQRYO 👀",
+          confessionSubject: "You have a new anonymous confession on AQRYO 👀",
+          eyebrow: "New anonymous message",
+          singleHeading: "Someone left you an anonymous message.",
+          groupedHeading: (count: number) => `You have ${count} new messages.`,
+          emailText: "We do not show the message content in email. Open your inbox and share any reply as an image.",
+          openInbox: "Open inbox →",
+          footer: "You can change AQRYO notification preferences from the Notifications screen in your account.",
+        };
 
-        console.error("Push gönderilemedi:", error);
+    if (subscriptions?.length) {
+      const { data: vapidPrivateKey, error: vapidSecretError } =
+        await admin.rpc("get_aqryo_push_secret", {
+          secret_name: "VAPID_PRIVATE_KEY",
+        });
+
+      if (
+        !vapidSecretError &&
+        typeof vapidPrivateKey === "string" &&
+        vapidPrivateKey
+      ) {
+        webpush.setVapidDetails(
+          vapidSubject,
+          vapidPublicKey,
+          vapidPrivateKey,
+        );
+
+        const payload = JSON.stringify({
+          title: mode === "question" ? copy.questionTitle : copy.confessionTitle,
+          body: mode === "question" ? copy.questionBody : copy.confessionBody,
+          icon: "/aqryo-q.png",
+          badge: "/aqryo-q.png",
+          tag: `aqryo-anonymous-${event.id}`,
+          url: "/creator-inbox",
+        });
+
+        for (const subscription of subscriptions) {
+          try {
+            await webpush.sendNotification(
+              {
+                endpoint: subscription.endpoint,
+                keys: {
+                  p256dh: subscription.p256dh,
+                  auth: subscription.auth,
+                },
+              },
+              payload,
+            );
+            sent += 1;
+          } catch (error) {
+            const statusCode =
+              typeof error === "object" &&
+              error &&
+              "statusCode" in error
+                ? Number((error as { statusCode?: unknown }).statusCode)
+                : 0;
+
+            if (statusCode === 404 || statusCode === 410) {
+              await admin
+                .from("creator_push_subscriptions")
+                .delete()
+                .eq("endpoint", subscription.endpoint);
+              continue;
+            }
+
+            console.error("Push delivery failed:", error);
+          }
+        }
+      } else {
+        console.error("VAPID secret unavailable:", vapidSecretError);
       }
     }
 
@@ -176,21 +216,6 @@ Deno.serve(async (request) => {
         });
     }
 
-    const { data: preferenceRow } = await admin
-      .from("creator_notification_preferences")
-      .select(
-        "email_enabled,email_cooldown_minutes,last_email_sent_at,suppressed_email_count",
-      )
-      .eq("creator_id", experience.creator_id)
-      .maybeSingle();
-
-    const preferences = preferenceRow ?? {
-      email_enabled: true,
-      email_cooldown_minutes: 15,
-      last_email_sent_at: null,
-      suppressed_email_count: 0,
-    };
-
     if (!preferenceRow) {
       await admin
         .from("creator_notification_preferences")
@@ -199,6 +224,7 @@ Deno.serve(async (request) => {
           email_enabled: true,
           push_enabled: true,
           email_cooldown_minutes: 15,
+          locale,
         });
     }
 
@@ -244,10 +270,10 @@ Deno.serve(async (request) => {
               Number(preferences.suppressed_email_count || 0) + 1;
             const subject =
               groupedCount > 1
-                ? `AQRYO’da ${groupedCount} yeni anonim mesajın var 👀`
+                ? copy.groupedSubject(groupedCount)
                 : mode === "question"
-                  ? "AQRYO’da yeni anonim sorun var 👀"
-                  : "AQRYO’da yeni anonim itirafın var 👀";
+                  ? copy.questionSubject
+                  : copy.confessionSubject;
 
             const inboxUrl = "https://aqryo.com/creator-inbox";
             const html = `
@@ -255,19 +281,19 @@ Deno.serve(async (request) => {
                 <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:24px;padding:28px">
                   <div style="font-size:28px;font-weight:900;letter-spacing:-1px">AQRYO.</div>
                   <div style="margin-top:28px;font-size:13px;font-weight:800;color:#7c3aed;text-transform:uppercase;letter-spacing:1.2px">
-                    Yeni anonim mesaj
+                    ${copy.eyebrow}
                   </div>
                   <h1 style="margin:10px 0 0;font-size:28px;line-height:1.05">
-                    ${groupedCount > 1 ? `${groupedCount} yeni mesajın var.` : "Biri sana anonim bir mesaj bıraktı."}
+                    ${groupedCount > 1 ? copy.groupedHeading(groupedCount) : copy.singleHeading}
                   </h1>
                   <p style="margin:14px 0 0;font-size:15px;line-height:1.7;color:#6b6475">
-                    Mesaj içeriğini e-postada göstermiyoruz. Gelen kutunu açıp istediğin cevabı görsel olarak paylaşabilirsin.
+                    ${copy.emailText}
                   </p>
                   <a href="${inboxUrl}" style="display:inline-block;margin-top:24px;background:#17101f;color:#fff;text-decoration:none;padding:14px 22px;border-radius:999px;font-weight:800">
-                    Gelen kutusunu aç →
+                    ${copy.openInbox}
                   </a>
                   <p style="margin:24px 0 0;font-size:12px;line-height:1.6;color:#8a8292">
-                    AQRYO bildirim tercihlerini hesabındaki Bildirimler ekranından değiştirebilirsin.
+                    ${copy.footer}
                   </p>
                 </div>
               </div>
@@ -314,7 +340,7 @@ Deno.serve(async (request) => {
 
     return json({
       delivered: sent > 0 || emailSent,
-      subscriptions: subscriptions.length,
+      subscriptions: subscriptions?.length ?? 0,
       sent,
       emailSent,
       emailSuppressed,
