@@ -47,16 +47,6 @@ export function HomeHero({
             </a>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-2">
-            {["Anonim etkileşim", "SVG puzzle", "Kendi görselin", "15 dil"].map((item) => (
-              <span
-                key={item}
-                className="rounded-full bg-white px-3 py-2 text-[12px] font-extrabold text-[#6a6077] shadow-sm"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
         </div>
 
         <div id="aqryo-formats" className="relative">
