@@ -33,8 +33,8 @@ const NOTIFICATION_COPY = {
     emailTitle:"E-posta yedeği", emailText:"Push bildirimi bu cihazda çalışmıyorsa AQRYO hesabındaki e-posta adresine haber verir. Kısa sürede gelen birden fazla mesaj tek tek e-posta yağmuruna dönüşmez.",
     disableEmail:"E-posta bildirimlerini kapat", enableEmail:"E-posta bildirimlerini aç", emailFoot:"İlk yeni mesajda e-posta gider. Sonraki 15 dakika içindeki mesajlar gruplanır; yeni bir tetikleyici geldiğinde toplu sayı ile haber verilir.",
     how:"Nasıl çalışıyor?", s1t:"Takipçi yazar", s1x:"Anonim soru veya itiraf gönderilir.", s2t:"AQRYO haber verir", s2x:"Önce push dener; push yoksa e-posta yedeği devreye girer.", s3t:"Creator cevaplar", s3x:"Bildirime dokunur, cevabı görsel olarak paylaşır.",
-    loadFail:copy.loadFail, enabledMsg:copy.enabledMsg, enableFail:copy.enableFail, disabledMsg:copy.disabledMsg, disableFail:copy.disableFail,
-    emailOn:copy.emailOn, emailOff:copy.emailOff, emailFail:copy.emailFail
+    loadFail:"Bildirimler yüklenemedi.", enabledMsg:"Bildirimler açık. Yeni anonim soru ve itiraflar bu cihaza ulaşacak.", enableFail:"Bildirimler açılamadı.", disabledMsg:"Bu cihazda push bildirimleri kapatıldı.", disableFail:"Bildirimler kapatılamadı.",
+    emailOn:"E-posta yedeği açık. Push ulaşmazsa AQRYO e-posta ile haber verecek.", emailOff:"E-posta bildirimleri kapalı.", emailFail:"E-posta ayarları güncellenemedi."
   },
   en: {
     eyebrow:"Notifications", title:"Never miss a new message.", intro:"Let AQRYO notify you when a new anonymous question or confession arrives, so you do not have to keep checking your inbox.",
