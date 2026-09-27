@@ -33,12 +33,6 @@ interface CreatorExperience {
   published_at: string | null;
   created_at: string;
   stats: ExperienceStats;
-  revenue: {
-    giftAmountMinor: number;
-    offerAmountMinor: number;
-    totalAmountMinor: number;
-    currency: string;
-  };
 }
 
 interface ExperienceRow {
@@ -53,18 +47,6 @@ interface ExperienceRow {
   published_at: string | null;
   created_at: string;
   content: unknown;
-}
-
-type ExperienceOrderMetadata = {
-  kind?: "gift" | "offer" | string;
-};
-
-interface ExperienceRevenueOrder {
-  experience_id: string;
-  amount_minor: number;
-  currency: string;
-  status: string;
-  metadata: ExperienceOrderMetadata | null;
 }
 
 interface ParticipantCompletion {
@@ -176,91 +158,6 @@ function CreatorExperiencesPage() {
         const rows =
           (data ?? []) as ExperienceRow[];
 
-        const experienceIds =
-          rows.map(
-            (experience) =>
-              experience.id,
-          );
-
-        const revenueByExperience =
-          new Map<
-            string,
-            {
-              giftAmountMinor: number;
-              offerAmountMinor: number;
-              totalAmountMinor: number;
-              currency: string;
-            }
-          >();
-
-        if (experienceIds.length > 0) {
-          const {
-            data: orderData,
-            error: orderError,
-          } = await supabase
-            .from("orders")
-            .select(
-              `
-                experience_id,
-                amount_minor,
-                currency,
-                status,
-                metadata
-              `,
-            )
-            .in(
-              "experience_id",
-              experienceIds,
-            )
-            .eq("status", "paid");
-
-          if (orderError) {
-            throw new Error(
-              orderError.message,
-            );
-          }
-
-          for (const rawOrder of
-            (orderData ??
-              []) as ExperienceRevenueOrder[]) {
-            const current =
-              revenueByExperience.get(
-                rawOrder.experience_id,
-              ) ?? {
-                giftAmountMinor: 0,
-                offerAmountMinor: 0,
-                totalAmountMinor: 0,
-                currency:
-                  rawOrder.currency ||
-                  "TRY",
-              };
-
-            const amount =
-              normalizeMinorAmount(
-                rawOrder.amount_minor,
-              );
-
-            if (
-              rawOrder.metadata?.kind ===
-              "gift"
-            ) {
-              current.giftAmountMinor +=
-                amount;
-            } else {
-              current.offerAmountMinor +=
-                amount;
-            }
-
-            current.totalAmountMinor +=
-              amount;
-
-            revenueByExperience.set(
-              rawOrder.experience_id,
-              current,
-            );
-          }
-        }
-
         const experiencesWithStats =
           await Promise.all(
             rows.map(
@@ -279,15 +176,6 @@ function CreatorExperiencesPage() {
                       experience.content,
                     ),
                   stats,
-                  revenue:
-                    revenueByExperience.get(
-                      experience.id,
-                    ) ?? {
-                      giftAmountMinor: 0,
-                      offerAmountMinor: 0,
-                      totalAmountMinor: 0,
-                      currency: "TRY",
-                    },
                 };
               },
             ),
@@ -372,19 +260,6 @@ const totalStarts = useMemo(
     ),
   [experiences],
 );
-  const totalRevenueMinor =
-    useMemo(
-      () =>
-        experiences.reduce(
-          (total, experience) =>
-            total +
-            experience.revenue
-              .totalAmountMinor,
-          0,
-        ),
-      [experiences],
-    );
-
   const filteredExperiences =
     useMemo(() => {
       const normalizedSearch =
@@ -2545,48 +2420,6 @@ function formatExperienceType(
   };
 
   return labels[normalized] ?? normalized;
-}
-
-function normalizeMinorAmount(
-  value: unknown,
-) {
-  const numeric =
-    typeof value === "number"
-      ? value
-      : Number(value);
-
-  return Number.isFinite(numeric)
-    ? Math.max(
-        0,
-        Math.round(numeric),
-      )
-    : 0;
-}
-
-function formatMoney(
-  amountMinor: number,
-  currency: string,
-) {
-  try {
-    return new Intl.NumberFormat(
-      "tr-TR",
-      {
-        style: "currency",
-        currency:
-          currency || "TRY",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2,
-      },
-    ).format(
-      amountMinor / 100,
-    );
-  } catch {
-    return `${(
-      amountMinor / 100
-    ).toFixed(2)} ${
-      currency || "TRY"
-    }`;
-  }
 }
 
 function formatShortDate(
