@@ -48,6 +48,37 @@ async function loadDebateTemplate(templateId: number) {
   return canvas.toDataURL("image/jpeg", 0.94);
 }
 
+const ALGEBRA_TEMPLATE_IDS = Array.from({ length: 10 }, (_, index) => index + 1);
+
+function pickAlgebraTemplate(previous?: number) {
+  const pool = ALGEBRA_TEMPLATE_IDS.filter((id) => id !== previous);
+  return pool[Math.floor(Math.random() * pool.length)] ?? 1;
+}
+
+function algebraSprite(templateId: number) {
+  return {
+    src: "/puzzle/algebra/algebra-set-1.webp",
+    column: Math.max(0, Math.min(9, templateId - 1)),
+  };
+}
+
+async function loadAlgebraTemplate(templateId: number) {
+  const { src, column } = algebraSprite(templateId);
+  const image = new Image();
+  await new Promise<void>((resolve, reject) => {
+    image.onload = () => resolve();
+    image.onerror = () => reject(new Error("Algebra template could not be loaded"));
+    image.src = src;
+  });
+  const canvas = document.createElement("canvas");
+  canvas.width = 1080;
+  canvas.height = 1350;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("Canvas unavailable");
+  context.drawImage(image, column * 432, 0, 432, 540, 0, 0, 1080, 1350);
+  return canvas.toDataURL("image/jpeg", 0.94);
+}
+
 const SCENE_TEMPLATES = [
   "/puzzle/scenes/scene-01-cleopatra.webp",
   "/puzzle/scenes/scene-02-frida.webp",
@@ -451,6 +482,8 @@ function PuzzleBuilderPage() {
   const [shareImage,setShareImage]=useState<{key:string;file:File}|null>(null);
   const [debateTemplate,setDebateTemplate]=useState(()=>pickDebateTemplate());
   const [debateImage,setDebateImage]=useState<string|null>(null);
+  const [algebraTemplate,setAlgebraTemplate]=useState(()=>pickAlgebraTemplate());
+  const [algebraImage,setAlgebraImage]=useState<string|null>(null);
   const [sceneTemplate,setSceneTemplate]=useState(()=>nextSceneTemplate());
   const [sceneImage,setSceneImage]=useState<string|null>(null);
   const previewRef=useRef<HTMLDivElement|null>(null);
@@ -474,7 +507,7 @@ function PuzzleBuilderPage() {
   },[recent]);
 
   useEffect(()=>{
-    if(presentation!=="debate" || (kind!=="math" && kind!=="algebra")){
+    if(presentation!=="debate" || kind!=="math"){
       setDebateImage(null);
       return;
     }
@@ -484,6 +517,18 @@ function PuzzleBuilderPage() {
       .catch((error)=>{ if(!cancelled) console.error(error); });
     return()=>{cancelled=true};
   },[presentation,kind,debateTemplate]);
+
+  useEffect(()=>{
+    if(kind!=="algebra"){
+      setAlgebraImage(null);
+      return;
+    }
+    let cancelled=false;
+    void loadAlgebraTemplate(algebraTemplate)
+      .then((dataUrl)=>{ if(!cancelled) setAlgebraImage(dataUrl); })
+      .catch((error)=>{ if(!cancelled) console.error(error); });
+    return()=>{cancelled=true};
+  },[kind,algebraTemplate]);
 
   useEffect(()=>{
     if(kind==="math" || kind==="algebra"){
@@ -510,15 +555,17 @@ function PuzzleBuilderPage() {
     setKind(next);
     const fresh=generate(next,recent[next]);
     setPuzzle(fresh);
-    setPresentation(next==="math" || next==="algebra" ? "debate" : "clean");
-    if(next==="math" || next==="algebra") setDebateTemplate((current)=>pickDebateTemplate(current));
+    setPresentation(next==="math" ? "debate" : "clean");
+    if(next==="math") setDebateTemplate((current)=>pickDebateTemplate(current));
+    else if(next==="algebra") setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
     else setSceneTemplate((current)=>nextSceneTemplate(current));
     remember(fresh);
   }
 
   function regenerate(){
     const fresh=generate(kind,recent[kind]);
-    if(kind==="math" || kind==="algebra") setDebateTemplate((current)=>pickDebateTemplate(current));
+    if(kind==="math") setDebateTemplate((current)=>pickDebateTemplate(current));
+    else if(kind==="algebra") setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
     else setSceneTemplate((current)=>nextSceneTemplate(current));
     setPuzzle(fresh);
     remember(fresh);
@@ -531,10 +578,11 @@ function PuzzleBuilderPage() {
     return new XMLSerializer().serializeToString(svgRef.current);
   }
 
-  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImage?"ready":"loading"}:${sceneTemplate}:${sceneImage?"scene-ready":"scene-loading"}`;
+  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImage?"ready":"loading"}:${algebraTemplate}:${algebraImage?"algebra-ready":"algebra-loading"}:${sceneTemplate}:${sceneImage?"scene-ready":"scene-loading"}`;
   useEffect(() => {
     let cancelled = false;
     if(presentation==="debate" && !debateImage) return;
+    if(puzzle.kind==="algebra" && !algebraImage) return;
     if(puzzle.kind!=="math" && puzzle.kind!=="algebra" && !sceneImage) return;
     const source = serializeSvg();
     if (source) {
@@ -623,7 +671,7 @@ function PuzzleBuilderPage() {
                 {locale === "tr" ? "Görseli değiştir" : t("newQuestion")} ↻
               </button>
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate} sceneImage={sceneImage}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate} algebraImage={algebraImage} sceneImage={sceneImage}/>
               </div>
             </div>
           </div>
@@ -638,9 +686,13 @@ function PuzzleBuilderPage() {
               ))}
             </div>
 
-            {kind==="math" || kind==="algebra" ? (
+            {kind==="math" ? (
               <div className="mt-7 rounded-[18px] border border-violet-200 bg-violet-50 px-4 py-3 text-[12px] font-black text-violet-800">
                 {locale==="tr" ? "Bu kategoride görsel formatı: Kim Haklı" : "Visual format: Who is right"}
+              </div>
+            ) : kind==="algebra" ? (
+              <div className="mt-7 rounded-[18px] border border-cyan-200 bg-cyan-50 px-4 py-3 text-[12px] font-black text-cyan-900">
+                {locale==="tr" ? "Cebir görseli: iki düşünen kişi + beyaz tahta" : "Algebra visual: two thinkers + whiteboard"}
               </div>
             ) : null}
 
@@ -681,14 +733,44 @@ function PuzzleBuilderPage() {
 
 const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
-  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;sceneImage:string|null}
->(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,sceneImage},ref){
+  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;algebraImage:string|null;sceneImage:string|null}
+>(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,algebraImage,sceneImage},ref){
   const answer = puzzle.answer;
   const headline = headlineFor(locale,puzzle);
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
   const headlineLines = wrapHeadline(headline, 20);
   const questionRows = puzzleQuestionRows(puzzle.diagram);
   const compactDebate = COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
+
+  if (puzzle.kind==="algebra" && algebraImage) {
+    const rows = questionRows.slice(0, 4);
+    const longest = Math.max(...rows.map((row)=>row.length), 1);
+    const size = longest > 22 ? 11 : longest > 15 ? 13 : 16;
+    const lineGap = 29;
+    const blockHeight = Math.max(0, (rows.length - 1) * lineGap);
+    const startY = 154 - blockHeight / 2;
+    return (
+      <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
+        <image href={algebraImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
+        {rows.map((row,index)=>(
+          <text
+            key={`${puzzle.id}-algebra-${index}`}
+            x="180"
+            y={startY + index*lineGap}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontFamily="Arial,sans-serif"
+            fontSize={size}
+            fontWeight="900"
+            fill={["#2563eb","#dc2626","#7c3aed","#0f766e"][index%4]}
+          >
+            {row}
+          </text>
+        ))}
+      </svg>
+    );
+  }
+
   if (sceneImage && puzzle.kind!=="math" && puzzle.kind!=="algebra") {
     const safeX = 160;
     const safeY = 50;
