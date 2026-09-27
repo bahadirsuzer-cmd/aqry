@@ -88,8 +88,7 @@ type SortMode =
   | "oldest"
   | "most-viewed"
   | "most-started"
-  | "most-completed"
-  | "highest-revenue";
+  | "most-completed";
 
 type StatusFilter =
   | "all"
@@ -641,9 +640,6 @@ const totalStarts = useMemo(
                   En çok tamamlanan
                 </option>
 
-                <option value="highest-revenue">
-                  En çok kazandıran
-                </option>
               </select>
             </div>
           </div>
@@ -674,14 +670,13 @@ const totalStarts = useMemo(
             !errorMessage &&
             experiences.length > 0 && (
               <div>
-                <div className="hidden grid-cols-[minmax(220px,1fr)_82px_78px_78px_78px_110px_108px_24px] items-center gap-3 border-b border-border bg-[#fafafa] px-4 py-2.5 text-[11px] font-black uppercase tracking-[0.06em] text-muted-foreground lg:grid">
+                <div className="hidden grid-cols-[minmax(220px,1fr)_82px_78px_78px_78px_110px_24px] items-center gap-3 border-b border-border bg-[#fafafa] px-4 py-2.5 text-[11px] font-black uppercase tracking-[0.06em] text-muted-foreground lg:grid">
                   <span>Experience</span>
                   <span>Durum</span>
                   <span>Görüntüleme</span>
                   <span>Başlatma</span>
                   <span>Tamamlama</span>
                   <span>Son tamamlama</span>
-                  <span>Kazanç</span>
                   <span />
                 </div>
 
@@ -746,7 +741,7 @@ function ExperienceListItem({
             : "bg-white hover:bg-[#fafafa]"
         }`}
       >
-        <div className="flex items-center justify-between gap-3 px-3 py-3.5 sm:px-4 lg:grid lg:grid-cols-[minmax(220px,1fr)_82px_78px_78px_78px_110px_108px_24px] lg:gap-3 lg:py-3">
+        <div className="flex items-center justify-between gap-3 px-3 py-3.5 sm:px-4 lg:grid lg:grid-cols-[minmax(220px,1fr)_82px_78px_78px_78px_110px_24px] lg:gap-3 lg:py-3">
   <div className="min-w-0">
     <div className="flex items-center gap-2.5">
       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px] bg-foreground text-[13px] font-black text-background">
@@ -801,22 +796,6 @@ function ExperienceListItem({
       : "Henüz yok"}
   </p>
 
-  <div className="hidden lg:block">
-    <p className="text-[11px] font-black">
-      {formatMoney(
-        experience.revenue.totalAmountMinor,
-        experience.revenue.currency,
-      )}
-    </p>
-    <p className="mt-0.5 text-[7px] font-bold text-muted-foreground">
-      🎁{" "}
-      {formatMoney(
-        experience.revenue.giftAmountMinor,
-        experience.revenue.currency,
-      )}
-    </p>
-  </div>
-
   <span
     className={`text-[17px] font-black transition ${
       selected
@@ -827,29 +806,34 @@ function ExperienceListItem({
     ⌄
   </span>
 </div>
-        <div className="grid grid-cols-2 gap-2 px-3 pb-3.5 sm:grid-cols-4 sm:px-4 lg:hidden">
+        <div className={`grid gap-2 px-3 pb-3.5 sm:px-4 lg:hidden ${
+          experience.type === "question_confession"
+            ? "grid-cols-2"
+            : "grid-cols-3"
+        }`}>
   <MobileMetric
     label="Görüntüleme"
     value={`${experience.stats.totalViews}`}
   />
 
-  <MobileMetric
-    label="Başlatma"
-    value={`${experience.stats.totalStarts}`}
-  />
+  {experience.type === "question_confession" ? (
+    <MobileMetric
+      label="Gelen"
+      value={`${experience.stats.totalResponses}`}
+    />
+  ) : (
+    <>
+      <MobileMetric
+        label="Başlatma"
+        value={`${experience.stats.totalStarts}`}
+      />
 
-  <MobileMetric
-    label="Tamamlama"
-    value={`${experience.stats.totalCompletions}`}
-  />
-
-  <MobileMetric
-    label="Kazanç"
-    value={formatMoney(
-      experience.revenue.totalAmountMinor,
-      experience.revenue.currency,
-    )}
-  />
+      <MobileMetric
+        label="Tamamlama"
+        value={`${experience.stats.totalCompletions}`}
+      />
+    </>
+  )}
 </div>
       </button>
 
@@ -1873,28 +1857,34 @@ async function toggleExperienceStatus() {
             </p>
           )}
 
-          <div className="mt-4 grid grid-cols-3 gap-2">
+          <div className={`mt-4 grid gap-2 ${
+            experience.type === "question_confession"
+              ? "grid-cols-2"
+              : "grid-cols-3"
+          }`}>
             <DetailMetric
               label="Görüntüleme"
               value={`${experience.stats.totalViews}`}
             />
 
-            <DetailMetric
-              label="Başlatma"
-              value={`${experience.stats.totalStarts}`}
-            />
+            {experience.type === "question_confession" ? (
+              <DetailMetric
+                label="Gelen"
+                value={`${experience.stats.totalResponses}`}
+              />
+            ) : (
+              <>
+                <DetailMetric
+                  label="Başlatma"
+                  value={`${experience.stats.totalStarts}`}
+                />
 
-            <DetailMetric
-              label="Tamamlama"
-              value={`${experience.stats.totalCompletions}`}
-            />
-            <DetailMetric
-              label="Kazanç"
-              value={formatMoney(
-                experience.revenue.totalAmountMinor,
-                experience.revenue.currency,
-              )}
-            />
+                <DetailMetric
+                  label="Tamamlama"
+                  value={`${experience.stats.totalCompletions}`}
+                />
+              </>
+            )}
           </div>
         </>
       )}
@@ -1915,7 +1905,7 @@ async function toggleExperienceStatus() {
         </div>
       )}
 
-      <div className="mt-4 grid gap-2 border-t border-border pt-3 sm:grid-cols-5">
+      <div className="mt-4 grid gap-2 border-t border-border pt-3 sm:grid-cols-4">
         <a
           href={experienceUrl}
           target="_blank"
@@ -1934,20 +1924,6 @@ async function toggleExperienceStatus() {
           {editLoading
             ? "İçerik açılıyor..."
             : "İçeriği düzenle"}
-        </button>
-
-        <button
-          type="button"
-          onClick={openParticipants}
-          className={`flex h-10 items-center justify-center rounded-full border px-4 text-[13px] font-black transition ${
-            panel === "participants"
-              ? "border-primary bg-primary text-white"
-              : "border-border bg-white text-foreground hover:border-primary hover:text-primary"
-          }`}
-        >
-          {panel === "participants"
-            ? "Katılımcıları kapat"
-            : "Katılımcılar"}
         </button>
 
         {(
