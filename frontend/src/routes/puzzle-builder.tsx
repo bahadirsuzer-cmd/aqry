@@ -391,16 +391,45 @@ function headlineFor(locale:AqryoLocale,puzzle:Puzzle) {
   return COPY[locale].titles[puzzle.kind];
 }
 
+function isInvalidGeneratedPuzzle(puzzle: ViralPuzzle) {
+  if (puzzle.kind !== "algebra") return false;
+  const answer = String(puzzle.answer ?? "").trim().toLowerCase();
+  const wrong = String(puzzle.commonWrong ?? "").trim().toLowerCase();
+  return Boolean(
+    puzzle.answerKey ||
+    !answer ||
+    answer === "?" ||
+    answer.includes("unknown") ||
+    answer.includes("belirsiz") ||
+    wrong.includes("unknown") ||
+    wrong.includes("belirsiz")
+  );
+}
+
 function generate(kind: PuzzleKind, recent: string[]): Puzzle {
   const families = VIRAL_FAMILIES.filter((family) => family.kind === kind);
   const seen = recent.filter((family) => families.some((candidate) => candidate.id === family));
   const excluded = seen.length >= families.length ? seen.slice(0, 1) : seen;
-  try {
-    return { id: crypto.randomUUID(), ...makeViralPuzzle(kind, excluded) };
-  } catch (error) {
-    console.error("Puzzle generation retry", error);
-    return { id: crypto.randomUUID(), ...makeViralPuzzle(kind, []) };
+
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    try {
+      const next = { id: crypto.randomUUID(), ...makeViralPuzzle(kind, excluded) };
+      if (isInvalidGeneratedPuzzle(next)) continue;
+      return next;
+    } catch (error) {
+      console.error("Puzzle generation retry", error);
+    }
   }
+
+  const safeFamilies = VIRAL_FAMILIES.filter(
+    (family) => family.kind === kind && family.id !== "missing_information",
+  );
+  for (const family of safeFamilies) {
+    const next = { id: crypto.randomUUID(), family: family.id, kind: family.kind, ...family.make(Math.random) };
+    if (!isInvalidGeneratedPuzzle(next)) return next;
+  }
+
+  throw new Error(`No valid puzzle could be generated for ${kind}`);
 }
 
 function ctaFor(locale: AqryoLocale, puzzle: Puzzle) {
@@ -637,7 +666,7 @@ function PuzzleBuilderPage() {
           </div>
 
           <div className="grid gap-3 rounded-[26px] border border-violet-100 bg-violet-50/70 p-5 sm:grid-cols-2 sm:p-6">
-            <div><p className="text-[12px] font-black text-violet-950">{t("correctAnswer")}</p><p className="mt-2 text-[30px] font-black text-violet-800">{puzzle.answerKey ? UNDETERMINED[locale] : puzzle.answer}</p></div>
+            <div><p className="text-[12px] font-black text-violet-950">{t("correctAnswer")}</p><p className="mt-2 text-[30px] font-black text-violet-800">{puzzle.answer}</p></div>
             <div><p className="text-[12px] font-black text-violet-950">{t("commonWrong")}</p><p className="mt-2 text-[30px] font-black text-rose-600">{puzzle.commonWrong}</p></div>
           </div>
           <details className="rounded-[24px] border border-border bg-white p-5 text-[15px] font-semibold leading-7 sm:p-6">
@@ -654,7 +683,7 @@ const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
   {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;sceneImage:string|null}
 >(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,sceneImage},ref){
-  const answer = puzzle.answerKey ? UNDETERMINED_SHORT[locale] : puzzle.answer;
+  const answer = puzzle.answer;
   const headline = headlineFor(locale,puzzle);
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
   const headlineLines = wrapHeadline(headline, 20);
