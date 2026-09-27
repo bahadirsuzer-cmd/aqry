@@ -14,9 +14,8 @@ type PuzzleKind = ViralKind;
 type Presentation = "clean" | "debate";
 type Puzzle = ViralPuzzle & { id: string };
 
-const DEBATE_TEMPLATE_IDS = Array.from({ length: 38 }, (_, index) => index + 1)
-  .filter((id) => id !== 34);
-const COMPACT_DEBATE_TEMPLATES = new Set([7,8,10,13,14,15,16,17,18,19,25]);
+const DEBATE_TEMPLATE_IDS = Array.from({ length: 40 }, (_, index) => index + 1);
+const COMPACT_DEBATE_TEMPLATES = new Set(DEBATE_TEMPLATE_IDS);
 
 function pickDebateTemplate(previous?: number) {
   const pool = DEBATE_TEMPLATE_IDS.filter((id) => id !== previous);
@@ -26,7 +25,7 @@ function pickDebateTemplate(previous?: number) {
 function debateSprite(templateId: number) {
   const zero = templateId - 1;
   return {
-    src: `/puzzle/who-is-right/kim-hakli-row-${Math.floor(zero / 10) + 1}.webp`,
+    src: `/puzzle/who-is-right/kim-hakli-row-${Math.floor(zero / 10) + 1}.svg`,
     column: zero % 10,
   };
 }
