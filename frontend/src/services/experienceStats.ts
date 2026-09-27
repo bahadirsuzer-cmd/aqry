@@ -122,7 +122,7 @@ const uniqueCompletions = Array.from(
   uniqueCompletions.length,
     highestScore: Math.max(...scores),
     averageScore: Math.round(
-      scoreTotal / completions.length,
+      scoreTotal / uniqueCompletions.length,
     ),
     latestCompletionAt:
   uniqueCompletions[0]
