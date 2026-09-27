@@ -45,11 +45,6 @@ export async function saveCompletion({
     completed_at: new Date().toISOString(),
   };
 
-  console.log(
-    "Supabase completion gönderiliyor:",
-    completion,
-  );
-
   const { error } = await supabase
     .from("completions")
     .insert(completion);
