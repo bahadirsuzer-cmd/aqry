@@ -49,13 +49,6 @@ const accountItems = [
     icon: "profile",
   },
   {
-    href: "/creator-following",
-    title: "Takip ettiklerim",
-    description:
-      "Takip ettiğin creator'ları tek yerde gör ve yönet.",
-    icon: "heart",
-  },
-  {
     href: "/creator-privacy",
     title: "Gizlilik ve izinler",
     description:
@@ -231,7 +224,7 @@ function CreatorAccountHubPage() {
           </h1>
 
           <p className="mt-2 max-w-[720px] text-[17px] leading-7 text-muted-foreground">
-            Profilin, takiplerin, gizlilik tercihlerin ve hesap
+            Profilin, gizlilik tercihlerin ve hesap
             ayarların burada.
           </p>
         </header>
