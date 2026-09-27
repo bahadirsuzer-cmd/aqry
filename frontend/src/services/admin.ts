@@ -88,7 +88,22 @@ function safeNumber(value: unknown) {
     : 0;
 }
 
+const AQRYO_ADMIN_EMAIL = "bahadirsuzer@gmail.com";
+
 export async function isCurrentUserAdmin() {
+  const { data: authData, error: authError } =
+    await supabase.auth.getUser();
+
+  const email =
+    authData.user?.email?.trim().toLowerCase();
+
+  if (
+    authError ||
+    email !== AQRYO_ADMIN_EMAIL
+  ) {
+    return false;
+  }
+
   const { data, error } =
     await supabase.rpc(
       "is_aqryo_admin",

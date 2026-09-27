@@ -48,30 +48,40 @@ async function loadDebateTemplate(templateId: number) {
   return canvas.toDataURL("image/jpeg", 0.94);
 }
 
-const PATTERN_TEMPLATES = [
-  "/puzzle/pattern/pattern-01-metro.webp",
-  "/puzzle/pattern/pattern-02-rainy-neon.webp",
-  "/puzzle/pattern/pattern-03-paris.webp",
-  "/puzzle/pattern/pattern-04-campus.webp",
-  "/puzzle/pattern/pattern-05-coast.webp",
-  "/puzzle/pattern/pattern-06-cafe.webp",
-  "/puzzle/pattern/pattern-07-rooftop.webp",
-  "/puzzle/pattern/pattern-08-airport.webp",
-  "/puzzle/pattern/pattern-09-waterfront.webp",
-  "/puzzle/pattern/pattern-10-gallery.webp",
+const SCENE_TEMPLATES = [
+  "/puzzle/scenes/scene-01-cleopatra.webp",
+  "/puzzle/scenes/scene-02-frida.webp",
+  "/puzzle/scenes/scene-03-rooftop-woman.webp",
+  "/puzzle/scenes/scene-04-aviator.webp",
+  "/puzzle/scenes/scene-05-samurai.webp",
+  "/puzzle/scenes/scene-06-athlete.webp",
+  "/puzzle/scenes/scene-07-tesla.webp",
+  "/puzzle/scenes/scene-08-van-gogh.webp",
+  "/puzzle/scenes/scene-09-knight.webp",
+  "/puzzle/scenes/scene-10-einstein.webp",
+  "/puzzle/scenes/scene-11-gallery-woman.webp",
+  "/puzzle/scenes/scene-12-architect.webp",
+  "/puzzle/scenes/scene-13-racer.webp",
+  "/puzzle/scenes/scene-14-chef.webp",
+  "/puzzle/scenes/scene-15-ballerina.webp",
+  "/puzzle/scenes/scene-16-pilot.webp",
+  "/puzzle/scenes/scene-17-boxer.webp",
+  "/puzzle/scenes/scene-18-guitarist.webp",
+  "/puzzle/scenes/scene-19-photographer.webp",
+  "/puzzle/scenes/scene-20-archaeologist.webp",
 ] as const;
 
-function pickPatternTemplate(previous?: number) {
-  const pool = PATTERN_TEMPLATES.map((_, index) => index).filter((index) => index !== previous);
-  return pool[Math.floor(Math.random() * pool.length)] ?? 0;
+function nextSceneTemplate(current?: number) {
+  if (typeof current !== "number") return Math.floor(Math.random() * SCENE_TEMPLATES.length);
+  return (current + 1) % SCENE_TEMPLATES.length;
 }
 
-async function loadPatternTemplate(templateIndex: number) {
+async function loadSceneTemplate(templateIndex: number) {
   const image = new Image();
   await new Promise<void>((resolve, reject) => {
     image.onload = () => resolve();
-    image.onerror = () => reject(new Error("Pattern template could not be loaded"));
-    image.src = PATTERN_TEMPLATES[templateIndex] ?? PATTERN_TEMPLATES[0];
+    image.onerror = () => reject(new Error("Scene template could not be loaded"));
+    image.src = SCENE_TEMPLATES[templateIndex] ?? SCENE_TEMPLATES[0];
   });
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
@@ -164,7 +174,7 @@ const COPY: Record<AqryoLocale, PuzzleCopy> = {
       geometry: "Kontrollü şablonlardan üretilen çok adımlı açı problemleri",
       count: "Gizli üçgenler, kesişen kareler ve birleşik şekiller",
       algebra: "Semboller, özdeşlikler ve eksik bilgi tuzakları",
-      area: "Bileşik alanlar, eksik parçalar ve çok adımlı uzunluklar",
+      area: "Çevre, Pisagor ve çok adımlı uzunluklar",
     },
     titles: {
       math: "Sonuç kaç?",
@@ -190,7 +200,7 @@ const COPY: Record<AqryoLocale, PuzzleCopy> = {
       geometry: "Angles, parallel lines, vertical angles and polygons",
       count: "Hidden triangles and overlapping squares",
       algebra: "Symbols, identities and missing information",
-      area: "Composite regions, missing pieces and two-step lengths",
+      area: "Perimeter, Pythagoras and multi-step lengths",
     },
     titles: {
       math: "What is the result?",
@@ -344,9 +354,9 @@ const AREA_TITLES: Record<AqryoLocale, {area:string;perimeter:string;length:stri
 };
 
 
-const PATTERN_COPY: Partial<Record<AqryoLocale, {label:string;description:string;title:string;subtitle:string}>> = {
-  tr: { label:"Örüntü", description:"Sayı dizileri, artan farklar ve gizli kurallar", title:"Sıradaki sayı kaç?", subtitle:"Kuralı yakala 👀" },
-  en: { label:"Pattern", description:"Number sequences, changing gaps and hidden rules", title:"What comes next?", subtitle:"Spot the rule 👀" },
+const PATTERN_COPY: Partial<Record<AqryoLocale, {label:string;description:string;title:string;mappingTitle:string;subtitle:string}>> = {
+  tr: { label:"Örüntü", description:"Sayı dizileri, girdi-çıktı ilişkileri ve gizli kurallar", title:"Sıradaki sayı kaç?", mappingTitle:"Kuralı bul: ? kaç?", subtitle:"Gizli kuralı yakala 👀" },
+  en: { label:"Pattern", description:"Number sequences, input-output relations and hidden rules", title:"What comes next?", mappingTitle:"Find the rule: what is ?", subtitle:"Spot the hidden rule 👀" },
 };
 
 function patternCopy(locale:AqryoLocale) {
@@ -358,7 +368,7 @@ function subtitleFor(locale:AqryoLocale, kind:PuzzleKind, copy:PuzzleCopy) {
 }
 
 function headlineFor(locale:AqryoLocale,puzzle:Puzzle) {
-  if(puzzle.kind==="pattern") return patternCopy(locale).title;
+  if(puzzle.kind==="pattern") return puzzle.patternMode==="mapping" ? patternCopy(locale).mappingTitle : patternCopy(locale).title;
   if(puzzle.kind==="count" && puzzle.countTarget) return COUNT_TITLES[locale][puzzle.countTarget];
   if(puzzle.kind==="area" && puzzle.areaTarget) return AREA_TITLES[locale][puzzle.areaTarget];
   return COPY[locale].titles[puzzle.kind];
@@ -386,7 +396,7 @@ function PuzzleBuilderPage() {
   const copy = COPY[locale] ?? COPY.en;
   const [loading,setLoading]=useState(true);
   const [kind,setKind]=useState<PuzzleKind>("math");
-  const [presentation,setPresentation]=useState<Presentation>("clean");
+  const [presentation,setPresentation]=useState<Presentation>("debate");
   const [recent,setRecent]=useState<RecentFamilies>(readRecent);
   const [puzzle,setPuzzle]=useState<Puzzle>(()=>generate("math", []));
   const [socialText,setSocialText]=useState("");
@@ -395,8 +405,8 @@ function PuzzleBuilderPage() {
   const [shareImage,setShareImage]=useState<{key:string;file:File}|null>(null);
   const [debateTemplate,setDebateTemplate]=useState(()=>pickDebateTemplate());
   const [debateImage,setDebateImage]=useState<string|null>(null);
-  const [patternTemplate,setPatternTemplate]=useState(()=>pickPatternTemplate());
-  const [patternImage,setPatternImage]=useState<string|null>(null);
+  const [sceneTemplate,setSceneTemplate]=useState(()=>nextSceneTemplate());
+  const [sceneImage,setSceneImage]=useState<string|null>(null);
   const previewRef=useRef<HTMLDivElement|null>(null);
   const svgRef=useRef<SVGSVGElement|null>(null);
 
@@ -430,16 +440,16 @@ function PuzzleBuilderPage() {
   },[presentation,kind,debateTemplate]);
 
   useEffect(()=>{
-    if(kind!=="pattern"){
-      setPatternImage(null);
+    if(kind==="math" || kind==="algebra"){
+      setSceneImage(null);
       return;
     }
     let cancelled=false;
-    void loadPatternTemplate(patternTemplate)
-      .then((dataUrl)=>{ if(!cancelled) setPatternImage(dataUrl); })
+    void loadSceneTemplate(sceneTemplate)
+      .then((dataUrl)=>{ if(!cancelled) setSceneImage(dataUrl); })
       .catch((error)=>{ if(!cancelled) console.error(error); });
     return()=>{cancelled=true};
-  },[kind,patternTemplate]);
+  },[kind,sceneTemplate]);
 
   function remember(next:Puzzle){
     setRecent((old)=>{
@@ -454,15 +464,16 @@ function PuzzleBuilderPage() {
     setKind(next);
     const fresh=generate(next,recent[next]);
     setPuzzle(fresh);
-    setPresentation("clean");
-    if(next==="pattern") setPatternTemplate((current)=>pickPatternTemplate(current));
+    setPresentation(next==="math" || next==="algebra" ? "debate" : "clean");
+    if(next==="math" || next==="algebra") setDebateTemplate((current)=>pickDebateTemplate(current));
+    else setSceneTemplate((current)=>nextSceneTemplate(current));
     remember(fresh);
   }
 
   function regenerate(){
     const fresh=generate(kind,recent[kind]);
-    if(presentation==="debate") setDebateTemplate((current)=>pickDebateTemplate(current));
-    if(kind==="pattern") setPatternTemplate((current)=>pickPatternTemplate(current));
+    if(kind==="math" || kind==="algebra") setDebateTemplate((current)=>pickDebateTemplate(current));
+    else setSceneTemplate((current)=>nextSceneTemplate(current));
     setPuzzle(fresh);
     remember(fresh);
     setCopied(false);
@@ -474,14 +485,14 @@ function PuzzleBuilderPage() {
     return new XMLSerializer().serializeToString(svgRef.current);
   }
 
-  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImage?"ready":"loading"}:${puzzle.kind==="pattern"?patternTemplate:0}:${patternImage?"pattern-ready":"pattern-loading"}`;
+  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImage?"ready":"loading"}:${sceneTemplate}:${sceneImage?"scene-ready":"scene-loading"}`;
   useEffect(() => {
     let cancelled = false;
     if(presentation==="debate" && !debateImage) return;
-    if(puzzle.kind==="pattern" && !patternImage) return;
+    if(puzzle.kind!=="math" && puzzle.kind!=="algebra" && !sceneImage) return;
     const source = serializeSvg();
     if (source) {
-      void puzzlePng(source, `aqryo-${puzzle.kind}-${puzzle.family}.png`, presentation==="debate" || puzzle.kind==="pattern")
+      void puzzlePng(source, `aqryo-${puzzle.kind}-${puzzle.family}.png`, true)
         .then((file) => { if (!cancelled) setShareImage({key:shareImageKey,file}); })
         .catch((error) => { if (!cancelled) console.error(error); });
     }
@@ -567,7 +578,7 @@ function PuzzleBuilderPage() {
                 {locale === "tr" ? "Görseli değiştir" : t("newQuestion")} ↻
               </button>
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate} patternImage={patternImage}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate} sceneImage={sceneImage}/>
               </div>
             </div>
           </div>
@@ -582,21 +593,11 @@ function PuzzleBuilderPage() {
               ))}
             </div>
 
-            <p className="mt-7 text-[14px] font-black">{t("presentation")}</p>
-            <div className={`mt-2 grid gap-3 ${kind==="math"||kind==="algebra"?"grid-cols-2":"grid-cols-1"}`}>
-              <Choice active={presentation==="clean"} title={t("clean")} description={copy.cleanDesc} onClick={()=>setPresentation("clean")}/>
-              {kind==="math"||kind==="algebra" ? (
-                <Choice
-                  active={presentation==="debate"}
-                  title={t("debate")}
-                  description={copy.debateDesc}
-                  onClick={()=>{
-                    setDebateTemplate((current)=>pickDebateTemplate(current));
-                    setPresentation("debate");
-                  }}
-                />
-              ) : null}
-            </div>
+            {kind==="math" || kind==="algebra" ? (
+              <div className="mt-7 rounded-[18px] border border-violet-200 bg-violet-50 px-4 py-3 text-[12px] font-black text-violet-800">
+                {locale==="tr" ? "Bu kategoride görsel formatı: Kim Haklı" : "Visual format: Who is right"}
+              </div>
+            ) : null}
 
             <button type="button" onClick={regenerate} className="mt-6 rounded-full bg-black px-7 py-4 text-[15px] font-black text-white">
               {t("newQuestion")} ↻
@@ -635,37 +636,57 @@ function PuzzleBuilderPage() {
 
 const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
-  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;patternImage:string|null}
->(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,patternImage},ref){
+  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;sceneImage:string|null}
+>(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,sceneImage},ref){
   const answer = puzzle.answerKey ? UNDETERMINED_SHORT[locale] : puzzle.answer;
   const headline = headlineFor(locale,puzzle);
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
   const questionRows = puzzleQuestionRows(puzzle.diagram);
   const compactDebate = COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
-  if (puzzle.kind==="pattern" && patternImage) {
+  if (sceneImage && puzzle.kind!=="math" && puzzle.kind!=="algebra") {
+    const safeX = 160;
+    const safeY = 34;
+    const safeW = 186;
+    const safeH = 318;
     const rows = (puzzle.patternRows?.length ? puzzle.patternRows : questionRows).slice(0, 7);
-    const colors = ["#2563eb","#0f766e","#7c3aed","#db2777","#dc2626","#ea580c","#f59e0b"];
-    const startY = rows.length >= 7 ? 86 : 98;
-    const gap = rows.length >= 7 ? 42 : 50;
+    const colors = ["#2563eb","#dc2626","#7c3aed","#0f766e","#db2777","#ea580c","#f59e0b"];
+
+    if (puzzle.kind==="pattern") {
+      const gap = rows.length >= 6 ? 45 : 54;
+      const startY = safeY + 58;
+      return (
+        <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
+          <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
+          <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize="13" fontWeight="900" fill="#17101f">{headline}</text>
+          {rows.map((row,index)=>(
+            <text
+              key={`${puzzle.id}-pattern-${index}`}
+              x={safeX+safeW/2}
+              y={startY + index*gap}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontFamily="Arial,sans-serif"
+              fontSize={row.length>12?20:row.length>8?23:row.length>5?27:34}
+              fontWeight="900"
+              fill={row.includes("?")?"#f59e0b":colors[index % colors.length]}
+              stroke="rgba(255,255,255,.92)"
+              strokeWidth="2.2"
+              paintOrder="stroke"
+            >
+              {row}
+            </text>
+          ))}
+        </svg>
+      );
+    }
+
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
-        <image href={patternImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-        <rect x="214" y="38" width="136" height="370" rx="10" fill="#ffffff" fillOpacity="0.93"/>
-        {rows.map((row,index)=>(
-          <text
-            key={`${puzzle.id}-pattern-${index}`}
-            x="282"
-            y={startY + index*gap}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontFamily="Arial,sans-serif"
-            fontSize={row.length>5?21:row.length>3?27:35}
-            fontWeight="900"
-            fill={row==="?"?"#f59e0b":colors[index % colors.length]}
-          >
-            {row}
-          </text>
-        ))}
+        <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
+        <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?14:12} fontWeight="900" fill="#17101f">{headline}</text>
+        <svg x={safeX} y={safeY+30} width={safeW} height={safeH-35} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet">
+          <g dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
+        </svg>
       </svg>
     );
   }
@@ -677,13 +698,13 @@ const PuzzleSvg=React.forwardRef<
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <image href={debateImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-        <text x="180" y={questionY - ((questionRows.length-1)*8)} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900" fill="#17101f">
+        <text x="180" y={questionY - ((questionRows.length-1)*8)} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900">
           {questionRows.map((row,index)=>(
-            <tspan key={index} x="180" dy={index===0?0:17}>{row}</tspan>
+            <tspan key={index} x="180" dy={index===0?0:17} fill={["#2563eb","#dc2626","#7c3aed","#0f766e"][index%4]}>{row}</tspan>
           ))}
         </text>
-        <text x="78" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={answer.length>10?11:19} fontWeight="900" fill="#17101f">{answer}</text>
-        <text x="282" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={puzzle.commonWrong.length>10?11:19} fontWeight="900" fill="#17101f">{puzzle.commonWrong}</text>
+        <text x="78" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={answer.length>10?11:20} fontWeight="900" fill="#2563eb">{answer}</text>
+        <text x="282" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={puzzle.commonWrong.length>10?11:20} fontWeight="900" fill="#dc2626">{puzzle.commonWrong}</text>
       </svg>
     );
   }
