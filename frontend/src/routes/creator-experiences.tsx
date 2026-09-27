@@ -250,12 +250,14 @@ const totalViews = useMemo(
   [experiences],
 );
 
-const totalStarts = useMemo(
+const totalEngagements = useMemo(
   () =>
     experiences.reduce(
       (total, experience) =>
         total +
-        experience.stats.totalStarts,
+        (experience.type === "question_confession"
+          ? experience.stats.totalResponses
+          : experience.stats.totalStarts),
       0,
     ),
   [experiences],
@@ -336,8 +338,8 @@ const totalStarts = useMemo(
             "most-started"
           ) {
             return (
-              second.stats.totalStarts -
-              first.stats.totalStarts
+              getExperienceEngagement(second) -
+              getExperienceEngagement(first)
             );
           }
 
@@ -418,9 +420,9 @@ const totalStarts = useMemo(
 />
 
 <SummaryMetric
-  label="Başlatma"
+  label="Etkileşim"
   value={formatCompactNumber(
-    totalStarts,
+    totalEngagements,
   )}
 />
 
@@ -508,7 +510,7 @@ const totalStarts = useMemo(
                 </option>
 
                 <option value="most-started">
-                  En çok başlatılan
+                  En çok etkileşim
                 </option>
 
                 <option value="most-completed">
@@ -549,9 +551,9 @@ const totalStarts = useMemo(
                   <span>Experience</span>
                   <span>Durum</span>
                   <span>Görüntüleme</span>
-                  <span>Başlatma</span>
+                  <span>Etkileşim</span>
                   <span>Tamamlama</span>
-                  <span>Son tamamlama</span>
+                  <span>Son aktivite</span>
                   <span />
                 </div>
 
@@ -656,19 +658,23 @@ function ExperienceListItem({
   </p>
 
   <p className="hidden text-[11px] font-black lg:block">
-    {experience.stats.totalStarts}
+    {getExperienceEngagement(experience)}
   </p>
 
   <p className="hidden text-[11px] font-black lg:block">
-    {experience.stats.totalCompletions}
+    {experience.type === "question_confession"
+      ? "—"
+      : experience.stats.totalCompletions}
   </p>
 
   <p className="hidden text-[12px] font-bold text-muted-foreground lg:block">
-    {experience.stats.latestCompletionAt
-      ? formatShortDate(
-          experience.stats.latestCompletionAt,
-        )
-      : "Henüz yok"}
+    {experience.type === "question_confession"
+      ? "—"
+      : experience.stats.latestCompletionAt
+        ? formatShortDate(
+            experience.stats.latestCompletionAt,
+          )
+        : "Henüz yok"}
   </p>
 
   <span
@@ -2309,6 +2315,14 @@ function calculateOverallAverage(
   );
 }
 
+function getExperienceEngagement(
+  experience: CreatorExperience,
+) {
+  return experience.type === "question_confession"
+    ? experience.stats.totalResponses
+    : experience.stats.totalStarts;
+}
+
 function getExperienceDate(
   experience: CreatorExperience,
 ) {
@@ -2406,6 +2420,8 @@ function formatExperienceType(
   }
 
   const labels: Record<string, string> = {
+    question_confession: "Soru mu İtiraf mı?",
+    "question confession": "Soru mu İtiraf mı?",
     compatibility:
       "Bana ne kadar yakınsın?",
     guess: "Tahmin et / Bu nedir?",
