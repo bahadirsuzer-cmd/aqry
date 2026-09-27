@@ -1038,14 +1038,60 @@ const PuzzleSvg=React.forwardRef<
       </svg>
     );
   }
-  if (presentation==="debate" && debateImage && (puzzle.kind==="math" || puzzle.kind==="algebra")) {
+  if (presentation==="debate" && debateImage && puzzle.kind==="math") {
+    const debateTitleLines = wrapHeadline(copy.debateQuestion, 18);
+    const debateTitleLongest = Math.max(...debateTitleLines.map((line)=>line.length), 1);
+    const debateTitleSize = debateTitleLongest > 20 ? 15 : debateTitleLongest > 14 ? 17 : 20;
+    const debateTitleY = debateTitleLines.length > 1 ? 34 : 42;
+    const rtl = locale==="ar" || locale==="ur";
     const longest = Math.max(...questionRows.map((row)=>row.length), 1);
     const questionSize = longest > 28 ? 10 : longest > 20 ? 12 : 15;
     const questionY = compactDebate ? 104 : 176;
     const answerY = compactDebate ? 157 : 118;
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
+        <defs>
+          <filter id="debateTitleShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="1.4" floodColor="#17101f" floodOpacity=".5"/>
+          </filter>
+        </defs>
         <image href={debateImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
+        <text
+          x="180"
+          y={debateTitleY}
+          textAnchor="middle"
+          fontFamily="Arial Black,Arial,'Noto Sans',sans-serif"
+          fontSize={debateTitleSize}
+          fontWeight="900"
+          fill="#f8fafc"
+          stroke="#17101f"
+          strokeWidth="5"
+          paintOrder="stroke"
+          filter="url(#debateTitleShadow)"
+          direction={rtl?"rtl":"ltr"}
+          unicodeBidi="plaintext"
+          letterSpacing=".2"
+        >
+          {debateTitleLines.map((line,index)=>(
+            <tspan key={`${puzzle.id}-debate-title-${index}`} x="180" dy={index===0?0:20}>{line}</tspan>
+          ))}
+        </text>
+        <text
+          x="180"
+          y={debateTitleY}
+          textAnchor="middle"
+          fontFamily="Arial Black,Arial,'Noto Sans',sans-serif"
+          fontSize={debateTitleSize}
+          fontWeight="900"
+          fill="#22d3ee"
+          direction={rtl?"rtl":"ltr"}
+          unicodeBidi="plaintext"
+          letterSpacing=".2"
+        >
+          {debateTitleLines.map((line,index)=>(
+            <tspan key={`${puzzle.id}-debate-title-fill-${index}`} x="180" dy={index===0?0:20}>{line}</tspan>
+          ))}
+        </text>
         <text x="180" y={questionY - ((questionRows.length-1)*8)} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900">
           {questionRows.map((row,index)=>(
             <tspan key={index} x="180" dy={index===0?0:17} fill={["#2563eb","#dc2626","#7c3aed","#0f766e"][index%4]}>{row}</tspan>
