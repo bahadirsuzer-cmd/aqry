@@ -111,49 +111,14 @@ export function HomeFooter() {
       </div>
 
       <div className="border-t border-border">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-5 py-6 sm:px-7 lg:px-10">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-[10px] font-semibold text-foreground">
-                Güvenli ödeme
-              </p>
-              <p className="mt-1 text-[9px] text-muted-foreground">
-                Ödemeler güvenli ödeme altyapısı üzerinden gerçekleştirilir.
-              </p>
-            </div>
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-2 px-5 py-6 text-[9px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-7 lg:px-10">
+          <span>
+            © {new Date().getFullYear()} AQRYO.
+          </span>
 
-            <div className="flex flex-wrap items-center gap-5">
-              <img
-                src="/payment-logos/visa.svg"
-                alt="Visa"
-                className="h-6 w-auto object-contain"
-              />
-
-              <img
-                src="/payment-logos/mastercard.svg"
-                alt="Mastercard"
-                className="h-7 w-auto object-contain"
-              />
-
-              <div className="hidden h-7 w-px bg-border sm:block" />
-
-              <img
-                src="/payment-logos/iyzico-ile-ode.svg"
-                alt="iyzico ile Öde"
-                className="h-7 w-auto object-contain"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2 border-t border-border pt-5 text-[9px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-            <span>
-              © {new Date().getFullYear()} AQRYO.
-            </span>
-
-            <span>
-              Interactive experiences for creators.
-            </span>
-          </div>
+          <span>
+            Interactive experiences for creators.
+          </span>
         </div>
       </div>
     </footer>
