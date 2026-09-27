@@ -55,6 +55,196 @@ function pickAlgebraTemplate(previous?: number) {
   return pool[Math.floor(Math.random() * pool.length)] ?? 1;
 }
 
+const ALGEBRA_CHALLENGE_IDS = Array.from({ length: 10 }, (_, index) => index);
+
+function pickAlgebraChallenge(previous?: number) {
+  const pool = ALGEBRA_CHALLENGE_IDS.filter((id) => id !== previous);
+  return pool[Math.floor(Math.random() * pool.length)] ?? 0;
+}
+
+const ALGEBRA_CHALLENGES: Record<AqryoLocale, readonly string[]> = {
+  tr: [
+    "bunu 6 saniyede çözen çıkmadı",
+    "Bu soruda çoğu kişi takılıyor",
+    "Kalem kullanmadan çözebilir misin?",
+    "İlk denemede çözen çıkmadı",
+    "Çözemezsen kızma",
+    "Yorumlara bakmadan çözebilir misin?",
+    "Cevabı yorumlara yaz",
+    "Matematikte ne kadar iyisin görelim",
+    "Dürüst ol, kaç saniyede çözdün?",
+    "bakalım ilk kim çözecek",
+  ],
+  en: [
+    "No one has solved this in 6 seconds",
+    "Most people get stuck on this question",
+    "Can you solve it without using a pen?",
+    "No one solved it on the first try",
+    "Don't get mad if you can't solve it",
+    "Can you solve it without looking at the comments?",
+    "Write your answer in the comments",
+    "Let's see how good you are at math",
+    "Be honest, how many seconds did it take you?",
+    "Let's see who solves it first",
+  ],
+  es: [
+    "Nadie ha resuelto esto en 6 segundos",
+    "La mayoría se atasca con esta pregunta",
+    "¿Puedes resolverlo sin usar lápiz?",
+    "Nadie lo resolvió en el primer intento",
+    "No te enfades si no puedes resolverlo",
+    "¿Puedes resolverlo sin mirar los comentarios?",
+    "Escribe tu respuesta en los comentarios",
+    "Veamos qué tan bueno eres en matemáticas",
+    "Sé sincero, ¿cuántos segundos tardaste?",
+    "Veamos quién lo resuelve primero",
+  ],
+  pt: [
+    "Ninguém conseguiu resolver isto em 6 segundos",
+    "A maioria das pessoas trava nesta pergunta",
+    "Consegue resolver sem usar caneta?",
+    "Ninguém resolveu na primeira tentativa",
+    "Não fique bravo se não conseguir resolver",
+    "Consegue resolver sem olhar os comentários?",
+    "Escreva sua resposta nos comentários",
+    "Vamos ver o quanto você é bom em matemática",
+    "Seja sincero, quantos segundos você levou?",
+    "Vamos ver quem resolve primeiro",
+  ],
+  fr: [
+    "Personne n'a résolu ça en 6 secondes",
+    "La plupart des gens bloquent sur cette question",
+    "Peux-tu le résoudre sans utiliser de stylo ?",
+    "Personne ne l'a résolu du premier coup",
+    "Ne te fâche pas si tu n'y arrives pas",
+    "Peux-tu le résoudre sans regarder les commentaires ?",
+    "Écris ta réponse dans les commentaires",
+    "Voyons à quel point tu es bon en maths",
+    "Sois honnête, combien de secondes as-tu mis ?",
+    "Voyons qui le résoudra en premier",
+  ],
+  de: [
+    "Niemand hat das in 6 Sekunden gelöst",
+    "Bei dieser Frage kommen die meisten ins Stocken",
+    "Kannst du es ohne Stift lösen?",
+    "Beim ersten Versuch hat es niemand gelöst",
+    "Sei nicht sauer, wenn du es nicht lösen kannst",
+    "Kannst du es lösen, ohne in die Kommentare zu schauen?",
+    "Schreib deine Antwort in die Kommentare",
+    "Mal sehen, wie gut du in Mathe bist",
+    "Sei ehrlich, wie viele Sekunden hast du gebraucht?",
+    "Mal sehen, wer es zuerst löst",
+  ],
+  it: [
+    "Nessuno l'ha risolto in 6 secondi",
+    "La maggior parte delle persone si blocca su questa domanda",
+    "Riesci a risolverlo senza usare una penna?",
+    "Nessuno l'ha risolto al primo tentativo",
+    "Non arrabbiarti se non riesci a risolverlo",
+    "Riesci a risolverlo senza guardare i commenti?",
+    "Scrivi la risposta nei commenti",
+    "Vediamo quanto sei bravo in matematica",
+    "Sii onesto, quanti secondi ci hai messo?",
+    "Vediamo chi lo risolve per primo",
+  ],
+  ar: [
+    "لم يتمكن أحد من حلها خلال 6 ثوانٍ",
+    "معظم الناس يتعثرون في هذا السؤال",
+    "هل يمكنك حلها من دون استخدام قلم؟",
+    "لم يحلها أحد من المحاولة الأولى",
+    "لا تغضب إذا لم تستطع حلها",
+    "هل يمكنك حلها من دون النظر إلى التعليقات؟",
+    "اكتب إجابتك في التعليقات",
+    "لنرَ مدى براعتك في الرياضيات",
+    "كن صريحًا، كم ثانية استغرقت؟",
+    "لنرَ من سيحلها أولًا",
+  ],
+  hi: [
+    "इसे 6 सेकंड में कोई हल नहीं कर पाया",
+    "इस सवाल पर ज्यादातर लोग अटक जाते हैं",
+    "क्या तुम इसे बिना पेन के हल कर सकते हो?",
+    "पहली कोशिश में कोई इसे हल नहीं कर पाया",
+    "हल न हो तो गुस्सा मत होना",
+    "क्या तुम कमेंट देखे बिना इसे हल कर सकते हो?",
+    "अपना जवाब कमेंट में लिखो",
+    "देखते हैं तुम गणित में कितने अच्छे हो",
+    "ईमानदारी से बताओ, कितने सेकंड लगे?",
+    "देखते हैं सबसे पहले कौन हल करेगा",
+  ],
+  id: [
+    "Belum ada yang menyelesaikannya dalam 6 detik",
+    "Kebanyakan orang terjebak di soal ini",
+    "Bisakah kamu menyelesaikannya tanpa pena?",
+    "Belum ada yang berhasil di percobaan pertama",
+    "Jangan marah kalau kamu tidak bisa menyelesaikannya",
+    "Bisakah kamu menyelesaikannya tanpa melihat komentar?",
+    "Tulis jawabanmu di komentar",
+    "Mari lihat seberapa jago kamu dalam matematika",
+    "Jujur, berapa detik yang kamu butuhkan?",
+    "Mari lihat siapa yang menyelesaikannya lebih dulu",
+  ],
+  ru: [
+    "Никто не решил это за 6 секунд",
+    "На этом вопросе большинство застревает",
+    "Сможешь решить без ручки?",
+    "С первой попытки никто не решил",
+    "Не злись, если не сможешь решить",
+    "Сможешь решить, не заглядывая в комментарии?",
+    "Напиши ответ в комментариях",
+    "Посмотрим, насколько ты хорош в математике",
+    "Честно, за сколько секунд ты решил?",
+    "Посмотрим, кто решит первым",
+  ],
+  bn: [
+    "৬ সেকেন্ডে কেউ এটি সমাধান করতে পারেনি",
+    "এই প্রশ্নে বেশিরভাগ মানুষ আটকে যায়",
+    "কলম ব্যবহার না করে সমাধান করতে পারবে?",
+    "প্রথম চেষ্টায় কেউ সমাধান করতে পারেনি",
+    "সমাধান না হলে রাগ করো না",
+    "কমেন্ট না দেখে সমাধান করতে পারবে?",
+    "উত্তর কমেন্টে লেখো",
+    "দেখি গণিতে তুমি কতটা ভালো",
+    "সত্যি বলো, কত সেকেন্ড লেগেছে?",
+    "দেখি সবার আগে কে সমাধান করে",
+  ],
+  ur: [
+    "6 سیکنڈ میں کوئی اسے حل نہیں کر سکا",
+    "اس سوال پر زیادہ تر لوگ اٹک جاتے ہیں",
+    "کیا تم اسے قلم کے بغیر حل کر سکتے ہو؟",
+    "پہلی کوشش میں کوئی حل نہیں کر سکا",
+    "حل نہ ہو تو ناراض مت ہونا",
+    "کیا تم تبصرے دیکھے بغیر اسے حل کر سکتے ہو؟",
+    "اپنا جواب تبصروں میں لکھو",
+    "دیکھتے ہیں تم ریاضی میں کتنے اچھے ہو",
+    "سچ بتاؤ، کتنے سیکنڈ لگے؟",
+    "دیکھتے ہیں سب سے پہلے کون حل کرتا ہے",
+  ],
+  vi: [
+    "Chưa ai giải được bài này trong 6 giây",
+    "Hầu hết mọi người đều mắc ở câu này",
+    "Bạn có thể giải mà không dùng bút không?",
+    "Chưa ai giải được ngay lần đầu",
+    "Đừng giận nếu bạn không giải được",
+    "Bạn có thể giải mà không xem bình luận không?",
+    "Viết đáp án của bạn vào bình luận",
+    "Hãy xem bạn giỏi toán đến mức nào",
+    "Thành thật đi, bạn mất bao nhiêu giây?",
+    "Xem ai sẽ giải được đầu tiên",
+  ],
+  fil: [
+    "Wala pang nakalutas nito sa loob ng 6 na segundo",
+    "Karamihan ay natitigil sa tanong na ito",
+    "Kaya mo bang lutasin ito nang walang panulat?",
+    "Walang nakalutas nito sa unang subok",
+    "Huwag magalit kung hindi mo ito malutas",
+    "Kaya mo bang lutasin ito nang hindi tumitingin sa comments?",
+    "Isulat ang sagot mo sa comments",
+    "Tingnan natin kung gaano ka kagaling sa math",
+    "Maging tapat, ilang segundo ang inabot mo?",
+    "Tingnan natin kung sino ang unang makakalutas",
+  ],
+};
+
 function algebraSprite(templateId: number) {
   return {
     src: "/puzzle/algebra/algebra-set-1.webp",
@@ -348,17 +538,6 @@ const COPY: Record<AqryoLocale, PuzzleCopy> = {
   },
 };
 
-const UNDETERMINED: Record<AqryoLocale, string> = {
-  tr:"Belirlenemez", en:"Cannot be determined", es:"Indeterminado", pt:"Indeterminado",
-  fr:"Indéterminé", de:"Nicht bestimmbar", it:"Indeterminato", ar:"لا يمكن تحديده",
-  hi:"निर्धारित नहीं", id:"Tidak dapat ditentukan", ru:"Нельзя определить",
-  bn:"নির্ধারণ করা যায় না", ur:"تعین نہیں کیا جا سکتا", vi:"Không xác định được", fil:"Hindi matukoy",
-};
-const UNDETERMINED_SHORT: Record<AqryoLocale, string> = {
-  tr:"Belirsiz",en:"Unknown",es:"Indefinido",pt:"Indefinido",fr:"Indéfini",
-  de:"Unklar",it:"Incerto",ar:"غير محدد",hi:"अज्ञात",id:"Tak pasti",
-  ru:"Неизвестно",bn:"অনির্ণীত",ur:"نامعلوم",vi:"Không rõ",fil:"Di tiyak",
-};
 const SOLUTION_TITLE: Record<AqryoLocale,string> = {
   tr:"Çözümü göster",en:"Show solution",es:"Ver solución",pt:"Ver solução",
   fr:"Voir la solution",de:"Lösung zeigen",it:"Mostra la soluzione",ar:"عرض الحل",
@@ -483,6 +662,7 @@ function PuzzleBuilderPage() {
   const [debateTemplate,setDebateTemplate]=useState(()=>pickDebateTemplate());
   const [debateImage,setDebateImage]=useState<string|null>(null);
   const [algebraTemplate,setAlgebraTemplate]=useState(()=>pickAlgebraTemplate());
+  const [algebraChallenge,setAlgebraChallenge]=useState(()=>pickAlgebraChallenge());
   const [algebraImage,setAlgebraImage]=useState<string|null>(null);
   const [sceneTemplate,setSceneTemplate]=useState(()=>nextSceneTemplate());
   const [sceneImage,setSceneImage]=useState<string|null>(null);
@@ -557,16 +737,20 @@ function PuzzleBuilderPage() {
     setPuzzle(fresh);
     setPresentation(next==="math" ? "debate" : "clean");
     if(next==="math") setDebateTemplate((current)=>pickDebateTemplate(current));
-    else if(next==="algebra") setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
-    else setSceneTemplate((current)=>nextSceneTemplate(current));
+    else if(next==="algebra") {
+      setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
+      setAlgebraChallenge((current)=>pickAlgebraChallenge(current));
+    } else setSceneTemplate((current)=>nextSceneTemplate(current));
     remember(fresh);
   }
 
   function regenerate(){
     const fresh=generate(kind,recent[kind]);
     if(kind==="math") setDebateTemplate((current)=>pickDebateTemplate(current));
-    else if(kind==="algebra") setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
-    else setSceneTemplate((current)=>nextSceneTemplate(current));
+    else if(kind==="algebra") {
+      setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
+      setAlgebraChallenge((current)=>pickAlgebraChallenge(current));
+    } else setSceneTemplate((current)=>nextSceneTemplate(current));
     setPuzzle(fresh);
     remember(fresh);
     setCopied(false);
@@ -578,7 +762,7 @@ function PuzzleBuilderPage() {
     return new XMLSerializer().serializeToString(svgRef.current);
   }
 
-  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImage?"ready":"loading"}:${algebraTemplate}:${algebraImage?"algebra-ready":"algebra-loading"}:${sceneTemplate}:${sceneImage?"scene-ready":"scene-loading"}`;
+  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImage?"ready":"loading"}:${algebraTemplate}:${algebraChallenge}:${algebraImage?"algebra-ready":"algebra-loading"}:${sceneTemplate}:${sceneImage?"scene-ready":"scene-loading"}`;
   useEffect(() => {
     let cancelled = false;
     if(presentation==="debate" && !debateImage) return;
@@ -671,7 +855,7 @@ function PuzzleBuilderPage() {
                 {locale === "tr" ? "Görseli değiştir" : t("newQuestion")} ↻
               </button>
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate} algebraImage={algebraImage} sceneImage={sceneImage}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate} algebraChallenge={algebraChallenge} algebraImage={algebraImage} sceneImage={sceneImage}/>
               </div>
             </div>
           </div>
@@ -733,8 +917,8 @@ function PuzzleBuilderPage() {
 
 const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
-  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;algebraImage:string|null;sceneImage:string|null}
->(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,algebraImage,sceneImage},ref){
+  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;algebraChallenge:number;algebraImage:string|null;sceneImage:string|null}
+>(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,algebraChallenge,algebraImage,sceneImage},ref){
   const answer = puzzle.answer;
   const headline = headlineFor(locale,puzzle);
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
@@ -743,15 +927,49 @@ const PuzzleSvg=React.forwardRef<
   const compactDebate = COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
 
   if (puzzle.kind==="algebra" && algebraImage) {
+    const challenge = ALGEBRA_CHALLENGES[locale][algebraChallenge] ?? ALGEBRA_CHALLENGES.en[algebraChallenge] ?? "";
+    const challengeLines = (() => {
+      const words = challenge.trim().split(/\s+/).filter(Boolean);
+      const lines:string[] = [];
+      let current = "";
+      for (const word of words) {
+        const candidate = current ? `${current} ${word}` : word;
+        if (candidate.length <= 27 || !current) current = candidate;
+        else { lines.push(current); current = word; }
+      }
+      if (current) lines.push(current);
+      if (lines.length <= 3) return lines;
+      return [lines[0], lines[1], lines.slice(2).join(" ")];
+    })();
+    const challengeLongest = Math.max(...challengeLines.map((line)=>line.length),1);
+    const challengeSize = challengeLongest > 30 ? 9.5 : challengeLongest > 23 ? 10.5 : 12;
     const rows = questionRows.slice(0, 4);
     const longest = Math.max(...rows.map((row)=>row.length), 1);
     const size = longest > 22 ? 11 : longest > 15 ? 13 : 16;
     const lineGap = 29;
     const blockHeight = Math.max(0, (rows.length - 1) * lineGap);
-    const startY = 154 - blockHeight / 2;
+    const titleTop = challengeLines.length===1 ? 72 : challengeLines.length===2 ? 65 : 59;
+    const equationsCenter = challengeLines.length===3 ? 188 : challengeLines.length===2 ? 180 : 172;
+    const startY = equationsCenter - blockHeight / 2;
+    const rtl = locale==="ar" || locale==="ur";
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <image href={algebraImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
+        <text
+          x="180"
+          y={titleTop}
+          textAnchor="middle"
+          fontFamily="Arial,'Noto Sans',sans-serif"
+          fontSize={challengeSize}
+          fontWeight="900"
+          fill="#17101f"
+          direction={rtl?"rtl":"ltr"}
+          unicodeBidi="plaintext"
+        >
+          {challengeLines.map((line,index)=>(
+            <tspan key={`${puzzle.id}-challenge-${index}`} x="180" dy={index===0?0:15}>{line}</tspan>
+          ))}
+        </text>
         {rows.map((row,index)=>(
           <text
             key={`${puzzle.id}-algebra-${index}`}
