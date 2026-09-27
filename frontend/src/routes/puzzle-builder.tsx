@@ -11,6 +11,7 @@ export const Route = createFileRoute("/puzzle-builder")({
 });
 
 type PuzzleKind = ViralKind;
+type BasePuzzleKind = Exclude<PuzzleKind, "pattern">;
 type Presentation = "clean" | "debate";
 type Puzzle = ViralPuzzle & { id: string };
 
@@ -44,6 +45,40 @@ async function loadDebateTemplate(templateId: number) {
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas unavailable");
   context.drawImage(image, column * 432, 0, 432, 540, 0, 0, 1080, 1350);
+  return canvas.toDataURL("image/jpeg", 0.94);
+}
+
+const PATTERN_TEMPLATES = [
+  "/puzzle/pattern/pattern-01-metro.webp",
+  "/puzzle/pattern/pattern-02-rainy-neon.webp",
+  "/puzzle/pattern/pattern-03-paris.webp",
+  "/puzzle/pattern/pattern-04-campus.webp",
+  "/puzzle/pattern/pattern-05-coast.webp",
+  "/puzzle/pattern/pattern-06-cafe.webp",
+  "/puzzle/pattern/pattern-07-rooftop.webp",
+  "/puzzle/pattern/pattern-08-airport.webp",
+  "/puzzle/pattern/pattern-09-waterfront.webp",
+  "/puzzle/pattern/pattern-10-gallery.webp",
+] as const;
+
+function pickPatternTemplate(previous?: number) {
+  const pool = PATTERN_TEMPLATES.map((_, index) => index).filter((index) => index !== previous);
+  return pool[Math.floor(Math.random() * pool.length)] ?? 0;
+}
+
+async function loadPatternTemplate(templateIndex: number) {
+  const image = new Image();
+  await new Promise<void>((resolve, reject) => {
+    image.onload = () => resolve();
+    image.onerror = () => reject(new Error("Pattern template could not be loaded"));
+    image.src = PATTERN_TEMPLATES[templateIndex] ?? PATTERN_TEMPLATES[0];
+  });
+  const canvas = document.createElement("canvas");
+  canvas.width = 1080;
+  canvas.height = 1350;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("Canvas unavailable");
+  context.drawImage(image, 0, 0, 1080, 1350);
   return canvas.toDataURL("image/jpeg", 0.94);
 }
 
@@ -96,9 +131,9 @@ function downloadPng(file: File) {
 }
 
 type PuzzleCopy = {
-  descriptions: Record<PuzzleKind, string>;
-  titles: Record<PuzzleKind, string>;
-  subtitles: Record<PuzzleKind, string>;
+  descriptions: Record<BasePuzzleKind, string>;
+  titles: Record<BasePuzzleKind, string>;
+  subtitles: Record<BasePuzzleKind, string>;
   cleanDesc: string;
   debateDesc: string;
   debateQuestion: string;
@@ -107,7 +142,7 @@ type PuzzleCopy = {
 const RECENT_LIMIT = 40;
 const ROTATION_STORAGE_KEY = "aqryo-puzzle-rotation-v2";
 type RecentFamilies = Record<PuzzleKind, string[]>;
-const emptyRecent = (): RecentFamilies => ({math:[],geometry:[],count:[],algebra:[],area:[]});
+const emptyRecent = (): RecentFamilies => ({math:[],geometry:[],count:[],algebra:[],area:[],pattern:[]});
 
 function readRecent(): RecentFamilies {
   if(typeof window==="undefined") return emptyRecent();
@@ -308,7 +343,22 @@ const AREA_TITLES: Record<AqryoLocale, {area:string;perimeter:string;length:stri
   fil:{area:"Ano ang lawak ng may kulay?",perimeter:"Ano ang perimeter ng hugis?",length:"Gaano kahaba ang x?"},
 };
 
+
+const PATTERN_COPY: Partial<Record<AqryoLocale, {label:string;description:string;title:string;subtitle:string}>> = {
+  tr: { label:"Örüntü", description:"Sayı dizileri, artan farklar ve gizli kurallar", title:"Sıradaki sayı kaç?", subtitle:"Kuralı yakala 👀" },
+  en: { label:"Pattern", description:"Number sequences, changing gaps and hidden rules", title:"What comes next?", subtitle:"Spot the rule 👀" },
+};
+
+function patternCopy(locale:AqryoLocale) {
+  return PATTERN_COPY[locale] ?? PATTERN_COPY.en!;
+}
+
+function subtitleFor(locale:AqryoLocale, kind:PuzzleKind, copy:PuzzleCopy) {
+  return kind==="pattern" ? patternCopy(locale).subtitle : copy.subtitles[kind];
+}
+
 function headlineFor(locale:AqryoLocale,puzzle:Puzzle) {
+  if(puzzle.kind==="pattern") return patternCopy(locale).title;
   if(puzzle.kind==="count" && puzzle.countTarget) return COUNT_TITLES[locale][puzzle.countTarget];
   if(puzzle.kind==="area" && puzzle.areaTarget) return AREA_TITLES[locale][puzzle.areaTarget];
   return COPY[locale].titles[puzzle.kind];
@@ -324,7 +374,7 @@ function generate(kind: PuzzleKind, recent: string[]): Puzzle {
 
 function ctaFor(locale: AqryoLocale, puzzle: Puzzle) {
   const copy = COPY[locale] ?? COPY.en;
-  return `${headlineFor(locale,puzzle)} · ${copy.subtitles[puzzle.kind]}`;
+  return `${headlineFor(locale,puzzle)} · ${subtitleFor(locale,puzzle.kind,copy)}`;
 }
 
 function PuzzleBuilderPage() {
@@ -341,6 +391,8 @@ function PuzzleBuilderPage() {
   const [shareImage,setShareImage]=useState<{key:string;file:File}|null>(null);
   const [debateTemplate,setDebateTemplate]=useState(()=>pickDebateTemplate());
   const [debateImage,setDebateImage]=useState<string|null>(null);
+  const [patternTemplate,setPatternTemplate]=useState(()=>pickPatternTemplate());
+  const [patternImage,setPatternImage]=useState<string|null>(null);
   const previewRef=useRef<HTMLDivElement|null>(null);
   const svgRef=useRef<SVGSVGElement|null>(null);
 
@@ -373,6 +425,18 @@ function PuzzleBuilderPage() {
     return()=>{cancelled=true};
   },[presentation,kind,debateTemplate]);
 
+  useEffect(()=>{
+    if(kind!=="pattern"){
+      setPatternImage(null);
+      return;
+    }
+    let cancelled=false;
+    void loadPatternTemplate(patternTemplate)
+      .then((dataUrl)=>{ if(!cancelled) setPatternImage(dataUrl); })
+      .catch((error)=>{ if(!cancelled) console.error(error); });
+    return()=>{cancelled=true};
+  },[kind,patternTemplate]);
+
   function remember(next:Puzzle){
     setRecent((old)=>{
       const familyCount=VIRAL_FAMILIES.filter((family)=>family.kind===next.kind).length;
@@ -387,12 +451,14 @@ function PuzzleBuilderPage() {
     const fresh=generate(next,recent[next]);
     setPuzzle(fresh);
     setPresentation("clean");
+    if(next==="pattern") setPatternTemplate((current)=>pickPatternTemplate(current));
     remember(fresh);
   }
 
   function regenerate(){
     const fresh=generate(kind,recent[kind]);
     if(presentation==="debate") setDebateTemplate((current)=>pickDebateTemplate(current));
+    if(kind==="pattern") setPatternTemplate((current)=>pickPatternTemplate(current));
     setPuzzle(fresh);
     remember(fresh);
     setCopied(false);
@@ -404,13 +470,14 @@ function PuzzleBuilderPage() {
     return new XMLSerializer().serializeToString(svgRef.current);
   }
 
-  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImage?"ready":"loading"}`;
+  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImage?"ready":"loading"}:${puzzle.kind==="pattern"?patternTemplate:0}:${patternImage?"pattern-ready":"pattern-loading"}`;
   useEffect(() => {
     let cancelled = false;
     if(presentation==="debate" && !debateImage) return;
+    if(puzzle.kind==="pattern" && !patternImage) return;
     const source = serializeSvg();
     if (source) {
-      void puzzlePng(source, `aqryo-${puzzle.kind}-${puzzle.family}.png`, presentation==="debate")
+      void puzzlePng(source, `aqryo-${puzzle.kind}-${puzzle.family}.png`, presentation==="debate" || puzzle.kind==="pattern")
         .then((file) => { if (!cancelled) setShareImage({key:shareImageKey,file}); })
         .catch((error) => { if (!cancelled) console.error(error); });
     }
@@ -466,6 +533,7 @@ function PuzzleBuilderPage() {
     ["count",t("count"),copy.descriptions.count],
     ["algebra",t("algebra"),copy.descriptions.algebra],
     ["area",t("area"),copy.descriptions.area],
+    ["pattern",patternCopy(locale).label,patternCopy(locale).description],
   ];
 
   return (
@@ -495,7 +563,7 @@ function PuzzleBuilderPage() {
                 {locale === "tr" ? "Görseli değiştir" : t("newQuestion")} ↻
               </button>
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate} patternImage={patternImage}/>
               </div>
             </div>
           </div>
@@ -563,13 +631,42 @@ function PuzzleBuilderPage() {
 
 const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
-  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number}
->(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate},ref){
+  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;patternImage:string|null}
+>(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,patternImage},ref){
   const answer = puzzle.answerKey ? UNDETERMINED_SHORT[locale] : puzzle.answer;
   const headline = headlineFor(locale,puzzle);
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
   const questionRows = puzzleQuestionRows(puzzle.diagram);
   const compactDebate = COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
+  if (puzzle.kind==="pattern" && patternImage) {
+    const rows = (puzzle.patternRows?.length ? puzzle.patternRows : questionRows).slice(0, 7);
+    const colors = ["#2563eb","#0f766e","#7c3aed","#db2777","#dc2626","#ea580c","#f59e0b"];
+    const startY = rows.length >= 7 ? 88 : 104;
+    const gap = rows.length >= 7 ? 43 : 49;
+    return (
+      <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
+        <image href={patternImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
+        {rows.map((row,index)=>(
+          <text
+            key={`${puzzle.id}-pattern-${index}`}
+            x="282"
+            y={startY + index*gap}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontFamily="Arial,sans-serif"
+            fontSize={row.length>5?22:row.length>3?27:34}
+            fontWeight="900"
+            fill={row==="?"?"#f59e0b":colors[index % colors.length]}
+            stroke="rgba(255,255,255,.96)"
+            strokeWidth="4"
+            paintOrder="stroke"
+          >
+            {row}
+          </text>
+        ))}
+      </svg>
+    );
+  }
   if (presentation==="debate" && debateImage && (puzzle.kind==="math" || puzzle.kind==="algebra")) {
     const longest = Math.max(...questionRows.map((row)=>row.length), 1);
     const questionSize = longest > 28 ? 10 : longest > 20 ? 12 : 15;
@@ -608,7 +705,7 @@ const PuzzleSvg=React.forwardRef<
           <text x="241" y="410" fontSize="20" fontWeight="900" fill="#17101f">{puzzle.commonWrong}</text>
           <text x="180" y="462" textAnchor="middle" fontSize="18" fontWeight="900" fill="#6d28d9">{copy.debateQuestion}</text>
         </>
-      ) : <text x="180" y="440" textAnchor="middle" fontSize="16" fontWeight="900" fill="#6b7280">{copy.subtitles[puzzle.kind]}</text>}
+      ) : <text x="180" y="440" textAnchor="middle" fontSize="16" fontWeight="900" fill="#6b7280">{subtitleFor(locale,puzzle.kind,copy)}</text>}
     </svg>
   );
 });

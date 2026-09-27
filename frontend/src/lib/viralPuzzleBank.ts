@@ -2,7 +2,7 @@ import { COUNT_SCENES, countSceneSvg, countVisibleShapeGroups } from "./countPuz
 import { GEOMETRY_FAMILIES } from "./viralGeometryBank";
 import { AREA_FAMILIES } from "./viralAreaBank";
 
-export type ViralKind = "math" | "geometry" | "count" | "algebra" | "area";
+export type ViralKind = "math" | "geometry" | "count" | "algebra" | "area" | "pattern";
 export type ViralPuzzle = {
   family: string;
   kind: ViralKind;
@@ -13,6 +13,7 @@ export type ViralPuzzle = {
   answerKey?: "undetermined";
   countTarget?: "triangles" | "squares";
   areaTarget?: "area" | "perimeter" | "length";
+  patternRows?: string[];
 };
 export type Family = {
   id: string;
@@ -283,6 +284,159 @@ const algebra: Family[] = [
   },
 ];
 
+
+const pattern: Family[] = [
+  {
+    id: "pattern_double_plus_one",
+    kind: "pattern",
+    make: (r) => {
+      const start = choose(r, [1, 2, 3]);
+      const rows = [start];
+      for (let i = 0; i < 5; i += 1) rows.push(rows[rows.length - 1] * 2 + 1);
+      const shown = rows.slice(0, 5).map(String);
+      return value(rows[5], rows[4] * 2, rowDiagram(...shown, "?"), [
+        `Her adımda sayı 2 ile çarpılıp 1 ekleniyor`,
+        `${rows[4]}×2+1=${rows[5]}`,
+      ], { patternRows: [...shown, "?"] });
+    },
+  },
+  {
+    id: "pattern_squares",
+    kind: "pattern",
+    make: (r) => {
+      const start = choose(r, [1, 2, 3]);
+      const rows = Array.from({ length: 6 }, (_, i) => (start + i) ** 2);
+      const shown = rows.slice(0, 5).map(String);
+      return value(rows[5], rows[4] + (start + 5), rowDiagram(...shown, "?"), [
+        `Terimler ardışık sayıların kareleri`,
+        `${start + 5}²=${rows[5]}`,
+      ], { patternRows: [...shown, "?"] });
+    },
+  },
+  {
+    id: "pattern_triangular",
+    kind: "pattern",
+    make: (r) => {
+      const start = choose(r, [1, 2, 3]);
+      const rows = [start];
+      let gap = start + 1;
+      for (let i = 0; i < 5; i += 1) { rows.push(rows[rows.length - 1] + gap); gap += 1; }
+      const shown = rows.slice(0, 5).map(String);
+      return value(rows[5], rows[4] + gap, rowDiagram(...shown, "?"), [
+        `Farklar her adımda 1 artıyor`,
+        `${rows[4]}+${start + 5}=${rows[5]}`,
+      ], { patternRows: [...shown, "?"] });
+    },
+  },
+  {
+    id: "pattern_n_nplus1",
+    kind: "pattern",
+    make: (r) => {
+      const start = choose(r, [1, 2, 3]);
+      const rows = Array.from({ length: 6 }, (_, i) => {
+        const n = start + i;
+        return n * (n + 1);
+      });
+      const shown = rows.slice(0, 5).map(String);
+      const n = start + 5;
+      return value(rows[5], n * n, rowDiagram(...shown, "?"), [
+        `Her terim n×(n+1) biçiminde ilerliyor`,
+        `${n}×${n + 1}=${rows[5]}`,
+      ], { patternRows: [...shown, "?"] });
+    },
+  },
+  {
+    id: "pattern_doubling",
+    kind: "pattern",
+    make: (r) => {
+      const start = choose(r, [2, 3, 5, 7]);
+      const rows = Array.from({ length: 6 }, (_, i) => start * (2 ** i));
+      const shown = rows.slice(0, 5).map(String);
+      return value(rows[5], rows[4] + start, rowDiagram(...shown, "?"), [
+        `Her terim bir öncekinin 2 katı`,
+        `${rows[4]}×2=${rows[5]}`,
+      ], { patternRows: [...shown, "?"] });
+    },
+  },
+  {
+    id: "pattern_increasing_gap",
+    kind: "pattern",
+    make: (r) => {
+      const start = choose(r, [2, 4, 6]);
+      const firstGap = choose(r, [2, 3]);
+      const rows = [start];
+      let gap = firstGap;
+      for (let i = 0; i < 5; i += 1) { rows.push(rows[rows.length - 1] + gap); gap += 2; }
+      const shown = rows.slice(0, 5).map(String);
+      const nextGap = firstGap + 8;
+      return value(rows[5], rows[4] + nextGap + 2, rowDiagram(...shown, "?"), [
+        `Artış miktarı her adımda 2 büyüyor`,
+        `${rows[4]}+${nextGap}=${rows[5]}`,
+      ], { patternRows: [...shown, "?"] });
+    },
+  },
+  {
+    id: "pattern_cubes",
+    kind: "pattern",
+    make: (r) => {
+      const start = choose(r, [1, 2]);
+      const rows = Array.from({ length: 5 }, (_, i) => (start + i) ** 3);
+      const shown = rows.slice(0, 4).map(String);
+      const n = start + 4;
+      return value(rows[4], n * n, rowDiagram(...shown, "?"), [
+        `Terimler ardışık sayıların küpleri`,
+        `${n}³=${rows[4]}`,
+      ], { patternRows: [...shown, "?"] });
+    },
+  },
+  {
+    id: "pattern_fibonacci",
+    kind: "pattern",
+    make: (r) => {
+      const a = choose(r, [1, 2, 3]);
+      const b = choose(r, [1, 2, 3]);
+      const rows = [a, b];
+      while (rows.length < 7) rows.push(rows[rows.length - 1] + rows[rows.length - 2]);
+      const shown = rows.slice(0, 6).map(String);
+      return value(rows[6], rows[5] * 2, rowDiagram(...shown.slice(0,5), "?"), [
+        `Her terim önceki iki terimin toplamı`,
+        `${rows[4]}+${rows[5]}=${rows[6]}`,
+      ], { patternRows: [...shown, "?"] });
+    },
+  },
+  {
+    id: "pattern_alternating",
+    kind: "pattern",
+    make: (r) => {
+      const start = choose(r, [2, 3, 4]);
+      const rows = [start];
+      for (let i = 0; i < 6; i += 1) {
+        rows.push(i % 2 === 0 ? rows[rows.length - 1] * 2 : rows[rows.length - 1] + 3);
+      }
+      const shown = rows.slice(0, 6).map(String);
+      return value(rows[6], rows[5] + 3, rowDiagram(...shown.slice(0,5), "?"), [
+        `Kural sırayla ×2 ve +3 olarak tekrar ediyor`,
+        `${rows[5]}×2=${rows[6]}`,
+      ], { patternRows: [...shown, "?"] });
+    },
+  },
+  {
+    id: "pattern_descending_gap",
+    kind: "pattern",
+    make: (r) => {
+      const start = choose(r, [48, 54, 60]);
+      const rows = [start];
+      let gap = 7;
+      for (let i = 0; i < 5; i += 1) { rows.push(rows[rows.length - 1] - gap); gap -= 1; }
+      const shown = rows.slice(0, 5).map(String);
+      return value(rows[5], rows[4] - 4, rowDiagram(...shown, "?"), [
+        `Çıkarılan sayı 7, 6, 5, 4, 3 diye azalıyor`,
+        `${rows[4]}−3=${rows[5]}`,
+      ], { patternRows: [...shown, "?"] });
+    },
+  },
+];
+
 const count: Family[] = COUNT_SCENES.map((scene) => ({
   id: scene.id,
   kind: "count" as const,
@@ -307,6 +461,7 @@ export const VIRAL_FAMILIES: Family[] = [
   ...GEOMETRY_FAMILIES,
   ...count,
   ...algebra,
+  ...pattern,
   ...AREA_FAMILIES,
 ];
 export function makeViralPuzzle(
