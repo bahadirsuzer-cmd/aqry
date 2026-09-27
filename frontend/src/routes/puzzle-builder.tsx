@@ -343,7 +343,12 @@ function puzzleQuestionRows(diagram: string) {
     .slice(0, 4);
 }
 
-async function puzzlePng(source: string, name: string, fourByFive = false): Promise<File> {
+async function puzzlePng(
+  source: string,
+  name: string,
+  fourByFive = false,
+  backgroundDataUrl?: string | null,
+): Promise<File> {
   const svgUrl = URL.createObjectURL(new Blob([source], { type: "image/svg+xml;charset=utf-8" }));
   try {
     const image = new Image();
@@ -352,12 +357,28 @@ async function puzzlePng(source: string, name: string, fourByFive = false): Prom
       image.onerror = () => reject(new Error("Puzzle image could not be rendered"));
       image.src = svgUrl;
     });
+
     const canvas = document.createElement("canvas");
     canvas.width = 1080;
     canvas.height = fourByFive ? 1350 : 1440;
     const context = canvas.getContext("2d");
     if (!context) throw new Error("Canvas unavailable");
+
+    if (backgroundDataUrl) {
+      const background = new Image();
+      await new Promise<void>((resolve, reject) => {
+        background.onload = () => resolve();
+        background.onerror = () => reject(new Error("Puzzle background could not be rendered"));
+        background.src = backgroundDataUrl;
+      });
+      context.drawImage(background, 0, 0, canvas.width, canvas.height);
+    } else {
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
     const blob = await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((result) => result ? resolve(result) : reject(new Error("PNG unavailable")), "image/png");
     });
@@ -582,8 +603,8 @@ const AREA_TITLES: Record<AqryoLocale, {area:string;perimeter:string;length:stri
 
 
 const PATTERN_COPY: Partial<Record<AqryoLocale, {label:string;description:string;title:string;mappingTitle:string;subtitle:string}>> = {
-  tr: { label:"Örüntü", description:"Sayı dizileri, girdi-çıktı ilişkileri ve gizli kurallar", title:"Sıradaki sayı kaç?", mappingTitle:"Kuralı bul: ? kaç?", subtitle:"Gizli kuralı yakala 👀" },
-  en: { label:"Pattern", description:"Number sequences, input-output relations and hidden rules", title:"What comes next?", mappingTitle:"Find the rule: what is ?", subtitle:"Spot the hidden rule 👀" },
+  tr: { label:"Örüntü", description:"Sayı dizileri, girdi-çıktı ilişkileri ve gizli kurallar", title:"Sıradaki sayı kaç?", mappingTitle:"Kuralı bul", subtitle:"Gizli kuralı yakala 👀" },
+  en: { label:"Pattern", description:"Number sequences, input-output relations and hidden rules", title:"What comes next?", mappingTitle:"Find the rule", subtitle:"Spot the hidden rule 👀" },
 };
 
 function patternCopy(locale:AqryoLocale) {
@@ -770,7 +791,19 @@ function PuzzleBuilderPage() {
     if(puzzle.kind!=="math" && puzzle.kind!=="algebra" && !sceneImage) return;
     const source = serializeSvg();
     if (source) {
-      void puzzlePng(source, `aqryo-${puzzle.kind}-${puzzle.family}.png`, true)
+      const backgroundDataUrl =
+        puzzle.kind === "math"
+          ? debateImage
+          : puzzle.kind === "algebra"
+            ? algebraImage
+            : sceneImage;
+
+      void puzzlePng(
+        source,
+        `aqryo-${puzzle.kind}-${puzzle.family}.png`,
+        true,
+        backgroundDataUrl,
+      )
         .then((file) => { if (!cancelled) setShareImage({key:shareImageKey,file}); })
         .catch((error) => { if (!cancelled) console.error(error); });
     }
