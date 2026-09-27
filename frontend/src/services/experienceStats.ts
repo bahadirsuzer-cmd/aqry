@@ -3,6 +3,7 @@ import { supabase } from "./supabase";
 export interface ExperienceStats {
   totalViews: number;
   totalStarts: number;
+  totalResponses: number;
   totalCompletions: number;
   highestScore: number;
   averageScore: number;
@@ -16,7 +17,10 @@ interface CompletionRow {
 }
 
 interface ExperienceEventRow {
-  event_type: "view" | "start";
+  event_type: "view" | "start" | "share";
+  metadata?: {
+    kind?: string;
+  } | null;
 }
 
 export async function getExperienceStats(
@@ -40,7 +44,7 @@ supabase
   }),
     supabase
       .from("experience_events")
-      .select("event_type")
+      .select("event_type, metadata")
       .eq(
         "experience_id",
         experienceId,
@@ -84,10 +88,17 @@ const uniqueCompletions = Array.from(
       event.event_type === "start",
   ).length;
 
+  const totalResponses = events.filter(
+    (event) =>
+      event.event_type === "share" &&
+      event.metadata?.kind === "anonymous_message",
+  ).length;
+
   if (uniqueCompletions.length === 0) {
     return {
       totalViews,
       totalStarts,
+      totalResponses,
       totalCompletions: 0,
       highestScore: 0,
       averageScore: 0,
@@ -106,6 +117,7 @@ const uniqueCompletions = Array.from(
   return {
     totalViews,
     totalStarts,
+    totalResponses,
     totalCompletions:
   uniqueCompletions.length,
     highestScore: Math.max(...scores),
