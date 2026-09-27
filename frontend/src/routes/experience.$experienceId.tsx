@@ -1085,9 +1085,17 @@ useEffect(() => {
           ) : null}
 
           {screen === "result" ? (
-            <ExperienceFeedbackCard
-              experienceId={experience.id}
-            />
+            <>
+              <ExperienceFeedbackCard
+                experienceId={experience.id}
+              />
+              <a
+                href="/"
+                className="mt-4 flex h-12 w-full items-center justify-center rounded-full bg-black px-5 text-[13px] font-black text-white shadow-[0_10px_28px_rgba(0,0,0,0.10)]"
+              >
+                Sen de içerik üret →
+              </a>
+            </>
           ) : null}
 
           {screen === "completion" && (
@@ -4264,7 +4272,9 @@ function QuestionConfessionPublicExperience({
     <div className={`min-h-screen bg-gradient-to-br ${accent} px-4 py-8 text-foreground sm:py-14`}>
       <div className="mx-auto max-w-[520px]">
         <div className="mb-4 flex items-center justify-center">
-          <img src="/aqryo-logo.png" alt="AQRYO" className="h-12 w-auto brightness-0 invert" />
+          <a href="/" aria-label="AQRYO ana sayfa" className="inline-flex">
+            <img src="/aqryo-logo.png" alt="AQRYO" className="h-12 w-auto brightness-0 invert" />
+          </a>
         </div>
 
         {experience.creator ? (
@@ -4291,13 +4301,13 @@ function QuestionConfessionPublicExperience({
               </p>
 
               <a
-                href="/creator-auth"
+                href="/"
                 className="mt-5 flex h-12 w-full items-center justify-center rounded-full bg-black px-5 text-[13px] font-black text-white"
               >
-                Sen de anonim link oluştur →
+                Sen de içerik üret →
               </a>
               <p className="mt-2 text-[11px] font-semibold text-emerald-900/60">
-                Kendi linkini oluştur, paylaş ve anonim mesajlarını topla. #AQRYO
+                AQRYO ana sayfasına git ve kendi içeriğini oluşturmaya başla.
               </p>
 
               <button
