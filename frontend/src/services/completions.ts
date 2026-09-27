@@ -50,13 +50,14 @@ export async function saveCompletion({
     completion,
   );
 
-  const { data, error } = await supabase
-  .from("completions")
-  .upsert(completion, {
-    onConflict: "experience_id,participant_key",
-  })
-  .select()
-  .single();
+  const { error } = await supabase
+    .from("completions")
+    .insert(completion);
+
+  if (error?.code === "23505") {
+    return completion;
+  }
+
   if (error) {
     console.error(
       "Supabase completion hatası:",
@@ -68,10 +69,5 @@ export async function saveCompletion({
     );
   }
 
-  console.log(
-    "Supabase completion kaydedildi:",
-    data,
-  );
-
-  return data;
+  return completion;
 }
