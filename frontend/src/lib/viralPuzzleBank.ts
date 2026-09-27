@@ -525,7 +525,7 @@ export const VIRAL_FAMILIES: Family[] = [
   ...math,
   ...GEOMETRY_FAMILIES,
   ...count,
-  ...algebra,
+  ...algebra.filter((family) => family.id !== "missing_information"),
   ...pattern,
   ...AREA_FAMILIES.filter((family) =>
     !["corner_cut","uniform_frame","overlap_union","triangle_missing","t_union","corridor_difference","trapezoid_split"].includes(family.id)
