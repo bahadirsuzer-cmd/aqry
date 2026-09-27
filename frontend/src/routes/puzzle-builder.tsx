@@ -364,6 +364,9 @@ async function puzzlePng(
     const context = canvas.getContext("2d");
     if (!context) throw new Error("Canvas unavailable");
 
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
     if (backgroundDataUrl) {
       const background = new Image();
       await new Promise<void>((resolve, reject) => {
@@ -371,10 +374,36 @@ async function puzzlePng(
         background.onerror = () => reject(new Error("Puzzle background could not be rendered"));
         background.src = backgroundDataUrl;
       });
-      context.drawImage(background, 0, 0, canvas.width, canvas.height);
-    } else {
-      context.fillStyle = "#ffffff";
-      context.fillRect(0, 0, canvas.width, canvas.height);
+
+      const sourceWidth = background.naturalWidth || background.width;
+      const sourceHeight = background.naturalHeight || background.height;
+      const sourceRatio = sourceWidth / sourceHeight;
+      const targetRatio = canvas.width / canvas.height;
+
+      let sx = 0;
+      let sy = 0;
+      let sw = sourceWidth;
+      let sh = sourceHeight;
+
+      if (sourceRatio > targetRatio) {
+        sw = sourceHeight * targetRatio;
+        sx = (sourceWidth - sw) / 2;
+      } else if (sourceRatio < targetRatio) {
+        sh = sourceWidth / targetRatio;
+        sy = (sourceHeight - sh) / 2;
+      }
+
+      context.drawImage(
+        background,
+        sx,
+        sy,
+        sw,
+        sh,
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+      );
     }
 
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
@@ -840,8 +869,17 @@ function PuzzleBuilderPage() {
       setSharing(true);
       const file = shareImage?.key === shareImageKey ? shareImage.file : null;
       if(!file) throw new Error("Visual unavailable");
-      if(navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))){
-        await navigator.share({files:[file],text:socialText,title:"AQRYO"});
+      const canShareFile =
+        typeof navigator.share === "function" &&
+        typeof navigator.canShare === "function" &&
+        navigator.canShare({ files: [file] });
+
+      if (canShareFile) {
+        await navigator.share({
+          files: [file],
+          text: socialText,
+          title: "AQRYO",
+        });
       } else {
         downloadPng(file);
         const x=new URL("https://x.com/intent/tweet");
