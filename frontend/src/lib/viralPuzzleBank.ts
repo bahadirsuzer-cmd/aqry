@@ -414,7 +414,7 @@ const pattern: Family[] = [
         rows.push(i % 2 === 0 ? rows[rows.length - 1] * 2 : rows[rows.length - 1] + 3);
       }
       const shown = rows.slice(0, 6).map(String);
-      return value(rows[6], rows[5] + 3, rowDiagram(...shown.slice(0,5), "?"), [
+      return value(rows[6], rows[5] + 4, rowDiagram(...shown.slice(0,5), "?"), [
         `Kural sırayla ×2 ve +3 olarak tekrar ediyor`,
         `${rows[5]}×2=${rows[6]}`,
       ], { patternRows: [...shown, "?"] });

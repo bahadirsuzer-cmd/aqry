@@ -26,7 +26,7 @@ function pickDebateTemplate(previous?: number) {
 function debateSprite(templateId: number) {
   const zero = templateId - 1;
   return {
-    src: `/puzzle/who-is-right/kim-hakli-row-${Math.floor(zero / 10) + 1}.svg`,
+    src: `/puzzle/who-is-right/kim-hakli-row-${Math.floor(zero / 10) + 1}.webp`,
     column: zero % 10,
   };
 }
@@ -367,9 +367,13 @@ function headlineFor(locale:AqryoLocale,puzzle:Puzzle) {
 function generate(kind: PuzzleKind, recent: string[]): Puzzle {
   const families = VIRAL_FAMILIES.filter((family) => family.kind === kind);
   const seen = recent.filter((family) => families.some((candidate) => candidate.id === family));
-  // Exhaust every family before repeating; avoid the previous family at the cycle boundary.
   const excluded = seen.length >= families.length ? seen.slice(0, 1) : seen;
-  return { id: crypto.randomUUID(), ...makeViralPuzzle(kind, excluded) };
+  try {
+    return { id: crypto.randomUUID(), ...makeViralPuzzle(kind, excluded) };
+  } catch (error) {
+    console.error("Puzzle generation retry", error);
+    return { id: crypto.randomUUID(), ...makeViralPuzzle(kind, []) };
+  }
 }
 
 function ctaFor(locale: AqryoLocale, puzzle: Puzzle) {
@@ -641,11 +645,12 @@ const PuzzleSvg=React.forwardRef<
   if (puzzle.kind==="pattern" && patternImage) {
     const rows = (puzzle.patternRows?.length ? puzzle.patternRows : questionRows).slice(0, 7);
     const colors = ["#2563eb","#0f766e","#7c3aed","#db2777","#dc2626","#ea580c","#f59e0b"];
-    const startY = rows.length >= 7 ? 88 : 104;
-    const gap = rows.length >= 7 ? 43 : 49;
+    const startY = rows.length >= 7 ? 86 : 98;
+    const gap = rows.length >= 7 ? 42 : 50;
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <image href={patternImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
+        <rect x="214" y="38" width="136" height="370" rx="10" fill="#ffffff" fillOpacity="0.93"/>
         {rows.map((row,index)=>(
           <text
             key={`${puzzle.id}-pattern-${index}`}
@@ -654,12 +659,9 @@ const PuzzleSvg=React.forwardRef<
             textAnchor="middle"
             dominantBaseline="middle"
             fontFamily="Arial,sans-serif"
-            fontSize={row.length>5?22:row.length>3?27:34}
+            fontSize={row.length>5?21:row.length>3?27:35}
             fontWeight="900"
             fill={row==="?"?"#f59e0b":colors[index % colors.length]}
-            stroke="rgba(255,255,255,.96)"
-            strokeWidth="4"
-            paintOrder="stroke"
           >
             {row}
           </text>
