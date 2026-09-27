@@ -798,8 +798,12 @@ function PuzzleBuilderPage() {
             ? algebraImage
             : sceneImage;
 
+      const exportSource = backgroundDataUrl
+        ? source.replace(/<image\b[^>]*\/>/i, "")
+        : source;
+
       void puzzlePng(
-        source,
+        exportSource,
         `aqryo-${puzzle.kind}-${puzzle.family}.png`,
         true,
         backgroundDataUrl,
