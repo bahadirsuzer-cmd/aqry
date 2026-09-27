@@ -92,6 +92,23 @@ async function loadSceneTemplate(templateIndex: number) {
   return canvas.toDataURL("image/jpeg", 0.94);
 }
 
+function wrapHeadline(value: string, maxChars = 20) {
+  const words = value.trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return [value];
+  const lines: string[] = [];
+  let current = "";
+  for (const word of words) {
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length <= maxChars || !current) current = candidate;
+    else {
+      lines.push(current);
+      current = word;
+    }
+  }
+  if (current) lines.push(current);
+  return lines.slice(0, 2);
+}
+
 function puzzleQuestionRows(diagram: string) {
   const decode = (value: string) => value
     .replaceAll("&amp;", "&")
@@ -640,13 +657,14 @@ const PuzzleSvg=React.forwardRef<
   const answer = puzzle.answerKey ? UNDETERMINED_SHORT[locale] : puzzle.answer;
   const headline = headlineFor(locale,puzzle);
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
+  const headlineLines = wrapHeadline(headline, 20);
   const questionRows = puzzleQuestionRows(puzzle.diagram);
   const compactDebate = COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
   if (sceneImage && puzzle.kind!=="math" && puzzle.kind!=="algebra") {
     const safeX = 160;
-    const safeY = 34;
+    const safeY = 50;
     const safeW = 186;
-    const safeH = 318;
+    const safeH = 302;
     const rows = (puzzle.patternRows?.length ? puzzle.patternRows : questionRows).slice(0, 7);
     const colors = ["#2563eb","#dc2626","#7c3aed","#0f766e","#db2777","#ea580c","#f59e0b"];
 
@@ -682,8 +700,10 @@ const PuzzleSvg=React.forwardRef<
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-        <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?14:12} fontWeight="900" fill="#17101f">{headline}</text>
-        <svg x={safeX} y={safeY+30} width={safeW} height={safeH-35} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet">
+        <text x={safeX+safeW/2} y={safeY+22} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?18:16} fontWeight="900" fill="#17101f">
+          {headlineLines.map((line,index)=><tspan key={`${puzzle.id}-headline-${index}`} x={safeX+safeW/2} dy={index===0?0:20}>{line}</tspan>)}
+        </text>
+        <svg x={safeX} y={safeY+(headlineLines.length>1?62:48)} width={safeW} height={safeH-(headlineLines.length>1?67:53)} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet">
           <g dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
         </svg>
       </svg>
