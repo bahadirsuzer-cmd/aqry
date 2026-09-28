@@ -725,6 +725,7 @@ function drawSquare(
 function drawOg(
   ctx: CanvasRenderingContext2D,
   source: ShareCardSource,
+  image: HTMLImageElement | null,
   theme: ShareCardTheme,
 ) {
   const { label, cta, helper } = getShareCopy(source);
@@ -738,6 +739,19 @@ function drawOg(
 
   ctx.fillStyle = background;
   ctx.fillRect(0, 0, width, height);
+
+  if (source.type === "story" && image) {
+    ctx.save();
+    drawImageCover(ctx, image, 0, 0, width, height);
+
+    const overlay = ctx.createLinearGradient(0, 0, width, 0);
+    overlay.addColorStop(0, "rgba(20,7,45,0.82)");
+    overlay.addColorStop(0.62, "rgba(20,7,45,0.48)");
+    overlay.addColorStop(1, "rgba(20,7,45,0.18)");
+    ctx.fillStyle = overlay;
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+  }
 
   ctx.fillStyle = "rgba(255,255,255,0.10)";
   ctx.beginPath();
@@ -1117,6 +1131,7 @@ export async function renderShareCard(
     drawOg(
       ctx,
       source,
+      image,
       theme,
     );
   } else {
