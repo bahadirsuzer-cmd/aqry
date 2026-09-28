@@ -16,7 +16,7 @@ type Presentation = "clean" | "debate";
 type Puzzle = ViralPuzzle & { id: string };
 
 const DEBATE_TEMPLATE_IDS = Array.from({ length: 40 }, (_, index) => index + 1);
-const COMPACT_DEBATE_TEMPLATES = new Set(DEBATE_TEMPLATE_IDS);
+const COMPACT_DEBATE_TEMPLATES = new Set<number>();
 
 function pickDebateTemplate(previous?: number) {
   const pool = DEBATE_TEMPLATE_IDS.filter((id) => id !== previous);
