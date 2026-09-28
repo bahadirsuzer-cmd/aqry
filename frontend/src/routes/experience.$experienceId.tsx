@@ -20,6 +20,7 @@ import { ReportExperienceDialog } from "@/components/experience/ReportExperience
 import { PublicNavigation } from "@/components/home/PublicNavigation";
 import { supabase } from "@/services/supabase";
 import { getPublicShareUrl } from "@/services/shareAssets";
+import { createShareCardBlob } from "@/services/shareCards";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
@@ -1751,11 +1752,83 @@ function StoryResultScreen({
   onRestart: () => void;
   onComplete: () => void;
 }) {
-  const story =
-    experience.story;
+  const story = experience.story;
+  const [sharing, setSharing] = useState(false);
 
   if (!story) {
     return null;
+  }
+
+  const shareText = `“${experience.title}” — devamını gör 👀 #AQRYO`;
+
+  async function shareStory() {
+    if (sharing) {
+      return;
+    }
+
+    try {
+      setSharing(true);
+
+      const blob = await createShareCardBlob(
+        {
+          id: experience.id,
+          title: experience.title,
+          type: "story",
+          coverImageUrl: experience.cover.imageUrl,
+          coverLabel: experience.cover.label,
+          testMode: null,
+        },
+        "story",
+      );
+
+      const file = new File(
+        [blob],
+        `aqryo-story-${experience.id}.png`,
+        { type: "image/png" },
+      );
+
+      const canShareFile =
+        typeof navigator.share === "function" &&
+        typeof navigator.canShare === "function" &&
+        navigator.canShare({ files: [file] });
+
+      if (canShareFile) {
+        await navigator.share({
+          files: [file],
+          text: shareText,
+          title: "AQRYO",
+        });
+        return;
+      }
+
+      const objectUrl = URL.createObjectURL(file);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = file.name;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(objectUrl);
+
+      const x = new URL("https://x.com/intent/tweet");
+      x.searchParams.set("text", shareText);
+      window.open(
+        x.toString(),
+        "_blank",
+        "noopener,noreferrer",
+      );
+    } catch (error) {
+      if (
+        !(
+          error instanceof DOMException &&
+          error.name === "AbortError"
+        )
+      ) {
+        console.error("Hikâye paylaşımı başarısız:", error);
+      }
+    } finally {
+      setSharing(false);
+    }
   }
 
   return (
@@ -1778,8 +1851,17 @@ function StoryResultScreen({
 
       <button
         type="button"
+        disabled={sharing}
+        onClick={() => void shareStory()}
+        className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-black text-[14px] font-black text-white disabled:opacity-50"
+      >
+        {sharing ? "Görsel hazırlanıyor…" : "Paylaş ↗"}
+      </button>
+
+      <button
+        type="button"
         onClick={onComplete}
-        className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-primary text-[14px] font-black text-white"
+        className="mt-3 flex h-12 w-full items-center justify-center rounded-full bg-primary text-[14px] font-black text-white"
       >
         Tamamla →
       </button>
