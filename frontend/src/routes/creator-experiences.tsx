@@ -1654,7 +1654,7 @@ async function toggleExperienceStatus() {
       if (canShareFile) {
         await navigator.share({
           files: [file],
-          text: getShareText(),
+          text: `${getShareText()}\n${experienceUrl}`,
           title: "AQRYO",
         });
         return;
@@ -1670,7 +1670,10 @@ async function toggleExperienceStatus() {
       URL.revokeObjectURL(objectUrl);
 
       const shareUrl = new URL("https://x.com/intent/tweet");
-      shareUrl.searchParams.set("text", getShareText());
+      shareUrl.searchParams.set(
+        "text",
+        `${getShareText()}\n${experienceUrl}`,
+      );
       window.open(shareUrl.toString(), "_blank", "noopener,noreferrer");
     } catch (error) {
       if (!(error instanceof DOMException && error.name === "AbortError")) {
