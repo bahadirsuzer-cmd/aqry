@@ -1068,20 +1068,24 @@ const PuzzleSvg=React.forwardRef<
   }
 
   if (sceneImage && puzzle.kind!=="math" && puzzle.kind!=="algebra") {
+    const safeX = 160;
+    const safeY = 50;
+    const safeW = 186;
+    const safeH = 302;
     const rows = (puzzle.patternRows?.length ? puzzle.patternRows : questionRows).slice(0, 7);
     const colors = ["#2563eb","#dc2626","#7c3aed","#0f766e","#db2777","#ea580c","#f59e0b"];
 
     if (puzzle.kind==="pattern") {
       const gap = rows.length >= 6 ? 45 : 54;
-      const startY = 118;
+      const startY = safeY + 58;
       return (
         <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
           <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-          <text x="180" y="72" textAnchor="middle" fontFamily="Arial,sans-serif" fontSize="13" fontWeight="900" fill="#17101f">{headline}</text>
+          <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize="13" fontWeight="900" fill="#17101f">{headline}</text>
           {rows.map((row,index)=>(
             <text
               key={`${puzzle.id}-pattern-${index}`}
-              x="180"
+              x={safeX+safeW/2}
               y={startY + index*gap}
               textAnchor="middle"
               dominantBaseline="middle"
@@ -1089,7 +1093,7 @@ const PuzzleSvg=React.forwardRef<
               fontSize={row.length>12?20:row.length>8?23:row.length>5?27:34}
               fontWeight="900"
               fill={row.includes("?")?"#f59e0b":colors[index % colors.length]}
-              stroke="rgba(255,255,255,.94)"
+              stroke="rgba(255,255,255,.92)"
               strokeWidth="2.2"
               paintOrder="stroke"
             >
@@ -1103,10 +1107,10 @@ const PuzzleSvg=React.forwardRef<
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-        <text x="180" y="72" textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?18:16} fontWeight="900" fill="#17101f">
-          {headlineLines.map((line,index)=><tspan key={`${puzzle.id}-headline-${index}`} x="180" dy={index===0?0:20}>{line}</tspan>)}
+        <text x={safeX+safeW/2} y={safeY+22} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?18:16} fontWeight="900" fill="#17101f">
+          {headlineLines.map((line,index)=><tspan key={`${puzzle.id}-headline-${index}`} x={safeX+safeW/2} dy={index===0?0:20}>{line}</tspan>)}
         </text>
-        <svg x="38" y={headlineLines.length>1?112:96} width="284" height={headlineLines.length>1?286:302} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet">
+        <svg x={safeX} y={safeY+(headlineLines.length>1?62:48)} width={safeW} height={safeH-(headlineLines.length>1?67:53)} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet">
           <g dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
         </svg>
       </svg>
@@ -1120,12 +1124,8 @@ const PuzzleSvg=React.forwardRef<
     const rtl = locale==="ar" || locale==="ur";
     const longest = Math.max(...questionRows.map((row)=>row.length), 1);
     const questionSize = longest > 28 ? 10 : longest > 20 ? 12 : 15;
-    // The sprite artwork already reserves one shared central board for the
-    // question and both answer choices. Keep every debate template on that
-    // same coordinate system; template-specific offsets were pushing content
-    // onto the characters/background on mobile.
-    const questionY = 176;
-    const answerY = 236;
+    const questionY = compactDebate ? 104 : 176;
+    const answerY = compactDebate ? 157 : 118;
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <defs>
