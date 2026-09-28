@@ -1120,8 +1120,12 @@ const PuzzleSvg=React.forwardRef<
     const rtl = locale==="ar" || locale==="ur";
     const longest = Math.max(...questionRows.map((row)=>row.length), 1);
     const questionSize = longest > 28 ? 10 : longest > 20 ? 12 : 15;
-    const questionY = compactDebate ? 104 : 176;
-    const answerY = compactDebate ? 157 : 118;
+    // The sprite artwork already reserves one shared central board for the
+    // question and both answer choices. Keep every debate template on that
+    // same coordinate system; template-specific offsets were pushing content
+    // onto the characters/background on mobile.
+    const questionY = 176;
+    const answerY = 236;
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <defs>
