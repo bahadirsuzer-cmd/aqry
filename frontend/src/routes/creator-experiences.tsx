@@ -1617,7 +1617,7 @@ async function toggleExperienceStatus() {
       : experience.type === "guess"
         ? `${participantText} “${experience.title}” — doğru cevabı bulabilecek misin? 👀`
         : experience.type === "story"
-          ? `${participantText} “${experience.title}” içeriğini tamamladı. Sen de bak 👀`
+          ? `“${experience.title}” — devamını gör 👀 #AQRYO`
           : experience.testMode === "spectrum"
             ? `${participantText} “${experience.title}” sonucunu merak ediyor musun? Seninki kaç çıkacak?`
             : experience.testMode === "archetype"
