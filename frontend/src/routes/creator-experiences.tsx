@@ -5,6 +5,7 @@ import {
   Link,
 } from "@tanstack/react-router";
 import { supabase } from "@/services/supabase";
+import { createShareCardBlob } from "@/services/shareCards";
 import {
   getExperienceStats,
   type ExperienceStats,
@@ -32,6 +33,8 @@ interface CreatorExperience {
   moderated_at: string | null;
   published_at: string | null;
   created_at: string;
+  coverImageUrl: string;
+  coverLabel: string;
   stats: ExperienceStats;
 }
 
@@ -46,6 +49,8 @@ interface ExperienceRow {
   moderated_at: string | null;
   published_at: string | null;
   created_at: string;
+  cover_image_url: string | null;
+  cover_label: string | null;
   content: unknown;
 }
 
@@ -143,7 +148,9 @@ function CreatorExperiencesPage() {
               pause_reason,
               moderated_at,
               published_at,
-              created_at
+              created_at,
+              cover_image_url,
+              cover_label
             `,
           )
           .eq("creator_id", creator.id)
@@ -171,6 +178,8 @@ function CreatorExperiencesPage() {
 
                 return {
                   ...experience,
+                  coverImageUrl: experience.cover_image_url ?? "",
+                  coverLabel: experience.cover_label ?? "",
                   testMode:
                     getTestModeFromContent(
                       experience.content,
@@ -1604,25 +1613,70 @@ async function toggleExperienceStatus() {
   }
 
   function getShareText() {
-    const total =
-      experience.stats.totalCompletions;
-
-    const participantText =
-      total === 1
-        ? "1 kişi çözdü."
-        : `${total} kişi çözdü.`;
-
     return experience.type === "compatibility"
-      ? `${participantText} Şu an en yüksek uyum %${experience.stats.highestScore}. Daha yükseğini yapabilir misin?`
+      ? `“${experience.title}” — uyumunu gör 👀 #AQRYO`
       : experience.type === "guess"
-        ? `${participantText} “${experience.title}” — doğru cevabı bulabilecek misin? 👀`
+        ? `“${experience.title}” — doğru cevabı bulabilecek misin? 👀 #AQRYO`
         : experience.type === "story"
           ? `“${experience.title}” — devamını gör 👀 #AQRYO`
           : experience.testMode === "spectrum"
-            ? `${participantText} “${experience.title}” sonucunu merak ediyor musun? Seninki kaç çıkacak?`
+            ? `“${experience.title}” — seninki kaç çıkacak? 👀 #AQRYO`
             : experience.testMode === "archetype"
-              ? `${participantText} “${experience.title}” — sen hangi sonuç çıkacaksın?`
-              : `${participantText} “${experience.title}” testinde en yüksek skor %${experience.stats.highestScore}. Beni geçebilir misin? 👀`;
+              ? `“${experience.title}” — sen hangi sonuç çıkacaksın? 👀 #AQRYO`
+              : `“${experience.title}” — sonucunu gör 👀 #AQRYO`;
+  }
+
+  async function shareNativeV2() {
+    try {
+      const blob = await createShareCardBlob(
+        {
+          id: experience.id,
+          title: experience.title,
+          type: experience.type,
+          coverImageUrl: experience.coverImageUrl,
+          coverLabel: experience.coverLabel,
+          testMode: experience.testMode,
+        },
+        "og",
+      );
+
+      const file = new File(
+        [blob],
+        `aqryo-${experience.id}.png`,
+        { type: "image/png" },
+      );
+
+      const canShareFile =
+        typeof navigator.share === "function" &&
+        typeof navigator.canShare === "function" &&
+        navigator.canShare({ files: [file] });
+
+      if (canShareFile) {
+        await navigator.share({
+          files: [file],
+          text: getShareText(),
+          title: "AQRYO",
+        });
+        return;
+      }
+
+      const objectUrl = URL.createObjectURL(file);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = file.name;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(objectUrl);
+
+      const shareUrl = new URL("https://x.com/intent/tweet");
+      shareUrl.searchParams.set("text", getShareText());
+      window.open(shareUrl.toString(), "_blank", "noopener,noreferrer");
+    } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError")) {
+        console.error("V2 paylaşım başarısız:", error);
+      }
+    }
   }
 
   function shareOnWhatsApp() {
@@ -1672,25 +1726,7 @@ async function toggleExperienceStatus() {
       : "";
 
   function shareOnX() {
-    const shareUrl = new URL(
-      "https://twitter.com/intent/tweet",
-    );
-
-    shareUrl.searchParams.set(
-      "text",
-      getShareText(),
-    );
-
-    shareUrl.searchParams.set(
-      "url",
-      experienceUrl,
-    );
-
-    window.open(
-      shareUrl.toString(),
-      "_blank",
-      "noopener,noreferrer",
-    );
+    void shareNativeV2();
   }
 
   return (
