@@ -710,12 +710,12 @@ function PuzzleBuilderPage() {
   const [sharing,setSharing]=useState(false);
   const [shareImage,setShareImage]=useState<{key:string;file:File}|null>(null);
   const [debateTemplate,setDebateTemplate]=useState(()=>pickDebateTemplate());
-  const [debateImage,setDebateImage]=useState<string|null>(null);
+  const [debateImage,setDebateImage]=useState<{template:number;dataUrl:string}|null>(null);
   const [algebraTemplate,setAlgebraTemplate]=useState(()=>pickAlgebraTemplate());
   const [algebraChallenge,setAlgebraChallenge]=useState(()=>pickAlgebraChallenge());
-  const [algebraImage,setAlgebraImage]=useState<string|null>(null);
+  const [algebraImage,setAlgebraImage]=useState<{template:number;dataUrl:string}|null>(null);
   const [sceneTemplate,setSceneTemplate]=useState(()=>nextSceneTemplate());
-  const [sceneImage,setSceneImage]=useState<string|null>(null);
+  const [sceneImage,setSceneImage]=useState<{template:number;dataUrl:string}|null>(null);
   const previewRef=useRef<HTMLDivElement|null>(null);
   const svgRef=useRef<SVGSVGElement|null>(null);
 
@@ -743,7 +743,7 @@ function PuzzleBuilderPage() {
     }
     let cancelled=false;
     void loadDebateTemplate(debateTemplate)
-      .then((dataUrl)=>{ if(!cancelled) setDebateImage(dataUrl); })
+      .then((dataUrl)=>{ if(!cancelled) setDebateImage({template:debateTemplate,dataUrl}); })
       .catch((error)=>{ if(!cancelled) console.error(error); });
     return()=>{cancelled=true};
   },[presentation,kind,debateTemplate]);
@@ -755,7 +755,7 @@ function PuzzleBuilderPage() {
     }
     let cancelled=false;
     void loadAlgebraTemplate(algebraTemplate)
-      .then((dataUrl)=>{ if(!cancelled) setAlgebraImage(dataUrl); })
+      .then((dataUrl)=>{ if(!cancelled) setAlgebraImage({template:algebraTemplate,dataUrl}); })
       .catch((error)=>{ if(!cancelled) console.error(error); });
     return()=>{cancelled=true};
   },[kind,algebraTemplate]);
@@ -767,7 +767,7 @@ function PuzzleBuilderPage() {
     }
     let cancelled=false;
     void loadSceneTemplate(sceneTemplate)
-      .then((dataUrl)=>{ if(!cancelled) setSceneImage(dataUrl); })
+      .then((dataUrl)=>{ if(!cancelled) setSceneImage({template:sceneTemplate,dataUrl}); })
       .catch((error)=>{ if(!cancelled) console.error(error); });
     return()=>{cancelled=true};
   },[kind,sceneTemplate]);
@@ -812,20 +812,23 @@ function PuzzleBuilderPage() {
     return new XMLSerializer().serializeToString(svgRef.current);
   }
 
-  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImage?"ready":"loading"}:${algebraTemplate}:${algebraChallenge}:${algebraImage?"algebra-ready":"algebra-loading"}:${sceneTemplate}:${sceneImage?"scene-ready":"scene-loading"}`;
+  const debateImageReady = debateImage?.template === debateTemplate;
+  const algebraImageReady = algebraImage?.template === algebraTemplate;
+  const sceneImageReady = sceneImage?.template === sceneTemplate;
+  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImageReady?"ready":"loading"}:${algebraTemplate}:${algebraChallenge}:${algebraImageReady?"algebra-ready":"algebra-loading"}:${sceneTemplate}:${sceneImageReady?"scene-ready":"scene-loading"}`;
   useEffect(() => {
     let cancelled = false;
-    if(presentation==="debate" && !debateImage) return;
-    if(puzzle.kind==="algebra" && !algebraImage) return;
-    if(puzzle.kind!=="math" && puzzle.kind!=="algebra" && !sceneImage) return;
+    if(presentation==="debate" && !debateImageReady) return;
+    if(puzzle.kind==="algebra" && !algebraImageReady) return;
+    if(puzzle.kind!=="math" && puzzle.kind!=="algebra" && !sceneImageReady) return;
     const source = serializeSvg();
     if (source) {
       const backgroundDataUrl =
         puzzle.kind === "math"
-          ? debateImage
+          ? (debateImageReady ? debateImage?.dataUrl : null)
           : puzzle.kind === "algebra"
-            ? algebraImage
-            : sceneImage;
+            ? (algebraImageReady ? algebraImage?.dataUrl : null)
+            : (sceneImageReady ? sceneImage?.dataUrl : null);
 
       const exportSource = backgroundDataUrl
         ? source.replace(/<image\b[^>]*\/>/i, "")
