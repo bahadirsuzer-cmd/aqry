@@ -995,83 +995,18 @@ function PuzzleBuilderPage() {
 
 const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
-  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;algebraChallenge:number;algebraImage:string|null;sceneImage:string|null}
->(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,algebraChallenge,algebraImage,sceneImage},ref){
-  const answer = puzzle.answer;
+  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;sceneImage:string|null}
+>(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,sceneImage},ref){
+  const answer = puzzle.answerKey ? UNDETERMINED_SHORT[locale] : puzzle.answer;
   const headline = headlineFor(locale,puzzle);
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
-  const headlineLines = wrapHeadline(headline, 20);
   const questionRows = puzzleQuestionRows(puzzle.diagram);
   const compactDebate = COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
-
-  if (puzzle.kind==="algebra" && algebraImage) {
-    const challenge = ALGEBRA_CHALLENGES[locale][algebraChallenge] ?? ALGEBRA_CHALLENGES.en[algebraChallenge] ?? "";
-    const challengeLines = (() => {
-      const words = challenge.trim().split(/\s+/).filter(Boolean);
-      const lines:string[] = [];
-      let current = "";
-      for (const word of words) {
-        const candidate = current ? `${current} ${word}` : word;
-        if (candidate.length <= 27 || !current) current = candidate;
-        else { lines.push(current); current = word; }
-      }
-      if (current) lines.push(current);
-      if (lines.length <= 3) return lines;
-      return [lines[0], lines[1], lines.slice(2).join(" ")];
-    })();
-    const challengeLongest = Math.max(...challengeLines.map((line)=>line.length),1);
-    const challengeSize = challengeLongest > 30 ? 9.5 : challengeLongest > 23 ? 10.5 : 12;
-    const rows = questionRows.slice(0, 4);
-    const longest = Math.max(...rows.map((row)=>row.length), 1);
-    const size = longest > 22 ? 11 : longest > 15 ? 13 : 16;
-    const lineGap = 29;
-    const blockHeight = Math.max(0, (rows.length - 1) * lineGap);
-    const titleTop = challengeLines.length===1 ? 72 : challengeLines.length===2 ? 65 : 59;
-    const equationsCenter = challengeLines.length===3 ? 188 : challengeLines.length===2 ? 180 : 172;
-    const startY = equationsCenter - blockHeight / 2;
-    const rtl = locale==="ar" || locale==="ur";
-    return (
-      <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
-        <image href={algebraImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-        <text
-          x="180"
-          y={titleTop}
-          textAnchor="middle"
-          fontFamily="Arial,'Noto Sans',sans-serif"
-          fontSize={challengeSize}
-          fontWeight="900"
-          fill="#17101f"
-          direction={rtl?"rtl":"ltr"}
-          unicodeBidi="plaintext"
-        >
-          {challengeLines.map((line,index)=>(
-            <tspan key={`${puzzle.id}-challenge-${index}`} x="180" dy={index===0?0:15}>{line}</tspan>
-          ))}
-        </text>
-        {rows.map((row,index)=>(
-          <text
-            key={`${puzzle.id}-algebra-${index}`}
-            x="180"
-            y={startY + index*lineGap}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontFamily="Arial,sans-serif"
-            fontSize={size}
-            fontWeight="900"
-            fill={["#2563eb","#dc2626","#7c3aed","#0f766e"][index%4]}
-          >
-            {row}
-          </text>
-        ))}
-      </svg>
-    );
-  }
-
   if (sceneImage && puzzle.kind!=="math" && puzzle.kind!=="algebra") {
     const safeX = 160;
-    const safeY = 50;
+    const safeY = 34;
     const safeW = 186;
-    const safeH = 302;
+    const safeH = 318;
     const rows = (puzzle.patternRows?.length ? puzzle.patternRows : questionRows).slice(0, 7);
     const colors = ["#2563eb","#dc2626","#7c3aed","#0f766e","#db2777","#ea580c","#f59e0b"];
 
@@ -1107,69 +1042,21 @@ const PuzzleSvg=React.forwardRef<
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-        <text x={safeX+safeW/2} y={safeY+22} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?18:16} fontWeight="900" fill="#17101f">
-          {headlineLines.map((line,index)=><tspan key={`${puzzle.id}-headline-${index}`} x={safeX+safeW/2} dy={index===0?0:20}>{line}</tspan>)}
-        </text>
-        <svg x={safeX} y={safeY+(headlineLines.length>1?62:48)} width={safeW} height={safeH-(headlineLines.length>1?67:53)} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet">
+        <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?14:12} fontWeight="900" fill="#17101f">{headline}</text>
+        <svg x={safeX} y={safeY+30} width={safeW} height={safeH-35} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet">
           <g dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
         </svg>
       </svg>
     );
   }
-  if (presentation==="debate" && debateImage && puzzle.kind==="math") {
-    const debateTitleLines = wrapHeadline(copy.debateQuestion, 18);
-    const debateTitleLongest = Math.max(...debateTitleLines.map((line)=>line.length), 1);
-    const debateTitleSize = debateTitleLongest > 20 ? 15 : debateTitleLongest > 14 ? 17 : 20;
-    const debateTitleY = debateTitleLines.length > 1 ? 34 : 42;
-    const rtl = locale==="ar" || locale==="ur";
+  if (presentation==="debate" && debateImage && (puzzle.kind==="math" || puzzle.kind==="algebra")) {
     const longest = Math.max(...questionRows.map((row)=>row.length), 1);
     const questionSize = longest > 28 ? 10 : longest > 20 ? 12 : 15;
     const questionY = compactDebate ? 104 : 176;
     const answerY = compactDebate ? 157 : 118;
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
-        <defs>
-          <filter id="debateTitleShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2" stdDeviation="1.4" floodColor="#17101f" floodOpacity=".5"/>
-          </filter>
-        </defs>
         <image href={debateImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-        <text
-          x="180"
-          y={debateTitleY}
-          textAnchor="middle"
-          fontFamily="Arial Black,Arial,'Noto Sans',sans-serif"
-          fontSize={debateTitleSize}
-          fontWeight="900"
-          fill="#f8fafc"
-          stroke="#17101f"
-          strokeWidth="5"
-          paintOrder="stroke"
-          filter="url(#debateTitleShadow)"
-          direction={rtl?"rtl":"ltr"}
-          unicodeBidi="plaintext"
-          letterSpacing=".2"
-        >
-          {debateTitleLines.map((line,index)=>(
-            <tspan key={`${puzzle.id}-debate-title-${index}`} x="180" dy={index===0?0:20}>{line}</tspan>
-          ))}
-        </text>
-        <text
-          x="180"
-          y={debateTitleY}
-          textAnchor="middle"
-          fontFamily="Arial Black,Arial,'Noto Sans',sans-serif"
-          fontSize={debateTitleSize}
-          fontWeight="900"
-          fill="#22d3ee"
-          direction={rtl?"rtl":"ltr"}
-          unicodeBidi="plaintext"
-          letterSpacing=".2"
-        >
-          {debateTitleLines.map((line,index)=>(
-            <tspan key={`${puzzle.id}-debate-title-fill-${index}`} x="180" dy={index===0?0:20}>{line}</tspan>
-          ))}
-        </text>
         <text x="180" y={questionY - ((questionRows.length-1)*8)} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900">
           {questionRows.map((row,index)=>(
             <tspan key={index} x="180" dy={index===0?0:17} fill={["#2563eb","#dc2626","#7c3aed","#0f766e"][index%4]}>{row}</tspan>
