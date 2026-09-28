@@ -929,49 +929,6 @@ useEffect(() => {
       <PublicNavigation />
 
       <main className="mx-auto flex min-h-[calc(100vh-64px)] max-w-[1240px] flex-col items-center justify-center px-4 py-7 sm:px-6 sm:py-10">
-        {screen === "entry" && experience.creator && (
-          <button
-            type="button"
-            onClick={() => {
-  window.location.href =
-    `/creator/${experience.creator!.id}`;
-}}
-            className="relative z-10 mb-[-18px] flex items-center gap-3 rounded-[26px] border border-white/80 bg-white px-4 py-3 shadow-[0_14px_38px_rgba(34,17,52,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(34,17,52,0.16)]"
-          >
-            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-primary/[0.08] text-[14px] font-black text-primary ring-2 ring-primary/20">
-              {experience.creator.avatarUrl ? (
-                <img
-                  src={experience.creator.avatarUrl}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                getCreatorInitials(
-                  experience.creator.displayName,
-                )
-              )}
-            </div>
-
-            <div className="min-w-0 text-left">
-              <div className="flex items-center gap-1.5">
-                <p className="max-w-[190px] truncate text-[12px] font-black sm:max-w-[240px]">
-                  {experience.creator.displayName}
-                </p>
-
-                <span className="text-[12px] text-primary">
-                  ◆
-                </span>
-              </div>
-
-              <p className="mt-0.5 max-w-[190px] truncate text-[9px] font-semibold text-muted-foreground sm:max-w-[240px]">
-                {experience.creator.username
-                  ? `@${experience.creator.username}`
-                  : "AQRYO creator"}
-              </p>
-            </div>
-          </button>
-        )}
-
         <div className="w-full max-w-[520px]">
           {screen === "entry" && (
             <EntryScreen
@@ -1450,25 +1407,13 @@ function EntryScreen({
         >
           {experience.type ===
           "story" ? (
-            <>
-              {experience.cover.imageUrl.trim() ? (
-                <div className="absolute inset-0 flex items-center justify-center p-4">
-                  <img
-                    src={
-                      experience.cover.imageUrl
-                    }
-                    alt=""
-                    className="max-h-full max-w-full object-contain"
-                  />
-                </div>
-              ) : null}
-
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent px-6 pb-5 pt-16">
-                <p className="max-w-[90%] text-[24px] font-black leading-[1] tracking-[-0.04em] text-white">
-                  {experience.title}
-                </p>
-              </div>
-            </>
+            experience.cover.imageUrl.trim() ? (
+              <img
+                src={experience.cover.imageUrl}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : null
           ) : experience.cover.imageUrl.trim() ? (
             <img
               src={experience.cover.imageUrl}
@@ -1489,27 +1434,25 @@ function EntryScreen({
             }}
           />
 
-          <div className="relative z-10 flex h-full flex-col justify-end p-7 text-white">
-            <span className="text-5xl">
-              {experience.type === "test"
-                ? "✦"
-                : experience.type === "guess"
-                  ? "?"
-                  : experience.type === "story"
-                    ? "▤"
+          {experience.type !== "story" ? (
+            <div className="relative z-10 flex h-full flex-col justify-end p-7 text-white">
+              <span className="text-5xl">
+                {experience.type === "test"
+                  ? "✦"
+                  : experience.type === "guess"
+                    ? "?"
                     : "♥"}
-            </span>
+              </span>
 
-            <p className="mt-4 text-[13px] font-black uppercase tracking-[0.15em] text-white/90">
-              {experience.type === "test"
-                ? "AQRYO Test"
-                : experience.type === "guess"
-                  ? "AQRYO Tahmin"
-                  : experience.type === "story"
-                    ? "AQRYO Story"
+              <p className="mt-4 text-[13px] font-black uppercase tracking-[0.15em] text-white/90">
+                {experience.type === "test"
+                  ? "AQRYO Test"
+                  : experience.type === "guess"
+                    ? "AQRYO Tahmin"
                     : "AQRYO Experience"}
-            </p>
-          </div>
+              </p>
+            </div>
+          ) : null}
         </div>
 
         <div className="p-6 sm:p-7">
