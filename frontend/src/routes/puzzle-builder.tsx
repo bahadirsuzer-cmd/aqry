@@ -16,7 +16,7 @@ type Presentation = "clean" | "debate";
 type Puzzle = ViralPuzzle & { id: string };
 
 const DEBATE_TEMPLATE_IDS = Array.from({ length: 40 }, (_, index) => index + 1);
-const COMPACT_DEBATE_TEMPLATES = new Set<number>();
+const COMPACT_DEBATE_TEMPLATES = new Set(DEBATE_TEMPLATE_IDS);
 
 function pickDebateTemplate(previous?: number) {
   const pool = DEBATE_TEMPLATE_IDS.filter((id) => id !== previous);
@@ -39,32 +39,12 @@ async function loadDebateTemplate(templateId: number) {
     image.onerror = () => reject(new Error("Debate template could not be loaded"));
     image.src = src;
   });
-
-  // Each set is a horizontal 10-frame sprite. Do not hard-code the source
-  // frame size: the production assets may be optimized/resized while keeping
-  // the same 10-column layout.
-  const frameWidth = image.naturalWidth / 10;
-  const frameHeight = image.naturalHeight;
-  if (!Number.isFinite(frameWidth) || frameWidth <= 0 || frameHeight <= 0) {
-    throw new Error("Debate template has invalid dimensions");
-  }
-
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
   canvas.height = 1350;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas unavailable");
-  context.drawImage(
-    image,
-    column * frameWidth,
-    0,
-    frameWidth,
-    frameHeight,
-    0,
-    0,
-    canvas.width,
-    canvas.height,
-  );
+  context.drawImage(image, column * 432, 0, 432, 540, 0, 0, 1080, 1350);
   return canvas.toDataURL("image/jpeg", 0.94);
 }
 
