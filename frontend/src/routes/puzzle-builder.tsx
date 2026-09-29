@@ -682,7 +682,7 @@ function isInvalidGeneratedPuzzle(puzzle: ViralPuzzle) {
 function generate(kind: PuzzleKind, recent: string[]): Puzzle {
   const families = VIRAL_FAMILIES.filter((family) => family.kind === kind);
   const seen = recent.filter((family) => families.some((candidate) => candidate.id === family));
-  const excluded = seen.length >= families.length ? seen.slice(0, 1) : seen;
+  const excluded = seen.length >= families.length ? [] : seen;
 
   for (let attempt = 0; attempt < 12; attempt += 1) {
     try {
@@ -1062,7 +1062,9 @@ const PuzzleSvg=React.forwardRef<
   }
   if (presentation==="debate" && debateImage && puzzle.kind==="math") {
     const longest = Math.max(...questionRows.map((row)=>row.length), 1);
-    const questionSize = longest > 28 ? 10 : longest > 20 ? 12 : 15;
+    const questionSize = longest > 28 ? 14 : longest > 20 ? 16 : 19;
+    const debateColors = ["#2563eb","#dc2626","#7c3aed","#0f766e","#db2777","#ea580c"];
+    const colorSeed = Array.from(puzzle.id).reduce((sum,char)=>sum+char.charCodeAt(0),0);
     const questionY = compactDebate ? 104 : 176;
     const answerY = compactDebate ? 157 : 118;
     return (
@@ -1070,7 +1072,7 @@ const PuzzleSvg=React.forwardRef<
         <image href={debateImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
         <text x="180" y={questionY - ((questionRows.length-1)*8)} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900">
           {questionRows.map((row,index)=>(
-            <tspan key={index} x="180" dy={index===0?0:17} fill={["#2563eb","#dc2626","#7c3aed","#0f766e"][index%4]}>{row}</tspan>
+            <tspan key={index} x="180" dy={index===0?0:17} fill={debateColors[(colorSeed+index)%debateColors.length]}>{row}</tspan>
           ))}
         </text>
         <text x="78" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={answer.length>10?11:20} fontWeight="900" fill="#2563eb">{answer}</text>
