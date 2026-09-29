@@ -1013,7 +1013,15 @@ const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
   {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;sceneImage:string|null}
 >(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,sceneImage},ref){
-  const answer = puzzle.answerKey ? UNDETERMINED_SHORT[locale] : puzzle.answer;
+  const cleanDebateValue = (value: unknown) => {
+    const raw = String(value ?? "").trim();
+    const numeric = Number(raw);
+    if (!Number.isFinite(numeric)) return raw;
+    if (Number.isInteger(numeric)) return String(numeric);
+    return String(Number(numeric.toFixed(2)));
+  };
+  const answer = puzzle.answerKey ? UNDETERMINED_SHORT[locale] : cleanDebateValue(puzzle.answer);
+  const wrongAnswer = cleanDebateValue(puzzle.commonWrong);
   const headline = headlineFor(locale,puzzle);
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
   const questionRows = puzzleQuestionRows(puzzle.diagram);
