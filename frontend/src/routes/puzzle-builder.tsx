@@ -702,7 +702,7 @@ function PuzzleBuilderPage() {
   const copy = COPY[locale] ?? COPY.en;
   const [loading,setLoading]=useState(true);
   const [kind,setKind]=useState<PuzzleKind>("math");
-  const [presentation,setPresentation]=useState<Presentation>("debate");
+  const [presentation,setPresentation]=useState<Presentation>("clean");
   const [recent,setRecent]=useState<RecentFamilies>(readRecent);
   const [puzzle,setPuzzle]=useState<Puzzle>(()=>generate("math", []));
   const [socialText,setSocialText]=useState("");
@@ -761,7 +761,7 @@ function PuzzleBuilderPage() {
   },[kind,algebraTemplate]);
 
   useEffect(()=>{
-    if(kind==="math" || kind==="algebra"){
+    if(kind==="algebra"){
       setSceneImage(null);
       return;
     }
@@ -786,8 +786,10 @@ function PuzzleBuilderPage() {
     const fresh=generate(next,recent[next]);
     setPuzzle(fresh);
     setPresentation("clean");
-    if(next==="math") setDebateTemplate((current)=>pickDebateTemplate(current));
-    else if(next==="algebra") {
+    if(next==="math") {
+      setDebateTemplate((current)=>pickDebateTemplate(current));
+      setSceneTemplate((current)=>nextSceneTemplate(current));
+    } else if(next==="algebra") {
       setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
       setAlgebraChallenge((current)=>pickAlgebraChallenge(current));
     } else setSceneTemplate((current)=>nextSceneTemplate(current));
@@ -796,8 +798,10 @@ function PuzzleBuilderPage() {
 
   function regenerate(){
     const fresh=generate(kind,recent[kind]);
-    if(kind==="math") setDebateTemplate((current)=>pickDebateTemplate(current));
-    else if(kind==="algebra") {
+    if(kind==="math") {
+      setDebateTemplate((current)=>pickDebateTemplate(current));
+      setSceneTemplate((current)=>nextSceneTemplate(current));
+    } else if(kind==="algebra") {
       setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
       setAlgebraChallenge((current)=>pickAlgebraChallenge(current));
     } else setSceneTemplate((current)=>nextSceneTemplate(current));
@@ -820,12 +824,12 @@ function PuzzleBuilderPage() {
     let cancelled = false;
     if(presentation==="debate" && !debateImageReady) return;
     if(puzzle.kind==="algebra" && !algebraImageReady) return;
-    if(puzzle.kind!=="math" && puzzle.kind!=="algebra" && !sceneImageReady) return;
+    if(puzzle.kind!=="algebra" && presentation!=="debate" && !sceneImageReady) return;
     const source = serializeSvg();
     if (source) {
       const backgroundDataUrl =
         puzzle.kind === "math"
-          ? (debateImageReady ? debateImage?.dataUrl : null)
+          ? (presentation==="debate" ? (debateImageReady ? debateImage?.dataUrl : null) : (sceneImageReady ? sceneImage?.dataUrl : null))
           : puzzle.kind === "algebra"
             ? (algebraImageReady ? algebraImage?.dataUrl : null)
             : (sceneImageReady ? sceneImage?.dataUrl : null);
@@ -1002,7 +1006,7 @@ const PuzzleSvg=React.forwardRef<
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
   const questionRows = puzzleQuestionRows(puzzle.diagram);
   const compactDebate = COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
-  if (sceneImage && puzzle.kind!=="math" && puzzle.kind!=="algebra") {
+  if (sceneImage && puzzle.kind!=="algebra" && presentation!=="debate") {
     const safeX = 160;
     const safeY = 34;
     const safeW = 186;
