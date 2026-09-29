@@ -303,7 +303,27 @@ function exteriorBisector(a: number, e: number) {
   return out(half, e - a, diagram, [`180°−${e}°`, `${e}°−${a}°=${e - a}°`, `½ ⇒ x=${half}°`]);
 }
 
+
+const polyline=(pts:readonly (readonly [number,number])[],color="#211638",width=3.5)=>pts.slice(1).reduce((s,p,i)=>s+line(pts[i][0],pts[i][1],p[0],p[1],color,width),"");
+const variant=(r:()=>number,n:number)=>Math.floor(r()*n);
+function triangleSum(a:number,b:number,v:number){const ans=180-a-b,L=[[[65,225],[290,225],[185,45]],[[55,220],[305,185],[130,48]],[[85,235],[315,215],[250,42]],[[45,205],[270,235],[315,70]],[[80,230],[275,230],[85,55]],[[55,235],[300,235],[220,60]]] as const;const[A,B,C]=L[v%6];return out(ans,a+b,polyline([A,B,C,A])+label(A[0]+42,A[1]-22,a+"°")+label(B[0]-42,B[1]-22,b+"°")+label(C[0],C[1]+40,"x","#e0524d"),["Üçgen iç açıları 180°","x=180°−"+a+"°−"+b+"°="+ans+"°"]); }
+function verticalAngles(a:number,v:number){const cx=180,cy=138,g=[24,34,44,54][v%4],p1=polar(cx,cy,180,g),p2=polar(cx,cy,180,g+180),p3=polar(cx,cy,180,180-g),p4=polar(cx,cy,180,360-g);return out(a,180-a,line(p1[0],p1[1],p2[0],p2[1])+line(p3[0],p3[1],p4[0],p4[1])+label(cx,cy-60,a+"°")+label(cx,cy+60,"x","#e0524d"),["Ters açılar eşittir","x="+a+"°"]); }
+function linearPair(a:number,v:number){const ans=180-a,x=[95,130,165,200][v%4],y=205,g=[35,55,70,115][v%4],p=polar(x,y,150,g);return out(ans,a,line(30,y,330,y)+line(x,y,p[0],p[1])+label(x+55,y-30,a+"°")+label(x-55,y-35,"x","#e0524d"),["Doğru açı 180°","x=180°−"+a+"°="+ans+"°"]); }
+function parallelAlternate(a:number,v:number){const sh=[-55,-25,25,55][v%4],x1=95+sh,x2=245+sh;return out(a,180-a,line(25,65,335,65)+line(25,215,335,215)+line(x1,250,x2,25)+par(48,65)+par(48,215)+label(x2-58,92,a+"°")+label(x1+55,190,"x","#e0524d"),["İç ters açılar eşittir","x="+a+"°"]); }
+function isoscelesBase(apex:number,v:number){const ans=(180-apex)/2,L=[[[65,225],[295,225],[180,50]],[[45,220],[270,235],[250,50]],[[85,235],[315,205],[120,45]],[[55,230],[300,230],[210,65]]] as const;const[A,B,C]=L[v%4];return out(ans,180-apex,polyline([A,B,C,A])+tick((A[0]+C[0])/2,(A[1]+C[1])/2,45)+tick((B[0]+C[0])/2,(B[1]+C[1])/2,135)+label(C[0],C[1]+40,apex+"°")+label(A[0]+38,A[1]-24,"x","#e0524d"),["İkizkenarda taban açıları eşittir","x=(180°−"+apex+"°)÷2="+ans+"°"]); }
+function quadrilateralMissing(a:number,b:number,cc:number,v:number){const ans=360-a-b-cc,L=[[[60,215],[285,230],[310,75],[110,45]],[[45,180],[145,235],[305,185],[250,45]],[[75,235],[300,205],[265,55],[55,75]],[[55,220],[280,235],[320,110],[165,45]]] as const,P=L[v%4];return out(ans,180-a,polyline([P[0],P[1],P[2],P[3],P[0]])+label(P[0][0]+30,P[0][1]-22,a+"°")+label(P[1][0]-28,P[1][1]-28,b+"°")+label(P[2][0]-28,P[2][1]+28,cc+"°")+label(P[3][0]+28,P[3][1]+28,"x","#e0524d"),["Dörtgen iç açıları 360°","x=360°−"+a+"°−"+b+"°−"+cc+"°="+ans+"°"]); }
+function rightTriangle(a:number,v:number){const ans=90-a,L=[[[65,225],[300,225],[65,55]],[[55,225],[300,225],[300,55]],[[80,235],[300,235],[80,75]],[[60,215],[285,215],[285,45]]] as const;const[A,B,C]=L[v%4],R=v%2===0?A:B;return out(ans,90+a,polyline([A,B,C,A])+'<path d="M'+R[0]+' '+(R[1]-16)+'h16v16" fill="none" stroke="#7c3aed" stroke-width="3"/>'+label(C[0]+(v%2?-35:35),C[1]+35,a+"°")+label((A[0]+B[0])/2,A[1]-25,"x","#e0524d"),["Dik üçgende dar açılar toplamı 90°","x=90°−"+a+"°="+ans+"°"]); }
+function angleBisector(total:number,v:number){const x=180,y=210,s=[20,35,50,65][v%4],e=s+total,m=(s+e)/2,p1=polar(x,y,155,s),p2=polar(x,y,155,e),pm=polar(x,y,145,m),ans=total/2;return out(ans,total,line(x,y,p1[0],p1[1])+line(x,y,p2[0],p2[1])+line(x,y,pm[0],pm[1],"#7c3aed",3)+arc(x,y,48,s,m)+arc(x,y,48,m,e)+arcTick(x,y,48,(s+m)/2)+arcTick(x,y,48,(m+e)/2)+label(x,y-78,total+"°")+label(pm[0]+18,pm[1]+18,"x","#e0524d"),["Açıortay iki eş açı oluşturur","x="+total+"°÷2="+ans+"°"]); }
 export const GEOMETRY_FAMILIES: Family[] = [
+  {id:"triangle_sum",kind:"geometry",make:r=>{const a=int(r,28,72),b=int(r,28,Math.min(78,145-a));return triangleSum(a,b,variant(r,6));}},
+  {id:"vertical_angles",kind:"geometry",make:r=>verticalAngles(int(r,28,152),variant(r,4))},
+  {id:"linear_pair",kind:"geometry",make:r=>linearPair(int(r,28,152),variant(r,4))},
+  {id:"parallel_alternate",kind:"geometry",make:r=>parallelAlternate(int(r,30,150),variant(r,4))},
+  {id:"isosceles_base",kind:"geometry",make:r=>isoscelesBase(int(r,30,120,2),variant(r,4))},
+  {id:"quadrilateral_missing",kind:"geometry",make:r=>{const a=int(r,70,105),b=int(r,70,105),cc=int(r,70,105);return quadrilateralMissing(a,b,cc,variant(r,4));}},
+  {id:"right_triangle",kind:"geometry",make:r=>rightTriangle(int(r,20,70),variant(r,4))},
+  {id:"angle_bisector",kind:"geometry",make:r=>angleBisector(int(r,40,140,2),variant(r,4))},
+] = [
   {
     id: "parallel_kink",
     kind: "geometry",
