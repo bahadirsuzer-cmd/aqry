@@ -1,6 +1,10 @@
 import type { Family } from "./viralPuzzleBank";
 const rad = Math.PI / 180;
 const choose = (r: () => number, values: number[]) => values[Math.floor(r() * values.length)];
+const int = (r: () => number, min: number, max: number, step = 1) => {
+  const count = Math.floor((max - min) / step) + 1;
+  return min + Math.floor(r() * count) * step;
+};
 const polar = (x: number, y: number, length: number, angle: number) =>
   [x + length * Math.cos(angle * rad), y - length * Math.sin(angle * rad)] as const;
 const line = (x: number, y: number, xx: number, yy: number, color = "#211638", width = 3.5) =>
@@ -303,46 +307,77 @@ export const GEOMETRY_FAMILIES: Family[] = [
   {
     id: "parallel_kink",
     kind: "geometry",
-    make: (r) => zigzag(choose(r, [35, 40, 45]), choose(r, [25, 30, 35]), false),
+    make: (r) => {
+      const a=int(r,28,58), b=int(r,20,42);
+      return zigzag(a,b,false);
+    },
   },
   {
     id: "bisected_parallel_kink",
     kind: "geometry",
-    make: (r) => zigzag(choose(r, [40, 50, 60]), choose(r, [20, 30, 40]), true),
+    make: (r) => {
+      // Keep the sum even so the bisected answer is a clean whole degree.
+      let a=int(r,36,66), b=int(r,18,44);
+      if ((a+b)%2) b += b<44 ? 1 : -1;
+      return zigzag(a,b,true);
+    },
   },
   {
     id: "diagonal_parallelogram",
     kind: "geometry",
-    make: (r) => parallelogram(choose(r, [110, 120, 130]), choose(r, [20, 25]), false),
+    make: (r) => {
+      const e=int(r,105,138), phi=int(r,14,32);
+      return parallelogram(e,phi,false);
+    },
   },
   {
     id: "bisected_diagonal_parallelogram",
     kind: "geometry",
-    make: (r) => parallelogram(choose(r, [110, 120]), choose(r, [20, 25]), true),
+    make: (r) => {
+      let e=int(r,106,136), phi=int(r,14,32);
+      if (((180-e-phi)%2)!==0) phi += phi<32 ? 1 : -1;
+      return parallelogram(e,phi,true);
+    },
   },
   {
     id: "isosceles_exterior_bisector",
     kind: "geometry",
-    make: (r) => isosceles(choose(r, [125, 130, 135])),
+    make: (r) => isosceles(int(r,118,146)),
   },
   {
     id: "right_altitude_bisector",
     kind: "geometry",
-    make: (r) => rightAltitude(choose(r, [30, 40, 50])),
+    make: (r) => {
+      // Even source angles keep the bisected result integral.
+      return rightAltitude(int(r,26,62,2));
+    },
   },
   {
     id: "crossed_parallel_transversals",
     kind: "geometry",
-    make: (r) => crossed(choose(r, [45, 50, 55]), choose(r, [45, 50, 55])),
+    make: (r) => {
+      let a=int(r,34,66), b=int(r,34,66);
+      if (a+b>132) b=132-a;
+      return crossed(a,b);
+    },
   },
   {
     id: "trapezoid_diagonal_bisector",
     kind: "geometry",
-    make: (r) => trapezoid(choose(r, [60, 70, 80]), choose(r, [15, 20])),
+    make: (r) => {
+      const a=int(r,56,86,2);
+      const phi=int(r,10,Math.max(12,Math.floor(a/2)-8));
+      return trapezoid(a,phi);
+    },
   },
   {
     id: "triangle_exterior_bisector",
     kind: "geometry",
-    make: (r) => exteriorBisector(choose(r, [50, 60]), choose(r, [120, 130])),
+    make: (r) => {
+      const a=int(r,42,72);
+      let e=int(r,108,148);
+      if ((e-a)%2) e += e<148 ? 1 : -1;
+      return exteriorBisector(a,e);
+    },
   },
 ];
