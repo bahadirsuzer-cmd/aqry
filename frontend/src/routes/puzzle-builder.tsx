@@ -785,7 +785,7 @@ function PuzzleBuilderPage() {
     setKind(next);
     const fresh=generate(next,recent[next]);
     setPuzzle(fresh);
-    setPresentation(next==="math" ? "debate" : "clean");
+    setPresentation("clean");
     if(next==="math") setDebateTemplate((current)=>pickDebateTemplate(current));
     else if(next==="algebra") {
       setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
