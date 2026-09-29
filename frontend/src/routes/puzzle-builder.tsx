@@ -1066,7 +1066,7 @@ const PuzzleSvg=React.forwardRef<
     const debateColors = ["#2563eb","#dc2626","#7c3aed","#0f766e","#db2777","#ea580c"];
     const colorSeed = Array.from(puzzle.id).reduce((sum,char)=>sum+char.charCodeAt(0),0);
     const questionY = compactDebate ? 82 : 160;
-    const answerY = compactDebate ? 126 : 112;
+    const answerY = compactDebate ? 157 : 118;
     const expressionTokens = questionRows.join(" ").split(/(\s+)/).filter(Boolean);
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
