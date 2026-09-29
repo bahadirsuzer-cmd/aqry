@@ -734,10 +734,15 @@ function PuzzleBuilderPage() {
 
   useEffect(()=>{
     let cancelled=false;
-    void getCurrentCreator().then((creator)=>{
-      if(!creator){ window.location.href="/creator-auth"; return; }
-      if(!cancelled) setLoading(false);
-    });
+    void getCurrentCreator()
+      .then((creator)=>{
+        if(!creator){ window.location.href="/creator-auth"; return; }
+        if(!cancelled) setLoading(false);
+      })
+      .catch((error)=>{
+        console.error(error);
+        if(!cancelled) setLoading(false);
+      });
     return()=>{cancelled=true};
   },[]);
 
