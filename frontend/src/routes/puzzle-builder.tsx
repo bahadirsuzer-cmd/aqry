@@ -1082,7 +1082,7 @@ const PuzzleSvg=React.forwardRef<
           ))}
         </text>
         <text x="78" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={answer.length>10?11:20} fontWeight="900" fill="#2563eb">{answer}</text>
-        <text x="282" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={puzzle.commonWrong.length>10?11:20} fontWeight="900" fill="#dc2626">{puzzle.commonWrong}</text>
+        <text x="282" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={wrongAnswer.length>10?11:20} fontWeight="900" fill="#dc2626">{wrongAnswer}</text>
       </svg>
     );
   }
