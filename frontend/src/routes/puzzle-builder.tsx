@@ -1070,7 +1070,7 @@ const PuzzleSvg=React.forwardRef<
     const questionSize = longest > 28 ? 18 : longest > 20 ? 21 : 24;
     const debateColors = ["#2563eb","#dc2626","#7c3aed","#0f766e","#db2777","#ea580c"];
     const colorSeed = Array.from(puzzle.id).reduce((sum,char)=>sum+char.charCodeAt(0),0);
-    const questionY = compactDebate ? 82 : 160;
+    const questionY = compactDebate ? 106 : 184;
     const answerY = compactDebate ? 157 : 118;
     const expressionTokens = questionRows.join(" ").split(/(\s+)/).filter(Boolean);
     return (
