@@ -44,7 +44,12 @@ async function loadDebateTemplate(templateId: number) {
   canvas.height = 1350;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas unavailable");
-  context.drawImage(image, column * 432, 0, 432, 540, 0, 0, 1080, 1350);
+  const frameWidth = image.naturalWidth / 10;
+  const frameHeight = image.naturalHeight;
+  if (!Number.isFinite(frameWidth) || frameWidth <= 0 || frameHeight <= 0) {
+    throw new Error("Debate template has invalid dimensions");
+  }
+  context.drawImage(image, column * frameWidth, 0, frameWidth, frameHeight, 0, 0, 1080, 1350);
   return canvas.toDataURL("image/jpeg", 0.94);
 }
 
@@ -1055,15 +1060,14 @@ const PuzzleSvg=React.forwardRef<
       </svg>
     );
   }
-  if (presentation==="debate" && puzzle.kind==="math") {
-    const directDebate = debateSprite(debateTemplate);
+  if (presentation==="debate" && debateImage && puzzle.kind==="math") {
     const longest = Math.max(...questionRows.map((row)=>row.length), 1);
     const questionSize = longest > 28 ? 10 : longest > 20 ? 12 : 15;
     const questionY = compactDebate ? 104 : 176;
     const answerY = compactDebate ? 157 : 118;
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
-        {debateImage ? <image href={debateImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/> : <image href={directDebate.src} x={-directDebate.column*360} y="0" width="3600" height="450" preserveAspectRatio="none"/>}
+        <image href={debateImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
         <text x="180" y={questionY - ((questionRows.length-1)*8)} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900">
           {questionRows.map((row,index)=>(
             <tspan key={index} x="180" dy={index===0?0:17} fill={["#2563eb","#dc2626","#7c3aed","#0f766e"][index%4]}>{row}</tspan>
