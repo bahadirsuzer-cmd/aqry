@@ -15,7 +15,7 @@ type BasePuzzleKind = Exclude<PuzzleKind, "pattern">;
 type Presentation = "clean" | "debate";
 type Puzzle = ViralPuzzle & { id: string };
 
-const DISABLED_DEBATE_TEMPLATE_IDS = new Set([3, 12, 16, 29]);
+const DISABLED_DEBATE_TEMPLATE_IDS = new Set([3, 12, 16, 19, 29]);
 const DEBATE_TEMPLATE_IDS = Array.from({ length: 40 }, (_, index) => index + 1).filter((id) => !DISABLED_DEBATE_TEMPLATE_IDS.has(id));
 const COMPACT_DEBATE_TEMPLATES = new Set(DEBATE_TEMPLATE_IDS);
 
@@ -944,7 +944,7 @@ function PuzzleBuilderPage() {
             <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
               <button
                 type="button"
-                onClick={()=>{ if(kind==="math"){ regenerate(); } else setSceneTemplate((current)=>nextSceneTemplate(current)); }}
+                onClick={regenerate}
                 className="absolute left-6 top-6 z-20 rounded-full bg-black/88 px-4 py-2 text-[12px] font-black text-white shadow-lg backdrop-blur transition hover:bg-violet-700 sm:left-7 sm:top-7 sm:text-[13px]"
               >
                 {copy.changeVisual} ↻
