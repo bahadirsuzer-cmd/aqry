@@ -1013,15 +1013,13 @@ const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
   {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;sceneImage:string|null}
 >(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,sceneImage},ref){
-  const cleanDebateValue = (value: unknown) => {
-    const raw = String(value ?? "").trim();
-    const numeric = Number(raw);
-    if (!Number.isFinite(numeric)) return raw;
-    if (Number.isInteger(numeric)) return String(numeric);
-    return String(Number(numeric.toFixed(2)));
+  const cleanDebateValue = (value: string) => {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) && !Number.isInteger(numeric)
+      ? String(Number(numeric.toFixed(2)))
+      : value;
   };
   const answer = puzzle.answerKey ? UNDETERMINED_SHORT[locale] : cleanDebateValue(puzzle.answer);
-  const wrongAnswer = cleanDebateValue(puzzle.commonWrong);
   const headline = headlineFor(locale,puzzle);
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
   const questionRows = puzzleQuestionRows(puzzle.diagram);
@@ -1090,7 +1088,7 @@ const PuzzleSvg=React.forwardRef<
           ))}
         </text>
         <text x="78" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={answer.length>10?11:20} fontWeight="900" fill="#2563eb">{answer}</text>
-        <text x="282" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={wrongAnswer.length>10?11:20} fontWeight="900" fill="#dc2626">{wrongAnswer}</text>
+        <text x="282" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={cleanDebateValue(puzzle.commonWrong).length>10?11:20} fontWeight="900" fill="#dc2626">{cleanDebateValue(puzzle.commonWrong)}</text>
       </svg>
     );
   }
