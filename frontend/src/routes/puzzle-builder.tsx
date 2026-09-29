@@ -938,7 +938,7 @@ function PuzzleBuilderPage() {
             <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
               <button
                 type="button"
-                onClick={()=>{ if(kind==="math") setDebateTemplate((current)=>pickDebateTemplate(current)); else setSceneTemplate((current)=>nextSceneTemplate(current)); }}
+                onClick={()=>{ if(kind==="math"){ regenerate(); } else setSceneTemplate((current)=>nextSceneTemplate(current)); }}
                 className="absolute left-6 top-6 z-20 rounded-full bg-black/88 px-4 py-2 text-[12px] font-black text-white shadow-lg backdrop-blur transition hover:bg-violet-700 sm:left-7 sm:top-7 sm:text-[13px]"
               >
                 {copy.changeVisual} ↻
@@ -1062,17 +1062,18 @@ const PuzzleSvg=React.forwardRef<
   }
   if (presentation==="debate" && debateImage && puzzle.kind==="math") {
     const longest = Math.max(...questionRows.map((row)=>row.length), 1);
-    const questionSize = longest > 28 ? 14 : longest > 20 ? 16 : 19;
+    const questionSize = longest > 28 ? 18 : longest > 20 ? 21 : 24;
     const debateColors = ["#2563eb","#dc2626","#7c3aed","#0f766e","#db2777","#ea580c"];
     const colorSeed = Array.from(puzzle.id).reduce((sum,char)=>sum+char.charCodeAt(0),0);
-    const questionY = compactDebate ? 104 : 176;
-    const answerY = compactDebate ? 157 : 118;
+    const questionY = compactDebate ? 82 : 160;
+    const answerY = compactDebate ? 126 : 112;
+    const expressionTokens = questionRows.join(" ").split(/(\s+)/).filter(Boolean);
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <image href={debateImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-        <text x="180" y={questionY - ((questionRows.length-1)*8)} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900">
-          {questionRows.map((row,index)=>(
-            <tspan key={index} x="180" dy={index===0?0:17} fill={debateColors[(colorSeed+index)%debateColors.length]}>{row}</tspan>
+        <text x="180" y={questionY} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900">
+          {expressionTokens.map((token,index)=>(
+            <tspan key={index} fill={debateColors[(colorSeed+index)%debateColors.length]}>{token}</tspan>
           ))}
         </text>
         <text x="78" y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={answer.length>10?11:20} fontWeight="900" fill="#2563eb">{answer}</text>
