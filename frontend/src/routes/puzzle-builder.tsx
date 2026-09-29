@@ -15,7 +15,8 @@ type BasePuzzleKind = Exclude<PuzzleKind, "pattern">;
 type Presentation = "clean" | "debate";
 type Puzzle = ViralPuzzle & { id: string };
 
-const DEBATE_TEMPLATE_IDS = Array.from({ length: 40 }, (_, index) => index + 1);
+const DISABLED_DEBATE_TEMPLATE_IDS = new Set([3, 12, 16, 29]);
+const DEBATE_TEMPLATE_IDS = Array.from({ length: 40 }, (_, index) => index + 1).filter((id) => !DISABLED_DEBATE_TEMPLATE_IDS.has(id));
 const COMPACT_DEBATE_TEMPLATES = new Set(DEBATE_TEMPLATE_IDS);
 
 function pickDebateTemplate(previous?: number) {
