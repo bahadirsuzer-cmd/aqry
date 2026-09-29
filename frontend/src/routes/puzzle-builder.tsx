@@ -435,6 +435,7 @@ type PuzzleCopy = {
   cleanDesc: string;
   debateDesc: string;
   debateQuestion: string;
+  changeVisual: string;
 };
 
 const RECENT_LIMIT = 40;
@@ -481,6 +482,7 @@ const COPY: Record<AqryoLocale, PuzzleCopy> = {
     cleanDesc: "Tek soru · temiz kart",
     debateDesc: "İki cevap · yorumlarda tartışma",
     debateQuestion: "Kim haklı?",
+    changeVisual: "Görseli değiştir",
   },
   en: {
     descriptions: {
@@ -507,84 +509,85 @@ const COPY: Record<AqryoLocale, PuzzleCopy> = {
     cleanDesc: "One question · clean card",
     debateDesc: "Two answers · built for comments",
     debateQuestion: "Who is right?",
+    changeVisual: "Change visual",
   },
   es: {
     descriptions:{math:"Prioridad, paréntesis, porcentajes y potencias",geometry:"Ángulos, paralelas, opuestos y polígonos",count:"Triángulos ocultos y cuadrados superpuestos",algebra:"Símbolos, identidades e información insuficiente",area:"Área, perímetro, Pitágoras y figuras compuestas"},
     titles:{math:"¿Cuál es el resultado?",geometry:"Halla el ángulo x",count:"¿Cuántos hay en total?",algebra:"Halla x",area:"Halla el valor que falta"},
     subtitles:{math:"No hagas primero lo que ves primero 👀",geometry:"Mira el dibujo otra vez",count:"Las figuras pequeñas son solo el inicio",algebra:"Parece corto. Piénsalo bien.",area:"Elige la fórmula correcta"},
-    cleanDesc:"Una pregunta · tarjeta limpia",debateDesc:"Dos respuestas · para debatir",debateQuestion:"¿Quién tiene razón?",
+    cleanDesc:"Una pregunta · tarjeta limpia",debateDesc:"Dos respuestas · para debatir",debateQuestion:"¿Quién tiene razón?",changeVisual:"Cambiar imagen",
   },
   pt: {
     descriptions:{math:"Ordem, parênteses, porcentagens e potências",geometry:"Ângulos, paralelas, opostos e polígonos",count:"Triângulos ocultos e quadrados sobrepostos",algebra:"Símbolos, identidades e dados insuficientes",area:"Área, perímetro, Pitágoras e formas compostas"},
     titles:{math:"Qual é o resultado?",geometry:"Encontre o ângulo x",count:"Quantos há no total?",algebra:"Encontre x",area:"Encontre o valor que falta"},
     subtitles:{math:"Não faça primeiro o que aparece primeiro 👀",geometry:"Olhe o desenho mais uma vez",count:"As formas pequenas são só o começo",algebra:"Parece curto. Pense bem.",area:"Escolha a fórmula certa"},
-    cleanDesc:"Uma pergunta · cartão limpo",debateDesc:"Duas respostas · feito para comentários",debateQuestion:"Quem está certo?",
+    cleanDesc:"Uma pergunta · cartão limpo",debateDesc:"Duas respostas · feito para comentários",debateQuestion:"Quem está certo?",changeVisual:"Mudar imagem",
   },
   fr: {
     descriptions:{math:"Priorités, parenthèses, pourcentages et puissances",geometry:"Angles, parallèles, opposés et polygones",count:"Triangles cachés et carrés superposés",algebra:"Symboles, identités et données insuffisantes",area:"Aire, périmètre, Pythagore et formes composées"},
     titles:{math:"Quel est le résultat ?",geometry:"Trouve l’angle x",count:"Combien au total ?",algebra:"Trouve x",area:"Trouve la valeur manquante"},
     subtitles:{math:"Ne fais pas d’abord ce que tu vois d’abord 👀",geometry:"Regarde encore une fois le schéma",count:"Les petites formes ne sont que le début",algebra:"Ça paraît court. Réfléchis bien.",area:"Choisis la bonne formule"},
-    cleanDesc:"Une question · carte propre",debateDesc:"Deux réponses · pour débattre",debateQuestion:"Qui a raison ?",
+    cleanDesc:"Une question · carte propre",debateDesc:"Deux réponses · pour débattre",debateQuestion:"Qui a raison ?",changeVisual:"Changer l’image",
   },
   de: {
     descriptions:{math:"Reihenfolge, Klammern, Prozent und Potenzen",geometry:"Winkel, Parallelen, Scheitelwinkel und Polygone",count:"Versteckte Dreiecke und überlappende Quadrate",algebra:"Symbole, Identitäten und fehlende Angaben",area:"Fläche, Umfang, Pythagoras und zusammengesetzte Formen"},
     titles:{math:"Was ist das Ergebnis?",geometry:"Finde den Winkel x",count:"Wie viele insgesamt?",algebra:"Löse nach x",area:"Finde den fehlenden Wert"},
     subtitles:{math:"Nicht einfach von links nach rechts 👀",geometry:"Schau noch einmal auf die Zeichnung",count:"Die kleinen Formen sind nur der Anfang",algebra:"Sieht kurz aus. Denk genau nach.",area:"Wähle die richtige Formel"},
-    cleanDesc:"Eine Frage · saubere Karte",debateDesc:"Zwei Antworten · für Kommentare",debateQuestion:"Wer hat recht?",
+    cleanDesc:"Eine Frage · saubere Karte",debateDesc:"Zwei Antworten · für Kommentare",debateQuestion:"Wer hat recht?",changeVisual:"Bild ändern",
   },
   it: {
     descriptions:{math:"Priorità, parentesi, percentuali e potenze",geometry:"Angoli, parallele, opposti e poligoni",count:"Triangoli nascosti e quadrati sovrapposti",algebra:"Simboli, identità e dati insufficienti",area:"Area, perimetro, Pitagora e figure composte"},
     titles:{math:"Qual è il risultato?",geometry:"Trova l’angolo x",count:"Quanti sono in totale?",algebra:"Trova x",area:"Trova il valore mancante"},
     subtitles:{math:"Non fare per prima l’operazione che vedi 👀",geometry:"Guarda il disegno ancora una volta",count:"Le forme piccole sono solo l’inizio",algebra:"Sembra breve. Pensaci bene.",area:"Scegli la formula giusta"},
-    cleanDesc:"Una domanda · card pulita",debateDesc:"Due risposte · fatta per i commenti",debateQuestion:"Chi ha ragione?",
+    cleanDesc:"Una domanda · card pulita",debateDesc:"Due risposte · fatta per i commenti",debateQuestion:"Chi ha ragione?",changeVisual:"Cambia immagine",
   },
   ar: {
     descriptions:{math:"ترتيب العمليات والأقواس والنسب والأسس",geometry:"الزوايا والمتوازيات والزوايا المتقابلة والمضلعات",count:"مثلثات مخفية ومربعات متداخلة",algebra:"رموز ومتطابقات ومعلومات ناقصة",area:"مساحة ومحيط وفيثاغورس وأشكال مركبة"},
     titles:{math:"ما النتيجة؟",geometry:"أوجد الزاوية x",count:"كم العدد الكلي؟",algebra:"أوجد x",area:"أوجد القيمة الناقصة"},
     subtitles:{math:"لا تبدأ بأول عملية تراها 👀",geometry:"انظر إلى الشكل مرة أخرى",count:"الأشكال الصغيرة ليست كل شيء",algebra:"يبدو قصيرًا. فكّر جيدًا.",area:"اختر القانون الصحيح"},
-    cleanDesc:"سؤال واحد · بطاقة نظيفة",debateDesc:"إجابتان · للنقاش",debateQuestion:"من الصحيح؟",
+    cleanDesc:"سؤال واحد · بطاقة نظيفة",debateDesc:"إجابتان · للنقاش",debateQuestion:"من الصحيح؟",changeVisual:"تغيير الصورة",
   },
   hi: {
     descriptions:{math:"ऑपरेशन क्रम, ब्रैकेट, प्रतिशत और घात",geometry:"कोण, समानांतर रेखाएँ, विपरीत कोण और बहुभुज",count:"छिपे त्रिभुज और एक दूसरे पर बने वर्ग",algebra:"प्रतीक, सर्वसमिकाएँ और अधूरी जानकारी",area:"क्षेत्रफल, परिमाप, पाइथागोरस और संयुक्त आकृतियाँ"},
     titles:{math:"उत्तर क्या है?",geometry:"कोण x ज्ञात करें",count:"कुल कितने हैं?",algebra:"x ज्ञात करें",area:"लापता मान ज्ञात करें"},
     subtitles:{math:"जो पहले दिखे वही पहले मत करो 👀",geometry:"चित्र को एक बार फिर देखें",count:"छोटी आकृतियाँ सिर्फ शुरुआत हैं",algebra:"छोटा है, पर ध्यान चाहिए",area:"सही सूत्र चुनें"},
-    cleanDesc:"एक सवाल · साफ कार्ड",debateDesc:"दो जवाब · चर्चा के लिए",debateQuestion:"कौन सही है?",
+    cleanDesc:"एक सवाल · साफ कार्ड",debateDesc:"दो जवाब · चर्चा के लिए",debateQuestion:"कौन सही है?",changeVisual:"चित्र बदलें",
   },
   id: {
     descriptions:{math:"Urutan operasi, kurung, persen dan pangkat",geometry:"Sudut, garis sejajar, sudut berlawanan dan poligon",count:"Segitiga tersembunyi dan persegi bertumpuk",algebra:"Simbol, identitas dan informasi kurang",area:"Luas, keliling, Pythagoras dan bangun gabungan"},
     titles:{math:"Berapa hasilnya?",geometry:"Cari sudut x",count:"Berapa jumlah semuanya?",algebra:"Cari x",area:"Cari nilai yang hilang"},
     subtitles:{math:"Jangan kerjakan yang pertama terlihat 👀",geometry:"Lihat diagram sekali lagi",count:"Bangun kecil baru permulaan",algebra:"Terlihat singkat. Pikirkan baik-baik.",area:"Pilih rumus yang tepat"},
-    cleanDesc:"Satu soal · kartu bersih",debateDesc:"Dua jawaban · untuk diskusi",debateQuestion:"Siapa yang benar?",
+    cleanDesc:"Satu soal · kartu bersih",debateDesc:"Dua jawaban · untuk diskusi",debateQuestion:"Siapa yang benar?",changeVisual:"Ganti gambar",
   },
   ru: {
     descriptions:{math:"Порядок действий, скобки, проценты и степени",geometry:"Углы, параллельные, вертикальные углы и многоугольники",count:"Скрытые треугольники и пересекающиеся квадраты",algebra:"Символы, тождества и неполные данные",area:"Площадь, периметр, Пифагор и составные фигуры"},
     titles:{math:"Какой результат?",geometry:"Найди угол x",count:"Сколько всего?",algebra:"Найди x",area:"Найди неизвестное"},
     subtitles:{math:"Не спеши считать слева направо 👀",geometry:"Посмотри на рисунок ещё раз",count:"Маленькие фигуры — только начало",algebra:"Коротко, но нужна внимательность",area:"Выбери правильную формулу"},
-    cleanDesc:"Один вопрос · чистая карточка",debateDesc:"Два ответа · для обсуждения",debateQuestion:"Кто прав?",
+    cleanDesc:"Один вопрос · чистая карточка",debateDesc:"Два ответа · для обсуждения",debateQuestion:"Кто прав?",changeVisual:"Сменить изображение",
   },
   bn: {
     descriptions:{math:"অপারেশন ক্রম, বন্ধনী, শতাংশ ও ঘাত",geometry:"কোণ, সমান্তরাল রেখা, বিপ্রতীপ কোণ ও বহুভুজ",count:"লুকানো ত্রিভুজ ও ছেদ করা বর্গ",algebra:"প্রতীক, অভেদ এবং অসম্পূর্ণ তথ্য",area:"ক্ষেত্রফল, পরিসীমা, পিথাগোরাস ও যৌগিক আকৃতি"},
     titles:{math:"ফল কত?",geometry:"x কোণ বের করুন",count:"মোট কতটি?",algebra:"x বের করুন",area:"অনুপস্থিত মান বের করুন"},
     subtitles:{math:"যেটা আগে দেখছেন সেটাই আগে করবেন না 👀",geometry:"চিত্রটি আরেকবার দেখুন",count:"ছোট আকৃতিগুলো শুধু শুরু",algebra:"ছোট দেখায়, মনোযোগ দরকার",area:"সঠিক সূত্র বেছে নিন"},
-    cleanDesc:"একটি প্রশ্ন · পরিষ্কার কার্ড",debateDesc:"দুটি উত্তর · আলোচনার জন্য",debateQuestion:"কে ঠিক?",
+    cleanDesc:"একটি প্রশ্ন · পরিষ্কার কার্ড",debateDesc:"দুটি উত্তর · আলোচনার জন্য",debateQuestion:"কে ঠিক?",changeVisual:"ছবি বদলান",
   },
   ur: {
     descriptions:{math:"عملی ترتیب، قوسین، فیصد اور قوتیں",geometry:"زاویے، متوازی لکیریں، مقابل زاویے اور کثیرالاضلاع",count:"پوشیدہ مثلث اور ایک دوسرے پر بنے مربع",algebra:"علامتیں، شناختیں اور نامکمل معلومات",area:"رقبہ، محیط، فیثاغورث اور مرکب اشکال"},
     titles:{math:"نتیجہ کیا ہے؟",geometry:"زاویہ x معلوم کریں",count:"کل کتنے ہیں؟",algebra:"x معلوم کریں",area:"نامعلوم قدر معلوم کریں"},
     subtitles:{math:"جو پہلے نظر آئے اسے پہلے نہ کریں 👀",geometry:"شکل کو ایک بار پھر دیکھیں",count:"چھوٹی شکلیں صرف ابتدا ہیں",algebra:"مختصر ہے، مگر غور چاہیے",area:"درست فارمولا منتخب کریں"},
-    cleanDesc:"ایک سوال · صاف کارڈ",debateDesc:"دو جواب · بحث کے لیے",debateQuestion:"کون درست ہے؟",
+    cleanDesc:"ایک سوال · صاف کارڈ",debateDesc:"دو جواب · بحث کے لیے",debateQuestion:"کون درست ہے؟",changeVisual:"تصویر بدلیں",
   },
   vi: {
     descriptions:{math:"Thứ tự phép tính, ngoặc, phần trăm và lũy thừa",geometry:"Góc, song song, góc đối đỉnh và đa giác",count:"Tam giác ẩn và hình vuông chồng lên nhau",algebra:"Biểu tượng, hằng đẳng thức và thiếu dữ kiện",area:"Diện tích, chu vi, Pythagore và hình ghép"},
     titles:{math:"Kết quả là bao nhiêu?",geometry:"Tìm góc x",count:"Tổng cộng có bao nhiêu?",algebra:"Tìm x",area:"Tìm giá trị còn thiếu"},
     subtitles:{math:"Đừng làm phép tính đầu tiên bạn thấy 👀",geometry:"Nhìn hình thêm một lần nữa",count:"Các hình nhỏ chỉ là khởi đầu",algebra:"Trông ngắn nhưng cần cẩn thận",area:"Chọn đúng công thức"},
-    cleanDesc:"Một câu hỏi · thẻ sạch",debateDesc:"Hai đáp án · để tranh luận",debateQuestion:"Ai đúng?",
+    cleanDesc:"Một câu hỏi · thẻ sạch",debateDesc:"Hai đáp án · để tranh luận",debateQuestion:"Ai đúng?",changeVisual:"Đổi hình ảnh",
   },
   fil: {
     descriptions:{math:"Order of operations, brackets, percent at powers",geometry:"Angles, parallel lines, vertical angles at polygons",count:"Nakatagong tatsulok at magkapatong na parisukat",algebra:"Mga simbolo, identity at kulang na impormasyon",area:"Area, perimeter, Pythagoras at composite shapes"},
     titles:{math:"Ano ang sagot?",geometry:"Hanapin ang angle x",count:"Ilan lahat?",algebra:"Hanapin ang x",area:"Hanapin ang nawawalang value"},
     subtitles:{math:"Huwag unahin agad ang unang nakikita 👀",geometry:"Tingnan ulit ang diagram",count:"Simula pa lang ang maliliit na hugis",algebra:"Maikli pero kailangan ng ingat",area:"Piliin ang tamang formula"},
-    cleanDesc:"Isang tanong · malinis na card",debateDesc:"Dalawang sagot · para sa comments",debateQuestion:"Sino ang tama?",
+    cleanDesc:"Isang tanong · malinis na card",debateDesc:"Dalawang sagot · para sa comments",debateQuestion:"Sino ang tama?",changeVisual:"Palitan ang larawan",
   },
 };
 
@@ -645,6 +648,11 @@ function subtitleFor(locale:AqryoLocale, kind:PuzzleKind, copy:PuzzleCopy) {
 }
 
 function headlineFor(locale:AqryoLocale,puzzle:Puzzle) {
+  if(puzzle.kind==="algebra") {
+    const diagramText = String(puzzle.diagram ?? "").replace(/<[^>]*>/g," ");
+    const hasX = /(^|[^a-zA-Z])x([^a-zA-Z]|$)/i.test(diagramText);
+    if(!hasX) return COPY[locale].titles.math;
+  }
   if(puzzle.kind==="pattern") return puzzle.patternMode==="mapping" ? patternCopy(locale).mappingTitle : patternCopy(locale).title;
   if(puzzle.kind==="count" && puzzle.countTarget) return COUNT_TITLES[locale][puzzle.countTarget];
   if(puzzle.kind==="area" && puzzle.areaTarget) return AREA_TITLES[locale][puzzle.areaTarget];
@@ -702,7 +710,7 @@ function PuzzleBuilderPage() {
   const copy = COPY[locale] ?? COPY.en;
   const [loading,setLoading]=useState(true);
   const [kind,setKind]=useState<PuzzleKind>("math");
-  const [presentation,setPresentation]=useState<Presentation>("clean");
+  const [presentation,setPresentation]=useState<Presentation>("debate");
   const [recent,setRecent]=useState<RecentFamilies>(readRecent);
   const [puzzle,setPuzzle]=useState<Puzzle>(()=>generate("math", []));
   const [socialText,setSocialText]=useState("");
@@ -781,7 +789,7 @@ function PuzzleBuilderPage() {
     setKind(next);
     const fresh=generate(next,recent[next]);
     setPuzzle(fresh);
-    setPresentation("clean");
+    setPresentation(next==="math" ? "debate" : "clean");
     if(next==="math") setDebateTemplate((current)=>pickDebateTemplate(current));
     if(next==="algebra") {
       setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
@@ -925,10 +933,10 @@ function PuzzleBuilderPage() {
             <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
               <button
                 type="button"
-                onClick={regenerate}
+                onClick={()=>{ if(kind==="math") setDebateTemplate((current)=>pickDebateTemplate(current)); else setSceneTemplate((current)=>nextSceneTemplate(current)); }}
                 className="absolute left-6 top-6 z-20 rounded-full bg-black/88 px-4 py-2 text-[12px] font-black text-white shadow-lg backdrop-blur transition hover:bg-violet-700 sm:left-7 sm:top-7 sm:text-[13px]"
               >
-                {locale === "tr" ? "Görseli değiştir" : t("newQuestion")} ↻
+                {copy.changeVisual} ↻
               </button>
               <div className="mx-auto max-w-[620px]">
                 <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate} algebraChallenge={algebraChallenge} algebraImage={algebraImage} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? SCENE_TEMPLATES[sceneTemplate] : SCENE_TEMPLATES[sceneTemplate]}/>
