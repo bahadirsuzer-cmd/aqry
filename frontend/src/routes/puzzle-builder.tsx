@@ -761,10 +761,6 @@ function PuzzleBuilderPage() {
   },[kind,algebraTemplate]);
 
   useEffect(()=>{
-    if(kind==="algebra"){
-      setSceneImage(null);
-      return;
-    }
     let cancelled=false;
     void loadSceneTemplate(sceneTemplate)
       .then((dataUrl)=>{ if(!cancelled) setSceneImage({template:sceneTemplate,dataUrl}); })
@@ -786,25 +782,23 @@ function PuzzleBuilderPage() {
     const fresh=generate(next,recent[next]);
     setPuzzle(fresh);
     setPresentation("clean");
-    if(next==="math") {
-      setDebateTemplate((current)=>pickDebateTemplate(current));
-      setSceneTemplate((current)=>nextSceneTemplate(current));
-    } else if(next==="algebra") {
+    if(next==="math") setDebateTemplate((current)=>pickDebateTemplate(current));
+    if(next==="algebra") {
       setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
       setAlgebraChallenge((current)=>pickAlgebraChallenge(current));
-    } else setSceneTemplate((current)=>nextSceneTemplate(current));
+    }
+    setSceneTemplate((current)=>nextSceneTemplate(current));
     remember(fresh);
   }
 
   function regenerate(){
     const fresh=generate(kind,recent[kind]);
-    if(kind==="math") {
-      setDebateTemplate((current)=>pickDebateTemplate(current));
-      setSceneTemplate((current)=>nextSceneTemplate(current));
-    } else if(kind==="algebra") {
+    if(kind==="math") setDebateTemplate((current)=>pickDebateTemplate(current));
+    if(kind==="algebra") {
       setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
       setAlgebraChallenge((current)=>pickAlgebraChallenge(current));
-    } else setSceneTemplate((current)=>nextSceneTemplate(current));
+    }
+    setSceneTemplate((current)=>nextSceneTemplate(current));
     setPuzzle(fresh);
     remember(fresh);
     setCopied(false);
@@ -823,15 +817,15 @@ function PuzzleBuilderPage() {
   useEffect(() => {
     let cancelled = false;
     if(presentation==="debate" && !debateImageReady) return;
-    if(puzzle.kind==="algebra" && !algebraImageReady) return;
-    if(puzzle.kind!=="algebra" && presentation!=="debate" && !sceneImageReady) return;
+    if(presentation==="debate" && puzzle.kind==="algebra" && !algebraImageReady) return;
+    if(presentation!=="debate" && !sceneImageReady) return;
     const source = serializeSvg();
     if (source) {
       const backgroundDataUrl =
         puzzle.kind === "math"
           ? (presentation==="debate" ? (debateImageReady ? debateImage?.dataUrl : null) : (sceneImageReady ? sceneImage?.dataUrl : null))
           : puzzle.kind === "algebra"
-            ? (algebraImageReady ? algebraImage?.dataUrl : null)
+            ? (presentation==="debate" ? (algebraImageReady ? algebraImage?.dataUrl : null) : (sceneImageReady ? sceneImage?.dataUrl : null))
             : (sceneImageReady ? sceneImage?.dataUrl : null);
 
       const exportSource = backgroundDataUrl
@@ -1006,7 +1000,7 @@ const PuzzleSvg=React.forwardRef<
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
   const questionRows = puzzleQuestionRows(puzzle.diagram);
   const compactDebate = COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
-  if (sceneImage && puzzle.kind!=="algebra" && presentation!=="debate") {
+  if (sceneImage && presentation!=="debate") {
     const safeX = 160;
     const safeY = 34;
     const safeW = 186;
