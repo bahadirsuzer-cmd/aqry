@@ -933,7 +933,7 @@ function PuzzleBuilderPage() {
                 {locale === "tr" ? "Görseli değiştir" : t("newQuestion")} ↻
               </button>
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate} algebraChallenge={algebraChallenge} algebraImage={algebraImage} sceneImage={sceneImage}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage.dataUrl : null} debateTemplate={debateTemplate} sceneImage={sceneImageReady ? sceneImage.dataUrl : null}/>
               </div>
             </div>
           </div>

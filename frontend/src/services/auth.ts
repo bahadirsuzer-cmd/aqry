@@ -251,3 +251,53 @@ export async function updateCreatorPassword(
 
   return data.user;
 }
+
+export async function requestAdminEmailCode(
+  email: string,
+) {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (!normalizedEmail) {
+    throw new Error("E-posta adresi boş bırakılamaz.");
+  }
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email: normalizedEmail,
+    options: {
+      shouldCreateUser: false,
+    },
+  });
+
+  if (error) {
+    throw new Error("Doğrulama kodu gönderilemedi.");
+  }
+
+  return normalizedEmail;
+}
+
+export async function verifyAdminEmailCode(
+  email: string,
+  token: string,
+) {
+  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedToken = token.replace(/\s/g, "");
+
+  if (!normalizedEmail || !normalizedToken) {
+    throw new Error("E-posta ve doğrulama kodu gerekli.");
+  }
+
+  const { data, error } = await supabase.auth.verifyOtp({
+    email: normalizedEmail,
+    token: normalizedToken,
+    type: "email",
+  });
+
+  if (error || !data.user || !data.session) {
+    throw new Error("Kod geçersiz veya süresi dolmuş.");
+  }
+
+  return {
+    user: data.user,
+    session: data.session,
+  };
+}
