@@ -939,7 +939,7 @@ function PuzzleBuilderPage() {
                 {copy.changeVisual} ↻
               </button>
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImage} debateTemplate={debateTemplate} algebraChallenge={algebraChallenge} algebraImage={algebraImage} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? SCENE_TEMPLATES[sceneTemplate] : SCENE_TEMPLATES[sceneTemplate]}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} algebraChallenge={algebraChallenge} algebraImage={algebraImage} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? SCENE_TEMPLATES[sceneTemplate] : SCENE_TEMPLATES[sceneTemplate]}/>
               </div>
             </div>
           </div>
@@ -1055,14 +1055,15 @@ const PuzzleSvg=React.forwardRef<
       </svg>
     );
   }
-  if (presentation==="debate" && debateImage && (puzzle.kind==="math" || puzzle.kind==="algebra")) {
+  if (presentation==="debate" && puzzle.kind==="math") {
+    const directDebate = debateSprite(debateTemplate);
     const longest = Math.max(...questionRows.map((row)=>row.length), 1);
     const questionSize = longest > 28 ? 10 : longest > 20 ? 12 : 15;
     const questionY = compactDebate ? 104 : 176;
     const answerY = compactDebate ? 157 : 118;
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
-        <image href={debateImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
+        {debateImage ? <image href={debateImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/> : <image href={directDebate.src} x={-directDebate.column*360} y="0" width="3600" height="450" preserveAspectRatio="none"/>}
         <text x="180" y={questionY - ((questionRows.length-1)*8)} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900">
           {questionRows.map((row,index)=>(
             <tspan key={index} x="180" dy={index===0?0:17} fill={["#2563eb","#dc2626","#7c3aed","#0f766e"][index%4]}>{row}</tspan>
