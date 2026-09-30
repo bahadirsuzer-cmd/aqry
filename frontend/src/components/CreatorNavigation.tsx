@@ -9,7 +9,7 @@ interface CreatorNavigationProps {
   onSignOut: () => void | Promise<void>;
 }
 
-export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
+export function CreatorNavigation({ onSignOut: _onSignOut }: CreatorNavigationProps) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { locale, setLocale, t } = useAqryoLocale();
   const [unreadCount, setUnreadCount] = useState(0);
@@ -141,25 +141,7 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
             })}
           </nav>
 
-          <div className="flex shrink-0 items-center gap-2">
-            <label className="hidden sm:block">
-              <span className="sr-only">{t("language")}</span>
-              <select
-                value={locale}
-                onChange={(event) => setLocale(event.target.value as AqryoLocale)}
-                className="h-11 rounded-full border border-border bg-white px-3 text-[12px] font-extrabold text-foreground outline-none focus:border-primary"
-              >
-                {AQRYO_LANGUAGES.map(([code, label]) => (
-                  <option key={code} value={code}>{label}</option>
-                ))}
-              </select>
-            </label>
-
-
-          </div>
-        </div>
-
-        <div className="border-t border-border md:hidden">
+          <div className="flex shrink-0 items-center gap-2">\n            <label>\n              <span className="sr-only">{t("language")}</span>\n              <select\n                value={locale}\n                onChange={(event) => setLocale(event.target.value as AqryoLocale)}\n                className="h-10 rounded-full border border-border bg-white px-3 text-[12px] font-extrabold text-foreground outline-none focus:border-primary"\n              >\n                {AQRYO_LANGUAGES.map(([code, label]) => (\n                  <option key={code} value={code}>{label}</option>\n                ))}\n              </select>\n            </label>\n          </div>\n        </div>\n\n        <div className="border-t border-border md:hidden">
           <nav className="-mx-3 flex items-center gap-2 overflow-x-auto px-3 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {navigationItems.map((item) => {
               const active = pathname === item.to;
@@ -183,24 +165,6 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
               );
             })}
 
-            <select
-              aria-label={t("language")}
-              value={locale}
-              onChange={(event) => setLocale(event.target.value as AqryoLocale)}
-              className="h-11 shrink-0 rounded-full border border-border bg-white px-3 text-[12px] font-extrabold"
-            >
-              {AQRYO_LANGUAGES.map(([code, label]) => (
-                <option key={code} value={code}>{label}</option>
-              ))}
-            </select>
-
-            <button
-              type="button"
-              onClick={onSignOut}
-              className="flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-background px-4 text-[13px] font-extrabold text-muted-foreground"
-            >
-              {t("signOut")}
-            </button>
           </nav>
         </div>
       </div>
