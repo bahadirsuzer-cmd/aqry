@@ -1071,8 +1071,8 @@ const PuzzleSvg=React.forwardRef<
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
         <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?14:12} fontWeight="900" fill="#17101f">{headline}</text>
-        <svg x={safeX} y={safeY+30} width={safeW} height={safeH-35} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet">
-          <g dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
+        <svg x={safeX} y={safeY+30} width={safeW} height={safeH-35} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+          <g transform={puzzle.kind==="geometry" ? "translate(27 20.25) scale(.85)" : undefined} dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
         </svg>
       </svg>
     );
