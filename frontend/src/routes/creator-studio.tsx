@@ -54,7 +54,6 @@ function CreatorStudioPage() {
   const [loading, setLoading] = useState(true);
   const { locale, t } = useAqryoLocale();
   const preview = PREVIEW_COPY[locale];
-  const questionConfession = getQuestionConfessionDefaults(locale);
 
   useEffect(() => {
     let cancelled = false;
@@ -126,7 +125,7 @@ function CreatorStudioPage() {
   );
 }
 
-function StudioChoice({ href, label, title, description, icon, className }: { href: string; label: string; title: string; description: string; icon: string; className: string }) {
+function StudioChoice({ href, label, title, description, icon, className }: { href: string; label: string; title: string; description: string; icon: string; className: string }) {\n  const { t } = useAqryoLocale();
   return (
     <Link
       to={href}
