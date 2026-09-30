@@ -168,7 +168,7 @@ function QuestionConfessionBuilderPage() {
               to="/creator-studio"
               className="rounded-full border border-border bg-white px-4 py-2 text-[13px] font-black text-muted-foreground"
             >
-              {isTr ? "Studio’ya dön" : "Back to Studio"}
+              {isTr ? "Ana sayfaya dön" : "Back to home"}
             </Link>
           </div>
         </div>
