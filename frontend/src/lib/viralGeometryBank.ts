@@ -314,7 +314,7 @@ function isoscelesBase(apex:number,v:number){const ans=(180-apex)/2,L=[[[65,225]
 function quadrilateralMissing(a:number,b:number,cc:number,v:number){const ans=360-a-b-cc,L=[[[60,215],[285,230],[310,75],[110,45]],[[45,180],[145,235],[305,185],[250,45]],[[75,235],[300,205],[265,55],[55,75]],[[55,220],[280,235],[320,110],[165,45]]] as const,P=L[v%4];return out(ans,180-a,polyline([P[0],P[1],P[2],P[3],P[0]])+label(P[0][0]+30,P[0][1]-22,a+"°")+label(P[1][0]-28,P[1][1]-28,b+"°")+label(P[2][0]-28,P[2][1]+28,cc+"°")+label(P[3][0]+28,P[3][1]+28,"x","#e0524d"),["Dörtgen iç açıları 360°","x=360°−"+a+"°−"+b+"°−"+cc+"°="+ans+"°"]); }
 function rightTriangle(a:number,v:number){const ans=90-a,L=[[[65,225],[300,225],[65,55]],[[55,225],[300,225],[300,55]],[[80,235],[300,235],[80,75]],[[60,215],[285,215],[285,45]]] as const;const[A,B,C]=L[v%4],R=v%2===0?A:B;return out(ans,90+a,polyline([A,B,C,A])+'<path d="M'+R[0]+' '+(R[1]-16)+'h16v16" fill="none" stroke="#7c3aed" stroke-width="3"/>'+label(C[0]+(v%2?-35:35),C[1]+35,a+"°")+label((A[0]+B[0])/2,A[1]-25,"x","#e0524d"),["Dik üçgende dar açılar toplamı 90°","x=90°−"+a+"°="+ans+"°"]); }
 function angleBisector(total:number,v:number){const x=180,y=210,s=[20,35,50,65][v%4],e=s+total,m=(s+e)/2,p1=polar(x,y,155,s),p2=polar(x,y,155,e),pm=polar(x,y,145,m),ans=total/2;return out(ans,total,line(x,y,p1[0],p1[1])+line(x,y,p2[0],p2[1])+line(x,y,pm[0],pm[1],"#7c3aed",3)+arc(x,y,48,s,m)+arc(x,y,48,m,e)+arcTick(x,y,48,(s+m)/2)+arcTick(x,y,48,(m+e)/2)+label(x,y-78,total+"°")+label(pm[0]+18,pm[1]+18,"x","#e0524d"),["Açıortay iki eş açı oluşturur","x="+total+"°÷2="+ans+"°"]); }
-export const GEOMETRY_FAMILIES: Family[,
+export const GEOMETRY_FAMILIES: Family[] = [
   {id:"triangle_sum",kind:"geometry",make:r=>{const a=int(r,28,72),b=int(r,28,Math.min(78,145-a));return triangleSum(a,b,variant(r,6));}},
   {id:"vertical_angles",kind:"geometry",make:r=>verticalAngles(int(r,28,152),variant(r,4))},
   {id:"linear_pair",kind:"geometry",make:r=>linearPair(int(r,28,152),variant(r,4))},
@@ -323,107 +323,17 @@ export const GEOMETRY_FAMILIES: Family[,
   {id:"quadrilateral_missing",kind:"geometry",make:r=>{const a=int(r,70,105),b=int(r,70,105),cc=int(r,70,105);return quadrilateralMissing(a,b,cc,variant(r,4));}},
   {id:"right_triangle",kind:"geometry",make:r=>rightTriangle(int(r,20,70),variant(r,4))},
   {id:"angle_bisector",kind:"geometry",make:r=>angleBisector(int(r,40,140,2),variant(r,4))},
-] = [
-  {
-    id: "parallel_kink",
-    kind: "geometry",
-    make: (r) => {
-      const a=int(r,28,58), b=int(r,20,42);
-      return zigzag(a,b,false);
-    },
-  },
-  {
-    id: "bisected_parallel_kink",
-    kind: "geometry",
-    make: (r) => {
-      // Keep the sum even so the bisected answer is a clean whole degree.
-      let a=int(r,36,66), b=int(r,18,44);
-      if ((a+b)%2) b += b<44 ? 1 : -1;
-      return zigzag(a,b,true);
-    },
-  },
-  {
-    id: "diagonal_parallelogram",
-    kind: "geometry",
-    make: (r) => {
-      const e=int(r,105,138), phi=int(r,14,32);
-      return parallelogram(e,phi,false);
-    },
-  },
-  {
-    id: "bisected_diagonal_parallelogram",
-    kind: "geometry",
-    make: (r) => {
-      let e=int(r,106,136), phi=int(r,14,32);
-      if (((180-e-phi)%2)!==0) phi += phi<32 ? 1 : -1;
-      return parallelogram(e,phi,true);
-    },
-  },
-  {
-    id: "isosceles_exterior_bisector",
-    kind: "geometry",
-    make: (r) => isosceles(int(r,118,146)),
-  },
-  {
-    id: "right_altitude_bisector",
-    kind: "geometry",
-    make: (r) => {
-      // Even source angles keep the bisected result integral.
-      return rightAltitude(int(r,26,62,2));
-    },
-  },
-  {
-    id: "crossed_parallel_transversals",
-    kind: "geometry",
-    make: (r) => {
-      let a=int(r,34,66), b=int(r,34,66);
-      if (a+b>132) b=132-a;
-      return crossed(a,b);
-    },
-  },
-  {
-    id: "trapezoid_diagonal_bisector",
-    kind: "geometry",
-    make: (r) => {
-      const a=int(r,56,86,2);
-      const phi=int(r,10,Math.max(12,Math.floor(a/2)-8));
-      return trapezoid(a,phi);
-    },
-  },
-  {
-    id: "triangle_exterior_bisector",
-    kind: "geometry",
-    make: (r) => {
-      const a=int(r,42,72);
-      let e=int(r,108,148);
-      if ((e-a)%2) e += e<148 ? 1 : -1;
-      return exteriorBisector(a,e);
-    },
-  },
-,
-  {
-    id:"triangle_exterior_sum",
-    kind:"geometry",
-    make:r=>{const a=int(r,28,68),b=int(r,28,Math.min(72,145-a)),ans=a+b;const A:[number,number]=[55,225],B:[number,number]=[260,225],C:[number,number]=[150+variant(r,80),55];const d=polyline([A,B,C,A])+line(B[0],B[1],330,B[1])+label(A[0]+38,A[1]-25,a+"°")+label(C[0],C[1]+38,b+"°")+label(B[0]+38,B[1]-35,"x","#e0524d");return out(ans,180-ans,d,["Dış açı uzak iki iç açının toplamıdır","x="+a+"°+"+b+"°="+ans+"°"]);},
-  },
-  {
-    id:"supplementary_parallel",
-    kind:"geometry",
-    make:r=>{const a=int(r,35,145),ans=180-a,x=180,y=135,g=variant(r,50)+40,p=polar(x,y,160,g);const d=line(25,y,335,y)+line(x,y,p[0],p[1])+par(50,y)+label(x+55,y-30,a+"°")+label(x-55,y-32,"x","#e0524d");return out(ans,a,d,["Komşu bütünler açılar 180°","x=180°−"+a+"°="+ans+"°"]);},
-  },
-  {
-    id:"kite_opposite_angles",
-    kind:"geometry",
-    make:r=>{const a=int(r,45,85),b=int(r,70,120),ans=360-a-b-b;const P:[[number,number],[number,number],[number,number],[number,number]]=[[180,38],[310,140],[180,238],[50,140]];const d=polyline([P[0],P[1],P[2],P[3],P[0]])+tick(115,89,38)+tick(245,89,142)+label(180,68,a+"°")+label(275,140,b+"°")+label(85,140,b+"°")+label(180,205,"x","#e0524d");return out(ans,180-a,d,["Dörtgen iç açıları 360°","x=360°−"+a+"°−2×"+b+"°="+ans+"°"]);},
-  },
-  {
-    id:"regular_polygon_interior",
-    kind:"geometry",
-    make:r=>{const n=choose(r,[5,6,8,9,10,12]),ans=180-360/n,cx=180,cy=140,R=95,rot=-90+variant(r,30),pts=Array.from({length:n},(_,i)=>polar(cx,cy,R,rot+i*360/n));const d=polyline([...pts,pts[0]])+label(cx,cy,n+" kenar")+label(pts[0][0],pts[0][1]+32,"x","#e0524d");return out(ans,360/n,d,["Düzgün çokgende bir dış açı 360°÷"+n,"İç açı=180°−"+(360/n)+"°="+ans+"°"]);},
-  },
-  {
-    id:"two_transversal_triangle",
-    kind:"geometry",
-    make:r=>{const a=int(r,25,65),b=int(r,25,65),ans=180-a-b;const top=55,base=225,L:[number,number]=[55,base],R:[number,number]=[305,base],C:[number,number]=[120+variant(r,120),top];const d=line(25,top,335,top)+line(25,base,335,base)+line(L[0],L[1],C[0],C[1])+line(R[0],R[1],C[0],C[1])+par(48,top)+par(48,base)+label(L[0]+42,base-22,a+"°")+label(R[0]-42,base-22,b+"°")+label(C[0],top+38,"x","#e0524d");return out(ans,a+b,d,["Üçgen iç açıları 180°","x=180°−"+a+"°−"+b+"°="+ans+"°"]);},
-  },
+  {id:"parallel_kink",kind:"geometry",make:r=>zigzag(int(r,28,58),int(r,20,42),false)},
+  {id:"bisected_parallel_kink",kind:"geometry",make:r=>{let a=int(r,36,66),b=int(r,18,44);if((a+b)%2)b+=b<44?1:-1;return zigzag(a,b,true);}},
+  {id:"diagonal_parallelogram",kind:"geometry",make:r=>parallelogram(int(r,105,138),int(r,14,32),false)},
+  {id:"bisected_diagonal_parallelogram",kind:"geometry",make:r=>{const e=int(r,106,136);let p=int(r,14,32);if((180-e-p)%2)p+=p<32?1:-1;return parallelogram(e,p,true);}},
+  {id:"isosceles_exterior_bisector",kind:"geometry",make:r=>isosceles(int(r,118,146))},
+  {id:"right_altitude_bisector",kind:"geometry",make:r=>rightAltitude(int(r,26,62,2))},
+  {id:"crossed_parallel_transversals",kind:"geometry",make:r=>{const a=int(r,34,62);let b=int(r,34,62);if(a+b>124)b=124-a;return crossed(a,b);}},
+  {id:"trapezoid_diagonal_bisector",kind:"geometry",make:r=>{const a=int(r,56,86,2),p=int(r,10,Math.max(12,Math.floor(a/2)-8));return trapezoid(a,p);}},
+  {id:"triangle_exterior_bisector",kind:"geometry",make:r=>{const a=int(r,42,72);let e=int(r,108,148);if((e-a)%2)e+=e<148?1:-1;return exteriorBisector(a,e);}},
+  {id:"triangle_exterior_sum",kind:"geometry",make:r=>{const a=int(r,28,68),b=int(r,28,Math.min(72,145-a)),ans=a+b,A:[number,number]=[55,225],B:[number,number]=[260,225],C:[number,number]=[130+variant(r,100),55];return out(ans,180-ans,polyline([A,B,C,A])+line(B[0],B[1],330,B[1])+label(A[0]+38,A[1]-25,a+"°")+label(C[0],C[1]+38,b+"°")+label(B[0]+38,B[1]-35,"x","#e0524d"),["Dış açı uzak iki iç açının toplamıdır","x="+a+"°+"+b+"°="+ans+"°"]);}},
+  {id:"supplementary_line",kind:"geometry",make:r=>linearPair(int(r,35,145),variant(r,4))},
+  {id:"regular_polygon_interior",kind:"geometry",make:r=>{const n=choose(r,[5,6,8,9,10,12]),ans=180-360/n,cx=180,cy=140,R=95,rot=-90+variant(r,30),pts=Array.from({length:n},(_,i)=>polar(cx,cy,R,rot+i*360/n));return out(ans,360/n,polyline([...pts,pts[0]])+label(cx,cy,n+" kenar")+label(pts[0][0],pts[0][1]+32,"x","#e0524d"),["Düzgün çokgende dış açı 360°÷"+n,"İç açı=180°−"+(360/n)+"°="+ans+"°"]);}},
+  {id:"two_transversal_triangle",kind:"geometry",make:r=>{const a=int(r,25,65),b=int(r,25,65),ans=180-a-b,top=55,base=225,L:[number,number]=[55,base],R:[number,number]=[305,base],C:[number,number]=[120+variant(r,120),top];return out(ans,a+b,line(25,top,335,top)+line(25,base,335,base)+line(L[0],L[1],C[0],C[1])+line(R[0],R[1],C[0],C[1])+par(48,top)+par(48,base)+label(L[0]+42,base-22,a+"°")+label(R[0]-42,base-22,b+"°")+label(C[0],top+38,"x","#e0524d"),["Üçgen iç açıları 180°","x=180°−"+a+"°−"+b+"°="+ans+"°"]);}},
 ];
