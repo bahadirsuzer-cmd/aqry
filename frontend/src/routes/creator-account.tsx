@@ -280,6 +280,23 @@ function CreatorAccountHubPage() {
                 ),
               )}
 
+              <button
+                type="button"
+                onClick={async () => {
+                  await signOutCreator();
+                  window.location.href = "/creator-auth";
+                }}
+                className="group flex min-h-[88px] w-full items-center gap-4 border-t border-border px-5 py-4 text-left transition hover:bg-background sm:px-6"
+              >
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] border border-border bg-background text-foreground">
+                  <span className="text-[20px] font-black">↗</span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-[18px] font-black tracking-[-0.015em]">Çıkış yap</h2>
+                  <p className="mt-1 text-[15px] leading-6 text-muted-foreground">AQRYO hesabından güvenli şekilde çık.</p>
+                </div>
+              </button>
+
               <a
                 href="/creator-delete-account"
                 className="group flex min-h-[102px] items-center gap-4 border-t border-border px-5 py-4 transition hover:bg-red-50/50 sm:px-6"
