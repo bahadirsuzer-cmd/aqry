@@ -607,3 +607,73 @@ export async function setAdminSiteAnnouncementActive(
 
   return data === true;
 }
+
+export interface AdminSubscriptionRow {
+  userId: string;
+  email: string | null;
+  displayName: string;
+  subscriptionId: string | null;
+  customerId: string | null;
+  status: string | null;
+  currentPeriodEnd: string | null;
+  eventType: string | null;
+  updatedAt: string | null;
+}
+
+export interface AdminPaymentEventLog {
+  id: string;
+  eventType: string;
+  subscriptionId: string | null;
+  customerId: string | null;
+  userId: string | null;
+  processingStatus: string;
+  errorMessage: string | null;
+  createdAt: string;
+}
+
+export interface AdminRefundCase {
+  id: string;
+  userId: string | null;
+  subscriptionId: string | null;
+  customerId: string | null;
+  transactionId: string | null;
+  reason: string | null;
+  status: string;
+  amount: number | null;
+  currency: string | null;
+  providerRefundId: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export async function getAdminSubscriptions(): Promise<AdminSubscriptionRow[]> {
+  const { data, error } = await supabase.rpc("admin_list_paddle_customers");
+  if (error) throw error;
+  return (data ?? []).map((row: any) => ({
+    userId: row.user_id, email: row.email, displayName: row.display_name ?? "",
+    subscriptionId: row.subscription_id, customerId: row.customer_id, status: row.status,
+    currentPeriodEnd: row.current_period_end, eventType: row.event_type, updatedAt: row.updated_at,
+  }));
+}
+
+export async function getAdminPaymentEventLogs(userId?: string): Promise<AdminPaymentEventLog[]> {
+  const { data, error } = await supabase.rpc("admin_list_payment_event_logs", { p_user_id: userId ?? null });
+  if (error) throw error;
+  return (data ?? []).map((row: any) => ({
+    id: row.id, eventType: row.event_type, subscriptionId: row.subscription_id,
+    customerId: row.customer_id, userId: row.user_id, processingStatus: row.processing_status,
+    errorMessage: row.error_message, createdAt: row.created_at,
+  }));
+}
+
+export async function getAdminRefundCases(): Promise<AdminRefundCase[]> {
+  const { data, error } = await supabase.rpc("admin_list_refund_cases");
+  if (error) throw error;
+  return (data ?? []).map((row: any) => ({
+    id: row.id, userId: row.user_id, subscriptionId: row.subscription_id,
+    customerId: row.customer_id, transactionId: row.transaction_id, reason: row.reason,
+    status: row.status, amount: row.amount == null ? null : Number(row.amount), currency: row.currency,
+    providerRefundId: row.provider_refund_id, notes: row.notes, createdAt: row.created_at, updatedAt: row.updated_at,
+  }));
+}
