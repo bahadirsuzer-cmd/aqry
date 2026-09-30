@@ -155,12 +155,7 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
               </select>
             </label>
 
-            <Link
-              to="/"
-              className="flex h-12 items-center justify-center whitespace-nowrap rounded-full bg-black px-5 text-[13px] font-extrabold text-white transition hover:bg-primary"
-            >
-              {t("newExperience")}
-            </Link>
+
           </div>
         </div>
 
