@@ -483,7 +483,7 @@ useEffect(() => {
     if (!experience) return "";
 
     return experience.type === "question_confession"
-      ? `${experience.title}\n\nBana anonim bir soru sor ya da bir itiraf bırak 👀\n\n#AQRYO`
+      ? `Bana söyleyemediğin ne varsa buraya bırak 👀\nİsmini göremiyorum. Gerçekten anonim.\n\n👇 Soru sor veya itiraf et\n\n#AQRYO`
       : experience.type === "story"
         ? `${experience.title}\n\nHikâyeye göz at 👀\n\n#AQRYO`
         : experience.type === "compatibility"
