@@ -673,21 +673,21 @@ function patternCopy(locale:AqryoLocale) {
 }
 
 const MATCHSTICK_COPY: Record<AqryoLocale,{label:string;title:string;description:string;largest:string;smallest:string;subtitle:string}> = {
-  tr:{label:"Kibrit",title:"Kibrit Bulmacası",description:"Kibritleri taşı, en büyük veya en küçük sayıyı oluştur",largest:"1 kibriti taşı · en büyük sayıyı yap",smallest:"1 kibriti taşı · en küçük sayıyı yap",subtitle:"Sadece 1 kibritin yerini değiştir"},
-  en:{label:"Matchsticks",title:"Matchstick Puzzle",description:"Move matches to build the largest or smallest number",largest:"Move 1 match · make the largest number",smallest:"Move 1 match · make the smallest number",subtitle:"Move exactly 1 match"},
-  es:{label:"Cerillas",title:"Puzzle de Cerillas",description:"Mueve cerillas y forma el número mayor o menor",largest:"Mueve 1 cerilla · número mayor",smallest:"Mueve 1 cerilla · número menor",subtitle:"Mueve exactamente 1 cerilla"},
-  pt:{label:"Palitos",title:"Desafio de Palitos",description:"Mova palitos e forme o maior ou menor número",largest:"Mova 1 palito · maior número",smallest:"Mova 1 palito · menor número",subtitle:"Mova exatamente 1 palito"},
-  fr:{label:"Allumettes",title:"Puzzle d’Allumettes",description:"Déplace des allumettes pour former le plus grand ou petit nombre",largest:"Déplace 1 allumette · plus grand nombre",smallest:"Déplace 1 allumette · plus petit nombre",subtitle:"Déplace exactement 1 allumette"},
-  de:{label:"Streichhölzer",title:"Streichholz-Rätsel",description:"Verschiebe Hölzer und bilde die größte oder kleinste Zahl",largest:"1 Holz verschieben · größte Zahl",smallest:"1 Holz verschieben · kleinste Zahl",subtitle:"Verschiebe genau 1 Streichholz"},
-  it:{label:"Fiammiferi",title:"Puzzle dei Fiammiferi",description:"Sposta fiammiferi e crea il numero più grande o piccolo",largest:"Sposta 1 fiammifero · numero più grande",smallest:"Sposta 1 fiammifero · numero più piccolo",subtitle:"Sposta esattamente 1 fiammifero"},
-  ar:{label:"أعواد الثقاب",title:"لغز أعواد الثقاب",description:"حرّك الأعواد لتكوين أكبر أو أصغر عدد",largest:"حرّك عودًا واحدًا · أكبر عدد",smallest:"حرّك عودًا واحدًا · أصغر عدد",subtitle:"حرّك عود ثقاب واحدًا فقط"},
-  hi:{label:"माचिस",title:"माचिस पहेली",description:"माचिस की तीलियाँ हटाकर सबसे बड़ी या छोटी संख्या बनाओ",largest:"1 तीली हटाओ · सबसे बड़ी संख्या",smallest:"1 तीली हटाओ · सबसे छोटी संख्या",subtitle:"सिर्फ 1 तीली की जगह बदलो"},
-  id:{label:"Korek api",title:"Teka-teki Korek Api",description:"Pindahkan batang untuk membuat angka terbesar atau terkecil",largest:"Pindahkan 1 batang · angka terbesar",smallest:"Pindahkan 1 batang · angka terkecil",subtitle:"Pindahkan tepat 1 batang"},
-  ru:{label:"Спички",title:"Головоломка со спичками",description:"Переложи спички и составь наибольшее или наименьшее число",largest:"Переложи 1 спичку · наибольшее число",smallest:"Переложи 1 спичку · наименьшее число",subtitle:"Переложи ровно 1 спичку"},
-  bn:{label:"ম্যাচস্টিক",title:"ম্যাচস্টিক ধাঁধা",description:"কাঠি সরিয়ে সবচেয়ে বড় বা ছোট সংখ্যা বানাও",largest:"১টি কাঠি সরাও · সবচেয়ে বড় সংখ্যা",smallest:"১টি কাঠি সরাও · সবচেয়ে ছোট সংখ্যা",subtitle:"ঠিক ১টি কাঠি সরাও"},
-  ur:{label:"ماچس",title:"ماچس کی پہیلی",description:"تیلیاں ہلا کر سب سے بڑا یا چھوٹا عدد بنائیں",largest:"1 تیلی ہٹائیں · سب سے بڑا عدد",smallest:"1 تیلی ہٹائیں · سب سے چھوٹا عدد",subtitle:"صرف 1 تیلی کی جگہ بدلیں"},
-  vi:{label:"Que diêm",title:"Câu đố Que diêm",description:"Di chuyển que để tạo số lớn nhất hoặc nhỏ nhất",largest:"Di chuyển 1 que · số lớn nhất",smallest:"Di chuyển 1 que · số nhỏ nhất",subtitle:"Di chuyển đúng 1 que"},
-  fil:{label:"Posporo",title:"Palaisipang Posporo",description:"Ilipat ang posporo para mabuo ang pinakamalaki o pinakamaliit na numero",largest:"Ilipat ang 1 posporo · pinakamalaking numero",smallest:"Ilipat ang 1 posporo · pinakamaliit na numero",subtitle:"Eksaktong 1 posporo lang"},
+  tr:{label:"Kibrit",title:"Kibrit Bulmacası",description:"Kibritleri taşı, en büyük veya en küçük sayıyı oluştur",largest:"En büyük sayıyı yap",smallest:"En küçük sayıyı yap",subtitle:"Sadece 1 kibritin yerini değiştir"},
+  en:{label:"Matchsticks",title:"Matchstick Puzzle",description:"Move matches to build the largest or smallest number",largest:"Make the largest number",smallest:"Make the smallest number",subtitle:"Move exactly 1 match"},
+  es:{label:"Cerillas",title:"Puzzle de Cerillas",description:"Mueve cerillas y forma el número mayor o menor",largest:"Forma el número mayor",smallest:"Forma el número menor",subtitle:"Mueve exactamente 1 cerilla"},
+  pt:{label:"Palitos",title:"Desafio de Palitos",description:"Mova palitos e forme o maior ou menor número",largest:"Forme o maior número",smallest:"Forme o menor número",subtitle:"Mova exatamente 1 palito"},
+  fr:{label:"Allumettes",title:"Puzzle d’Allumettes",description:"Déplace des allumettes pour former le plus grand ou petit nombre",largest:"Forme le plus grand nombre",smallest:"Forme le plus petit nombre",subtitle:"Déplace exactement 1 allumette"},
+  de:{label:"Streichhölzer",title:"Streichholz-Rätsel",description:"Verschiebe Hölzer und bilde die größte oder kleinste Zahl",largest:"Bilde die größte Zahl",smallest:"Bilde die kleinste Zahl",subtitle:"Verschiebe genau 1 Streichholz"},
+  it:{label:"Fiammiferi",title:"Puzzle dei Fiammiferi",description:"Sposta fiammiferi e crea il numero più grande o piccolo",largest:"Crea il numero più grande",smallest:"Crea il numero più piccolo",subtitle:"Sposta esattamente 1 fiammifero"},
+  ar:{label:"أعواد الثقاب",title:"لغز أعواد الثقاب",description:"حرّك الأعواد لتكوين أكبر أو أصغر عدد",largest:"كوّن أكبر عدد",smallest:"كوّن أصغر عدد",subtitle:"حرّك عود ثقاب واحدًا فقط"},
+  hi:{label:"माचिस",title:"माचिस पहेली",description:"माचिस की तीलियाँ हटाकर सबसे बड़ी या छोटी संख्या बनाओ",largest:"सबसे बड़ी संख्या बनाओ",smallest:"सबसे छोटी संख्या बनाओ",subtitle:"सिर्फ 1 तीली की जगह बदलो"},
+  id:{label:"Korek api",title:"Teka-teki Korek Api",description:"Pindahkan batang untuk membuat angka terbesar atau terkecil",largest:"Buat angka terbesar",smallest:"Buat angka terkecil",subtitle:"Pindahkan tepat 1 batang"},
+  ru:{label:"Спички",title:"Головоломка со спичками",description:"Переложи спички и составь наибольшее или наименьшее число",largest:"Составь наибольшее число",smallest:"Составь наименьшее число",subtitle:"Переложи ровно 1 спичку"},
+  bn:{label:"ম্যাচস্টিক",title:"ম্যাচস্টিক ধাঁধা",description:"কাঠি সরিয়ে সবচেয়ে বড় বা ছোট সংখ্যা বানাও",largest:"সবচেয়ে বড় সংখ্যা বানাও",smallest:"সবচেয়ে ছোট সংখ্যা বানাও",subtitle:"ঠিক ১টি কাঠি সরাও"},
+  ur:{label:"ماچس",title:"ماچس کی پہیلی",description:"تیلیاں ہلا کر سب سے بڑا یا چھوٹا عدد بنائیں",largest:"سب سے بڑا عدد بنائیں",smallest:"سب سے چھوٹا عدد بنائیں",subtitle:"صرف 1 تیلی کی جگہ بدلیں"},
+  vi:{label:"Que diêm",title:"Câu đố Que diêm",description:"Di chuyển que để tạo số lớn nhất hoặc nhỏ nhất",largest:"Tạo số lớn nhất",smallest:"Tạo số nhỏ nhất",subtitle:"Di chuyển đúng 1 que"},
+  fil:{label:"Posporo",title:"Palaisipang Posporo",description:"Ilipat ang posporo para mabuo ang pinakamalaki o pinakamaliit na numero",largest:"Buuin ang pinakamalaking numero",smallest:"Buuin ang pinakamaliit na numero",subtitle:"Eksaktong 1 posporo lang"},
 };
 function matchstickCopy(locale:AqryoLocale){ return MATCHSTICK_COPY[locale] ?? MATCHSTICK_COPY.en; }
 
@@ -1092,18 +1092,21 @@ const PuzzleSvg=React.forwardRef<
 
     if (puzzle.kind==="matchstick") {
       const matchCopy = matchstickCopy(locale);
-      const instruction = headline;
+      const puzzleTitle = headline;
+      const instruction = matchCopy.subtitle;
       const titleSize = matchCopy.title.length > 22 ? 15 : matchCopy.title.length > 16 ? 17 : 20;
-      const instructionSize = instruction.length > 34 ? 10 : instruction.length > 25 ? 11 : 12;
+      const puzzleTitleSize = puzzleTitle.length > 30 ? 12 : puzzleTitle.length > 22 ? 13 : 15;
+      const instructionSize = instruction.length > 34 ? 9 : instruction.length > 25 ? 10 : 11;
       return (
         <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
           <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-          <rect x="34" y="24" width="292" height="54" rx="18" fill="rgba(10,12,18,.82)" stroke="rgba(255,255,255,.42)" strokeWidth="1.5"/>
-          <text x="180" y="58" textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={titleSize} fontWeight="900" fill="#ffffff">{matchCopy.title}</text>
-          <rect x="40" y="88" width="280" height="48" rx="16" fill="rgba(255,255,255,.94)"/>
-          <text x="180" y="117" textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={instructionSize} fontWeight="900" fill="#17101f">{instruction}</text>
-          <svg x="18" y="145" width="324" height="245" viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet" overflow="visible">
-            <g transform="translate(0 0) scale(1)" dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
+          <rect x="38" y="40" width="284" height="50" rx="17" fill="rgba(10,12,18,.84)" stroke="rgba(255,255,255,.42)" strokeWidth="1.5"/>
+          <text x="180" y="71" textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={titleSize} fontWeight="900" fill="#ffffff">{matchCopy.title}</text>
+          <rect x="48" y="101" width="264" height="64" rx="18" fill="rgba(255,255,255,.95)"/>
+          <text x="180" y="126" textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={puzzleTitleSize} fontWeight="900" fill="#17101f">{puzzleTitle}</text>
+          <text x="180" y="149" textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={instructionSize} fontWeight="700" fill="#51485d">{instruction}</text>
+          <svg x="18" y="164" width="324" height="235" viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet" overflow="visible">
+            <g dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
           </svg>
         </svg>
       );
