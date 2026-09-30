@@ -93,7 +93,7 @@ function CreatorStudioPage() {
             title={t("questionConfession")}
             description={t("questionConfessionDesc")}
             icon="?"
-            className="bg-[#17101f] text-white"
+            variant="dark"
           />
           <StudioChoice
             href="/puzzle-builder"
@@ -101,7 +101,7 @@ function CreatorStudioPage() {
             title={t("puzzle")}
             description={t("puzzleDesc")}
             icon="x = ?"
-            className="bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white"
+            variant="purple"
           />
           <StudioChoice
             href="/compatibility-builder"
@@ -109,7 +109,7 @@ function CreatorStudioPage() {
             title={t("loveMeter")}
             description={t("loveMeterDesc")}
             icon="87%"
-            className="bg-white text-foreground"
+            variant="light"
           />
           <StudioChoice
             href="/story-builder"
@@ -117,7 +117,7 @@ function CreatorStudioPage() {
             title={t("story")}
             description={t("storyDesc")}
             icon="Aa"
-            className="bg-white text-foreground"
+            variant="light"
           />
         </div>
       </section>
@@ -125,11 +125,11 @@ function CreatorStudioPage() {
   );
 }
 
-function StudioChoice({ href, label, title, description, icon, className }: { href: string; label: string; title: string; description: string; icon: string; className: string }) {\n  const { t } = useAqryoLocale();
+function StudioChoice({ href, label, title, description, icon, variant }: { href: string; label: string; title: string; description: string; icon: string; variant: "dark" | "purple" | "light" }) {\n  const { t } = useAqryoLocale();\n  const variantClass = variant === "dark" ? "bg-[#17101f] text-white" : variant === "purple" ? "bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white" : "bg-white text-foreground";
   return (
     <Link
       to={href}
-      className={`group flex min-h-[190px] flex-col justify-between overflow-hidden rounded-[26px] border border-border/70 p-4 shadow-[0_10px_30px_rgba(33,21,53,0.05)] transition hover:-translate-y-0.5 sm:min-h-[230px] sm:p-6 ${className}`}
+      className={`group flex min-h-[190px] flex-col justify-between overflow-hidden rounded-[26px] border border-border/70 p-4 shadow-[0_10px_30px_rgba(33,21,53,0.05)] transition hover:-translate-y-0.5 sm:min-h-[230px] sm:p-6 ${variantClass}`}
     >
       <div className="flex items-start justify-between gap-2">
         <span className="text-[9px] font-black uppercase tracking-[0.14em] opacity-65">{label}</span>
