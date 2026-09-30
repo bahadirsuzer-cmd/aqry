@@ -301,3 +301,15 @@ export async function verifyAdminEmailCode(
     session: data.session,
   };
 }
+
+export async function signInAdminWithGoogle() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/admin-login`,
+      queryParams: { prompt: "select_account" },
+    },
+  });
+  if (error) throw new Error(`Google girişi başlatılamadı: ${error.message}`);
+  return data;
+}
