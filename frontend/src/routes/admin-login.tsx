@@ -8,6 +8,7 @@ import {
   getCurrentCreator,
   signInCreator,
   signOutCreator,
+  signInAdminWithGoogle,
 } from "@/services/auth";
 import { isCurrentUserAdmin } from "@/services/admin";
 
@@ -137,6 +138,27 @@ function AdminLoginPage() {
               Yalnızca yetkilendirilmiş AQRYO admin hesapları giriş yapabilir.
             </p>
           </div>
+
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                setLoading(true);
+                setErrorMessage(null);
+                await signInAdminWithGoogle();
+              } catch (error) {
+                setErrorMessage(error instanceof Error ? error.message : "Google girişi başlatılamadı.");
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
+            className="mt-7 flex h-12 w-full items-center justify-center gap-3 rounded-full border border-border bg-white px-5 text-[10px] font-black transition hover:bg-[#f7f7f9] disabled:opacity-50"
+          >
+            <span className="text-[16px] font-bold">G</span>
+            Google ile devam et
+          </button>
+
+          <div className="my-5 flex items-center gap-3"><div className="h-px flex-1 bg-border" /><span className="text-[8px] font-black uppercase text-muted-foreground">veya</span><div className="h-px flex-1 bg-border" /></div>
 
           <form
             onSubmit={handleSubmit}
