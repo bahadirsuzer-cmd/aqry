@@ -86,7 +86,8 @@ export function HomeHero({
             {formatCards.map((card) => (
               <Link
                 key={card.title}
-                to={card.to}
+                to={isCreator ? card.to : "/creator-auth"}
+                search={isCreator ? undefined : { next: card.to }}
                 className="group relative aspect-square min-w-0 overflow-hidden rounded-[26px] border border-white/70 bg-white shadow-[0_18px_50px_rgba(48,31,75,.12)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(48,31,75,.18)] sm:rounded-[32px]"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.visual}`} />
