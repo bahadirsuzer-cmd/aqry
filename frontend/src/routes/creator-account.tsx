@@ -11,6 +11,7 @@ import {
 import { supabase } from "@/services/supabase";
 import { getAqryoProSubscription, openAqryoProCheckout } from "@/services/paddle";
 import { createFileRoute } from "@tanstack/react-router";
+import { useAqryoLocale } from "@/lib/i18n";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute(
@@ -73,6 +74,8 @@ const accountItems = [
 ] as const;
 
 function CreatorAccountHubPage() {
+  const { locale } = useAqryoLocale();
+  const ui = locale === "tr" ? { account:"Hesabım", intro:"Profilin, gizlilik tercihlerin ve hesap ayarların burada.", loading:"Hesabın hazırlanıyor...", logout:"Çıkış yap", logoutDesc:"AQRYO hesabından güvenli şekilde çık.", delete:"Hesabı sil", deleteDesc:"Hesap silme talebi oluştur ve verilerini yönet." } : locale === "de" ? { account:"Konto", intro:"Hier verwaltest du dein Profil, deine Datenschutzeinstellungen und dein Konto.", loading:"Dein Konto wird vorbereitet...", logout:"Abmelden", logoutDesc:"Sicher von deinem AQRYO-Konto abmelden.", delete:"Konto löschen", deleteDesc:"Löschung deines Kontos beantragen und deine Daten verwalten." } : { account:"Account", intro:"Manage your profile, privacy preferences and account settings here.", loading:"Preparing your account...", logout:"Sign out", logoutDesc:"Sign out of your AQRYO account securely.", delete:"Delete account", deleteDesc:"Request account deletion and manage your data." };
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] =
     useState<AccountProfile | null>(null);
@@ -226,23 +229,22 @@ function CreatorAccountHubPage() {
       <div className="mx-auto max-w-[1380px] px-4 pb-16 pt-7 sm:px-6 lg:px-8">
         <header>
           <p className="text-[15px] font-black uppercase tracking-[0.14em] text-primary">
-            Hesabım
+            {ui.account}
           </p>
 
           <h1 className="mt-2 text-[38px] font-black tracking-[-0.055em] sm:text-[46px]">
-            Hesabım
+            {ui.account}
           </h1>
 
           <p className="mt-2 max-w-[720px] text-[17px] leading-7 text-muted-foreground">
-            Profilin, gizlilik tercihlerin ve hesap
-            ayarların burada.
+            {ui.intro}
           </p>
         </header>
 
         {loading ? (
           <section className="mt-7 rounded-[26px] border border-border bg-white p-12 text-center">
             <p className="text-[14px] font-bold text-muted-foreground">
-              Hesabın hazırlanıyor...
+              {ui.loading}
             </p>
           </section>
         ) : (
@@ -292,8 +294,8 @@ function CreatorAccountHubPage() {
                   <span className="text-[20px] font-black">↗</span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h2 className="text-[18px] font-black tracking-[-0.015em]">Çıkış yap</h2>
-                  <p className="mt-1 text-[15px] leading-6 text-muted-foreground">AQRYO hesabından güvenli şekilde çık.</p>
+                  <h2 className="text-[18px] font-black tracking-[-0.015em]">{ui.logout}</h2>
+                  <p className="mt-1 text-[15px] leading-6 text-muted-foreground">{ui.logoutDesc}</p>
                 </div>
               </button>
 
@@ -307,13 +309,11 @@ function CreatorAccountHubPage() {
 
                 <div className="min-w-0 flex-1">
                   <h2 className="text-[18px] font-black tracking-[-0.015em] text-red-700">
-                    Hesabı sil
+                    {ui.delete}
                   </h2>
 
                   <p className="mt-1 text-[15px] leading-6 text-muted-foreground">
-                    Hesap silme talebi
-                    oluştur ve verilerini
-                    yönet.
+                    {ui.deleteDesc}
                   </p>
                 </div>
 
