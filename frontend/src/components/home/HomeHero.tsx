@@ -42,7 +42,7 @@ export function HomeHero({
 }: HomeHeroProps) {
   return (
     <section className="overflow-hidden bg-[#faf8ff]">
-      <div className="mx-auto grid max-w-[1240px] gap-10 px-5 pb-14 pt-10 sm:px-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-16 lg:py-20">
+      <div className="mx-auto grid max-w-[1240px] gap-6 px-5 pb-8 pt-5 sm:px-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-16 lg:py-20">
         <div className="relative max-w-xl">
           {authChecked ? (
             <Link
@@ -53,13 +53,13 @@ export function HomeHero({
             </Link>
           ) : null}
 
-          <h1 className="pr-28 text-[clamp(3rem,5.4vw,5.5rem)] font-black leading-[0.94] tracking-[-0.07em] text-[#21163b] sm:pr-36">
+          <h1 className="pr-28 text-[clamp(2.65rem,5.4vw,5.5rem)] font-black leading-[0.88] tracking-[-0.07em] text-[#21163b] sm:pr-36">
             5 saniyede
             <br />
             <span className="text-[#7540d0]">viral içerik üret.</span>
           </h1>
 
-          <p className="mt-6 max-w-[34rem] text-[17px] font-medium leading-8 text-[#625a70] sm:text-[19px]">
+          <p className="mt-3 max-w-[34rem] text-[16px] font-medium leading-6 text-[#625a70] sm:mt-6 sm:text-[19px] sm:leading-8">
             Formatını seç, içeriğini hazırla ve kendi kitlenle paylaş.
           </p>
 
@@ -69,13 +69,13 @@ export function HomeHero({
           <div className="absolute -left-10 -top-10 h-48 w-48 rounded-full bg-violet-300/25 blur-3xl" />
           <div className="absolute -bottom-8 right-0 h-52 w-52 rounded-full bg-cyan-300/20 blur-3xl" />
 
-          <div className="relative grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="relative grid grid-cols-2 gap-2.5 sm:gap-4">
             {formatCards.map((card) => (
               <Link
                 key={card.title}
                 to={isCreator ? card.to : "/creator-auth"}
                 search={isCreator ? undefined : { next: card.to }}
-                className="group relative aspect-square min-w-0 overflow-hidden rounded-[26px] border border-white/70 bg-white shadow-[0_18px_50px_rgba(48,31,75,.12)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(48,31,75,.18)] sm:rounded-[32px]"
+                className="group relative aspect-[1/0.94] min-w-0 overflow-hidden rounded-[26px] border border-white/70 bg-white shadow-[0_18px_50px_rgba(48,31,75,.12)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(48,31,75,.18)] sm:rounded-[32px]"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.visual}`} />
                 <div className="absolute -right-[12%] -top-[8%] h-[58%] w-[58%] rounded-full bg-white/20 blur-2xl" />
@@ -97,7 +97,7 @@ export function HomeHero({
             ))}
           </div>
 
-          <p className="mt-4 text-center text-[12px] font-bold text-[#756b82]">
+          <p className="mt-2 text-center text-[12px] font-bold text-[#756b82] sm:mt-4">
             Bir format seç · oluştur · paylaş
           </p>
         </div>
