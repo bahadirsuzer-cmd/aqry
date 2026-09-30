@@ -7,6 +7,7 @@ import {
 
 export type AdminSection =
   | "overview"
+  | "traffic"
   | "reports"
   | "experiences"
   | "orders"
@@ -32,6 +33,10 @@ const ITEMS: Array<{
   {
     key: "overview",
     label: "Genel",
+  },
+  {
+    key: "traffic",
+    label: "Trafik",
   },
   {
     key: "reports",
