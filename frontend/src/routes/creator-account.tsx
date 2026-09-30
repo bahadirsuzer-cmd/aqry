@@ -9,6 +9,7 @@ import {
   signOutCreator,
 } from "@/services/auth";
 import { supabase } from "@/services/supabase";
+import { getAqryoProSubscription, openAqryoProCheckout } from "@/services/paddle";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
@@ -77,6 +78,8 @@ function CreatorAccountHubPage() {
     useState<AccountProfile | null>(null);
   const [activities, setActivities] =
     useState<ActivityItem[]>([]);
+  const [proStatus, setProStatus] = useState<string | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -184,6 +187,13 @@ function CreatorAccountHubPage() {
         }
 
         setActivities(nextActivities);
+
+        try {
+          const subscription = await getAqryoProSubscription();
+          if (!cancelled) setProStatus(subscription?.status ?? null);
+        } catch (subscriptionError) {
+          console.warn("Pro aboneliği okunamadı:", subscriptionError);
+        }
       } catch (error) {
         console.error(
           "Hesap merkezi yüklenemedi:",
@@ -297,6 +307,44 @@ function CreatorAccountHubPage() {
             </section>
 
             <aside className="space-y-5">
+              <section className="overflow-hidden rounded-[26px] bg-[#17111f] p-6 text-white shadow-[0_18px_50px_rgba(18,10,40,0.10)]">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-[13px] font-black uppercase tracking-[0.14em] text-white/55">AQRYO Pro</p>
+                    <h2 className="mt-2 text-[24px] font-black tracking-[-0.035em]">
+                      {proStatus === "active" || proStatus === "trialing" ? "Pro aktif" : "Creator araçlarını aç"}
+                    </h2>
+                  </div>
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-[12px] font-black">$4.99 / ay</span>
+                </div>
+                <p className="mt-3 text-[14px] leading-6 text-white/65">
+                  İçerik üretiminden yayınlama ve planlamaya uzanan Pro araçlarını kullan.
+                </p>
+                {proStatus === "active" || proStatus === "trialing" ? (
+                  <div className="mt-5 flex h-11 w-full items-center justify-center rounded-full bg-white/10 px-4 text-[14px] font-black">
+                    Aboneliğin aktif
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={checkoutLoading}
+                    onClick={async () => {
+                      try {
+                        setCheckoutLoading(true);
+                        await openAqryoProCheckout();
+                      } catch (error) {
+                        console.error("Paddle checkout açılamadı:", error);
+                        alert("Ödeme ekranı açılamadı. Lütfen tekrar dene.");
+                      } finally {
+                        setCheckoutLoading(false);
+                      }
+                    }}
+                    className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-full bg-white px-4 text-[14px] font-black text-[#17111f] transition hover:bg-white/90 disabled:cursor-wait disabled:opacity-60"
+                  >
+                    {checkoutLoading ? "Ödeme hazırlanıyor..." : "Pro’ya geç"}
+                  </button>
+                )}
+              </section>
               <section className="rounded-[26px] border border-border bg-white p-6 shadow-[0_18px_50px_rgba(18,10,40,0.04)]">
                 <div className="flex items-start gap-4">
                   <CreatorAvatar
