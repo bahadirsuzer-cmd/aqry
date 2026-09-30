@@ -311,17 +311,27 @@ const MATCHSTICK_TEMPLATES = [
   "/puzzle/matchstick/matchstick-10.jpg",
 ] as const;
 
-function nextSceneTemplate(current?: number) {
-  if (typeof current !== "number") return Math.floor(Math.random() * SCENE_TEMPLATES.length);
-  return (current + 1) % SCENE_TEMPLATES.length;
+function sceneTemplatesFor(kind?: ViralKind) {
+  return kind === "matchstick" ? MATCHSTICK_TEMPLATES : SCENE_TEMPLATES;
 }
 
-async function loadSceneTemplate(templateIndex: number) {
+function sceneTemplateSrc(kind: ViralKind, templateIndex: number) {
+  const templates = sceneTemplatesFor(kind);
+  return templates[templateIndex] ?? templates[0];
+}
+
+function nextSceneTemplate(current?: number, kind?: ViralKind) {
+  const templates = sceneTemplatesFor(kind);
+  if (typeof current !== "number") return Math.floor(Math.random() * templates.length);
+  return (current + 1) % templates.length;
+}
+
+async function loadSceneTemplate(templateIndex: number, kind: ViralKind) {
   const image = new Image();
   await new Promise<void>((resolve, reject) => {
     image.onload = () => resolve();
     image.onerror = () => reject(new Error("Scene template could not be loaded"));
-    image.src = SCENE_TEMPLATES[templateIndex] ?? SCENE_TEMPLATES[0];
+    image.src = sceneTemplateSrc(kind, templateIndex);
   });
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
@@ -819,7 +829,7 @@ function PuzzleBuilderPage() {
 
   useEffect(()=>{
     let cancelled=false;
-    void loadSceneTemplate(sceneTemplate)
+    void loadSceneTemplate(sceneTemplate, kind)
       .then((dataUrl)=>{ if(!cancelled) setSceneImage({template:sceneTemplate,dataUrl}); })
       .catch((error)=>{ if(!cancelled) console.error(error); });
     return()=>{cancelled=true};
@@ -845,7 +855,7 @@ function PuzzleBuilderPage() {
       setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
       setAlgebraChallenge((current)=>pickAlgebraChallenge(current));
     }
-    setSceneTemplate((current)=>nextSceneTemplate(current));
+    setSceneTemplate((current)=>nextSceneTemplate(current, kind));
     remember(fresh);
   }
 
@@ -863,7 +873,7 @@ function PuzzleBuilderPage() {
       setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
       setAlgebraChallenge((current)=>pickAlgebraChallenge(current));
     }
-    setSceneTemplate((current)=>nextSceneTemplate(current));
+    setSceneTemplate((current)=>nextSceneTemplate(current, kind));
     setPuzzle(fresh);
     remember(fresh);
     setCopied(false);
@@ -997,7 +1007,7 @@ function PuzzleBuilderPage() {
                 {copy.changeVisual} ↻
               </button>
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} algebraChallenge={algebraChallenge} algebraImage={algebraImage} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? SCENE_TEMPLATES[sceneTemplate] : SCENE_TEMPLATES[sceneTemplate]}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} algebraChallenge={algebraChallenge} algebraImage={algebraImage} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? sceneTemplateSrc(kind, sceneTemplate) : sceneTemplateSrc(kind, sceneTemplate)}/>
               </div>
             </div>
           </div>
