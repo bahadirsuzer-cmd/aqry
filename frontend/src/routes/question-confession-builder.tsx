@@ -38,6 +38,7 @@ function QuestionConfessionBuilderPage() {
   const [publishing, setPublishing] = useState(false);
   const { locale } = useAqryoLocale();
   const isTr = locale === "tr";
+  const ui = locale === "tr" ? qcCopy.tr : locale === "de" ? qcCopy.de : qcCopy.en;
 
   useEffect(() => {
     let cancelled = false;
@@ -117,7 +118,7 @@ function QuestionConfessionBuilderPage() {
       window.location.href = `/publish-success/${experienceId}`;
     } catch (error) {
       console.error(error);
-      window.alert(error instanceof Error ? error.message : "Yayınlanamadı.");
+      window.alert(error instanceof Error ? error.message : ui.publishError);
     } finally {
       setPublishing(false);
     }
@@ -150,7 +151,7 @@ function QuestionConfessionBuilderPage() {
         <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <div>
             <p className="text-[13px] font-black uppercase tracking-[0.16em] text-primary">
-              {isTr ? "Ana format" : "Main format"}
+              {ui.mainFormat}
             </p>
             <h1 className="mt-1 text-[28px] font-black tracking-[-0.045em]">
               {state.title}
@@ -162,13 +163,13 @@ function QuestionConfessionBuilderPage() {
               onClick={applyCurrentLanguage}
               className="rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-[12px] font-black text-violet-700"
             >
-              {isTr ? "Seçili dile uygula" : "Apply selected language"}
+              {ui.applyLanguage}
             </button>
             <Link
-              to="/creator-studio"
+              to="/"
               className="rounded-full border border-border bg-white px-4 py-2 text-[13px] font-black text-muted-foreground"
             >
-              {isTr ? "Ana sayfaya dön" : "Back to home"}
+              {ui.backHome}
             </Link>
           </div>
         </div>
@@ -181,10 +182,10 @@ function QuestionConfessionBuilderPage() {
               1 · Giriş
             </p>
             <h2 className="mt-2 text-[25px] font-black tracking-[-0.045em]">
-              {isTr ? "Takipçine ne söyleyeceksin?" : "What will your followers see?"}
+              {isTr ? "{ui.whatToSay}" : "What will your followers see?"}
             </h2>
             <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
-              {isTr ? "Başlık kısa kalsın. İnsan ne yapacağını ilk bakışta anlamalı." : "Keep it short. People should understand it at a glance."}
+              {isTr ? "{ui.titleHint}" : "Keep it short. People should understand it at a glance."}
             </p>
 
             <Field label={isTr ? "Başlık" : "Title"}>
@@ -210,7 +211,7 @@ function QuestionConfessionBuilderPage() {
               2 · Seçim
             </p>
             <h2 className="mt-2 text-[25px] font-black tracking-[-0.045em]">
-              {isTr ? "İki kapı. Fazlası yok." : "Two choices. Nothing more."}
+              {isTr ? "{ui.twoDoors}" : "Two choices. Nothing more."}
             </h2>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -266,10 +267,10 @@ function QuestionConfessionBuilderPage() {
           </div>
 
           <div className="rounded-[24px] border border-violet-200 bg-violet-50/70 p-5">
-            <p className="text-[13px] font-black text-violet-950">{isTr ? "Hazırsa yayınla ve paylaş." : "Publish and share when ready."}</p>
+            <p className="text-[13px] font-black text-violet-950">{isTr ? "{ui.ready}" : "Publish and share when ready."}</p>
             <p className="mt-1 text-[14px] leading-5 text-violet-900/65">
               {isTr
-                ? "Yayınlandıktan sonra paylaşılabilir AQRYO linkini alacaksın. Takipçilerin anonim soru veya itiraf bırakabilecek."
+                ? "{ui.afterPublish}"
                 : "After publishing, you’ll get a shareable AQRYO link for anonymous questions and confessions."}
             </p>
             <button
@@ -279,15 +280,15 @@ function QuestionConfessionBuilderPage() {
               className="mt-4 h-11 w-full rounded-full bg-violet-700 px-5 text-[14px] font-black text-white disabled:opacity-50 sm:w-auto"
             >
               {publishing
-                ? isTr ? "Yayınlanıyor..." : "Publishing..."
-                : isTr ? "Yayınla ve paylaş →" : "Publish and share →"}
+                ? isTr ? "{ui.publishing}" : "Publishing..."
+                : isTr ? "{ui.publishShare} →" : "Publish and share →"}
             </button>
           </div>
         </section>
 
         <aside className="lg:sticky lg:top-[92px] lg:self-start">
           <p className="mb-3 text-[13px] font-black uppercase tracking-[0.16em] text-muted-foreground">
-            {isTr ? "Canlı önizleme" : "Live preview"}
+            {isTr ? "{ui.livePreview}" : "Live preview"}
           </p>
 
           <div className={`overflow-hidden rounded-[32px] bg-gradient-to-br ${accent} p-3 shadow-[0_24px_70px_rgba(56,27,90,0.22)]`}>
@@ -355,11 +356,11 @@ function QuestionConfessionBuilderPage() {
                 type="button"
                 className="mt-3 h-11 w-full rounded-full bg-black text-[14px] font-black text-white"
               >
-                {isTr ? "Anonim gönder" : "Send anonymously"}
+                {isTr ? "{ui.sendAnonymous}" : "Send anonymously"}
               </button>
 
               <p className="mt-3 text-center text-[11px] font-bold text-muted-foreground">
-                {isTr ? "Kimliğin creator ile paylaşılmaz." : "Your identity is never shared with the creator."}
+                {isTr ? "{ui.identityHidden}" : "Your identity is never shared with the creator."}
               </p>
             </div>
           </div>
@@ -393,3 +394,5 @@ const inputClass =
 
 const textareaClass =
   "mt-2 w-full resize-none rounded-[16px] border border-border bg-background px-4 py-3 text-[14px] font-semibold leading-6 outline-none focus:border-primary";
+
+const qcCopy={tr:{publishError:"Yayınlanamadı.",mainFormat:"Ana format",applyLanguage:"Seçili dile uygula",backHome:"Ana sayfaya dön",whatToSay:"Takipçine ne söyleyeceksin?",titleHint:"Başlık kısa kalsın. İnsan ne yapacağını ilk bakışta anlamalı.",title:"Başlık",shortDescription:"Kısa açıklama",twoDoors:"İki kapı. Fazlası yok.",questionButton:"Soru butonu",confessionButton:"İtiraf butonu",textArea:"Yazı alanı",ready:"Hazırsa yayınla ve paylaş.",afterPublish:"Yayınlandıktan sonra paylaşılabilir AQRYO linkini alacaksın. Takipçilerin anonim soru veya itiraf bırakabilecek.",publishing:"Yayınlanıyor...",publishShare:"Yayınla ve paylaş",livePreview:"Canlı önizleme",sendAnonymous:"Anonim gönder",identityHidden:"Kimliğin creator ile paylaşılmaz."},en:{publishError:"Could not publish.",mainFormat:"Main format",applyLanguage:"Apply selected language",backHome:"Back to home",whatToSay:"What do you want to ask your followers?",titleHint:"Keep the title short so people understand what to do at a glance.",title:"Title",shortDescription:"Short description",twoDoors:"Two choices. Nothing more.",questionButton:"Question button",confessionButton:"Confession button",textArea:"Message field",ready:"Ready? Publish and share.",afterPublish:"After publishing, you’ll get a shareable AQRYO link where followers can leave anonymous questions or confessions.",publishing:"Publishing...",publishShare:"Publish and share",livePreview:"Live preview",sendAnonymous:"Send anonymously",identityHidden:"Your identity is not shown to the creator."},de:{publishError:"Veröffentlichung fehlgeschlagen.",mainFormat:"Hauptformat",applyLanguage:"Ausgewählte Sprache anwenden",backHome:"Zur Startseite",whatToSay:"Was möchtest du deine Follower fragen?",titleHint:"Halte den Titel kurz, damit sofort klar ist, was zu tun ist.",title:"Titel",shortDescription:"Kurzbeschreibung",twoDoors:"Zwei Möglichkeiten. Mehr braucht es nicht.",questionButton:"Frage-Button",confessionButton:"Geständnis-Button",textArea:"Nachrichtenfeld",ready:"Fertig? Veröffentlichen und teilen.",afterPublish:"Nach dem Veröffentlichen erhältst du einen teilbaren AQRYO-Link, über den Follower anonyme Fragen oder Geständnisse senden können.",publishing:"Wird veröffentlicht...",publishShare:"Veröffentlichen und teilen",livePreview:"Live-Vorschau",sendAnonymous:"Anonym senden",identityHidden:"Deine Identität wird dem Creator nicht angezeigt."}} as const;
