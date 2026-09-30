@@ -54,11 +54,14 @@ function matchstickDiagram(value:string){
     const x=startX+index*digitW+6;
     const lines=SEGMENTS[digit].map((segment)=>{
       const [x1,y1,x2,y2]=LINES[segment];
-      return `<g><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#f3c77b" stroke-width="8" stroke-linecap="round"/><circle cx="${x1}" cy="${y1}" r="4.7" fill="#e53e3e"/><circle cx="${x2}" cy="${y2}" r="4.7" fill="#e53e3e"/></g>`;
+      const horizontal=y1===y2;
+      const dx=horizontal?4:0, dy=horizontal?0:4;
+      const sx=x1+dx, sy=y1+dy, ex=x2-dx, ey=y2-dy;
+      return `<g filter="url(#matchShadow)"><line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="#f2c36f" stroke-width="7" stroke-linecap="round"/><circle cx="${ex}" cy="${ey}" r="4.2" fill="#e83f45"/></g>`;
     }).join("");
     return `<g transform="translate(${x} 78)">${lines}</g>`;
   }).join("");
-  return digits;
+  return `<defs><filter id="matchShadow" x="-35%" y="-35%" width="170%" height="170%"><feDropShadow dx="0" dy="2.2" stdDeviation="2.4" flood-color="#000000" flood-opacity=".82"/></filter></defs>${digits}`;
 }
 export const MATCHSTICK_FAMILIES: Family[] = [
   {id:"matchstick_largest_one",kind:"matchstick",make:(r)=>makePuzzle(r,"largest")},
