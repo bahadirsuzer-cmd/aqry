@@ -298,6 +298,19 @@ const SCENE_TEMPLATES = [
   "/puzzle/scenes/scene-20-archaeologist.webp",
 ] as const;
 
+const MATCHSTICK_TEMPLATES = [
+  "/puzzle/matchstick/matchstick-01.jpg",
+  "/puzzle/matchstick/matchstick-02.jpg",
+  "/puzzle/matchstick/matchstick-03.jpg",
+  "/puzzle/matchstick/matchstick-04.jpg",
+  "/puzzle/matchstick/matchstick-05.jpg",
+  "/puzzle/matchstick/matchstick-06.jpg",
+  "/puzzle/matchstick/matchstick-07.jpg",
+  "/puzzle/matchstick/matchstick-08.jpg",
+  "/puzzle/matchstick/matchstick-09.jpg",
+  "/puzzle/matchstick/matchstick-10.jpg",
+] as const;
+
 function nextSceneTemplate(current?: number) {
   if (typeof current !== "number") return Math.floor(Math.random() * SCENE_TEMPLATES.length);
   return (current + 1) % SCENE_TEMPLATES.length;
