@@ -190,6 +190,19 @@ function getShareCopy(
   };
 }
 
+function getQuestionConfessionHook(source: ShareCardSource) {
+  const hooks = [
+    "Bana söyleyemediğin ne var?",
+    "Hakkımda gerçekten ne düşünüyorsun?",
+    "Yüzüme söyleyemediğini buraya yaz.",
+    "Bir itirafın var mı?",
+    "Bana tek bir soru sorabilsen?",
+  ];
+  let hash = 0;
+  for (const char of source.id) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  return hooks[hash % hooks.length];
+}
+
 function roundedRect(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -576,6 +589,21 @@ function drawSquare(
       );
     },
   );
+
+  if (source.type === "question_confession") {
+    const hook = getQuestionConfessionHook(source);
+    const hookSize = fitFontSize(ctx, hook, 820, 62, 42, 900);
+    ctx.font = `900 ${hookSize}px Inter, Arial, sans-serif`;
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    const hookLines = wrapText(ctx, hook, 820, 3);
+    const hookLineHeight = hookSize * 1.08;
+    const hookBlockHeight = hookLines.length * hookLineHeight;
+    const hookStartY = 515 - hookBlockHeight / 2 + hookSize;
+    hookLines.forEach((line, index) => {
+      ctx.fillText(line, width / 2, hookStartY + index * hookLineHeight);
+    });
+  }
 
   const imageY =
     titleLines.length === 1
