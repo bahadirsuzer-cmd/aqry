@@ -44,16 +44,8 @@ export function HomeHero({
     <section className="overflow-hidden bg-[#faf8ff]">
       <div className="mx-auto grid max-w-[1240px] gap-6 px-5 pb-8 pt-5 sm:px-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-16 lg:py-20">
         <div className="relative max-w-xl">
-          {authChecked ? (
-            <Link
-              to={isCreator ? "/creator-studio" : "/creator-auth"}
-              className="absolute right-0 top-0 inline-flex min-h-11 items-center justify-center rounded-full bg-[#7540d0] px-5 py-2.5 text-[13px] font-black text-white shadow-[0_12px_26px_rgba(117,64,208,.2)] transition hover:bg-[#5f2bb9]"
-            >
-              {isCreator ? "Studio’ya git" : "İçerik üret"} →
-            </Link>
-          ) : null}
 
-          <h1 className="pr-28 text-[clamp(2.65rem,5.4vw,5.5rem)] font-black leading-[0.88] tracking-[-0.07em] text-[#21163b] sm:pr-36">
+          <h1 className="text-[clamp(2.65rem,5.4vw,5.5rem)] font-black leading-[0.88] tracking-[-0.07em] text-[#21163b] sm:pr-36">
             5 saniyede
             <br />
             <span className="text-[#7540d0]">viral içerik üret.</span>
