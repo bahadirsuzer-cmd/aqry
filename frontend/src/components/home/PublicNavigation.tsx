@@ -8,10 +8,6 @@ const navItems = [
     href: "/#how-it-works",
   },
   {
-    labelKey: "playExample",
-    href: "/#hero-demo",
-  },
-  {
     labelKey: "createContent",
     href: "/#start-creating",
   },
