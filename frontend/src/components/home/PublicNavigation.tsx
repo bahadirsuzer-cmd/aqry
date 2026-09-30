@@ -1,22 +1,24 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useAqryoLocale } from "@/lib/i18n";
 
 const navItems = [
   {
-    label: "Nasıl çalışır?",
+    labelKey: "howItWorks",
     href: "/#how-it-works",
   },
   {
-    label: "Örneği oyna",
+    labelKey: "playExample",
     href: "/#hero-demo",
   },
   {
-    label: "İçerik oluştur",
+    labelKey: "createContent",
     href: "/#start-creating",
   },
 ];
 
 export function PublicNavigation() {
+  const { t } = useAqryoLocale();
   const [
     mobileOpen,
     setMobileOpen,
@@ -27,7 +29,7 @@ export function PublicNavigation() {
       <div className="mx-auto flex h-[76px] w-full max-w-[1440px] items-center justify-between px-5 sm:px-7 lg:px-10">
         <Link
           to="/"
-          aria-label="AQRYO ana sayfa"
+          aria-label="AQRYO"
           className="flex shrink-0 items-center"
         >
           <img
@@ -44,7 +46,7 @@ export function PublicNavigation() {
               href={item.href}
               className="text-[13px] font-bold text-foreground/75 transition hover:text-primary"
             >
-              {item.label}
+              {t(item.labelKey)}
             </a>
           ))}
         </nav>
@@ -54,7 +56,7 @@ export function PublicNavigation() {
             to="/creator-auth"
             className="inline-flex h-11 items-center justify-center rounded-full border border-primary/25 bg-white px-5 text-[12px] font-black text-primary transition hover:border-primary hover:bg-primary/[0.04]"
           >
-            Giriş yap
+            {t("creatorLogin")}
             <span className="ml-2">
               →
             </span>
@@ -62,7 +64,7 @@ export function PublicNavigation() {
 
           <button
             type="button"
-            aria-label="Menüyü aç"
+            aria-label="Menu"
             aria-expanded={
               mobileOpen
             }
@@ -95,7 +97,7 @@ export function PublicNavigation() {
                   }
                   className="border-b border-border/70 py-4 text-sm font-black last:border-b-0"
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </a>
               ),
             )}
