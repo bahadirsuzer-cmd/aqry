@@ -12,6 +12,7 @@ import {
 import { supabase } from "@/services/supabase";
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useAqryoLocale } from "@/lib/i18n";
 
 export const Route = createFileRoute(
   "/story-builder",
@@ -136,6 +137,8 @@ const STORY_TEXT_EXAMPLES = [
 ];
 
 function StoryBuilderPage() {
+  const { locale } = useAqryoLocale();
+  const ui = locale === "tr" ? storyCopy.tr : locale === "de" ? storyCopy.de : storyCopy.en;
   const [loading, setLoading] =
     useState(true);
 
@@ -1174,7 +1177,7 @@ function StoryBuilderPage() {
             <p className="text-[14px] font-black uppercase tracking-[0.15em] text-teal-600">
               {state.sourceExperienceId ? "Yeni sürüm oluşturuluyor" : "Story / İçerik"}
             </p>
-            <p className="truncate text-[14px] font-bold">{state.title || "Yeni Story"}</p>
+            <p className="truncate text-[14px] font-bold">{state.title || "{ui.newStory}"}</p>
           </div>
           <button
             type="button"
@@ -1226,7 +1229,7 @@ function StoryBuilderPage() {
 
           {activePanel === "content" ? (
             <div className="space-y-5">
-              <BuilderSection eyebrow="1 · İçerik" title="Story’ni oluştur" description="Başlığı, kapağı ve ziyaretçinin sırayla göreceği metin/görselleri hazırla.">
+              <BuilderSection eyebrow="1 · İçerik" title="{ui.createStory}" description="{ui.createHint}">
                 <FieldLabel>Başlık</FieldLabel>
                 <input
                   value={state.title}
@@ -1266,7 +1269,7 @@ function StoryBuilderPage() {
                 <FieldLabel className="mt-5">Kapak görseli</FieldLabel>
                 <label className="mt-2 flex min-h-[88px] cursor-pointer items-center justify-between gap-4 rounded-[18px] border border-dashed border-teal-200 bg-teal-50/40 p-4">
                   <div>
-                    <p className="text-[15px] font-black">{uploadingId === "cover" ? "Yükleniyor..." : state.coverImageUrl ? "Kapak görselini değiştir" : "Kapak görseli yükle"}</p>
+                    <p className="text-[15px] font-black">{uploadingId === "cover" ? "Yükleniyor..." : state.coverImageUrl ? "{ui.changeCover}" : "{ui.uploadCover}"}</p>
                     <p className="mt-1 text-[15px] text-muted-foreground">JPG veya PNG · en fazla 8 MB</p>
                   </div>
                   <span className="text-[18px] font-black text-teal-600">↑</span>
@@ -1284,7 +1287,7 @@ function StoryBuilderPage() {
                 </label>
               </BuilderSection>
 
-              <BuilderSection eyebrow="2 · Akış" title="Metin ve görselleri sırala" description="Her öğe ziyaretçide ayrı bir ekran olur.">
+              <BuilderSection eyebrow="2 · Akış" title="{ui.arrange}" description="{ui.arrangeHint}">
                 <div className="space-y-3">
                   {state.items.map((item, index) => (
                     <div key={item.id} className="rounded-[20px] border border-border bg-background p-4">
@@ -1330,7 +1333,7 @@ function StoryBuilderPage() {
           ) : null}
 
           {activePanel === "result" ? (
-            <BuilderSection eyebrow="3 · Sonuç" title="Story’nin ücretsiz finali" description="Kullanıcı ana içeriği tamamladığında karşılığını burada almalı.">
+            <BuilderSection eyebrow="3 · Sonuç" title="{ui.freeFinal}" description="{ui.freeFinalHint}">
               <FieldLabel>Başlık</FieldLabel>
               <input value={state.resultTitle} onChange={(event) => setState((current) => ({ ...current, resultTitle: event.target.value }))} className="mt-2 h-12 w-full rounded-[16px] border border-border bg-background px-4 text-[13px] font-bold outline-none focus:border-teal-300" />
               <FieldLabel className="mt-5">Açıklama</FieldLabel>
@@ -1339,7 +1342,7 @@ function StoryBuilderPage() {
           ) : null}
 
           {activePanel === "preview" ? (
-            <BuilderSection eyebrow="3 · Önizleme" title="Yayınlamadan önce bir kez yaşa" description="Hikâyeyi ziyaretçi gibi baştan sona kontrol et. Hazırsa tek dokunuşla yayınla.">
+            <BuilderSection eyebrow="3 · Önizleme" title="{ui.previewTitle}" description="{ui.previewHint}">
               <div className="rounded-[18px] border border-border bg-background p-4">
                 <p className="text-[15px] font-black">Hazırsan sağdaki önizlemeden başlat.</p>
                 <p className="mt-1 text-[13px] leading-6 text-muted-foreground">Akışı ve final ekranını ziyaretçinin göreceği haliyle kontrol edeceksin.</p>
@@ -1352,13 +1355,13 @@ function StoryBuilderPage() {
             {activePanel !== "preview" ? (
               <button type="button" onClick={goNext} className="h-11 rounded-full bg-black px-7 text-[15px] font-black text-white hover:bg-teal-600">Sonraki →</button>
             ) : (
-              <button type="button" disabled={!canContinue || publishing} onClick={() => void publishStory()} className="h-11 rounded-full bg-black px-7 text-[15px] font-black text-white enabled:hover:bg-teal-600 disabled:opacity-25">{publishing ? "Yayınlanıyor..." : state.sourceExperienceId ? "Yeni sürümü yayınla" : "Yayınla"}</button>
+              <button type="button" disabled={!canContinue || publishing} onClick={() => void publishStory()} className="h-11 rounded-full bg-black px-7 text-[15px] font-black text-white enabled:hover:bg-teal-600 disabled:opacity-25">{publishing ? "{ui.publishing}" : state.sourceExperienceId ? "{ui.publishNew}" : "Yayınla"}</button>
             )}
           </div>
         </section>
 
         <aside className="border-t border-border px-4 py-6 lg:sticky lg:top-[122px] lg:h-[calc(100vh-122px)] lg:self-start lg:overflow-y-auto lg:border-l lg:border-t-0 sm:px-6">
-          <p className="mb-3 text-[15px] font-black uppercase tracking-[0.15em] text-muted-foreground">{activePanel === "preview" ? "Gerçek deneyim" : "Canlı önizleme"}</p>
+          <p className="mb-3 text-[15px] font-black uppercase tracking-[0.15em] text-muted-foreground">{activePanel === "preview" ? "{ui.realExperience}" : "{ui.livePreview}"}</p>
           <div className="overflow-hidden rounded-[28px] border border-border bg-white shadow-[0_18px_55px_rgba(22,12,34,0.06)]">
             {activePanel === "preview" ? (
               <div className="p-5">
@@ -1612,3 +1615,4 @@ function SmallButton({
     </button>
   );
 }
+const storyCopy={tr:{newStory:"Yeni Hikâye",createStory:"Hikâyeni oluştur",createHint:"Başlığı, kapağı ve ziyaretçinin sırayla göreceği metin ve görselleri hazırla.",changeCover:"Kapak görselini değiştir",uploadCover:"Kapak görseli yükle",arrange:"Metin ve görselleri sırala",arrangeHint:"Her öğe ziyaretçide ayrı bir ekran olur.",freeFinal:"Hikâyenin ücretsiz finali",freeFinalHint:"Kullanıcı ana içeriği tamamladığında karşılığını burada almalı.",previewTitle:"Yayınlamadan önce bir kez yaşa",previewHint:"Hikâyeyi ziyaretçi gibi baştan sona kontrol et. Hazırsa tek dokunuşla yayınla.",publishing:"Yayınlanıyor...",publishNew:"Yeni sürümü yayınla",publish:"Yayınla",realExperience:"Gerçek deneyim",livePreview:"Canlı önizleme"},en:{newStory:"New story",createStory:"Create your story",createHint:"Prepare the title, cover, text and images visitors will see in sequence.",changeCover:"Change cover image",uploadCover:"Upload cover image",arrange:"Arrange text and images",arrangeHint:"Each item becomes a separate screen for the visitor.",freeFinal:"Free story ending",freeFinalHint:"Give visitors a meaningful ending when they finish the main content.",previewTitle:"Experience it before publishing",previewHint:"Go through the story from start to finish like a visitor. Publish when it feels right.",publishing:"Publishing...",publishNew:"Publish new version",publish:"Publish",realExperience:"Real experience",livePreview:"Live preview"},de:{newStory:"Neue Geschichte",createStory:"Erstelle deine Geschichte",createHint:"Bereite Titel, Cover, Texte und Bilder in der Reihenfolge vor, in der Besucher sie sehen.",changeCover:"Coverbild ändern",uploadCover:"Coverbild hochladen",arrange:"Texte und Bilder anordnen",arrangeHint:"Jedes Element wird für Besucher zu einem eigenen Bildschirm.",freeFinal:"Kostenloses Finale",freeFinalHint:"Gib Besuchern nach dem Hauptinhalt einen stimmigen Abschluss.",previewTitle:"Vor dem Veröffentlichen selbst erleben",previewHint:"Gehe die Geschichte wie ein Besucher von Anfang bis Ende durch und veröffentliche sie anschließend.",publishing:"Wird veröffentlicht...",publishNew:"Neue Version veröffentlichen",publish:"Veröffentlichen",realExperience:"Echtes Erlebnis",livePreview:"Live-Vorschau"}} as const;
