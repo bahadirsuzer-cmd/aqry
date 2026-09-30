@@ -998,14 +998,12 @@ function PuzzleBuilderPage() {
         <section className="space-y-5">
           <div ref={previewRef} className="scroll-mt-32">
             <p className="mb-3 text-[12px] font-black uppercase tracking-[0.16em] text-muted-foreground">{t("shareVisual")}</p>
-            <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
-              <button
-                type="button"
-                onClick={regenerate}
-                className="absolute left-6 top-6 z-20 rounded-full bg-black/88 px-4 py-2 text-[12px] font-black text-white shadow-lg backdrop-blur transition hover:bg-violet-700 sm:left-7 sm:top-7 sm:text-[13px]"
-              >
+            <div className="mb-3 flex justify-start">
+              <button type="button" onClick={regenerate} className="rounded-full bg-black/88 px-4 py-2 text-[12px] font-black text-white shadow-lg transition hover:bg-violet-700 sm:text-[13px]">
                 {copy.changeVisual} ↻
               </button>
+            </div>
+            <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
               <div className="mx-auto max-w-[620px]">
                 <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} algebraChallenge={algebraChallenge} algebraImage={algebraImage} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? sceneTemplateSrc(kind, sceneTemplate) : sceneTemplateSrc(kind, sceneTemplate)}/>
               </div>
