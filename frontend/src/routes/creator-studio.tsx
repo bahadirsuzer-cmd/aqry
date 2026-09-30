@@ -81,86 +81,67 @@ function CreatorStudioPage() {
         }}
       />
 
-      <section className="mx-auto max-w-[1240px] px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
-        <div className="mb-7">
-          <p className="text-[13px] font-black uppercase tracking-[0.18em] text-primary">
-            {t("studioEyebrow")}
-          </p>
-          <h1 className="mt-2 max-w-[760px] text-[42px] font-black leading-[0.98] tracking-[-0.06em] sm:text-[64px]">
-            {t("studioTitle")}
-          </h1>
-          <p className="mt-4 max-w-[680px] text-[18px] font-semibold leading-8 text-muted-foreground sm:text-[20px]">
-            {t("studioDescription")}
-          </p>
+      <section className="mx-auto max-w-[1080px] px-4 pb-12 pt-5 sm:px-6 sm:pt-8">
+        <div className="mb-5 sm:mb-7">
+          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-primary">{t("studioEyebrow")}</p>
+          <h1 className="mt-1.5 text-[30px] font-black leading-tight tracking-[-0.05em] sm:text-[42px]">{t("studioTitle")}</h1>
         </div>
 
-        <Link
-          to="/question-confession-builder"
-          className="group relative block overflow-hidden rounded-[34px] border border-violet-200 bg-[#17101f] p-6 text-white shadow-[0_24px_70px_rgba(56,27,90,0.22)] transition hover:-translate-y-0.5 sm:p-9"
-        >
-          <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-fuchsia-500/30 blur-3xl" />
-          <div className="absolute -bottom-28 left-10 h-64 w-64 rounded-full bg-cyan-400/15 blur-3xl" />
-
-          <div className="relative grid gap-8 lg:grid-cols-[1fr_430px] lg:items-center">
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-white px-3.5 py-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-[#17101f]">
-                  {preview.featured}
-                </span>
-                <span className="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-[11px] font-extrabold text-white/85">
-                  {preview.anonymous}
-                </span>
-              </div>
-
-              <h2 className="mt-6 text-[50px] font-black leading-[0.92] tracking-[-0.07em] sm:text-[72px]">
-                {t("questionConfession")}
-              </h2>
-              <p className="mt-5 max-w-[590px] text-[18px] font-semibold leading-8 text-white/72 sm:text-[20px]">
-                {t("questionConfessionDesc")}
-              </p>
-              <span className="mt-7 inline-flex h-13 items-center justify-center rounded-full bg-white px-7 py-3.5 text-[15px] font-black text-[#17101f] transition group-hover:bg-[#74f0de]">
-                {t("create")} →
-              </span>
-            </div>
-
-            <QuestionConfessionPreview copy={preview} defaults={questionConfession} />
-          </div>
-        </Link>
-
-        <div className="mt-6 grid gap-5 md:grid-cols-3">
-          <ProductCard
-            eyebrow={preview.matchLabel}
-            title={t("loveMeter")}
-            description={t("loveMeterDesc")}
-            href="/compatibility-builder"
-            accent="rose"
-            badge={t("ready")}
-            visual={<LoveVisual copy={preview} />}
-            cta={t("create")}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <StudioChoice
+            href="/question-confession-builder"
+            label={preview.featured}
+            title={t("questionConfession")}
+            description={t("questionConfessionDesc")}
+            icon="?"
+            className="bg-[#17101f] text-white"
           />
-          <ProductCard
-            eyebrow={preview.storyLabel}
-            title={t("story")}
-            description={t("storyDesc")}
-            href="/story-builder"
-            accent="sky"
-            badge={t("ownImage")}
-            visual={<StoryVisual copy={preview} />}
-            cta={t("create")}
-          />
-          <ProductCard
-            eyebrow={preview.challengeLabel}
+          <StudioChoice
+            href="/puzzle-builder"
+            label={preview.challengeLabel}
             title={t("puzzle")}
             description={t("puzzleDesc")}
-            href="/puzzle-builder"
-            accent="violet"
-            badge={t("freeSvg")}
-            visual={<PuzzleVisual copy={preview} />}
-            cta={t("create")}
+            icon="x = ?"
+            className="bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white"
+          />
+          <StudioChoice
+            href="/compatibility-builder"
+            label={preview.matchLabel}
+            title={t("loveMeter")}
+            description={t("loveMeterDesc")}
+            icon="87%"
+            className="bg-white text-foreground"
+          />
+          <StudioChoice
+            href="/story-builder"
+            label={preview.storyLabel}
+            title={t("story")}
+            description={t("storyDesc")}
+            icon="Aa"
+            className="bg-white text-foreground"
           />
         </div>
       </section>
     </main>
+  );
+}
+
+function StudioChoice({ href, label, title, description, icon, className }: { href: string; label: string; title: string; description: string; icon: string; className: string }) {
+  return (
+    <Link
+      to={href}
+      className={`group flex min-h-[190px] flex-col justify-between overflow-hidden rounded-[26px] border border-border/70 p-4 shadow-[0_10px_30px_rgba(33,21,53,0.05)] transition hover:-translate-y-0.5 sm:min-h-[230px] sm:p-6 ${className}`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-[9px] font-black uppercase tracking-[0.14em] opacity-65">{label}</span>
+        <span className="flex h-11 min-w-11 items-center justify-center rounded-[16px] bg-current/10 px-2 text-[16px] font-black">{icon}</span>
+      </div>
+      <div>
+        <h2 className="text-[23px] font-black leading-[0.95] tracking-[-0.055em] sm:text-[34px]">{title}</h2>
+        <p className="mt-2 line-clamp-2 text-[11px] font-semibold leading-4 opacity-60 sm:text-[13px] sm:leading-5">{description}</p>
+        <p className="mt-3 text-[11px] font-black sm:text-[13px]">{t("create")} →</p>
+      </div>
+    </Link>
   );
 }
 
