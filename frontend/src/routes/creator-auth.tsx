@@ -17,6 +17,19 @@ type OAuthProvider = "google" | "apple";
 
 const APPLE_AUTH_ENABLED = false;
 
+const allowedNextRoutes = new Set([
+  "/question-confession-builder",
+  "/puzzle-builder",
+  "/compatibility-builder",
+  "/story-builder",
+  "/creator-studio",
+]);
+
+function getSafeNextRoute() {
+  const next = new URLSearchParams(window.location.search).get("next");
+  return next && allowedNextRoutes.has(next) ? next : "/creator-studio";
+}
+
 export const Route = createFileRoute(
   "/creator-auth",
 )({
@@ -75,7 +88,7 @@ useEffect(() => {
 
     if (active && session) {
       navigate({
-        to: "/creator-studio",
+        to: getSafeNextRoute(),
       });
     }
   }
@@ -88,8 +101,8 @@ useEffect(() => {
     (_event, session) => {
       if (active && session) {
         navigate({
-          to: "/creator-studio",
-        });
+        to: getSafeNextRoute(),
+      });
       }
     },
   );
@@ -111,8 +124,9 @@ useEffect(() => {
       setErrorMessage(null);
       setSuccessMessage(null);
 
+      const nextRoute = getSafeNextRoute();
       const redirectTo =
-        `${window.location.origin}/creator-studio`;
+        `${window.location.origin}/creator-auth?next=${encodeURIComponent(nextRoute)}`;
 
       const { error } =
         await supabase.auth.signInWithOAuth({
@@ -159,8 +173,8 @@ useEffect(() => {
 
         if (result.session) {
           navigate({
-            to: "/creator-studio",
-          });
+        to: getSafeNextRoute(),
+      });
 
           return;
         }
@@ -178,7 +192,7 @@ useEffect(() => {
       });
 
       navigate({
-        to: "/creator-studio",
+        to: getSafeNextRoute(),
       });
     } catch (error) {
       const message =
