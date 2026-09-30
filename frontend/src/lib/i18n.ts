@@ -529,6 +529,14 @@ export function detectLocale(): AqryoLocale {
 
   const source = window.localStorage.getItem(STORAGE_SOURCE_KEY);
   const stored = window.localStorage.getItem(STORAGE_KEY);
+  const queryLocale = new URLSearchParams(window.location.search).get("lang");
+
+  if (queryLocale) {
+    const normalized = normalizeLocale(queryLocale);
+    window.localStorage.setItem(STORAGE_KEY, normalized);
+    window.localStorage.setItem(STORAGE_SOURCE_KEY, "manual");
+    return normalized;
+  }
 
   if (source === "manual" && stored) {
     return normalizeLocale(stored);
