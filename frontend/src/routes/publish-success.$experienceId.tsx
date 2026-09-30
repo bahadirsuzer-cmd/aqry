@@ -12,6 +12,7 @@ import { supabase } from "@/services/supabase";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import {
   downloadShareCard,
+  createShareCardBlob,
   type ShareCardSource,
   type ShareTestMode,
 } from "@/services/shareCards";
@@ -490,10 +491,36 @@ useEffect(() => {
           : `${experience.title}\n\nSenin sonucun ne çıkacak?\n\n#AQRYO`;
   }
 
-  function shareOnChannel(channel: Exclude<SocialChannel, "instagram">) {
+  async function shareOnChannel(channel: Exclude<SocialChannel, "instagram">) {
     if (!experience) return;
 
     const url = shareAssetsReady ? publicShareUrl : experienceUrl;
+
+    if (channel === "x") {
+      const source = getShareSource();
+      if (source && navigator.share) {
+        try {
+          const blob = await createShareCardBlob(source, "square");
+          const file = new File([blob], `aqryo-${experience.id}.png`, {
+            type: "image/png",
+          });
+
+          if (!navigator.canShare || navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              text: getShareText(),
+              url,
+            });
+            void maybeShowNotificationNudge();
+            return;
+          }
+        } catch (error) {
+          if (error instanceof DOMException && error.name === "AbortError") return;
+          console.error("X görsel paylaşımı açılamadı:", error);
+        }
+      }
+    }
+
     openSocialShare(channel, getShareText(), url);
     void maybeShowNotificationNudge();
   }
@@ -684,11 +711,11 @@ useEffect(() => {
             </div>
 
             <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              <button type="button" onClick={() => shareOnChannel("x")} className="flex h-11 items-center justify-center rounded-full bg-black text-xs font-bold text-white transition hover:bg-primary">X</button>
-              <button type="button" onClick={() => shareOnChannel("linkedin")} className="flex h-11 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-xs font-bold text-sky-700">LinkedIn</button>
-              <button type="button" onClick={() => shareOnChannel("whatsapp")} className="flex h-11 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-xs font-bold text-emerald-700">WhatsApp</button>
-              <button type="button" onClick={() => shareOnChannel("facebook")} className="flex h-11 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-xs font-bold text-blue-700">Facebook</button>
-              <button type="button" onClick={() => shareOnChannel("telegram")} className="flex h-11 items-center justify-center rounded-full border border-cyan-200 bg-cyan-50 text-xs font-bold text-cyan-700">Telegram</button>
+              <button type="button" onClick={() => void shareOnChannel("x")} className="flex h-11 items-center justify-center rounded-full bg-black text-xs font-bold text-white transition hover:bg-primary">X</button>
+              <button type="button" onClick={() => void shareOnChannel("linkedin")} className="flex h-11 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-xs font-bold text-sky-700">LinkedIn</button>
+              <button type="button" onClick={() => void shareOnChannel("whatsapp")} className="flex h-11 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-xs font-bold text-emerald-700">WhatsApp</button>
+              <button type="button" onClick={() => void shareOnChannel("facebook")} className="flex h-11 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-xs font-bold text-blue-700">Facebook</button>
+              <button type="button" onClick={() => void shareOnChannel("telegram")} className="flex h-11 items-center justify-center rounded-full border border-cyan-200 bg-cyan-50 text-xs font-bold text-cyan-700">Telegram</button>
               <button type="button" onClick={() => void shareOnInstagram()} className="flex h-11 items-center justify-center rounded-full border border-pink-200 bg-pink-50 text-xs font-bold text-pink-700">Instagram</button>
             </div>
 
