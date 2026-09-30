@@ -16,6 +16,8 @@ import {
   getAdminSubscriptions,
   getAdminPaymentEventLogs,
   getAdminRefundCases,
+  getAdminTrafficSummary,
+  getAdminTopTrafficPaths,
   getAdminExperienceReports,
   getAdminExperiences,
   getAdminOrders,
@@ -32,6 +34,8 @@ import {
   type AdminSubscriptionRow,
   type AdminPaymentEventLog,
   type AdminRefundCase,
+  type AdminTrafficSummary,
+  type AdminTrafficPath,
   type AdminExperienceReport,
   type AdminExperienceRow,
   type AdminOrderRow,
@@ -152,6 +156,8 @@ function AdminPage() {
   const [subscriptions, setSubscriptions] = useState<AdminSubscriptionRow[]>([]);
   const [paymentLogs, setPaymentLogs] = useState<AdminPaymentEventLog[]>([]);
   const [refundCases, setRefundCases] = useState<AdminRefundCase[]>([]);
+  const [traffic, setTraffic] = useState<AdminTrafficSummary | null>(null);
+  const [trafficPaths, setTrafficPaths] = useState<AdminTrafficPath[]>([]);
   const [
     homepageSlots,
     setHomepageSlots,
@@ -199,6 +205,8 @@ function AdminPage() {
           subscriptionData,
           paymentLogData,
           refundCaseData,
+          trafficData,
+          trafficPathData,
         ] = await Promise.all([
           getAdminDashboardSummary(),
           getAdminExperienceReports(),
@@ -211,6 +219,8 @@ function AdminPage() {
           getAdminSubscriptions(),
           getAdminPaymentEventLogs(),
           getAdminRefundCases(),
+          getAdminTrafficSummary(30),
+          getAdminTopTrafficPaths(30),
         ]);
 
         if (cancelled) {
@@ -234,6 +244,8 @@ function AdminPage() {
         setSubscriptions(subscriptionData);
         setPaymentLogs(paymentLogData);
         setRefundCases(refundCaseData);
+        setTraffic(trafficData);
+        setTrafficPaths(trafficPathData);
         setLoadState("ready");
       } catch (error) {
         if (cancelled) {
@@ -499,6 +511,10 @@ function AdminPage() {
             openReports.length
           }
         />
+      ) : null}
+
+      {activeSection === "traffic" ? (
+        <TrafficPanel summary={traffic} paths={trafficPaths} />
       ) : null}
 
       {activeSection ===
@@ -1733,5 +1749,17 @@ function SupportPanel({ subscriptions, paymentLogs, refundCases }: { subscriptio
     <section className="mt-4 rounded-[20px] border border-border bg-white p-5"><h2 className="text-[14px] font-black">İade vakaları</h2>
       <div className="mt-3 space-y-2">{refundCases.length ? refundCases.map((r)=><div key={r.id} className="rounded-[14px] bg-[#f7f7f9] p-3 text-[9px]"><span className="font-black">{r.status}</span> · {r.reason || "Sebep girilmemiş"} · {formatDate(r.createdAt)}</div>) : <p className="text-[10px] text-muted-foreground">Henüz iade vakası yok.</p>}</div>
     </section>
+  </>;
+}
+
+function TrafficPanel({ summary, paths }: { summary: AdminTrafficSummary | null; paths: AdminTrafficPath[] }) {
+  const cards = [["Sayfa görüntüleme", summary?.pageViews ?? 0],["Tekil ziyaretçi", summary?.uniqueVisitors ?? 0],["Oturum", summary?.sessions ?? 0],["Giriş yapmış kullanıcı", summary?.signedInUsers ?? 0]];
+  return <>
+    <h1 className="text-[28px] font-black tracking-[-0.045em]">Trafik</h1>
+    <p className="mt-2 text-[10px] text-muted-foreground">Son 30 gün · AQRYO'nun kendi birinci taraf analitiği.</p>
+    <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{cards.map(([label,value])=><div key={String(label)} className="rounded-[20px] border border-border bg-white p-5"><p className="text-[9px] font-black uppercase tracking-[0.07em] text-muted-foreground">{label}</p><p className="mt-2 text-[27px] font-black">{value}</p></div>)}</div>
+    <div className="mt-4 overflow-hidden rounded-[20px] border border-border bg-white"><div className="border-b border-border p-5"><h2 className="text-[14px] font-black">En çok ziyaret edilen sayfalar</h2></div>
+      <div className="divide-y divide-border">{paths.length ? paths.map((p)=><div key={p.path} className="grid grid-cols-[1fr_auto_auto] gap-5 px-5 py-3 text-[10px]"><span className="truncate font-black">{p.path}</span><span>{p.pageViews} görüntüleme</span><span className="text-muted-foreground">{p.uniqueVisitors} tekil</span></div>) : <div className="p-5 text-[10px] text-muted-foreground">Yeni trafik kayıtları geldikçe burada görünecek.</div>}</div>
+    </div>
   </>;
 }
