@@ -98,7 +98,6 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
   }, []);
 
   const navigationItems = [
-    { label: t("studio"), to: "/creator-studio", badge: 0 },
     { label: t("inbox"), to: "/creator-inbox", badge: unreadCount },
     { label: t("notifications"), to: "/creator-notifications", badge: unreadCount },
     { label: t("experiences"), to: "/creator-experiences", badge: 0 },
@@ -157,7 +156,7 @@ export function CreatorNavigation({ onSignOut }: CreatorNavigationProps) {
             </label>
 
             <Link
-              to="/creator-studio"
+              to="/"
               className="flex h-12 items-center justify-center whitespace-nowrap rounded-full bg-black px-5 text-[13px] font-extrabold text-white transition hover:bg-primary"
             >
               {t("newExperience")}
