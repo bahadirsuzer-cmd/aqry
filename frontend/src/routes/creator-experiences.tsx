@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { supabase } from "@/services/supabase";
 import { createShareCardBlob } from "@/services/shareCards";
+import { useAqryoLocale } from "@/lib/i18n";
 import {
   getExperienceStats,
   type ExperienceStats,
@@ -92,6 +93,8 @@ export const Route = createFileRoute(
 });
 
 function CreatorExperiencesPage() {
+  const { locale } = useAqryoLocale();
+  const ui = locale === "tr" ? experienceCopy.tr : locale === "de" ? experienceCopy.de : experienceCopy.en;
   const [experiences, setExperiences] = useState<
     CreatorExperience[]
   >([]);
@@ -402,11 +405,11 @@ const totalEngagements = useMemo(
       <div className="mx-auto max-w-[1320px] px-4 pb-10 pt-5 sm:px-6 lg:px-8">
         <header className="flex items-center justify-between border-b border-border pb-4">
           <h1 className="text-[11px] font-black uppercase tracking-[0.13em] sm:text-xs">
-            Experience’larım
+            {ui.mine}
           </h1>
 
           <p className="text-[14px] font-black uppercase tracking-[0.09em] text-muted-foreground">
-            Aktif:{" "}
+            {ui.active}:{" "}
             <span className="text-foreground">
               {activeExperienceCount}
             </span>
@@ -422,21 +425,21 @@ const totalEngagements = useMemo(
 />
 
 <SummaryMetric
-  label="Görüntüleme"
+  label={ui.views}
   value={formatCompactNumber(
     totalViews,
   )}
 />
 
 <SummaryMetric
-  label="Etkileşim"
+  label={ui.engagement}
   value={formatCompactNumber(
     totalEngagements,
   )}
 />
 
 <SummaryMetric
-  label="Tamamlama"
+  label={ui.completions}
   value={formatCompactNumber(
     totalCompletions,
   )}
@@ -446,7 +449,7 @@ const totalEngagements = useMemo(
           <div className="flex flex-col gap-2 border-b border-border p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
             <div className="flex min-w-0 items-center gap-2">
               <span className="text-[14px] font-black uppercase tracking-[0.08em]">
-                Tüm Experience’lar
+                {ui.allExperiences}
               </span>
 
               <span className="rounded-full bg-background px-2 py-1 text-[12px] font-black text-muted-foreground">
@@ -463,7 +466,7 @@ const totalEngagements = useMemo(
                     event.target.value,
                   )
                 }
-                placeholder="Experience ara"
+                placeholder={ui.search}
                 className="col-span-2 h-9 min-w-0 rounded-[11px] border border-border bg-background px-3 text-[14px] font-semibold outline-none transition placeholder:text-muted-foreground focus:border-primary sm:col-span-1 sm:w-52"
               />
 
@@ -475,23 +478,23 @@ const totalEngagements = useMemo(
                       .value as StatusFilter,
                   )
                 }
-                aria-label="Experience durum filtresi"
+                aria-label={ui.statusFilter}
                 className="h-9 rounded-[11px] border border-border bg-background px-3 text-[13px] font-bold outline-none transition focus:border-primary"
               >
                 <option value="all">
-                  Tüm durumlar
+                  {ui.allStatuses}
                 </option>
 
                 <option value="published">
-                  Aktif
+                  {ui.active}
                 </option>
 
                 <option value="paused">
-                  Pasif
+                  {ui.paused}
                 </option>
 
                 <option value="draft">
-                  Taslak
+                  {ui.draft}
                 </option>
               </select>
 
@@ -503,27 +506,27 @@ const totalEngagements = useMemo(
                       .value as SortMode,
                   )
                 }
-                aria-label="Experience sıralaması"
+                aria-label={ui.sort}
                 className="h-9 rounded-[11px] border border-border bg-background px-3 text-[13px] font-bold outline-none transition focus:border-primary"
               >
                 <option value="newest">
-                  En yeni
+                  {ui.newest}
                 </option>
 
                 <option value="oldest">
-                  En eski
+                  {ui.oldest}
                 </option>
 
                 <option value="most-viewed">
-                  En çok görüntülenen
+                  {ui.mostViewed}
                 </option>
 
                 <option value="most-started">
-                  En çok etkileşim
+                  {ui.mostEngaged}
                 </option>
 
                 <option value="most-completed">
-                  En çok tamamlanan
+                  {ui.mostCompleted}
                 </option>
 
               </select>
@@ -533,8 +536,7 @@ const totalEngagements = useMemo(
           {loading && (
             <div className="p-12 text-center">
               <p className="text-xs font-bold text-muted-foreground">
-                Experience’lar
-                yükleniyor...
+                {ui.loading}
               </p>
             </div>
           )}
@@ -558,22 +560,22 @@ const totalEngagements = useMemo(
               <div>
                 <div className="hidden grid-cols-[minmax(220px,1fr)_82px_78px_78px_78px_110px_24px] items-center gap-3 border-b border-border bg-[#fafafa] px-4 py-2.5 text-[11px] font-black uppercase tracking-[0.06em] text-muted-foreground lg:grid">
                   <span>Experience</span>
-                  <span>Durum</span>
-                  <span>Görüntüleme</span>
-                  <span>Etkileşim</span>
-                  <span>Tamamlama</span>
-                  <span>Son aktivite</span>
+                  <span>{ui.status}</span>
+                  <span>{ui.views}</span>
+                  <span>{ui.engagement}</span>
+                  <span>{ui.completions}</span>
+                  <span>{ui.lastActivity}</span>
                   <span />
                 </div>
 
                 {filteredExperiences.length === 0 && (
                   <div className="p-12 text-center">
                     <p className="text-[16px] font-black">
-                      Sonuç bulunamadı
+                      {ui.noResults}
                     </p>
 
                     <p className="mt-1 text-[10px] text-muted-foreground">
-                      Arama veya filtrelerini değiştir.
+                      {ui.changeFilters}
                     </p>
                   </div>
                 )}
@@ -2545,3 +2547,8 @@ function formatCompactDecimal(
     ? value.toString()
     : value.toFixed(1);
 }
+const experienceCopy = {
+ tr:{mine:"Experience’larım",active:"Aktif",views:"Görüntüleme",engagement:"Etkileşim",completions:"Tamamlama",allExperiences:"Tüm Experience’lar",search:"Experience ara",statusFilter:"Experience durum filtresi",allStatuses:"Tüm durumlar",paused:"Pasif",draft:"Taslak",sort:"Experience sıralaması",newest:"En yeni",oldest:"En eski",mostViewed:"En çok görüntülenen",mostEngaged:"En çok etkileşim",mostCompleted:"En çok tamamlanan",loading:"Experience’lar yükleniyor...",status:"Durum",lastActivity:"Son aktivite",noResults:"Sonuç bulunamadı",changeFilters:"Arama veya filtrelerini değiştir."},
+ en:{mine:"My experiences",active:"Active",views:"Views",engagement:"Engagement",completions:"Completions",allExperiences:"All experiences",search:"Search experiences",statusFilter:"Experience status filter",allStatuses:"All statuses",paused:"Paused",draft:"Draft",sort:"Sort experiences",newest:"Newest",oldest:"Oldest",mostViewed:"Most viewed",mostEngaged:"Most engagement",mostCompleted:"Most completed",loading:"Loading experiences...",status:"Status",lastActivity:"Last activity",noResults:"No results found",changeFilters:"Change your search or filters."},
+ de:{mine:"Meine Erlebnisse",active:"Aktiv",views:"Aufrufe",engagement:"Interaktionen",completions:"Abschlüsse",allExperiences:"Alle Erlebnisse",search:"Erlebnisse suchen",statusFilter:"Status filtern",allStatuses:"Alle Status",paused:"Pausiert",draft:"Entwurf",sort:"Erlebnisse sortieren",newest:"Neueste",oldest:"Älteste",mostViewed:"Meiste Aufrufe",mostEngaged:"Meiste Interaktionen",mostCompleted:"Meiste Abschlüsse",loading:"Erlebnisse werden geladen...",status:"Status",lastActivity:"Letzte Aktivität",noResults:"Keine Ergebnisse",changeFilters:"Ändere deine Suche oder Filter."}
+} as const;
