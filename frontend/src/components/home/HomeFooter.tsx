@@ -4,7 +4,7 @@ import { useAqryoLocale } from "@/lib/i18n";
 export function HomeFooter() {
   const { t } = useAqryoLocale();
   const groups = [
-    { title: t("product"), items: [[t("howItWorks"), "/#how-it-works"], [t("playExample"), "/#hero-demo"], [t("createContent"), "/#aqryo-formats"], [t("pricing"), "/pricing"]] },
+    { title: t("product"), items: [[t("howItWorks"), "/#how-it-works"], [t("createContent"), "/#aqryo-formats"], [t("pricing"), "/pricing"]] },
     { title: t("creator"), items: [[t("creatorLogin"), "/creator-auth"]] },
     { title: t("legal"), items: [[t("about"), "/about"], [t("contact"), "/contact"], [t("terms"), "/terms"], [t("privacy"), "/privacy"], [t("deliveryRefund"), "/delivery-refund"], [t("distanceSales"), "/distance-sales"], [t("paymentTerms"), "/payment-terms"], [t("cookies"), "/cookies"], [t("creatorTerms"), "/creator-terms"]] },
   ];
