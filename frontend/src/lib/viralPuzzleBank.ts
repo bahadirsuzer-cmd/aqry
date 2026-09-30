@@ -1,8 +1,9 @@
 import { COUNT_SCENES, countSceneSvg, countVisibleShapeGroups } from "./countPuzzleBank";
 import { GEOMETRY_FAMILIES } from "./viralGeometryBank";
 import { AREA_FAMILIES } from "./viralAreaBank";
+import { MATCHSTICK_FAMILIES } from "./matchstickPuzzleBank";
 
-export type ViralKind = "math" | "geometry" | "count" | "algebra" | "area" | "pattern";
+export type ViralKind = "math" | "geometry" | "count" | "algebra" | "area" | "pattern" | "matchstick";
 export type ViralPuzzle = {
   family: string;
   kind: ViralKind;
@@ -15,6 +16,8 @@ export type ViralPuzzle = {
   areaTarget?: "area" | "perimeter" | "length";
   patternRows?: string[];
   patternMode?: "sequence" | "mapping";
+  matchstickGoal?: "largest" | "smallest";
+  matchstickMoves?: 1 | 2;
 };
 export type Family = {
   id: string;
@@ -527,6 +530,7 @@ export const VIRAL_FAMILIES: Family[] = [
   ...count,
   ...algebra.filter((family) => family.id !== "missing_information"),
   ...pattern,
+  ...MATCHSTICK_FAMILIES,
   ...AREA_FAMILIES.filter((family) =>
     !["corner_cut","uniform_frame","overlap_union","triangle_missing","t_union","corridor_difference","trapezoid_split"].includes(family.id)
   ),

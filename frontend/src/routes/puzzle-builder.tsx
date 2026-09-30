@@ -11,7 +11,7 @@ export const Route = createFileRoute("/puzzle-builder")({
 });
 
 type PuzzleKind = ViralKind;
-type BasePuzzleKind = Exclude<PuzzleKind, "pattern">;
+type BasePuzzleKind = Exclude<PuzzleKind, "pattern" | "matchstick">;
 type Presentation = "clean" | "debate";
 type Puzzle = ViralPuzzle & { id: string };
 
@@ -447,7 +447,7 @@ type PuzzleCopy = {
 const RECENT_LIMIT = 40;
 const ROTATION_STORAGE_KEY = "aqryo-puzzle-rotation-v3";
 type RecentFamilies = Record<PuzzleKind, string[]>;
-const emptyRecent = (): RecentFamilies => ({math:[],geometry:[],count:[],algebra:[],area:[],pattern:[]});
+const emptyRecent = (): RecentFamilies => ({math:[],geometry:[],count:[],algebra:[],area:[],pattern:[],matchstick:[]});
 
 function readRecent(): RecentFamilies {
   if(typeof window==="undefined") return emptyRecent();
@@ -649,8 +649,27 @@ function patternCopy(locale:AqryoLocale) {
   return PATTERN_COPY[locale] ?? PATTERN_COPY.en!;
 }
 
+const MATCHSTICK_COPY: Record<AqryoLocale,{label:string;description:string;largest:string;smallest:string;subtitle:string}> = {
+  tr:{label:"Kibrit",description:"Kibritleri taşı, en büyük veya en küçük sayıyı oluştur",largest:"1 kibriti taşı · en büyük sayıyı yap",smallest:"1 kibriti taşı · en küçük sayıyı yap",subtitle:"Sadece 1 kibritin yerini değiştir"},
+  en:{label:"Matchsticks",description:"Move matches to build the largest or smallest number",largest:"Move 1 match · make the largest number",smallest:"Move 1 match · make the smallest number",subtitle:"Move exactly 1 match"},
+  es:{label:"Cerillas",description:"Mueve cerillas y forma el número mayor o menor",largest:"Mueve 1 cerilla · número mayor",smallest:"Mueve 1 cerilla · número menor",subtitle:"Mueve exactamente 1 cerilla"},
+  pt:{label:"Palitos",description:"Mova palitos e forme o maior ou menor número",largest:"Mova 1 palito · maior número",smallest:"Mova 1 palito · menor número",subtitle:"Mova exatamente 1 palito"},
+  fr:{label:"Allumettes",description:"Déplace des allumettes pour former le plus grand ou petit nombre",largest:"Déplace 1 allumette · plus grand nombre",smallest:"Déplace 1 allumette · plus petit nombre",subtitle:"Déplace exactement 1 allumette"},
+  de:{label:"Streichhölzer",description:"Verschiebe Hölzer und bilde die größte oder kleinste Zahl",largest:"1 Holz verschieben · größte Zahl",smallest:"1 Holz verschieben · kleinste Zahl",subtitle:"Verschiebe genau 1 Streichholz"},
+  it:{label:"Fiammiferi",description:"Sposta fiammiferi e crea il numero più grande o piccolo",largest:"Sposta 1 fiammifero · numero più grande",smallest:"Sposta 1 fiammifero · numero più piccolo",subtitle:"Sposta esattamente 1 fiammifero"},
+  ar:{label:"أعواد الثقاب",description:"حرّك الأعواد لتكوين أكبر أو أصغر عدد",largest:"حرّك عودًا واحدًا · أكبر عدد",smallest:"حرّك عودًا واحدًا · أصغر عدد",subtitle:"حرّك عود ثقاب واحدًا فقط"},
+  hi:{label:"माचिस",description:"माचिस की तीलियाँ हटाकर सबसे बड़ी या छोटी संख्या बनाओ",largest:"1 तीली हटाओ · सबसे बड़ी संख्या",smallest:"1 तीली हटाओ · सबसे छोटी संख्या",subtitle:"सिर्फ 1 तीली की जगह बदलो"},
+  id:{label:"Korek api",description:"Pindahkan batang untuk membuat angka terbesar atau terkecil",largest:"Pindahkan 1 batang · angka terbesar",smallest:"Pindahkan 1 batang · angka terkecil",subtitle:"Pindahkan tepat 1 batang"},
+  ru:{label:"Спички",description:"Переложи спички и составь наибольшее или наименьшее число",largest:"Переложи 1 спичку · наибольшее число",smallest:"Переложи 1 спичку · наименьшее число",subtitle:"Переложи ровно 1 спичку"},
+  bn:{label:"ম্যাচস্টিক",description:"কাঠি সরিয়ে সবচেয়ে বড় বা ছোট সংখ্যা বানাও",largest:"১টি কাঠি সরাও · সবচেয়ে বড় সংখ্যা",smallest:"১টি কাঠি সরাও · সবচেয়ে ছোট সংখ্যা",subtitle:"ঠিক ১টি কাঠি সরাও"},
+  ur:{label:"ماچس",description:"تیلیاں ہلا کر سب سے بڑا یا چھوٹا عدد بنائیں",largest:"1 تیلی ہٹائیں · سب سے بڑا عدد",smallest:"1 تیلی ہٹائیں · سب سے چھوٹا عدد",subtitle:"صرف 1 تیلی کی جگہ بدلیں"},
+  vi:{label:"Que diêm",description:"Di chuyển que để tạo số lớn nhất hoặc nhỏ nhất",largest:"Di chuyển 1 que · số lớn nhất",smallest:"Di chuyển 1 que · số nhỏ nhất",subtitle:"Di chuyển đúng 1 que"},
+  fil:{label:"Posporo",description:"Ilipat ang posporo para mabuo ang pinakamalaki o pinakamaliit na numero",largest:"Ilipat ang 1 posporo · pinakamalaking numero",smallest:"Ilipat ang 1 posporo · pinakamaliit na numero",subtitle:"Eksaktong 1 posporo lang"},
+};
+function matchstickCopy(locale:AqryoLocale){ return MATCHSTICK_COPY[locale] ?? MATCHSTICK_COPY.en; }
+
 function subtitleFor(locale:AqryoLocale, kind:PuzzleKind, copy:PuzzleCopy) {
-  return kind==="pattern" ? patternCopy(locale).subtitle : copy.subtitles[kind];
+  return kind==="pattern" ? patternCopy(locale).subtitle : kind==="matchstick" ? matchstickCopy(locale).subtitle : copy.subtitles[kind];
 }
 
 function headlineFor(locale:AqryoLocale,puzzle:Puzzle) {
@@ -660,6 +679,7 @@ function headlineFor(locale:AqryoLocale,puzzle:Puzzle) {
     if(!hasX) return COPY[locale].titles.math;
   }
   if(puzzle.kind==="pattern") return puzzle.patternMode==="mapping" ? patternCopy(locale).mappingTitle : patternCopy(locale).title;
+  if(puzzle.kind==="matchstick") return puzzle.matchstickGoal==="smallest" ? matchstickCopy(locale).smallest : matchstickCopy(locale).largest;
   if(puzzle.kind==="count" && puzzle.countTarget) return COUNT_TITLES[locale][puzzle.countTarget];
   if(puzzle.kind==="area" && puzzle.areaTarget) return AREA_TITLES[locale][puzzle.areaTarget];
   return COPY[locale].titles[puzzle.kind];
@@ -934,6 +954,7 @@ function PuzzleBuilderPage() {
     ["count",t("count"),copy.descriptions.count],
     ["algebra",t("algebra"),copy.descriptions.algebra],
     ["pattern",patternCopy(locale).label,patternCopy(locale).description],
+    ["matchstick",matchstickCopy(locale).label,matchstickCopy(locale).description],
   ];
 
   return (
