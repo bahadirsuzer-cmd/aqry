@@ -445,7 +445,7 @@ type PuzzleCopy = {
 };
 
 const RECENT_LIMIT = 40;
-const ROTATION_STORAGE_KEY = "aqryo-puzzle-rotation-v2";
+const ROTATION_STORAGE_KEY = "aqryo-puzzle-rotation-v3";
 type RecentFamilies = Record<PuzzleKind, string[]>;
 const emptyRecent = (): RecentFamilies => ({math:[],geometry:[],count:[],algebra:[],area:[],pattern:[]});
 
@@ -794,8 +794,9 @@ function PuzzleBuilderPage() {
 
   function remember(next:Puzzle){
     setRecent((old)=>{
-      const familyCount=VIRAL_FAMILIES.filter((family)=>family.kind===next.kind).length;
-      const prior=old[next.kind];
+      const activeFamilies=VIRAL_FAMILIES.filter((family)=>family.kind===next.kind && !(next.kind==="geometry" && (family.id==="advanced_isosceles_exterior" || family.id==="angle_bisector")));
+      const familyCount=activeFamilies.length;
+      const prior=old[next.kind].filter((id)=>activeFamilies.some((family)=>family.id===id));
       const cycle=prior.length>=familyCount ? [] : prior;
       return {...old,[next.kind]:[next.family,...cycle.filter((value)=>value!==next.family)].slice(0,RECENT_LIMIT)};
     });
@@ -818,8 +819,10 @@ function PuzzleBuilderPage() {
   function regenerate(){
     let fresh=generate(kind,recent[kind]);
     if(kind==="geometry"){
-      for(let attempt=0; attempt<8 && (fresh.diagram===puzzle.diagram || (fresh.answer===puzzle.answer && fresh.commonWrong===puzzle.commonWrong)); attempt+=1){
-        fresh=generate(kind,recent[kind]);
+      const blockedFamilies=[...new Set([...recent.geometry,puzzle.family])];
+      fresh=generate(kind,blockedFamilies);
+      for(let attempt=0; attempt<12 && fresh.family===puzzle.family; attempt+=1){
+        fresh=generate(kind,blockedFamilies);
       }
     }
     if(kind==="math") setDebateTemplate((current)=>pickDebateTemplate(current));
@@ -1077,7 +1080,7 @@ const PuzzleSvg=React.forwardRef<
         <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
         <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?14:12} fontWeight="900" fill="#17101f">{headline}</text>
         <svg x={safeX} y={safeY+30} width={safeW} height={safeH-35} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet" overflow="hidden">
-          <g transform={puzzle.kind==="geometry" ? "translate(-54 -40.5) scale(1.3)" : undefined} dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
+          <g transform={puzzle.kind==="geometry" ? "translate(-27 -20.25) scale(1.15)" : undefined} dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
         </svg>
       </svg>
     );
