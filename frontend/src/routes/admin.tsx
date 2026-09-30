@@ -13,6 +13,9 @@ import {
 import {
   getAdminCreators,
   getAdminDashboardSummary,
+  getAdminSubscriptions,
+  getAdminPaymentEventLogs,
+  getAdminRefundCases,
   getAdminExperienceReports,
   getAdminExperiences,
   getAdminOrders,
@@ -26,6 +29,9 @@ import {
   updateAdminExperienceReport,
   type AdminCreatorRow,
   type AdminDashboardSummary,
+  type AdminSubscriptionRow,
+  type AdminPaymentEventLog,
+  type AdminRefundCase,
   type AdminExperienceReport,
   type AdminExperienceRow,
   type AdminOrderRow,
@@ -143,6 +149,9 @@ function AdminPage() {
     useState<AdminPayoutRow[]>([]);
   const [creators, setCreators] =
     useState<AdminCreatorRow[]>([]);
+  const [subscriptions, setSubscriptions] = useState<AdminSubscriptionRow[]>([]);
+  const [paymentLogs, setPaymentLogs] = useState<AdminPaymentEventLog[]>([]);
+  const [refundCases, setRefundCases] = useState<AdminRefundCase[]>([]);
   const [
     homepageSlots,
     setHomepageSlots,
@@ -187,6 +196,9 @@ function AdminPage() {
           creatorData,
           homepageSlotData,
           announcementData,
+          subscriptionData,
+          paymentLogData,
+          refundCaseData,
         ] = await Promise.all([
           getAdminDashboardSummary(),
           getAdminExperienceReports(),
@@ -196,6 +208,9 @@ function AdminPage() {
           getAdminCreators(),
           getAdminHomepageFeaturedSlots(),
           getAdminSiteAnnouncements(),
+          getAdminSubscriptions(),
+          getAdminPaymentEventLogs(),
+          getAdminRefundCases(),
         ]);
 
         if (cancelled) {
@@ -216,6 +231,9 @@ function AdminPage() {
         setAnnouncements(
           announcementData,
         );
+        setSubscriptions(subscriptionData);
+        setPaymentLogs(paymentLogData);
+        setRefundCases(refundCaseData);
         setLoadState("ready");
       } catch (error) {
         if (cancelled) {
@@ -559,6 +577,14 @@ function AdminPage() {
         <CreatorsTable
           creators={creators}
         />
+      ) : null}
+
+      {activeSection === "subscriptions" ? (
+        <SubscriptionsTable subscriptions={subscriptions} />
+      ) : null}
+
+      {activeSection === "support" ? (
+        <SupportPanel subscriptions={subscriptions} paymentLogs={paymentLogs} refundCases={refundCases} />
       ) : null}
 
       {activeSection ===
@@ -1665,3 +1691,47 @@ function Empty({
     </div>
   );
 } 
+function SubscriptionsTable({ subscriptions }: { subscriptions: AdminSubscriptionRow[] }) {
+  return <>
+    <h1 className="text-[28px] font-black tracking-[-0.045em]">Abonelikler</h1>
+    <p className="mt-2 text-[10px] text-muted-foreground">Kullanıcı, e-posta ve Paddle abonelik durumunu birlikte gösterir.</p>
+    <div className="mt-5 overflow-x-auto rounded-[20px] border border-border bg-white">
+      <table className="min-w-full text-left text-[10px]">
+        <thead className="border-b border-border bg-[#fafafa] text-[8px] uppercase text-muted-foreground"><tr>
+          <th className="px-4 py-3">Kullanıcı</th><th className="px-4 py-3">E-posta</th><th className="px-4 py-3">Durum</th><th className="px-4 py-3">Paddle müşteri</th><th className="px-4 py-3">Dönem sonu</th>
+        </tr></thead>
+        <tbody>{subscriptions.map((item) => <tr key={item.userId} className="border-b border-border/70 last:border-0">
+          <td className="px-4 py-3 font-black">{item.displayName || item.userId.slice(0,8)}</td>
+          <td className="px-4 py-3">{item.email || "—"}</td>
+          <td className="px-4 py-3"><span className="rounded-full bg-[#f5f5f7] px-2 py-1 font-black">{item.status || "Free"}</span></td>
+          <td className="px-4 py-3 font-mono text-[9px]">{item.customerId || "—"}</td>
+          <td className="px-4 py-3">{formatDate(item.currentPeriodEnd)}</td>
+        </tr>)}</tbody>
+      </table>
+    </div>
+  </>;
+}
+
+function SupportPanel({ subscriptions, paymentLogs, refundCases }: { subscriptions: AdminSubscriptionRow[]; paymentLogs: AdminPaymentEventLog[]; refundCases: AdminRefundCase[] }) {
+  const [query, setQuery] = useState("");
+  const q = query.trim().toLowerCase();
+  const users = subscriptions.filter((x) => !q || (x.email ?? "").toLowerCase().includes(q) || (x.customerId ?? "").toLowerCase().includes(q) || (x.subscriptionId ?? "").toLowerCase().includes(q));
+  const userIds = new Set(users.map((x) => x.userId));
+  const logs = paymentLogs.filter((x) => !q || (x.userId && userIds.has(x.userId)) || (x.customerId ?? "").toLowerCase().includes(q) || (x.subscriptionId ?? "").toLowerCase().includes(q));
+  return <>
+    <h1 className="text-[28px] font-black tracking-[-0.045em]">Destek / İade</h1>
+    <p className="mt-2 text-[10px] text-muted-foreground">Bir kullanıcı sorun bildirdiğinde e-posta, Paddle ID veya abonelik ID ile olay zincirini bul.</p>
+    <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="E-posta, customer ID veya subscription ID ara" className="mt-5 h-12 w-full max-w-xl rounded-[14px] border border-border bg-white px-4 text-[11px] outline-none focus:border-black" />
+    <div className="mt-5 grid gap-4 xl:grid-cols-2">
+      <section className="rounded-[20px] border border-border bg-white p-5"><h2 className="text-[14px] font-black">Kullanıcı / abonelik</h2>
+        <div className="mt-3 space-y-2">{users.slice(0,50).map((u)=><div key={u.userId} className="rounded-[14px] bg-[#f7f7f9] p-3"><p className="text-[10px] font-black">{u.email || u.displayName || u.userId}</p><p className="mt-1 text-[9px] text-muted-foreground">{u.status || "Free"} · {u.subscriptionId || "abonelik yok"}</p></div>)}</div>
+      </section>
+      <section className="rounded-[20px] border border-border bg-white p-5"><h2 className="text-[14px] font-black">Ödeme olayları</h2>
+        <div className="mt-3 space-y-2">{logs.slice(0,100).map((l)=><div key={l.id} className="rounded-[14px] bg-[#f7f7f9] p-3"><div className="flex justify-between gap-3"><p className="text-[10px] font-black">{l.eventType}</p><p className="text-[8px] text-muted-foreground">{formatDate(l.createdAt)}</p></div><p className="mt-1 text-[9px] text-muted-foreground">{l.processingStatus}{l.errorMessage ? ` · ${l.errorMessage}` : ""}</p></div>)}</div>
+      </section>
+    </div>
+    <section className="mt-4 rounded-[20px] border border-border bg-white p-5"><h2 className="text-[14px] font-black">İade vakaları</h2>
+      <div className="mt-3 space-y-2">{refundCases.length ? refundCases.map((r)=><div key={r.id} className="rounded-[14px] bg-[#f7f7f9] p-3 text-[9px]"><span className="font-black">{r.status}</span> · {r.reason || "Sebep girilmemiş"} · {formatDate(r.createdAt)}</div>) : <p className="text-[10px] text-muted-foreground">Henüz iade vakası yok.</p>}</div>
+    </section>
+  </>;
+}
