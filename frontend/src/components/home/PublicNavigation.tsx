@@ -9,7 +9,7 @@ const navItems = [
   },
   {
     labelKey: "createContent",
-    href: "/#start-creating",
+    href: "/#aqryo-formats",
   },
 ];
 
