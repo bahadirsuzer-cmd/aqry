@@ -14,7 +14,7 @@ const formatCards = [
     visual: "from-violet-500 via-purple-500 to-fuchsia-400",
   },
   {
-    title: "Puzzle Üret",
+    title: "Bulmaca Üret",
     description: "Saniyeler içinde paylaşılabilir viral bulmacalar üret.",
     to: "/puzzle-builder",
     symbol: "7+?",
@@ -43,13 +43,17 @@ export function HomeHero({
   return (
     <section className="overflow-hidden bg-[#faf8ff]">
       <div className="mx-auto grid max-w-[1240px] gap-10 px-5 pb-14 pt-10 sm:px-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-16 lg:py-20">
-        <div className="max-w-xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-white px-4 py-2 text-[12px] font-black text-[#7140c4]">
-            <span className="h-2 w-2 rounded-full bg-[#74f0de]" />
-            AQRYO · CREATOR STUDIO
-          </div>
+        <div className="relative max-w-xl">
+          {authChecked ? (
+            <Link
+              to={isCreator ? "/creator-studio" : "/creator-auth"}
+              className="absolute right-0 top-0 inline-flex min-h-11 items-center justify-center rounded-full bg-[#7540d0] px-5 py-2.5 text-[13px] font-black text-white shadow-[0_12px_26px_rgba(117,64,208,.2)] transition hover:bg-[#5f2bb9]"
+            >
+              {isCreator ? "Studio’ya git" : "İçerik üret"} →
+            </Link>
+          ) : null}
 
-          <h1 className="mt-5 text-[clamp(3rem,5.4vw,5.5rem)] font-black leading-[0.94] tracking-[-0.07em] text-[#21163b]">
+          <h1 className="pr-28 text-[clamp(3rem,5.4vw,5.5rem)] font-black leading-[0.94] tracking-[-0.07em] text-[#21163b] sm:pr-36">
             5 saniyede
             <br />
             <span className="text-[#7540d0]">viral içerik üret.</span>
@@ -59,23 +63,6 @@ export function HomeHero({
             Formatını seç, içeriğini hazırla ve kendi kitlenle paylaş.
           </p>
 
-          <div className="mt-7 flex flex-wrap gap-3">
-            {authChecked ? (
-              <Link
-                to={isCreator ? "/creator-studio" : "/creator-auth"}
-                className="inline-flex min-h-13 items-center justify-center rounded-full bg-[#7540d0] px-7 py-3 text-[15px] font-black text-white shadow-[0_14px_30px_rgba(117,64,208,.2)] transition hover:bg-[#5f2bb9]"
-              >
-                {isCreator ? "Studio’ya git" : "İlk içeriğini oluştur"} →
-              </Link>
-            ) : null}
-
-            <a
-              href="#aqryo-formats"
-              className="inline-flex min-h-13 items-center justify-center rounded-full border border-[#ded5ed] bg-white px-7 py-3 text-[15px] font-black text-[#332347]"
-            >
-              Formatları gör
-            </a>
-          </div>
         </div>
 
         <div id="aqryo-formats" className="relative">
