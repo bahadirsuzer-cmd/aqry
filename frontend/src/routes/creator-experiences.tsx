@@ -2314,7 +2314,7 @@ function EmptyExperiences() {
       </p>
 
       <Link
-        to="/creator-studio"
+        to="/"
         className="mx-auto mt-4 flex h-10 w-full max-w-[210px] items-center justify-center rounded-full bg-black text-[14px] font-black text-white transition hover:bg-primary"
       >
         Yeni Experience
