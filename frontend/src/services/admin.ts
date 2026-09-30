@@ -677,3 +677,23 @@ export async function getAdminRefundCases(): Promise<AdminRefundCase[]> {
     providerRefundId: row.provider_refund_id, notes: row.notes, createdAt: row.created_at, updatedAt: row.updated_at,
   }));
 }
+
+export interface AdminTrafficSummary {
+  pageViews: number;
+  uniqueVisitors: number;
+  sessions: number;
+  signedInUsers: number;
+}
+export interface AdminTrafficPath { path: string; pageViews: number; uniqueVisitors: number; }
+
+export async function getAdminTrafficSummary(days = 30): Promise<AdminTrafficSummary> {
+  const { data, error } = await supabase.rpc("admin_get_traffic_summary", { p_days: days });
+  if (error) throw error;
+  const row: any = data?.[0] ?? {};
+  return { pageViews: Number(row.page_views ?? 0), uniqueVisitors: Number(row.unique_visitors ?? 0), sessions: Number(row.sessions ?? 0), signedInUsers: Number(row.signed_in_users ?? 0) };
+}
+export async function getAdminTopTrafficPaths(days = 30): Promise<AdminTrafficPath[]> {
+  const { data, error } = await supabase.rpc("admin_get_top_traffic_paths", { p_days: days });
+  if (error) throw error;
+  return (data ?? []).map((row: any) => ({ path: row.path, pageViews: Number(row.page_views ?? 0), uniqueVisitors: Number(row.unique_visitors ?? 0) }));
+}
