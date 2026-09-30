@@ -666,6 +666,11 @@ function headlineFor(locale:AqryoLocale,puzzle:Puzzle) {
 }
 
 function isInvalidGeneratedPuzzle(puzzle: ViralPuzzle) {
+  if (puzzle.kind === "geometry") {
+    // Production quality gate: reject one-glance drills. Geometry cards should
+    // require at least two explicit relationships/steps, not just "halve this angle".
+    if (puzzle.family === "advanced_isosceles_exterior" || puzzle.family === "angle_bisector") return true;
+  }
   if (puzzle.kind !== "algebra") return false;
   const answer = String(puzzle.answer ?? "").trim().toLowerCase();
   const wrong = String(puzzle.commonWrong ?? "").trim().toLowerCase();
@@ -1072,7 +1077,7 @@ const PuzzleSvg=React.forwardRef<
         <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
         <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?14:12} fontWeight="900" fill="#17101f">{headline}</text>
         <svg x={safeX} y={safeY+30} width={safeW} height={safeH-35} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet" overflow="hidden">
-          <g transform={puzzle.kind==="geometry" ? "translate(27 20.25) scale(.85)" : undefined} dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
+          <g transform={puzzle.kind==="geometry" ? "translate(-54 -40.5) scale(1.3)" : undefined} dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
         </svg>
       </svg>
     );
