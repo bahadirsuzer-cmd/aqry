@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useAqryoLocale } from "@/lib/i18n";
 
 interface HomeHeroProps {
   isCreator?: boolean;
@@ -7,29 +8,29 @@ interface HomeHeroProps {
 
 const formatCards = [
   {
-    title: "Soru Sor",
-    description: "Anonim soru ve itiraflarla kitleni konuştur.",
+    titleKey: "questionConfession",
+    descriptionKey: "questionConfessionDesc",
     to: "/question-confession-builder",
     symbol: "?",
     visual: "from-violet-500 via-purple-500 to-fuchsia-400",
   },
   {
-    title: "Bulmaca Üret",
-    description: "Saniyeler içinde paylaşılabilir viral bulmacalar üret.",
+    titleKey: "puzzle",
+    descriptionKey: "puzzleDesc",
     to: "/puzzle-builder",
     symbol: "7+?",
     visual: "from-amber-300 via-orange-400 to-rose-400",
   },
   {
-    title: "Aşk Metre",
-    description: "Uyumu ölçen eğlenceli içerikler oluştur ve paylaş.",
+    titleKey: "loveMeter",
+    descriptionKey: "loveMeterDesc",
     to: "/compatibility-builder",
     symbol: "♡",
     visual: "from-pink-400 via-rose-400 to-red-400",
   },
   {
-    title: "Hikaye",
-    description: "Görsel ve metni birleştir, takipçini hikâyenin içine çek.",
+    titleKey: "story",
+    descriptionKey: "storyDesc",
     to: "/story-builder",
     symbol: "Aa",
     visual: "from-cyan-400 via-sky-500 to-indigo-500",
@@ -40,19 +41,18 @@ export function HomeHero({
   isCreator = false,
   authChecked = true,
 }: HomeHeroProps) {
+  const { t } = useAqryoLocale();
   return (
     <section className="overflow-hidden bg-[#faf8ff]">
       <div className="mx-auto grid max-w-[1240px] gap-6 px-5 pb-8 pt-5 sm:px-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-16 lg:py-20">
         <div className="relative max-w-xl">
 
           <h1 className="text-[clamp(2.65rem,5.4vw,5.5rem)] font-black leading-[0.88] tracking-[-0.07em] text-[#21163b] sm:pr-36">
-            5 saniyede
-            <br />
-            <span className="text-[#7540d0]">viral içerik üret.</span>
+            {t("viralInFive")}
           </h1>
 
           <p className="mt-3 max-w-[34rem] text-[16px] font-medium leading-6 text-[#625a70] sm:mt-6 sm:text-[19px] sm:leading-8">
-            Formatını seç, içeriğini hazırla ve kendi kitlenle paylaş.
+            {t("studioDescription")}
           </p>
 
         </div>
@@ -64,7 +64,7 @@ export function HomeHero({
           <div className="relative grid grid-cols-2 gap-2.5 sm:gap-4">
             {formatCards.map((card) => (
               <Link
-                key={card.title}
+                key={card.titleKey}
                 to={isCreator ? card.to : "/creator-auth"}
                 search={isCreator ? undefined : { next: card.to }}
                 className="group relative aspect-[1/0.94] min-w-0 overflow-hidden rounded-[26px] border border-white/70 bg-white shadow-[0_18px_50px_rgba(48,31,75,.12)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(48,31,75,.18)] sm:rounded-[32px]"
@@ -79,10 +79,10 @@ export function HomeHero({
 
                 <div className="absolute inset-x-0 bottom-0 min-h-[46%] bg-gradient-to-t from-[#17101f]/90 via-[#17101f]/72 to-transparent px-4 pb-4 pt-9 text-white sm:px-6 sm:pb-6 sm:pt-12">
                   <h2 className="text-[clamp(1.15rem,2.4vw,1.75rem)] font-black tracking-[-0.045em]">
-                    {card.title}
+                    {t(card.titleKey)}
                   </h2>
                   <p className="mt-1.5 line-clamp-2 text-[11px] font-semibold leading-4 text-white/80 sm:mt-2 sm:text-[13px] sm:leading-5">
-                    {card.description}
+                    {t(card.descriptionKey)}
                   </p>
                 </div>
               </Link>
@@ -90,7 +90,7 @@ export function HomeHero({
           </div>
 
           <p className="mt-2 text-center text-[12px] font-bold text-[#756b82] sm:mt-4">
-            Bir format seç · oluştur · paylaş
+            {t("studioDescription")}
           </p>
         </div>
       </div>
