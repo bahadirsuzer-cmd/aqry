@@ -26,6 +26,8 @@ function CreatorInboxPage() {
   const { locale } = useAqryoLocale();
 
   const isTr = locale === "tr";
+  const isDe = locale === "de";
+  const ui = isTr ? inboxCopy.tr : isDe ? inboxCopy.de : inboxCopy.en;
 
   useEffect(() => {
     let cancelled = false;
@@ -53,9 +55,7 @@ function CreatorInboxPage() {
           setError(
             loadError instanceof Error
               ? loadError.message
-              : isTr
-                ? "Mesajlar yüklenemedi."
-                : "Messages could not be loaded.",
+              : ui.loadError,
           );
         }
       } finally {
@@ -305,15 +305,13 @@ function CreatorInboxPage() {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-[12px] font-black uppercase tracking-[0.18em] text-primary">
-              {isTr ? "Soru mu İtiraf mı?" : "Question or Confession?"}
+              {ui.product}
             </p>
             <h1 className="mt-2 text-[36px] font-black tracking-[-0.055em] sm:text-[48px]">
-              {isTr ? "Anonim Gelen Kutusu" : "Anonymous Inbox"}
+              {ui.title}
             </h1>
             <p className="mt-3 max-w-[650px] text-[16px] font-medium leading-7 text-muted-foreground">
-              {isTr
-                ? "Takipçilerin sana anonim soru veya itiraf bırakır. İstediğini seç, cevabı görsel olarak paylaş ve yorumunu paylaşım ekranında kendin ekle."
-                : "Followers leave anonymous questions or confessions. Pick one, share the answer as an image, and add your own comment in the share screen."}
+              {ui.intro}
             </p>
           </div>
 
@@ -321,36 +319,36 @@ function CreatorInboxPage() {
             to="/question-confession-builder"
             className="inline-flex h-12 items-center justify-center rounded-full bg-black px-6 text-[14px] font-black text-white"
           >
-            {isTr ? "Anonim link oluştur +" : "Create anonymous link +"}
+            {ui.createLink} +
           </Link>
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-3 sm:max-w-[430px]">
-          <StatCard label={isTr ? "Sorular" : "Questions"} value={questionCount} />
-          <StatCard label={isTr ? "İtiraflar" : "Confessions"} value={confessionCount} />
+          <StatCard label={ui.questions} value={questionCount} />
+          <StatCard label={ui.confessions} value={confessionCount} />
         </div>
 
         <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
           <FilterButton active={filter === "all"} onClick={() => setFilter("all")}>
-            {isTr ? "Tümü" : "All"} · {items.length}
+            {ui.all} · {items.length}
           </FilterButton>
           <FilterButton active={filter === "question"} onClick={() => setFilter("question")}>
-            {isTr ? "Sorular" : "Questions"} · {questionCount}
+            {ui.questions} · {questionCount}
           </FilterButton>
           <FilterButton active={filter === "confession"} onClick={() => setFilter("confession")}>
-            {isTr ? "İtiraflar" : "Confessions"} · {confessionCount}
+            {ui.confessions} · {confessionCount}
           </FilterButton>
         </div>
 
         {error ? (
           <div className="mt-6 rounded-[24px] border border-rose-200 bg-rose-50 p-5">
             <p className="text-[14px] font-black text-rose-800">
-              {isTr ? "Gelen kutusu açılamadı" : "Inbox could not be opened"}
+              {ui.openError}
             </p>
             <p className="mt-2 text-[14px] leading-6 text-rose-700">{error}</p>
           </div>
         ) : filtered.length === 0 ? (
-          <EmptyState hasExperiences={items.length > 0} isTr={isTr} />
+          <EmptyState hasExperiences={items.length > 0} copy={ui} />
         ) : (
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             {filtered.map((item) => (
@@ -461,33 +459,23 @@ function FilterButton({
   );
 }
 
-function EmptyState({
-  hasExperiences,
-  isTr,
-}: {
-  hasExperiences: boolean;
-  isTr: boolean;
-}) {
+function EmptyState({ hasExperiences, copy }: { hasExperiences: boolean; copy: typeof inboxCopy.en }) {
   return (
     <div className="mt-5 rounded-[30px] border border-dashed border-violet-200 bg-white px-5 py-14 text-center">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-violet-100 text-[24px]">
         ?
       </div>
       <h2 className="mt-5 text-[24px] font-black tracking-[-0.04em]">
-        {hasExperiences
-          ? isTr ? "Bu filtrede mesaj yok." : "No messages in this filter."
-          : isTr ? "Henüz anonim mesaj yok." : "No anonymous messages yet."}
+        {hasExperiences ? copy.emptyFilter : copy.empty}
       </h2>
       <p className="mx-auto mt-3 max-w-[440px] text-[14px] leading-6 text-muted-foreground">
-        {isTr
-          ? "Anonim linkini paylaş. İlk soru veya itiraf geldiğinde burada görünecek."
-          : "Share your anonymous link. New questions and confessions will appear here."}
+        {copy.emptyDesc}
       </p>
       <Link
         to="/question-confession-builder"
         className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-violet-600 px-6 text-[14px] font-black text-white"
       >
-        {isTr ? "Anonim link oluştur →" : "Create anonymous link →"}
+        {copy.createLink} →
       </Link>
     </div>
   );
@@ -525,3 +513,9 @@ function formatTime(value: string, locale: string) {
     minute: "2-digit",
   }).format(date);
 }
+
+const inboxCopy = {
+  tr: { product:"Soru mu İtiraf mı?", title:"Anonim Gelen Kutusu", intro:"Takipçilerin sana anonim soru veya itiraf bırakır. İstediğini seç, cevabı görsel olarak paylaş.", createLink:"Anonim link oluştur", questions:"Sorular", confessions:"İtiraflar", all:"Tümü", openError:"Gelen kutusu açılamadı", loadError:"Mesajlar yüklenemedi.", emptyFilter:"Bu filtrede mesaj yok.", empty:"Henüz anonim mesaj yok.", emptyDesc:"Anonim linkini paylaş. İlk soru veya itiraf geldiğinde burada görünecek." },
+  en: { product:"Question or Confession?", title:"Anonymous Inbox", intro:"Followers can leave anonymous questions or confessions. Pick one and share your answer as an image.", createLink:"Create anonymous link", questions:"Questions", confessions:"Confessions", all:"All", openError:"Inbox could not be opened", loadError:"Messages could not be loaded.", emptyFilter:"No messages in this filter.", empty:"No anonymous messages yet.", emptyDesc:"Share your anonymous link. New questions and confessions will appear here." },
+  de: { product:"Frage oder Geständnis?", title:"Anonymer Posteingang", intro:"Deine Follower können dir anonyme Fragen oder Geständnisse schicken. Wähle eine Nachricht aus und teile deine Antwort als Bild.", createLink:"Anonymen Link erstellen", questions:"Fragen", confessions:"Geständnisse", all:"Alle", openError:"Posteingang konnte nicht geöffnet werden", loadError:"Nachrichten konnten nicht geladen werden.", emptyFilter:"Keine Nachrichten in diesem Filter.", empty:"Noch keine anonymen Nachrichten.", emptyDesc:"Teile deinen anonymen Link. Neue Fragen und Geständnisse erscheinen hier." }
+} as const;
