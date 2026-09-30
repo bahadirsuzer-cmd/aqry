@@ -56,10 +56,23 @@ export const Route = createFileRoute("/")({
     ],
 
     links: [
-      {
-        rel: "canonical",
-        href: "https://aqryo.com/",
-      },
+      { rel: "canonical", href: "https://aqryo.com/" },
+      { rel: "alternate", hrefLang: "x-default", href: "https://aqryo.com/" },
+      { rel: "alternate", hrefLang: "tr", href: "https://aqryo.com/?lang=tr" },
+      { rel: "alternate", hrefLang: "en", href: "https://aqryo.com/?lang=en" },
+      { rel: "alternate", hrefLang: "es", href: "https://aqryo.com/?lang=es" },
+      { rel: "alternate", hrefLang: "pt", href: "https://aqryo.com/?lang=pt" },
+      { rel: "alternate", hrefLang: "fr", href: "https://aqryo.com/?lang=fr" },
+      { rel: "alternate", hrefLang: "de", href: "https://aqryo.com/?lang=de" },
+      { rel: "alternate", hrefLang: "it", href: "https://aqryo.com/?lang=it" },
+      { rel: "alternate", hrefLang: "ar", href: "https://aqryo.com/?lang=ar" },
+      { rel: "alternate", hrefLang: "hi", href: "https://aqryo.com/?lang=hi" },
+      { rel: "alternate", hrefLang: "id", href: "https://aqryo.com/?lang=id" },
+      { rel: "alternate", hrefLang: "ru", href: "https://aqryo.com/?lang=ru" },
+      { rel: "alternate", hrefLang: "bn", href: "https://aqryo.com/?lang=bn" },
+      { rel: "alternate", hrefLang: "ur", href: "https://aqryo.com/?lang=ur" },
+      { rel: "alternate", hrefLang: "vi", href: "https://aqryo.com/?lang=vi" },
+      { rel: "alternate", hrefLang: "fil", href: "https://aqryo.com/?lang=fil" },
     ],
 
     scripts: [
