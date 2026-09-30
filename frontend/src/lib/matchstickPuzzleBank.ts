@@ -58,7 +58,7 @@ function matchstickDiagram(value:string){
     }).join("");
     return `<g transform="translate(${x} 78)">${lines}</g>`;
   }).join("");
-  return `<rect x="18" y="38" width="324" height="204" rx="22" fill="rgba(35,20,12,.88)" stroke="rgba(255,255,255,.75)" stroke-width="2"/>${digits}`;
+  return digits;
 }
 export const MATCHSTICK_FAMILIES: Family[] = [
   {id:"matchstick_largest_one",kind:"matchstick",make:(r)=>makePuzzle(r,"largest")},
