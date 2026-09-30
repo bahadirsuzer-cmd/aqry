@@ -12,6 +12,8 @@ export type AdminSection =
   | "orders"
   | "payouts"
   | "creators"
+  | "subscriptions"
+  | "support"
   | "homepage"
   | "announcements";
 
@@ -50,6 +52,14 @@ const ITEMS: Array<{
   {
     key: "creators",
     label: "Creator’lar",
+  },
+  {
+    key: "subscriptions",
+    label: "Abonelikler",
+  },
+  {
+    key: "support",
+    label: "Destek / İade",
   },
   {
     key: "homepage",
