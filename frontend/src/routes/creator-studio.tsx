@@ -125,7 +125,9 @@ function CreatorStudioPage() {
   );
 }
 
-function StudioChoice({ href, label, title, description, icon, variant }: { href: string; label: string; title: string; description: string; icon: string; variant: "dark" | "purple" | "light" }) {\n  const { t } = useAqryoLocale();\n  const variantClass = variant === "dark" ? "bg-[#17101f] text-white" : variant === "purple" ? "bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white" : "bg-white text-foreground";
+function StudioChoice({ href, label, title, description, icon, variant }: { href: string; label: string; title: string; description: string; icon: string; variant: "dark" | "purple" | "light" }) {
+  const { t } = useAqryoLocale();
+  const variantClass = variant === "dark" ? "bg-[#17101f] text-white" : variant === "purple" ? "bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white" : "bg-white text-foreground";
   return (
     <Link
       to={href}
