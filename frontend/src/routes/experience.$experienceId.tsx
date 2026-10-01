@@ -780,7 +780,9 @@ useEffect(() => {
   function confirmCompletion() {
     if (!experience) return;
 
-    setScreen("completion");
+    if (experience.type !== "story") {
+      setScreen("completion");
+    }
 
     if (completionSavedRef.current) return;
     completionSavedRef.current = true;
@@ -1044,9 +1046,6 @@ useEffect(() => {
 
           {screen === "result" ? (
             <>
-              <ExperienceFeedbackCard
-                experienceId={experience.id}
-              />
               <a
                 href="/"
                 className="mt-4 flex h-12 w-full items-center justify-center rounded-full bg-black px-5 text-[13px] font-black text-white shadow-[0_10px_28px_rgba(0,0,0,0.10)]"
@@ -1100,17 +1099,6 @@ useEffect(() => {
 />
           )}
 
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={() =>
-                setReportDialogOpen(true)
-              }
-              className="text-[9px] font-bold text-muted-foreground underline decoration-border underline-offset-4 transition hover:text-foreground"
-            >
-              İçeriği bildir
-            </button>
-          </div>
         </div>
       </main>
 
