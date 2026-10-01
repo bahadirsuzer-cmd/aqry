@@ -1269,7 +1269,7 @@ function StoryBuilderPage() {
                 <FieldLabel className="mt-5">Kapak görseli</FieldLabel>
                 <label className="mt-2 flex min-h-[88px] cursor-pointer items-center justify-between gap-4 rounded-[18px] border border-dashed border-teal-200 bg-teal-50/40 p-4">
                   <div>
-                    <p className="text-[15px] font-black">{uploadingId === "cover" ? "Yükleniyor..." : state.coverImageUrl ? "{ui.changeCover}" : "{ui.uploadCover}"}</p>
+                    <p className="text-[15px] font-black">{uploadingId === "cover" ? "Yükleniyor..." : state.coverImageUrl ? ui.changeCover : ui.uploadCover}</p>
                     <p className="mt-1 text-[15px] text-muted-foreground">JPG veya PNG · en fazla 8 MB</p>
                   </div>
                   <span className="text-[18px] font-black text-teal-600">↑</span>
@@ -1287,7 +1287,7 @@ function StoryBuilderPage() {
                 </label>
               </BuilderSection>
 
-              <BuilderSection eyebrow="2 · Akış" title="{ui.arrange}" description="{ui.arrangeHint}">
+              <BuilderSection eyebrow="2 · Akış" title={ui.arrange} description={ui.arrangeHint}>
                 <div className="space-y-3">
                   {state.items.map((item, index) => (
                     <div key={item.id} className="rounded-[20px] border border-border bg-background p-4">
@@ -1333,7 +1333,7 @@ function StoryBuilderPage() {
           ) : null}
 
           {activePanel === "result" ? (
-            <BuilderSection eyebrow="3 · Sonuç" title="{ui.freeFinal}" description="{ui.freeFinalHint}">
+            <BuilderSection eyebrow="3 · Sonuç" title={ui.freeFinal} description={ui.freeFinalHint}>
               <FieldLabel>Başlık</FieldLabel>
               <input value={state.resultTitle} onChange={(event) => setState((current) => ({ ...current, resultTitle: event.target.value }))} className="mt-2 h-12 w-full rounded-[16px] border border-border bg-background px-4 text-[13px] font-bold outline-none focus:border-teal-300" />
               <FieldLabel className="mt-5">Açıklama</FieldLabel>
@@ -1342,7 +1342,7 @@ function StoryBuilderPage() {
           ) : null}
 
           {activePanel === "preview" ? (
-            <BuilderSection eyebrow="3 · Önizleme" title="{ui.previewTitle}" description="{ui.previewHint}">
+            <BuilderSection eyebrow="3 · Önizleme" title={ui.previewTitle} description={ui.previewHint}>
               <div className="rounded-[18px] border border-border bg-background p-4">
                 <p className="text-[15px] font-black">Hazırsan sağdaki önizlemeden başlat.</p>
                 <p className="mt-1 text-[13px] leading-6 text-muted-foreground">Akışı ve final ekranını ziyaretçinin göreceği haliyle kontrol edeceksin.</p>
@@ -1355,13 +1355,13 @@ function StoryBuilderPage() {
             {activePanel !== "preview" ? (
               <button type="button" onClick={goNext} className="h-11 rounded-full bg-black px-7 text-[15px] font-black text-white hover:bg-teal-600">Sonraki →</button>
             ) : (
-              <button type="button" disabled={!canContinue || publishing} onClick={() => void publishStory()} className="h-11 rounded-full bg-black px-7 text-[15px] font-black text-white enabled:hover:bg-teal-600 disabled:opacity-25">{publishing ? "{ui.publishing}" : state.sourceExperienceId ? "{ui.publishNew}" : "Yayınla"}</button>
+              <button type="button" disabled={!canContinue || publishing} onClick={() => void publishStory()} className="h-11 rounded-full bg-black px-7 text-[15px] font-black text-white enabled:hover:bg-teal-600 disabled:opacity-25">{publishing ? ui.publishing : state.sourceExperienceId ? ui.publishNew : "Yayınla"}</button>
             )}
           </div>
         </section>
 
         <aside className="border-t border-border px-4 py-6 lg:sticky lg:top-[122px] lg:h-[calc(100vh-122px)] lg:self-start lg:overflow-y-auto lg:border-l lg:border-t-0 sm:px-6">
-          <p className="mb-3 text-[15px] font-black uppercase tracking-[0.15em] text-muted-foreground">{activePanel === "preview" ? "{ui.realExperience}" : "{ui.livePreview}"}</p>
+          <p className="mb-3 text-[15px] font-black uppercase tracking-[0.15em] text-muted-foreground">{activePanel === "preview" ? {ui.realExperience} : {ui.livePreview}}</p>
           <div className="overflow-hidden rounded-[28px] border border-border bg-white shadow-[0_18px_55px_rgba(22,12,34,0.06)]">
             {activePanel === "preview" ? (
               <div className="p-5">
