@@ -1,59 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LegalPageLayout } from "@/components/legal/LegalPageLayout";
+import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
 
-export const Route = createFileRoute("/contact")({
-    component: ContactPage,
-});
-
-function ContactPage() {
-    return (
-        <LegalPageLayout
-            title="İletişim"
-            description="AQRYO ile ilgili destek, ödeme, iade ve yasal talepleriniz için bizimle iletişime geçebilirsiniz."
-            sections={[
-                {
-                    title: "Şirket bilgileri",
-                    content: (
-                        <p>
-                            <strong>Ticari Unvan:</strong>{" "}
-                            BUUME Bilişim Teknoloji Reklamcılık Anonim Şirketi
-                            <br />
-                            <strong>Marka:</strong> AQRYO
-                            <br />
-                            <strong>Merkez Adresi:</strong>{" "}
-                            Büyükesat Mahallesi Koza 1 Caddesi No: 153/4 Çankaya / Ankara
-                            <br />
-                            <strong>E-posta:</strong>{" "}
-                            <a href="mailto:hey@buum-e.com">hey@buum-e.com</a>
-                            <br />
-                            <strong>Telefon:</strong>{" "}
-                            <a href="tel:+905412914935">0541 291 49 35</a>
-                            <br />
-                            <strong>Web:</strong> www.aqryo.com
-                        </p>
-                    ),
-                },
-                {
-                    title: "Destek",
-                    content: (
-                        <p>
-                            Hesap, Experience, ödeme, Gift, dijital içerik, teknik sorun veya
-                            iade talepleriniz için hey@buum-e.com adresi üzerinden bizimle
-                            iletişime geçebilirsiniz.
-                        </p>
-                    ),
-                },
-                {
-                    title: "Kişisel veriler ve yasal talepler",
-                    content: (
-                        <p>
-                            Kişisel verilerin korunması, gizlilik ve diğer yasal konulara
-                            ilişkin başvurularınızı hey@buum-e.com adresine
-                            gönderebilirsiniz.
-                        </p>
-                    ),
-                },
-            ]}
-        />
-    );
-}
+export const Route = createFileRoute("/contact")({ component: ContactPage });
+type C={title:string;description:string;company:string;labels:string[];support:string;supportText:string;legal:string;legalText:string;collab:string;collabText:string};
+const COPY:Record<AqryoLocale,C>={
+tr:{title:"İletişim",description:"AQRYO hakkında destek, hesap, ödeme, iade, iş birliği veya yasal konular için bize ulaşabilirsin.",company:"Şirket bilgileri",labels:["Ticari Unvan","Marka","Merkez Adresi","E-posta","Telefon","Web"],support:"Destek",supportText:"Hesabın, oluşturduğun içerikler, teknik bir sorun, ödeme veya iade konusunda yardıma ihtiyacın varsa hey@buum-e.com adresinden bize ulaşabilirsin.",legal:"Gizlilik ve yasal talepler",legalText:"Kişisel veriler, gizlilik veya diğer yasal talepler için hey@buum-e.com adresine yazabilirsin.",collab:"İş birliği",collabText:"Creator, marka veya iş ortaklığı tekliflerini hey@buum-e.com adresine gönderebilirsin."},
+en:{title:"Contact",description:"Contact AQRYO for support, account, payment, refund, partnership or legal matters.",company:"Company information",labels:["Legal name","Brand","Registered address","Email","Phone","Web"],support:"Support",supportText:"For help with your account, content, technical issues, payments or refunds, email us at hey@buum-e.com.",legal:"Privacy and legal requests",legalText:"For personal data, privacy or other legal requests, email hey@buum-e.com.",collab:"Partnerships",collabText:"Creators, brands and potential partners can send collaboration proposals to hey@buum-e.com."},
+de:{title:"Kontakt",description:"Kontaktiere AQRYO bei Fragen zu Support, Konto, Zahlung, Erstattung, Kooperationen oder rechtlichen Themen.",company:"Unternehmensinformationen",labels:["Firmenname","Marke","Geschäftsanschrift","E-Mail","Telefon","Web"],support:"Support",supportText:"Bei Fragen zu deinem Konto, Inhalten, technischen Problemen, Zahlungen oder Erstattungen erreichst du uns unter hey@buum-e.com.",legal:"Datenschutz und rechtliche Anfragen",legalText:"Anfragen zu personenbezogenen Daten, Datenschutz oder anderen rechtlichen Themen kannst du an hey@buum-e.com senden.",collab:"Kooperationen",collabText:"Creator, Marken und mögliche Partner können Kooperationsanfragen an hey@buum-e.com senden."},
+es:{title:"Contacto",description:"Contacta con AQRYO para soporte, cuenta, pagos, reembolsos, colaboraciones o asuntos legales.",company:"Información de la empresa",labels:["Razón social","Marca","Domicilio social","Correo electrónico","Teléfono","Web"],support:"Soporte",supportText:"Si necesitas ayuda con tu cuenta, contenido, problemas técnicos, pagos o reembolsos, escríbenos a hey@buum-e.com.",legal:"Privacidad y solicitudes legales",legalText:"Para solicitudes sobre datos personales, privacidad u otros asuntos legales, escribe a hey@buum-e.com.",collab:"Colaboraciones",collabText:"Creadores, marcas y posibles socios pueden enviar propuestas a hey@buum-e.com."},
+pt:{title:"Contato",description:"Fale com a AQRYO sobre suporte, conta, pagamentos, reembolsos, parcerias ou assuntos legais.",company:"Informações da empresa",labels:["Razão social","Marca","Endereço registrado","E-mail","Telefone","Web"],support:"Suporte",supportText:"Para ajuda com conta, conteúdo, problemas técnicos, pagamentos ou reembolsos, escreva para hey@buum-e.com.",legal:"Privacidade e solicitações legais",legalText:"Para questões de dados pessoais, privacidade ou outros assuntos legais, escreva para hey@buum-e.com.",collab:"Parcerias",collabText:"Creators, marcas e potenciais parceiros podem enviar propostas para hey@buum-e.com."},
+fr:{title:"Contact",description:"Contactez AQRYO pour toute question de support, compte, paiement, remboursement, partenariat ou sujet juridique.",company:"Informations sur l’entreprise",labels:["Raison sociale","Marque","Adresse du siège","E-mail","Téléphone","Web"],support:"Assistance",supportText:"Pour votre compte, vos contenus, un problème technique, un paiement ou un remboursement, écrivez à hey@buum-e.com.",legal:"Confidentialité et demandes juridiques",legalText:"Pour les données personnelles, la confidentialité ou toute autre demande juridique, écrivez à hey@buum-e.com.",collab:"Partenariats",collabText:"Créateurs, marques et partenaires potentiels peuvent envoyer leurs propositions à hey@buum-e.com."},
+it:{title:"Contatti",description:"Contatta AQRYO per assistenza, account, pagamenti, rimborsi, collaborazioni o questioni legali.",company:"Informazioni societarie",labels:["Ragione sociale","Marchio","Sede legale","E-mail","Telefono","Web"],support:"Assistenza",supportText:"Per account, contenuti, problemi tecnici, pagamenti o rimborsi scrivi a hey@buum-e.com.",legal:"Privacy e richieste legali",legalText:"Per dati personali, privacy o altre richieste legali scrivi a hey@buum-e.com.",collab:"Collaborazioni",collabText:"Creator, brand e potenziali partner possono inviare proposte a hey@buum-e.com."},
+ar:{title:"اتصل بنا",description:"تواصل مع AQRYO للدعم أو الحساب أو الدفع أو الاسترداد أو التعاون أو المسائل القانونية.",company:"معلومات الشركة",labels:["الاسم القانوني","العلامة التجارية","العنوان المسجل","البريد الإلكتروني","الهاتف","الموقع"],support:"الدعم",supportText:"للمساعدة بشأن الحساب أو المحتوى أو المشاكل التقنية أو الدفع أو الاسترداد، راسلنا على hey@buum-e.com.",legal:"الخصوصية والطلبات القانونية",legalText:"لطلبات البيانات الشخصية أو الخصوصية أو المسائل القانونية، راسل hey@buum-e.com.",collab:"التعاون",collabText:"يمكن لصنّاع المحتوى والعلامات التجارية والشركاء المحتملين إرسال مقترحاتهم إلى hey@buum-e.com."},
+hi:{title:"संपर्क",description:"सहायता, अकाउंट, भुगतान, रिफंड, साझेदारी या कानूनी विषयों के लिए AQRYO से संपर्क करें।",company:"कंपनी की जानकारी",labels:["कानूनी नाम","ब्रांड","पंजीकृत पता","ईमेल","फ़ोन","वेब"],support:"सहायता",supportText:"अकाउंट, कंटेंट, तकनीकी समस्या, भुगतान या रिफंड के लिए hey@buum-e.com पर लिखें।",legal:"गोपनीयता और कानूनी अनुरोध",legalText:"व्यक्तिगत डेटा, गोपनीयता या अन्य कानूनी अनुरोधों के लिए hey@buum-e.com पर लिखें।",collab:"साझेदारी",collabText:"क्रिएटर, ब्रांड और संभावित साझेदार hey@buum-e.com पर प्रस्ताव भेज सकते हैं।"},
+id:{title:"Kontak",description:"Hubungi AQRYO untuk dukungan, akun, pembayaran, pengembalian dana, kemitraan, atau urusan hukum.",company:"Informasi perusahaan",labels:["Nama resmi","Merek","Alamat terdaftar","Email","Telepon","Web"],support:"Dukungan",supportText:"Untuk bantuan akun, konten, masalah teknis, pembayaran, atau pengembalian dana, email hey@buum-e.com.",legal:"Privasi dan permintaan hukum",legalText:"Untuk data pribadi, privasi, atau permintaan hukum lainnya, email hey@buum-e.com.",collab:"Kemitraan",collabText:"Kreator, merek, dan calon mitra dapat mengirim proposal ke hey@buum-e.com."},
+ru:{title:"Контакты",description:"Свяжитесь с AQRYO по вопросам поддержки, аккаунта, оплаты, возврата, сотрудничества или права.",company:"Информация о компании",labels:["Юридическое название","Бренд","Юридический адрес","Эл. почта","Телефон","Сайт"],support:"Поддержка",supportText:"По вопросам аккаунта, контента, технических проблем, оплаты или возврата пишите на hey@buum-e.com.",legal:"Конфиденциальность и юридические запросы",legalText:"По вопросам персональных данных, конфиденциальности и другим юридическим запросам пишите на hey@buum-e.com.",collab:"Сотрудничество",collabText:"Авторы, бренды и потенциальные партнёры могут отправлять предложения на hey@buum-e.com."},
+bn:{title:"যোগাযোগ",description:"সহায়তা, অ্যাকাউন্ট, পেমেন্ট, রিফান্ড, অংশীদারিত্ব বা আইনি বিষয়ে AQRYO-এর সঙ্গে যোগাযোগ করুন।",company:"কোম্পানির তথ্য",labels:["আইনি নাম","ব্র্যান্ড","নিবন্ধিত ঠিকানা","ইমেইল","ফোন","ওয়েব"],support:"সহায়তা",supportText:"অ্যাকাউন্ট, কনটেন্ট, প্রযুক্তিগত সমস্যা, পেমেন্ট বা রিফান্ডের জন্য hey@buum-e.com-এ লিখুন।",legal:"গোপনীয়তা ও আইনি অনুরোধ",legalText:"ব্যক্তিগত তথ্য, গোপনীয়তা বা অন্যান্য আইনি অনুরোধের জন্য hey@buum-e.com-এ লিখুন।",collab:"অংশীদারিত্ব",collabText:"ক্রিয়েটর, ব্র্যান্ড ও সম্ভাব্য অংশীদাররা hey@buum-e.com-এ প্রস্তাব পাঠাতে পারেন।"},
+ur:{title:"رابطہ",description:"مدد، اکاؤنٹ، ادائیگی، ریفنڈ، شراکت داری یا قانونی امور کے لیے AQRYO سے رابطہ کریں۔",company:"کمپنی کی معلومات",labels:["قانونی نام","برانڈ","رجسٹرڈ پتہ","ای میل","فون","ویب"],support:"مدد",supportText:"اکاؤنٹ، مواد، تکنیکی مسئلے، ادائیگی یا ریفنڈ کے لیے hey@buum-e.com پر لکھیں۔",legal:"رازداری اور قانونی درخواستیں",legalText:"ذاتی ڈیٹا، رازداری یا دیگر قانونی درخواستوں کے لیے hey@buum-e.com پر لکھیں۔",collab:"شراکت داری",collabText:"کریئیٹرز، برانڈز اور ممکنہ شراکت دار hey@buum-e.com پر تجاویز بھیج سکتے ہیں۔"},
+vi:{title:"Liên hệ",description:"Liên hệ AQRYO về hỗ trợ, tài khoản, thanh toán, hoàn tiền, hợp tác hoặc vấn đề pháp lý.",company:"Thông tin công ty",labels:["Tên pháp lý","Thương hiệu","Địa chỉ đăng ký","Email","Điện thoại","Web"],support:"Hỗ trợ",supportText:"Nếu cần hỗ trợ về tài khoản, nội dung, kỹ thuật, thanh toán hoặc hoàn tiền, hãy viết tới hey@buum-e.com.",legal:"Quyền riêng tư và yêu cầu pháp lý",legalText:"Với dữ liệu cá nhân, quyền riêng tư hoặc yêu cầu pháp lý khác, hãy viết tới hey@buum-e.com.",collab:"Hợp tác",collabText:"Nhà sáng tạo, thương hiệu và đối tác tiềm năng có thể gửi đề xuất tới hey@buum-e.com."},
+fil:{title:"Makipag-ugnayan",description:"Makipag-ugnayan sa AQRYO para sa support, account, payment, refund, partnership, o legal na usapin.",company:"Impormasyon ng kumpanya",labels:["Legal na pangalan","Brand","Rehistradong address","Email","Telepono","Web"],support:"Support",supportText:"Para sa account, content, technical issue, payment, o refund, mag-email sa hey@buum-e.com.",legal:"Privacy at legal requests",legalText:"Para sa personal data, privacy, o ibang legal request, mag-email sa hey@buum-e.com.",collab:"Partnerships",collabText:"Maaaring magpadala ang creators, brands, at potential partners ng proposal sa hey@buum-e.com."}
+};
+function ContactPage(){const {locale}=useAqryoLocale();const x=COPY[locale];const company=<p><strong>{x.labels[0]}:</strong> BUUME Bilişim Teknoloji Reklamcılık Anonim Şirketi<br/><strong>{x.labels[1]}:</strong> AQRYO<br/><strong>{x.labels[2]}:</strong> Büyükesat Mahallesi Koza 1 Caddesi No: 153/4 Çankaya / Ankara<br/><strong>{x.labels[3]}:</strong> <a href="mailto:hey@buum-e.com">hey@buum-e.com</a><br/><strong>{x.labels[4]}:</strong> <a href="tel:+905412914935">0541 291 49 35</a><br/><strong>{x.labels[5]}:</strong> aqryo.com</p>;return <LegalPageLayout title={x.title} description={x.description} sections={[{title:x.company,content:company},{title:x.support,content:<p>{x.supportText}</p>},{title:x.legal,content:<p>{x.legalText}</p>},{title:x.collab,content:<p>{x.collabText}</p>}]}/>;}
