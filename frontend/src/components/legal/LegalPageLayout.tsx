@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { PublicNavigation } from "@/components/home/PublicNavigation";
 import { HomeFooter } from "@/components/home/HomeFooter";
+import { useAqryoLocale } from "@/lib/i18n";
 
 interface LegalSection {
   title: string;
@@ -19,6 +20,8 @@ export function LegalPageLayout({
   description,
   sections,
 }: LegalPageLayoutProps) {
+  const { locale } = useAqryoLocale();
+  const ui = locale === "tr" ? { onPage:"Bu sayfada", contact:"İletişim", contactText:"Yasal, ödeme, iade veya hesapla ilgili talepleriniz için", or:"adresinden veya", via:"numarasından bize ulaşabilirsiniz.", home:"AQRYO ana sayfasına dön" } : locale === "de" ? { onPage:"Auf dieser Seite", contact:"Kontakt", contactText:"Bei Fragen zu Rechtlichem, Zahlung, Erstattung oder deinem Konto erreichst du uns unter", or:"oder unter", via:".", home:"Zur AQRYO-Startseite" } : { onPage:"On this page", contact:"Contact", contactText:"For legal, payment, refund or account requests, contact us at", or:"or", via:".", home:"Back to AQRYO home" };
   return (
     <div className="min-h-screen bg-white text-foreground">
       <PublicNavigation />
@@ -41,7 +44,7 @@ export function LegalPageLayout({
             <aside className="hidden lg:block">
               <div className="sticky top-24 rounded-[22px] border border-border bg-white p-4">
                 <p className="text-[10px] font-black">
-                  Bu sayfada
+                  {ui.onPage}
                 </p>
 
                 <nav className="mt-3 flex flex-col gap-2">
@@ -77,12 +80,11 @@ export function LegalPageLayout({
 
               <div className="rounded-[22px] border border-border bg-background p-5">
                 <p className="text-[11px] font-black">
-                  İletişim
+                  {ui.contact}
                 </p>
 
                 <p className="mt-2 text-[10px] leading-5 text-muted-foreground">
-                  Yasal, ödeme, iade veya hesapla ilgili talepleriniz için
-                  {" "}
+                  {ui.contactText}{" "}
                   <a
                     href="mailto:hey@buum-e.com"
                     className="font-semibold text-primary"
@@ -90,8 +92,7 @@ export function LegalPageLayout({
                     hey@buum-e.com
                   </a>
                   {" "}
-                  adresinden veya
-                  {" "}
+                  {ui.or}{" "}
                   <a
                     href="tel:+905412914935"
                     className="font-semibold text-primary"
@@ -99,14 +100,14 @@ export function LegalPageLayout({
                     0541 291 49 35
                   </a>
                   {" "}
-                  numarasından bize ulaşabilirsiniz.
+                  {ui.via}
                 </p>
 
                 <Link
                   to="/"
                   className="mt-4 inline-flex text-[10px] font-black text-primary"
                 >
-                  AQRYO ana sayfasına dön →
+                  {ui.home} →
                 </Link>
               </div>
             </div>
