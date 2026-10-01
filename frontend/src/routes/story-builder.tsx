@@ -1361,7 +1361,7 @@ function StoryBuilderPage() {
         </section>
 
         <aside className="border-t border-border px-4 py-6 lg:sticky lg:top-[122px] lg:h-[calc(100vh-122px)] lg:self-start lg:overflow-y-auto lg:border-l lg:border-t-0 sm:px-6">
-          <p className="mb-3 text-[15px] font-black uppercase tracking-[0.15em] text-muted-foreground">{activePanel === "preview" ? {ui.realExperience} : {ui.livePreview}}</p>
+          <p className="mb-3 text-[15px] font-black uppercase tracking-[0.15em] text-muted-foreground">{activePanel === "preview" ? ui.realExperience : ui.livePreview}</p>
           <div className="overflow-hidden rounded-[28px] border border-border bg-white shadow-[0_18px_55px_rgba(22,12,34,0.06)]">
             {activePanel === "preview" ? (
               <div className="p-5">
