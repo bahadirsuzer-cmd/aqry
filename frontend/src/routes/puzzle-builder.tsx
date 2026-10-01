@@ -1021,16 +1021,6 @@ function PuzzleBuilderPage() {
     <main className="min-h-screen bg-[#f7f5fb] text-foreground">
       <CreatorNavigation onSignOut={async()=>{await signOutCreator();window.location.href="/creator-auth";}}/>
 
-      <header className="border-b border-border bg-white">
-        <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-4 py-5 sm:px-6">
-          <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-violet-600">{t("puzzleEngine")}</p>
-            <h1 className="mt-1 text-[30px] font-black tracking-[-0.055em]">{t("puzzle")}</h1>
-          </div>
-
-        </div>
-      </header>
-
       <div className="mx-auto max-w-[980px] px-4 py-6 sm:px-6 lg:py-9">
         <section className="space-y-5">
           <div ref={previewRef} className="scroll-mt-32">
