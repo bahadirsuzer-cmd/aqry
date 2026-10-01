@@ -8,7 +8,7 @@ export const Route = createFileRoute(
 )({
   beforeLoad: () => {
     throw redirect({
-      to: "/creator-inbox",
+      to: "/",
     });
   },
 });
