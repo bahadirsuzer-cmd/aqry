@@ -759,6 +759,29 @@ function ctaFor(locale: AqryoLocale, puzzle: Puzzle) {
   return `${headlineFor(locale,puzzle)} · ${subtitleFor(locale,puzzle.kind,copy)}`;
 }
 
+const ACCESS_LABELS: Record<AqryoLocale, { free: string; limited: string }> = {
+  tr: { free: "Ücretsiz", limited: "Sınırlı süre ücretsiz" },
+  en: { free: "Free", limited: "Free for a limited time" },
+  es: { free: "Gratis", limited: "Gratis por tiempo limitado" },
+  pt: { free: "Grátis", limited: "Grátis por tempo limitado" },
+  fr: { free: "Gratuit", limited: "Gratuit pour une durée limitée" },
+  de: { free: "Kostenlos", limited: "Für kurze Zeit kostenlos" },
+  it: { free: "Gratis", limited: "Gratis per un periodo limitato" },
+  ar: { free: "مجاني", limited: "مجاني لفترة محدودة" },
+  hi: { free: "मुफ़्त", limited: "सीमित समय के लिए मुफ़्त" },
+  id: { free: "Gratis", limited: "Gratis untuk waktu terbatas" },
+  ru: { free: "Бесплатно", limited: "Бесплатно ограниченное время" },
+  bn: { free: "বিনামূল্যে", limited: "সীমিত সময়ের জন্য বিনামূল্যে" },
+  ur: { free: "مفت", limited: "محدود وقت کے لیے مفت" },
+  vi: { free: "Miễn phí", limited: "Miễn phí trong thời gian giới hạn" },
+  fil: { free: "Libre", limited: "Libre sa limitadong panahon" },
+};
+
+function accessLabelFor(locale: AqryoLocale, kind: PuzzleKind) {
+  const labels = ACCESS_LABELS[locale] ?? ACCESS_LABELS.en;
+  return kind === "count" || kind === "pattern" || kind === "matchstick" ? labels.limited : labels.free;
+}
+
 function PuzzleBuilderPage() {
   const { locale, t } = useAqryoLocale();
   const copy = COPY[locale] ?? COPY.en;
@@ -971,13 +994,13 @@ function PuzzleBuilderPage() {
 
   if(loading) return <LoadingScreen/>;
 
-  const kinds:Array<[PuzzleKind,string,string]> = [
-    ["math",t("math"),copy.descriptions.math],
-    ["geometry",t("geometry"),copy.descriptions.geometry],
-    ["count",t("count"),copy.descriptions.count],
-    ["algebra",t("algebra"),copy.descriptions.algebra],
-    ["pattern",patternCopy(locale).label,patternCopy(locale).description],
-    ["matchstick",matchstickCopy(locale).label,matchstickCopy(locale).description],
+  const kinds:Array<[PuzzleKind,string,string,string]> = [
+    ["math",t("math"),copy.descriptions.math,accessLabelFor(locale,"math")],
+    ["geometry",t("geometry"),copy.descriptions.geometry,accessLabelFor(locale,"geometry")],
+    ["count",t("count"),copy.descriptions.count,accessLabelFor(locale,"count")],
+    ["algebra",t("algebra"),copy.descriptions.algebra,accessLabelFor(locale,"algebra")],
+    ["pattern",patternCopy(locale).label,patternCopy(locale).description,accessLabelFor(locale,"pattern")],
+    ["matchstick",matchstickCopy(locale).label,matchstickCopy(locale).description,accessLabelFor(locale,"matchstick")],
   ];
 
   return (
@@ -1015,8 +1038,8 @@ function PuzzleBuilderPage() {
             <h2 className="mt-3 text-[34px] font-black leading-tight tracking-[-0.055em] sm:text-[42px]">{t("viralInFive")}</h2>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {kinds.map(([value,title,description])=>(
-                <PuzzleTypeButton key={value} active={kind===value} title={title} description={description} onClick={()=>chooseKind(value)}/>
+              {kinds.map(([value,title,description,badge])=>(
+                <PuzzleTypeButton key={value} active={kind===value} title={title} description={description} badge={badge} onClick={()=>chooseKind(value)}/>
               ))}
             </div>
 
@@ -1196,17 +1219,17 @@ const PuzzleSvg=React.forwardRef<
 });
 
 function PuzzleTypeButton({
-  active,title,description,onClick,
+  active,title,description,badge,onClick,
 }:{
   active:boolean;
   title:string;
   description:string;
+  badge:string;
   onClick:()=>void;
 }){
   return (
     <button type="button" onClick={onClick} className={`rounded-[22px] border p-4 text-left transition ${active?"border-violet-500 bg-violet-50 shadow-[0_12px_30px_rgba(124,58,237,.1)]":"border-border bg-white"}`}>
-      <p className="text-[17px] font-black">{title}</p>
-      <p className="mt-1 text-[14px] font-semibold leading-6 text-muted-foreground">{description}</p>
+      <div className="flex items-start justify-between gap-3">\n        <p className="text-[17px] font-black">{title}</p>\n        <span className="shrink-0 rounded-full bg-violet-100 px-2.5 py-1 text-[10px] font-black text-violet-700">{badge}</span>\n      </div>\n      <p className="mt-1 text-[14px] font-semibold leading-6 text-muted-foreground">{description}</p>
     </button>
   );
 }
