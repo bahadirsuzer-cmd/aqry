@@ -891,8 +891,9 @@ function PuzzleBuilderPage() {
       setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
       setAlgebraChallenge((current)=>pickAlgebraChallenge(current));
     }
-    setSceneTemplate((current)=>nextSceneTemplate(current, kind));
+    setSceneTemplate((current)=>nextSceneTemplate(current, next));
     remember(fresh);
+    window.setTimeout(()=>previewRef.current?.scrollIntoView({behavior:"smooth",block:"start"}),80);
   }
 
   function regenerate(){
@@ -1242,7 +1243,11 @@ function PuzzleTypeButton({
 }){
   return (
     <button type="button" onClick={onClick} className={`rounded-[22px] border p-4 text-left transition ${active?"border-violet-500 bg-violet-50 shadow-[0_12px_30px_rgba(124,58,237,.1)]":"border-border bg-white"}`}>
-      <div className="flex items-start justify-between gap-3">\n        <p className="text-[17px] font-black">{title}</p>\n        <span className="shrink-0 rounded-full bg-violet-100 px-2.5 py-1 text-[10px] font-black text-violet-700">{badge}</span>\n      </div>\n      <p className="mt-1 text-[14px] font-semibold leading-6 text-muted-foreground">{description}</p>
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[17px] font-black">{title}</p>
+        <span className="shrink-0 rounded-full bg-violet-100 px-2.5 py-1 text-[10px] font-black text-violet-700">{badge}</span>
+      </div>
+      <p className="mt-1 text-[14px] font-semibold leading-6 text-muted-foreground">{description}</p>
     </button>
   );
 }
