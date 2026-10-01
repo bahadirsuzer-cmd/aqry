@@ -101,7 +101,6 @@ export function CreatorNavigation(_props: CreatorNavigationProps) {
     { label: t("inbox"), to: "/creator-inbox", badge: unreadCount },
     { label: t("notifications"), to: "/creator-notifications", badge: unreadCount },
     { label: t("experiences"), to: "/creator-experiences", badge: 0 },
-    { label: locale === "tr" ? "Yayınla" : "Publish", to: "/creator-social", badge: 0 },
     { label: t("account"), to: "/creator-account", badge: 0 },
   ];
 
