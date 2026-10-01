@@ -96,6 +96,26 @@ function PrivacyPage() {
           ),
         },
         {
+          title: "Anonim soru ve itiraflar",
+          content: (
+            <>
+              <p>
+                AQRYO üzerindeki anonim soru ve itiraf özelliklerinde gönderenin
+                kimliği creator'a gösterilmez. Gönderenin IP adresi, cihaz
+                bilgileri ve benzeri teknik tanımlayıcıları creator ile
+                paylaşılmaz ve creator panelinde gösterilmez.
+              </p>
+              <p>
+                Güvenlik, kötüye kullanımın önlenmesi, dolandırıcılığın
+                araştırılması ve yasal yükümlülüklerin yerine getirilmesi için
+                gerekli teknik kayıtlar AQRYO tarafından sınırlı sürelerle
+                işlenebilir. Bu kayıtlar yalnızca yetkili süreçlerde kullanılır;
+                anonim mesajın alıcısına göndereni tanımlamak amacıyla sunulmaz.
+              </p>
+            </>
+          ),
+        },
+        {
           title: "Ödeme bilgileri",
           content: (
             <p>
