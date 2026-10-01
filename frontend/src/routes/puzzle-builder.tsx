@@ -1067,9 +1067,14 @@ function PuzzleBuilderPage() {
               </div>
             ) : null}
 
-            <button type="button" onClick={regenerate} className="mt-6 rounded-full bg-black px-7 py-4 text-[15px] font-black text-white">
-              {t("newQuestion")} ↻
-            </button>
+            <div className="mt-6 flex flex-wrap gap-2">
+              <button type="button" onClick={regenerate} className="rounded-full bg-black px-7 py-4 text-[15px] font-black text-white">
+                {t("newQuestion")} ↻
+              </button>
+              <button type="button" disabled={sharing || shareImage?.key !== shareImageKey} onClick={()=>void share()} className="rounded-full bg-violet-600 px-7 py-4 text-[15px] font-black text-white disabled:opacity-50">
+                {sharing ? "..." : t("share")} →
+              </button>
+            </div>
           </div>
 
           <div className="rounded-[30px] border border-border bg-white p-5 sm:p-8">
