@@ -1,167 +1,64 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LegalPageLayout } from "@/components/legal/LegalPageLayout";
-
-export const Route = createFileRoute("/privacy")({
-  component: PrivacyPage,
-});
-
-function PrivacyPage() {
-  return (
-    <LegalPageLayout
-      title="Gizlilik ve Kişisel Verilerin Korunması Politikası"
-      description="AQRYO hizmetlerinin kullanılması sırasında kişisel verilerin nasıl işlendiğini, korunduğunu ve kullanıcıların haklarını açıklar."
-      sections={[
-        {
-          title: "Veri sorumlusu",
-          content: (
-            <p>
-              6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında veri
-              sorumlusu BUUME Bilişim Teknoloji Reklamcılık Anonim Şirketi'dir.
-              <br />
-              <br />
-              Adres: Büyükesat Mahallesi Koza 1 Caddesi No: 153/4 Çankaya /
-              Ankara
-              <br />
-              E-posta: hey@buum-e.com
-              <br />
-              Telefon: 0541 291 49 35
-            </p>
-          ),
-        },
-        {
-          title: "İşlenen kişisel veriler",
-          content: (
-            <p>
-              AQRYO'nun kullanım şekline göre kimlik ve iletişim bilgileri,
-              e-posta adresi, kullanıcı hesabı bilgileri, creator profil
-              bilgileri, Experience içerikleri, satın alma ve ödeme işlem
-              kayıtları, kullanıcı tarafından gönüllü olarak sağlanan iletişim
-              bilgileri, cihaz ve bağlantı bilgileri, IP adresi, teknik loglar
-              ve güvenlik kayıtları işlenebilir.
-            </p>
-          ),
-        },
-        {
-          title: "Kişisel verilerin işlenme amaçları",
-          content: (
-            <p>
-              Kişisel veriler; kullanıcı hesaplarının oluşturulması ve
-              yönetilmesi, Experience oluşturma ve yayınlama hizmetlerinin
-              sağlanması, satın alma ve ödeme işlemlerinin yürütülmesi, Gift ve
-              Offer işlemlerinin takibi, kullanıcı desteğinin sağlanması,
-              sistem güvenliğinin korunması, kötüye kullanım ve
-              dolandırıcılığın önlenmesi, yasal yükümlülüklerin yerine
-              getirilmesi ve AQRYO hizmetlerinin geliştirilmesi amaçlarıyla
-              işlenir.
-            </p>
-          ),
-        },
-        {
-          title: "Hukuki sebepler",
-          content: (
-            <p>
-              Kişisel veriler; bir sözleşmenin kurulması veya ifasıyla doğrudan
-              doğruya ilgili olması, veri sorumlusunun hukuki yükümlülüğünü
-              yerine getirebilmesi için zorunlu olması, bir hakkın tesisi,
-              kullanılması veya korunması için veri işlemenin zorunlu olması ve
-              ilgili kişinin temel hak ve özgürlüklerine zarar vermemek kaydıyla
-              veri sorumlusunun meşru menfaatleri için veri işlenmesinin zorunlu
-              olması hukuki sebeplerine dayanılarak işlenebilir. Açık rıza
-              gerektiren işlemlerde ayrıca ilgili kişinin açık rızası alınır.
-            </p>
-          ),
-        },
-        {
-          title: "Verilerin aktarılması",
-          content: (
-            <p>
-              Kişisel veriler, hizmetin sunulması için gerekli olduğu ölçüde
-              ödeme hizmeti sağlayıcıları, barındırma ve altyapı sağlayıcıları,
-              kimlik doğrulama sağlayıcıları, e-posta ve iletişim hizmetleri,
-              güvenlik ve dolandırıcılık önleme hizmetleri ile mevzuat gereği
-              yetkili kamu kurum ve kuruluşlarına aktarılabilir.
-            </p>
-          ),
-        },
-        {
-          title: "Participant ve creator verileri",
-          content: (
-            <p>
-              Public Experience'lara katılım için hesap oluşturulması zorunlu
-              olmayabilir. Participant tarafından belirli bir creator ile
-              iletişim kurulması amacıyla gönüllü olarak paylaşılan iletişim
-              bilgileri, yalnızca belirtilen amaç kapsamında ilgili creator ile
-              paylaşılabilir.
-            </p>
-          ),
-        },
-        {
-          title: "Anonim soru ve itiraflar",
-          content: (
-            <>
-              <p>
-                AQRYO üzerindeki anonim soru ve itiraf özelliklerinde gönderenin
-                kimliği creator'a gösterilmez. Gönderenin IP adresi, cihaz
-                bilgileri ve benzeri teknik tanımlayıcıları creator ile
-                paylaşılmaz ve creator panelinde gösterilmez.
-              </p>
-              <p>
-                Güvenlik, kötüye kullanımın önlenmesi, dolandırıcılığın
-                araştırılması ve yasal yükümlülüklerin yerine getirilmesi için
-                gerekli teknik kayıtlar AQRYO tarafından sınırlı sürelerle
-                işlenebilir. Bu kayıtlar yalnızca yetkili süreçlerde kullanılır;
-                anonim mesajın alıcısına göndereni tanımlamak amacıyla sunulmaz.
-              </p>
-            </>
-          ),
-        },
-        {
-          title: "Ödeme bilgileri",
-          content: (
-            <p>
-              Ödeme işlemleri yetkili ödeme hizmeti sağlayıcıları üzerinden
-              gerçekleştirilir. AQRYO, ödeme kartının tam kart numarası veya
-              kart güvenlik kodu gibi hassas kart bilgilerini kendi
-              sistemlerinde saklamaz.
-            </p>
-          ),
-        },
-        {
-          title: "Saklama ve güvenlik",
-          content: (
-            <p>
-              Kişisel veriler ilgili işleme amacının gerektirdiği süre boyunca
-              ve uygulanabilir mevzuatta öngörülen saklama süreleri kapsamında
-              muhafaza edilir. Saklama gerekliliğinin sona ermesi halinde
-              veriler mevzuata uygun şekilde silinir, yok edilir veya anonim
-              hale getirilir.
-            </p>
-          ),
-        },
-        {
-          title: "KVKK kapsamındaki haklarınız",
-          content: (
-            <p>
-              İlgili kişiler 6698 sayılı Kanun'un 11. maddesi kapsamında
-              kişisel verilerinin işlenip işlenmediğini öğrenme, işlenmişse
-              bilgi talep etme, işlenme amacını öğrenme, aktarıldığı üçüncü
-              kişileri bilme, eksik veya yanlış işlenmiş verilerin
-              düzeltilmesini isteme ve mevzuatta belirtilen şartlarda
-              silinmesini veya yok edilmesini isteme haklarına sahiptir.
-            </p>
-          ),
-        },
-        {
-          title: "Başvuru",
-          content: (
-            <p>
-              Kişisel verilerinize ilişkin taleplerinizi BUUME Bilişim
-              Teknoloji Reklamcılık Anonim Şirketi'ne hey@buum-e.com adresi
-              üzerinden iletebilirsiniz.
-            </p>
-          ),
-        },
-      ]}
-    />
-  );
-}
+import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
+export const Route=createFileRoute("/privacy")({component:PrivacyPage});
+type C={title:string;description:string;heads:string[];bodies:string[]};
+const H_EN=["Data controller","Data we process","Why we process data","Legal bases","Data sharing","Participants and creators","Anonymous questions and confessions","Payment data","Retention and security","Your privacy rights","Requests"];
+const B_EN=[
+"Under applicable data-protection law, the data controller for AQRYO is BUUME Bilişim Teknoloji Reklamcılık Anonim Şirketi, Büyükesat Mahallesi Koza 1 Caddesi No: 153/4 Çankaya / Ankara. Contact: hey@buum-e.com.",
+"Depending on how AQRYO is used, we may process account and contact information, email address, creator profile data, content and interaction records, purchase and payment records, device and connection information, IP address, technical logs and security records.",
+"We process data to create and manage accounts, provide content creation and publishing features, operate payments, provide support, protect platform security, prevent abuse and fraud, meet legal obligations and improve AQRYO.",
+"Processing may rely on performance of a contract, compliance with legal obligations, establishment or protection of legal rights, legitimate interests that do not override fundamental rights, and consent where consent is legally required.",
+"Where necessary to provide the service, data may be shared with payment, hosting, infrastructure, authentication, email, communications, security and fraud-prevention providers, and with competent authorities when required by law.",
+"Participation in public AQRYO experiences may not require an account. Information voluntarily supplied for communication with a creator is used only for the stated purpose and may be shared with that creator when this is clear to the participant.",
+"For anonymous questions and confessions, the sender’s identity is not shown to the creator. IP address, device information and similar technical identifiers are not shown in the creator dashboard or shared with the creator. AQRYO may process limited technical records for security, abuse prevention, fraud investigation and legal obligations; these records are not provided to the recipient to identify an anonymous sender.",
+"Payments are processed through authorized payment providers. AQRYO does not store sensitive card data such as the full card number or card security code in its own systems.",
+"Personal data is retained only as long as needed for the relevant purpose and applicable legal retention periods. When retention is no longer required, data is deleted, destroyed or anonymized as appropriate. Reasonable technical and organizational safeguards are used to protect data.",
+"Depending on applicable law, you may have rights to learn whether your data is processed, request access, correction or deletion, object to or restrict certain processing, and learn about relevant recipients. Users in Türkiye also have the rights provided by Article 11 of Law No. 6698 (KVKK).",
+"Privacy and personal-data requests can be sent to hey@buum-e.com. We may request information needed to verify identity before completing a request."
+];
+const translations:Record<AqryoLocale,{title:string;description:string;heads:string[]}>={
+tr:{title:"Gizlilik ve Kişisel Verilerin Korunması Politikası",description:"AQRYO hizmetlerinde kişisel verilerin nasıl işlendiğini, korunduğunu ve kullanıcıların haklarını açıklar.",heads:["Veri sorumlusu","İşlenen kişisel veriler","Verileri neden işliyoruz?","Hukuki sebepler","Verilerin aktarılması","Katılımcı ve creator verileri","Anonim soru ve itiraflar","Ödeme bilgileri","Saklama ve güvenlik","Gizlilik ve KVKK haklarınız","Başvuru"]},
+en:{title:"Privacy and Data Protection Policy",description:"How AQRYO processes and protects personal data and the privacy rights available to users.",heads:H_EN},
+de:{title:"Datenschutzrichtlinie",description:"Wie AQRYO personenbezogene Daten verarbeitet und schützt und welche Datenschutzrechte Nutzer haben.",heads:["Verantwortlicher","Verarbeitete Daten","Warum wir Daten verarbeiten","Rechtsgrundlagen","Datenweitergabe","Teilnehmer und Creator","Anonyme Fragen und Geständnisse","Zahlungsdaten","Speicherung und Sicherheit","Deine Datenschutzrechte","Anfragen"]},
+es:{title:"Política de privacidad y protección de datos",description:"Cómo AQRYO trata y protege los datos personales y qué derechos tienen los usuarios.",heads:["Responsable del tratamiento","Datos que tratamos","Por qué tratamos datos","Bases jurídicas","Compartición de datos","Participantes y creadores","Preguntas y confesiones anónimas","Datos de pago","Conservación y seguridad","Tus derechos de privacidad","Solicitudes"]},
+pt:{title:"Política de Privacidade e Proteção de Dados",description:"Como a AQRYO trata e protege dados pessoais e quais direitos de privacidade os usuários possuem.",heads:["Controlador de dados","Dados tratados","Por que tratamos dados","Bases legais","Compartilhamento de dados","Participantes e creators","Perguntas e confissões anônimas","Dados de pagamento","Retenção e segurança","Seus direitos de privacidade","Solicitações"]},
+fr:{title:"Politique de confidentialité et de protection des données",description:"Comment AQRYO traite et protège les données personnelles et quels sont les droits des utilisateurs.",heads:["Responsable du traitement","Données traitées","Pourquoi nous traitons les données","Bases juridiques","Partage des données","Participants et créateurs","Questions et confessions anonymes","Données de paiement","Conservation et sécurité","Vos droits","Demandes"]},
+it:{title:"Informativa sulla privacy e protezione dei dati",description:"Come AQRYO tratta e protegge i dati personali e quali diritti spettano agli utenti.",heads:["Titolare del trattamento","Dati trattati","Perché trattiamo i dati","Basi giuridiche","Condivisione dei dati","Partecipanti e creator","Domande e confessioni anonime","Dati di pagamento","Conservazione e sicurezza","I tuoi diritti","Richieste"]},
+ar:{title:"سياسة الخصوصية وحماية البيانات",description:"توضح كيفية معالجة AQRYO للبيانات الشخصية وحمايتها وحقوق الخصوصية المتاحة للمستخدمين.",heads:["مسؤول البيانات","البيانات التي نعالجها","لماذا نعالج البيانات","الأسس القانونية","مشاركة البيانات","المشاركون وصنّاع المحتوى","الأسئلة والاعترافات المجهولة","بيانات الدفع","الاحتفاظ والأمان","حقوق الخصوصية","الطلبات"]},
+hi:{title:"गोपनीयता और डेटा संरक्षण नीति",description:"AQRYO व्यक्तिगत डेटा को कैसे संसाधित और सुरक्षित करता है और उपयोगकर्ताओं के क्या अधिकार हैं।",heads:["डेटा नियंत्रक","हम कौन-सा डेटा संसाधित करते हैं","डेटा क्यों संसाधित करते हैं","कानूनी आधार","डेटा साझा करना","प्रतिभागी और क्रिएटर","गुमनाम सवाल और इकरार","भुगतान डेटा","भंडारण और सुरक्षा","आपके गोपनीयता अधिकार","अनुरोध"]},
+id:{title:"Kebijakan Privasi dan Perlindungan Data",description:"Cara AQRYO memproses dan melindungi data pribadi serta hak privasi pengguna.",heads:["Pengendali data","Data yang diproses","Mengapa data diproses","Dasar hukum","Berbagi data","Peserta dan kreator","Pertanyaan dan pengakuan anonim","Data pembayaran","Penyimpanan dan keamanan","Hak privasi Anda","Permintaan"]},
+ru:{title:"Политика конфиденциальности и защиты данных",description:"Как AQRYO обрабатывает и защищает персональные данные и какие права есть у пользователей.",heads:["Оператор данных","Обрабатываемые данные","Зачем мы обрабатываем данные","Правовые основания","Передача данных","Участники и авторы","Анонимные вопросы и признания","Платёжные данные","Хранение и безопасность","Ваши права","Запросы"]},
+bn:{title:"গোপনীয়তা ও ডেটা সুরক্ষা নীতি",description:"AQRYO কীভাবে ব্যক্তিগত তথ্য প্রক্রিয়া ও সুরক্ষা করে এবং ব্যবহারকারীদের কী অধিকার রয়েছে।",heads:["ডেটা নিয়ন্ত্রক","প্রক্রিয়াকৃত তথ্য","কেন তথ্য প্রক্রিয়া করি","আইনি ভিত্তি","তথ্য শেয়ারিং","অংশগ্রহণকারী ও ক্রিয়েটর","বেনামী প্রশ্ন ও স্বীকারোক্তি","পেমেন্ট তথ্য","সংরক্ষণ ও নিরাপত্তা","আপনার গোপনীয়তার অধিকার","অনুরোধ"]},
+ur:{title:"رازداری اور ڈیٹا تحفظ کی پالیسی",description:"AQRYO ذاتی ڈیٹا کو کیسے پراسیس اور محفوظ کرتا ہے اور صارفین کو کون سے حقوق حاصل ہیں۔",heads:["ڈیٹا کنٹرولر","پراسیس کیا جانے والا ڈیٹا","ہم ڈیٹا کیوں پراسیس کرتے ہیں","قانونی بنیادیں","ڈیٹا شیئرنگ","شرکاء اور کریئیٹرز","گمنام سوالات اور اعترافات","ادائیگی کا ڈیٹا","محفوظ رکھنا اور سیکیورٹی","آپ کے رازداری کے حقوق","درخواستیں"]},
+vi:{title:"Chính sách Quyền riêng tư và Bảo vệ Dữ liệu",description:"Cách AQRYO xử lý, bảo vệ dữ liệu cá nhân và các quyền riêng tư của người dùng.",heads:["Bên kiểm soát dữ liệu","Dữ liệu được xử lý","Vì sao chúng tôi xử lý dữ liệu","Cơ sở pháp lý","Chia sẻ dữ liệu","Người tham gia và nhà sáng tạo","Câu hỏi và lời thú nhận ẩn danh","Dữ liệu thanh toán","Lưu trữ và bảo mật","Quyền riêng tư của bạn","Yêu cầu"]},
+fil:{title:"Privacy at Data Protection Policy",description:"Paano pinoproseso at pinoprotektahan ng AQRYO ang personal data at ang privacy rights ng users.",heads:["Data controller","Data na pinoproseso","Bakit namin pinoproseso ang data","Legal na batayan","Pagbabahagi ng data","Participants at creators","Anonymous questions at confessions","Payment data","Retention at seguridad","Iyong privacy rights","Requests"]}
+};
+const BODY_OVERRIDES:Partial<Record<AqryoLocale,string[]>>={
+tr:[
+"6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında AQRYO’nun veri sorumlusu BUUME Bilişim Teknoloji Reklamcılık Anonim Şirketi’dir. Adres: Büyükesat Mahallesi Koza 1 Caddesi No: 153/4 Çankaya / Ankara. İletişim: hey@buum-e.com.",
+"AQRYO’nun kullanımına göre hesap ve iletişim bilgileri, e-posta, creator profil bilgileri, içerik ve etkileşim kayıtları, satın alma ve ödeme kayıtları, cihaz ve bağlantı bilgileri, IP adresi, teknik loglar ve güvenlik kayıtları işlenebilir.",
+"Veriler; hesapların oluşturulması ve yönetilmesi, içerik oluşturma ve yayınlama hizmetleri, ödeme işlemleri, destek, sistem güvenliği, kötüye kullanım ve dolandırıcılığın önlenmesi, yasal yükümlülükler ve AQRYO’nun geliştirilmesi için işlenebilir.",
+"Veri işleme; sözleşmenin kurulması veya ifası, hukuki yükümlülük, bir hakkın tesisi veya korunması, temel haklara zarar vermeyen meşru menfaat ve gerekli durumlarda açık rıza hukuki sebeplerine dayanabilir.",
+"Hizmetin sunulması için gerekli ölçüde veriler ödeme, barındırma, altyapı, kimlik doğrulama, e-posta, iletişim, güvenlik ve dolandırıcılık önleme sağlayıcılarıyla ve kanunen gerekli olduğunda yetkili makamlarla paylaşılabilir.",
+"Public AQRYO deneyimlerine katılım için hesap gerekmeyebilir. Creator ile iletişim amacıyla gönüllü verilen bilgiler, kullanıcıya açıkça belirtildiği ölçüde ilgili creator ile paylaşılabilir.",
+"Anonim soru ve itiraflarda gönderenin kimliği creator’a gösterilmez. IP adresi, cihaz bilgileri ve benzeri teknik tanımlayıcılar creator panelinde gösterilmez ve creator ile paylaşılmaz. AQRYO güvenlik, kötüye kullanımın önlenmesi, dolandırıcılığın araştırılması ve yasal yükümlülükler için sınırlı teknik kayıtları işleyebilir; bu kayıtlar anonim göndereni tanımlaması için mesaj alıcısına verilmez.",
+"Ödemeler yetkili ödeme sağlayıcıları üzerinden yürütülür. AQRYO tam kart numarası veya kart güvenlik kodu gibi hassas kart bilgilerini kendi sistemlerinde saklamaz.",
+"Kişisel veriler yalnızca ilgili amaç ve uygulanabilir yasal saklama süreleri boyunca tutulur. Gereklilik sona erdiğinde uygun şekilde silinir, yok edilir veya anonimleştirilir. Verileri korumak için makul teknik ve organizasyonel tedbirler uygulanır.",
+"6698 sayılı Kanun’un 11. maddesi kapsamında verilerinin işlenip işlenmediğini öğrenme, bilgi talep etme, amacını ve aktarılan kişileri öğrenme, düzeltme ve şartları oluştuğunda silme veya yok etme dahil haklara sahipsin. Uygulanabilir diğer veri koruma mevzuatındaki haklar da saklıdır.",
+"Kişisel verilerle ilgili taleplerini hey@buum-e.com adresine gönderebilirsin. Talebi sonuçlandırmadan önce kimliğini doğrulamak için gerekli bilgiler istenebilir."
+],
+de:[
+"Verantwortlicher für AQRYO ist BUUME Bilişim Teknoloji Reklamcılık Anonim Şirketi, Büyükesat Mahallesi Koza 1 Caddesi No: 153/4 Çankaya / Ankara. Kontakt: hey@buum-e.com.",
+"Je nach Nutzung können Konto- und Kontaktdaten, E-Mail-Adresse, Creator-Profil, Inhalte und Interaktionen, Kauf- und Zahlungsdaten, Geräte- und Verbindungsdaten, IP-Adresse sowie technische und sicherheitsbezogene Protokolle verarbeitet werden.",
+"Wir verarbeiten Daten zur Kontoverwaltung, Bereitstellung von Erstellungs- und Veröffentlichungsfunktionen, Zahlungsabwicklung, Unterstützung, Sicherheit, Missbrauchs- und Betrugsprävention, Erfüllung rechtlicher Pflichten und Verbesserung von AQRYO.",
+"Die Verarbeitung kann auf Vertragserfüllung, gesetzlichen Pflichten, Schutz von Rechtsansprüchen, berechtigten Interessen oder – soweit erforderlich – Einwilligung beruhen.",
+"Soweit für den Dienst erforderlich, können Daten an Zahlungs-, Hosting-, Infrastruktur-, Authentifizierungs-, E-Mail-, Kommunikations-, Sicherheits- und Betrugspräventionsanbieter sowie gesetzlich zuständige Behörden übermittelt werden.",
+"Für öffentliche AQRYO-Erlebnisse ist nicht immer ein Konto erforderlich. Freiwillig zur Kontaktaufnahme mit einem Creator bereitgestellte Informationen können für diesen klar angegebenen Zweck mit dem betreffenden Creator geteilt werden.",
+"Bei anonymen Fragen und Geständnissen wird die Identität des Absenders dem Creator nicht angezeigt. IP-Adresse, Geräteinformationen und ähnliche technische Kennungen werden weder im Creator-Dashboard angezeigt noch mit dem Creator geteilt. AQRYO kann begrenzte technische Daten für Sicherheit, Missbrauchs- und Betrugsprävention sowie rechtliche Pflichten verarbeiten; sie werden dem Empfänger nicht zur Identifizierung des anonymen Absenders bereitgestellt.",
+"Zahlungen werden über autorisierte Zahlungsanbieter abgewickelt. AQRYO speichert keine sensiblen Kartendaten wie vollständige Kartennummer oder Sicherheitscode in eigenen Systemen.",
+"Personenbezogene Daten werden nur so lange gespeichert, wie es für den jeweiligen Zweck und gesetzliche Aufbewahrungsfristen erforderlich ist. Danach werden sie angemessen gelöscht, vernichtet oder anonymisiert. Es werden angemessene technische und organisatorische Schutzmaßnahmen eingesetzt.",
+"Je nach anwendbarem Recht kannst du Auskunft, Berichtigung oder Löschung verlangen, bestimmten Verarbeitungen widersprechen oder sie einschränken und Informationen über Empfänger erhalten. Für Nutzer in Türkiye gelten zusätzlich die Rechte nach Artikel 11 des Gesetzes Nr. 6698 (KVKK).",
+"Datenschutzanfragen kannst du an hey@buum-e.com senden. Vor Bearbeitung kann eine Identitätsprüfung erforderlich sein."
+]};
+function PrivacyPage(){const {locale}=useAqryoLocale();const x=translations[locale];const bodies=BODY_OVERRIDES[locale]??B_EN;return <LegalPageLayout title={x.title} description={x.description} sections={x.heads.map((h,i)=>({title:h,content:<p>{bodies[i]}</p>}))}/>;}
