@@ -311,6 +311,19 @@ const MATCHSTICK_TEMPLATES = [
   "/puzzle/matchstick/matchstick-10.jpg",
 ] as const;
 
+const FREE_GENERAL_SCENE_COUNT = 5;
+const FREE_MATCHSTICK_SCENE_COUNT = 3;
+const FREE_DEBATE_SET_MAX_TEMPLATE = 10;
+
+function visualAccessLabel(locale: AqryoLocale, kind: PuzzleKind, presentation: Presentation, sceneTemplate: number, debateTemplate: number) {
+  const free = locale === "tr" ? "Ücretsiz" : "Free";
+  const premium = "Premium";
+  if (kind === "algebra") return free;
+  if (kind === "math" && presentation === "debate") return debateTemplate <= FREE_DEBATE_SET_MAX_TEMPLATE ? free : premium;
+  if (kind === "matchstick") return sceneTemplate < FREE_MATCHSTICK_SCENE_COUNT ? free : premium;
+  return sceneTemplate < FREE_GENERAL_SCENE_COUNT ? free : premium;
+}
+
 function sceneTemplatesFor(kind?: ViralKind) {
   return kind === "matchstick" ? MATCHSTICK_TEMPLATES : SCENE_TEMPLATES;
 }
