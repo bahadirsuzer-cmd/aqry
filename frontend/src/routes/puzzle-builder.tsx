@@ -1027,7 +1027,7 @@ function PuzzleBuilderPage() {
             <p className="text-[11px] font-black uppercase tracking-[0.16em] text-violet-600">{t("puzzleEngine")}</p>
             <h1 className="mt-1 text-[30px] font-black tracking-[-0.055em]">{t("puzzle")}</h1>
           </div>
-          <Link to="/creator-studio" className="rounded-full border border-border bg-white px-5 py-3 text-[12px] font-black text-muted-foreground">{t("backToStudio")}</Link>
+
         </div>
       </header>
 
@@ -1035,9 +1035,12 @@ function PuzzleBuilderPage() {
         <section className="space-y-5">
           <div ref={previewRef} className="scroll-mt-32">
             <p className="mb-3 text-[12px] font-black uppercase tracking-[0.16em] text-muted-foreground">{t("shareVisual")}</p>
-            <div className="mb-3 flex justify-start">
+            <div className="mb-3 flex flex-wrap justify-start gap-2">
               <button type="button" onClick={regenerate} className="rounded-full bg-black/88 px-4 py-2 text-[12px] font-black text-white shadow-lg transition hover:bg-violet-700 sm:text-[13px]">
                 {copy.changeVisual} ↻
+              </button>
+              <button type="button" disabled={sharing || shareImage?.key !== shareImageKey} onClick={()=>void share()} className="rounded-full bg-violet-600 px-4 py-2 text-[12px] font-black text-white shadow-lg disabled:opacity-50 sm:text-[13px]">
+                {sharing ? "..." : t("share")} →
               </button>
             </div>
             <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
@@ -1067,14 +1070,9 @@ function PuzzleBuilderPage() {
               </div>
             ) : null}
 
-            <div className="mt-6 flex flex-wrap gap-2">
-              <button type="button" onClick={regenerate} className="rounded-full bg-black px-7 py-4 text-[15px] font-black text-white">
-                {t("newQuestion")} ↻
-              </button>
-              <button type="button" disabled={sharing || shareImage?.key !== shareImageKey} onClick={()=>void share()} className="rounded-full bg-violet-600 px-7 py-4 text-[15px] font-black text-white disabled:opacity-50">
-                {sharing ? "..." : t("share")} →
-              </button>
-            </div>
+            <button type="button" onClick={regenerate} className="mt-6 rounded-full bg-black px-7 py-4 text-[15px] font-black text-white">
+              {t("newQuestion")} ↻
+            </button>
           </div>
 
           <div className="rounded-[30px] border border-border bg-white p-5 sm:p-8">
