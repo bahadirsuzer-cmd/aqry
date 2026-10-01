@@ -1177,7 +1177,7 @@ function StoryBuilderPage() {
             <p className="text-[14px] font-black uppercase tracking-[0.15em] text-teal-600">
               {state.sourceExperienceId ? "Yeni sürüm oluşturuluyor" : "Story / İçerik"}
             </p>
-            <p className="truncate text-[14px] font-bold">{state.title || "{ui.newStory}"}</p>
+            <p className="truncate text-[14px] font-bold">{state.title || ui.newStory}</p>
           </div>
           <button
             type="button"
@@ -1229,7 +1229,7 @@ function StoryBuilderPage() {
 
           {activePanel === "content" ? (
             <div className="space-y-5">
-              <BuilderSection eyebrow="1 · İçerik" title="{ui.createStory}" description="{ui.createHint}">
+              <BuilderSection eyebrow="1 · İçerik" title={ui.createStory} description={ui.createHint}>
                 <FieldLabel>Başlık</FieldLabel>
                 <input
                   value={state.title}
