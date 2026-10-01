@@ -182,13 +182,13 @@ function QuestionConfessionBuilderPage() {
               1 · Giriş
             </p>
             <h2 className="mt-2 text-[25px] font-black tracking-[-0.045em]">
-              {isTr ? "{ui.whatToSay}" : "What will your followers see?"}
+              {ui.whatToSay}
             </h2>
             <p className="mt-2 text-[13px] leading-5 text-muted-foreground">
-              {isTr ? "{ui.titleHint}" : "Keep it short. People should understand it at a glance."}
+              {ui.titleHint}
             </p>
 
-            <Field label={isTr ? "Başlık" : "Title"}>
+            <Field label={ui.title}>
               <input
                 value={state.title}
                 onChange={(event) => setState((current) => ({ ...current, title: event.target.value }))}
@@ -196,7 +196,7 @@ function QuestionConfessionBuilderPage() {
               />
             </Field>
 
-            <Field label={isTr ? "Kısa açıklama" : "Short description"}>
+            <Field label={ui.shortDescription}>
               <textarea
                 rows={3}
                 value={state.intro}
@@ -211,18 +211,18 @@ function QuestionConfessionBuilderPage() {
               2 · Seçim
             </p>
             <h2 className="mt-2 text-[25px] font-black tracking-[-0.045em]">
-              {isTr ? "{ui.twoDoors}" : "Two choices. Nothing more."}
+              {ui.twoDoors}
             </h2>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Field label={isTr ? "Soru butonu" : "Question button"}>
+              <Field label={ui.questionButton}>
                 <input
                   value={state.questionLabel}
                   onChange={(event) => setState((current) => ({ ...current, questionLabel: event.target.value }))}
                   className={inputClass}
                 />
               </Field>
-              <Field label={isTr ? "İtiraf butonu" : "Confession button"}>
+              <Field label={ui.confessionButton}>
                 <input
                   value={state.confessionLabel}
                   onChange={(event) => setState((current) => ({ ...current, confessionLabel: event.target.value }))}
@@ -231,7 +231,7 @@ function QuestionConfessionBuilderPage() {
               </Field>
             </div>
 
-            <Field label={isTr ? "Yazı alanı" : "Input placeholder"}>
+            <Field label={ui.textArea}>
               <input
                 value={state.placeholder}
                 onChange={(event) => setState((current) => ({ ...current, placeholder: event.target.value }))}
@@ -267,11 +267,9 @@ function QuestionConfessionBuilderPage() {
           </div>
 
           <div className="rounded-[24px] border border-violet-200 bg-violet-50/70 p-5">
-            <p className="text-[13px] font-black text-violet-950">{isTr ? "{ui.ready}" : "Publish and share when ready."}</p>
+            <p className="text-[13px] font-black text-violet-950">{ui.ready}</p>
             <p className="mt-1 text-[14px] leading-5 text-violet-900/65">
-              {isTr
-                ? "{ui.afterPublish}"
-                : "After publishing, you’ll get a shareable AQRYO link for anonymous questions and confessions."}
+              {ui.afterPublish}
             </p>
             <button
               type="button"
@@ -279,16 +277,14 @@ function QuestionConfessionBuilderPage() {
               onClick={() => void publishExperience()}
               className="mt-4 h-11 w-full rounded-full bg-violet-700 px-5 text-[14px] font-black text-white disabled:opacity-50 sm:w-auto"
             >
-              {publishing
-                ? isTr ? "{ui.publishing}" : "Publishing..."
-                : isTr ? "{ui.publishShare} →" : "Publish and share →"}
+              {publishing ? ui.publishing : `${ui.publishShare} →`}
             </button>
           </div>
         </section>
 
         <aside className="lg:sticky lg:top-[92px] lg:self-start">
           <p className="mb-3 text-[13px] font-black uppercase tracking-[0.16em] text-muted-foreground">
-            {isTr ? "{ui.livePreview}" : "Live preview"}
+            {ui.livePreview}
           </p>
 
           <div className={`overflow-hidden rounded-[32px] bg-gradient-to-br ${accent} p-3 shadow-[0_24px_70px_rgba(56,27,90,0.22)]`}>
@@ -356,11 +352,11 @@ function QuestionConfessionBuilderPage() {
                 type="button"
                 className="mt-3 h-11 w-full rounded-full bg-black text-[14px] font-black text-white"
               >
-                {isTr ? "{ui.sendAnonymous}" : "Send anonymously"}
+                {ui.sendAnonymous}
               </button>
 
               <p className="mt-3 text-center text-[11px] font-bold text-muted-foreground">
-                {isTr ? "{ui.identityHidden}" : "Your identity is never shared with the creator."}
+                {ui.identityHidden}
               </p>
             </div>
           </div>
