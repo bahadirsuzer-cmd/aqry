@@ -27,7 +27,7 @@ const allowedNextRoutes = new Set([
 
 function getSafeNextRoute() {
   const next = new URLSearchParams(window.location.search).get("next");
-  return next && allowedNextRoutes.has(next) ? next : "/creator-inbox";
+  return next && allowedNextRoutes.has(next) ? next : "/";
 }
 
 export const Route = createFileRoute(
