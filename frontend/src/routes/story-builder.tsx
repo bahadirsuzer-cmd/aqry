@@ -138,7 +138,7 @@ const STORY_TEXT_EXAMPLES = [
 
 function StoryBuilderPage() {
   const { locale } = useAqryoLocale();
-  const ui = storyCopy[locale] ?? storyCopy.en;
+  const ui = storyCopy[locale as keyof typeof storyCopy] ?? storyCopy.en;
   const [loading, setLoading] =
     useState(true);
 
