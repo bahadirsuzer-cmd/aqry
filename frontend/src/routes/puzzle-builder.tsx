@@ -317,7 +317,7 @@ const FREE_DEBATE_SET_MAX_TEMPLATE = 10;
 
 function visualAccessLabel(locale: AqryoLocale, kind: PuzzleKind, presentation: Presentation, sceneTemplate: number, debateTemplate: number) {
   const free = locale === "tr" ? "Ücretsiz" : "Free";
-  const premium = "Premium";
+  const premium = locale === "tr" ? "Premium · Sınırlı süre ücretsiz" : "Premium · Free for a limited time";
   if (kind === "algebra") return free;
   if (kind === "math" && presentation === "debate") return debateTemplate <= FREE_DEBATE_SET_MAX_TEMPLATE ? free : premium;
   if (kind === "matchstick") return sceneTemplate < FREE_MATCHSTICK_SCENE_COUNT ? free : premium;
