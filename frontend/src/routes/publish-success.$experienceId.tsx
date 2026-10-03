@@ -22,6 +22,7 @@ import {
 } from "@/services/shareAssets";
 import {
   openSocialShare,
+  shareNativeImage,
   shareToInstagram,
   type SocialChannel,
 } from "@/services/socialShare";
@@ -498,24 +499,25 @@ useEffect(() => {
 
     if (channel === "x") {
       const source = getShareSource();
-      if (source && navigator.share) {
+      if (source) {
         try {
           const blob = await createShareCardBlob(source, "square");
           const file = new File([blob], `aqryo-${experience.id}.png`, {
             type: "image/png",
           });
 
-          if (!navigator.canShare || navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              files: [file],
-              text: getShareText(),
-              url,
-            });
+          const shared = await shareNativeImage({
+            file,
+            text: getShareText(),
+            shareUrl: url,
+            title: experience.title,
+          });
+
+          if (shared) {
             void maybeShowNotificationNudge();
             return;
           }
         } catch (error) {
-          if (error instanceof DOMException && error.name === "AbortError") return;
           console.error("X görsel paylaşımı açılamadı:", error);
         }
       }
