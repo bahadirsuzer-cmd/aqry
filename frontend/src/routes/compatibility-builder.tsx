@@ -398,9 +398,13 @@ useEffect(() => {
     sourceExperienceId,
   ]);
 
-  const answeredCount = questions.filter(
-    (question) => creatorAnswers[question.id] !== undefined,
-  ).length;
+  const answeredCount = questions.filter((question) => {
+    const selectedOptionIndex = creatorAnswers[question.id];
+    return (
+      selectedOptionIndex !== undefined &&
+      question.options[selectedOptionIndex]?.trim().length > 0
+    );
+  }).length;
  
   const allAnswersSelected =
     questions.length > 0 && answeredCount === questions.length;
@@ -408,10 +412,9 @@ useEffect(() => {
   const questionsAreValid = questions.every(
     (question) =>
       question.text.trim().length > 0 &&
-      question.options.length >= 2 &&
-      question.options.every(
+      question.options.filter(
         (option) => option.trim().length > 0,
-      ),
+      ).length >= 2,
   );
 
   const resultsAreValid = results.every(
@@ -614,7 +617,7 @@ useEffect(() => {
 
   function continueFromContent() {
     if (!questionsAreValid || !title.trim() || !description.trim()) {
-      window.alert("Devam etmeden önce başlık, açıklama, sorular ve seçenekler eksiksiz olmalı.");
+      window.alert("Devam etmeden önce başlık, açıklama, sorular ve her soru için en az 2 seçenek olmalı.");
       return;
     }
     setGuidance("answers");
@@ -701,7 +704,45 @@ useEffect(() => {
       return previewScore >= min && previewScore <= max;
     }) ?? results[0];
 
+  function getNormalizedExperienceData() {
+    const normalizedCreatorAnswers: Record<number, number> = {};
+
+    const normalizedQuestions = questions.map((question) => {
+      const filledOptions = question.options
+        .map((option, originalIndex) => ({
+          option: option.trim(),
+          originalIndex,
+        }))
+        .filter(({ option }) => option.length > 0);
+
+      const selectedOriginalIndex = creatorAnswers[question.id];
+      if (selectedOriginalIndex !== undefined) {
+        const normalizedIndex = filledOptions.findIndex(
+          ({ originalIndex }) =>
+            originalIndex === selectedOriginalIndex,
+        );
+
+        if (normalizedIndex >= 0) {
+          normalizedCreatorAnswers[question.id] =
+            normalizedIndex;
+        }
+      }
+
+      return {
+        ...question,
+        text: question.text.trim(),
+        options: filledOptions.map(({ option }) => option),
+      };
+    });
+
+    return {
+      questions: normalizedQuestions,
+      creatorAnswers: normalizedCreatorAnswers,
+    };
+  }
+
   function handlePreview() {
+  const normalizedExperience = getNormalizedExperienceData();
   const previewData = {
     title,
     description,
@@ -710,8 +751,8 @@ useEffect(() => {
       imageUrl: coverImageUrl,
       label: coverLabel,
     },
-    questions,
-    creatorAnswers,
+    questions: normalizedExperience.questions,
+    creatorAnswers: normalizedExperience.creatorAnswers,
     results,
     offer: {
       enabled: false,
@@ -740,6 +781,7 @@ if (!creator) {
   return;
 }
   const experienceId = crypto.randomUUID();
+  const normalizedExperience = getNormalizedExperienceData();
 const publishedExperience = {
   id: experienceId,
   creatorId: creator.id,
@@ -753,8 +795,8 @@ const publishedExperience = {
       imageUrl: coverImageUrl,
       label: coverLabel,
     },
-    questions,
-    creatorAnswers,
+    questions: normalizedExperience.questions,
+    creatorAnswers: normalizedExperience.creatorAnswers,
     results,
     offer: {
       enabled: false,
@@ -1582,6 +1624,10 @@ function CreatorAnswersEditor({
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {question.options.map(
                   (option, optionIndex) => {
+                    if (!option.trim()) {
+                      return null;
+                    }
+
                     const isSelected =
                       selectedOption === optionIndex;
 
@@ -2188,6 +2234,10 @@ function SelfPreview({
           <h3 className="mt-6 text-[21px] font-black leading-tight tracking-[-0.035em]">{question.text}</h3>
           <div className="mt-5 grid gap-2.5">
             {question.options.map((option, optionIndex) => {
+              if (!option.trim()) {
+                return null;
+              }
+
               const selected = answers[question.id] === optionIndex;
               return (
                 <button
