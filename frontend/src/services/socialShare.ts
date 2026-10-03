@@ -7,6 +7,45 @@ export type SocialChannel =
   | "telegram"
   | "instagram";
 
+export interface NativeImageShareInput {
+  file: File;
+  text: string;
+  shareUrl?: string | null;
+  title?: string;
+}
+
+export async function shareNativeImage({
+  file,
+  text,
+  shareUrl,
+  title = "AQRYO",
+}: NativeImageShareInput) {
+  const fullText = shareUrl ? `${text}\n${shareUrl}` : text;
+  const canShareFile =
+    typeof navigator !== "undefined" &&
+    typeof navigator.share === "function" &&
+    typeof navigator.canShare === "function" &&
+    navigator.canShare({ files: [file] });
+
+  if (!canShareFile) return false;
+
+  try {
+    // Keep the public URL inside text when sharing a file. iOS/Web Share
+    // targets are inconsistent when files + the separate url field are mixed.
+    await navigator.share({
+      files: [file],
+      title,
+      text: fullText,
+    });
+    return true;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      return true;
+    }
+    throw error;
+  }
+}
+
 function openPopup(url: URL | string) {
   window.open(
     typeof url === "string" ? url : url.toString(),
