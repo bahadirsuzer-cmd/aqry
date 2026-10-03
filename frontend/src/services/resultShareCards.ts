@@ -1,3 +1,4 @@
+import { shareNativeImage } from "@/services/socialShare";
 export interface ResultShareCardSource {
   experienceTitle: string;
   resultTitle: string;
@@ -718,12 +719,11 @@ export async function shareResultCard(
         });
 
       if (canShareFile) {
-        await navigator.share({
-          title:
-            source.experienceTitle,
-          text: shareText,
-          url: source.shareUrl,
-          files: [asset.file],
+        await shareNativeImage({
+          file: asset.file,
+          title: source.experienceTitle,
+          text: `Benim sonucum: ${source.resultTitle}\n\nSen de çöz:`,
+          shareUrl: source.shareUrl,
         });
 
         return {
