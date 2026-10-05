@@ -6,6 +6,7 @@ import { localizedPuzzleSteps } from "@/lib/puzzleSolutionI18n";
 import { ANIME_SINGLE_TEMPLATES, supportsAnimeSingle, type VisualPack, type PuzzleSafeArea } from "@/lib/animeSingleTemplates";
 import { ANIME_COUPLE_TEMPLATES } from "@/lib/animeCoupleTemplates";
 import { ANIME_SCENE_TEMPLATES, ANIME_SCENE_SAFE_AREA } from "@/lib/animeSceneTemplates";
+import { MAGIC_SINGLE_TEMPLATES, MAGIC_COUPLE_TEMPLATES, MAGIC_SCENE_TEMPLATES, MAGIC_SINGLE_SAFE_AREA, MAGIC_SCENE_SAFE_AREA } from "@/lib/magicAcademyTemplates";
 import React, { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -23,7 +24,8 @@ const DEBATE_TEMPLATE_IDS = Array.from({ length: 40 }, (_, index) => index + 1).
 const COMPACT_DEBATE_TEMPLATES = new Set(DEBATE_TEMPLATE_IDS);
 
 function pickDebateTemplate(previous?: number, pack: VisualPack = "classic") {
-  const ids = pack === "anime" ? ANIME_COUPLE_TEMPLATES.map((_, index) => index + 1) : DEBATE_TEMPLATE_IDS;
+  const templates = pack === "magic" ? MAGIC_COUPLE_TEMPLATES : ANIME_COUPLE_TEMPLATES;
+  const ids = pack !== "classic" ? templates.map((_, index) => index + 1) : DEBATE_TEMPLATE_IDS;
   const pool = ids.filter((id) => id !== previous);
   return pool[Math.floor(Math.random() * pool.length)] ?? 1;
 }
@@ -37,8 +39,9 @@ function debateSprite(templateId: number) {
 }
 
 async function loadDebateTemplate(templateId: number, pack: VisualPack = "classic") {
-  const { src, column } = pack === "anime"
-    ? { src: ANIME_COUPLE_TEMPLATES[templateId - 1] ?? ANIME_COUPLE_TEMPLATES[0], column: 0 }
+  const templates = pack === "magic" ? MAGIC_COUPLE_TEMPLATES : ANIME_COUPLE_TEMPLATES;
+  const { src, column } = pack !== "classic"
+    ? { src: templates[templateId - 1] ?? templates[0], column: 0 }
     : debateSprite(templateId);
   const image = new Image();
   await new Promise<void>((resolve, reject) => {
@@ -51,7 +54,7 @@ async function loadDebateTemplate(templateId: number, pack: VisualPack = "classi
   canvas.height = 1350;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas unavailable");
-  const frameWidth = pack === "anime" ? image.naturalWidth : image.naturalWidth / 10;
+  const frameWidth = pack !== "classic" ? image.naturalWidth : image.naturalWidth / 10;
   const frameHeight = image.naturalHeight;
   if (!Number.isFinite(frameWidth) || frameWidth <= 0 || frameHeight <= 0) {
     throw new Error("Debate template has invalid dimensions");
@@ -331,6 +334,8 @@ function visualAccessLabel(locale: AqryoLocale, kind: PuzzleKind, presentation: 
 }
 
 function sceneTemplatesFor(kind?: ViralKind, pack: VisualPack = "classic") {
+  if (pack === "magic" && kind === "matchstick") return MAGIC_SCENE_TEMPLATES;
+  if (pack === "magic" && kind && supportsAnimeSingle(kind)) return MAGIC_SINGLE_TEMPLATES;
   if (pack === "anime" && kind === "matchstick") return ANIME_SCENE_TEMPLATES;
   if (pack === "anime" && kind && supportsAnimeSingle(kind)) return ANIME_SINGLE_TEMPLATES.map((template) => template.src);
   return kind === "matchstick" ? MATCHSTICK_TEMPLATES : SCENE_TEMPLATES;
@@ -1045,19 +1050,19 @@ function PuzzleBuilderPage() {
               </button>
             </div>
             {(supportsAnimeSingle(kind) || kind === "math" || kind === "matchstick") && (
-              <div className="mb-3 flex items-center gap-2" role="group" aria-label={locale === "tr" ? "Görsel paketi" : "Visual pack"}>
-                {(["classic", "anime"] as const).map((pack) => (
+              <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label={locale === "tr" ? "Görsel paketi" : "Visual pack"}>
+                {(["classic", "anime", "magic"] as const).map((pack) => (
                   <button key={pack} type="button" aria-pressed={visualPack === pack}
                     onClick={() => { setVisualPack(pack); setSceneTemplate(0); setDebateTemplate(1); }}
                     className={`rounded-full border px-4 py-2 text-[14px] font-bold ${visualPack === pack ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-900"}`}>
-                    {pack === "anime" ? "Anime" : locale === "tr" ? "Klasik" : "Classic"}
+                    {pack === "magic" ? (locale === "tr" ? "Büyü Akademisi" : "Magic Academy") : pack === "anime" ? "Anime" : locale === "tr" ? "Klasik" : "Classic"}
                   </button>
                 ))}
               </div>
             )}
             <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} visualPack={activePack} safeArea={activePack === "anime" ? (kind === "matchstick" ? ANIME_SCENE_SAFE_AREA : ANIME_SINGLE_TEMPLATES[sceneTemplate]?.safeArea) : undefined} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? sceneSrc : sceneSrc}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} visualPack={activePack} safeArea={activePack === "magic" ? (kind === "matchstick" ? MAGIC_SCENE_SAFE_AREA : MAGIC_SINGLE_SAFE_AREA) : activePack === "anime" ? (kind === "matchstick" ? ANIME_SCENE_SAFE_AREA : ANIME_SINGLE_TEMPLATES[sceneTemplate]?.safeArea) : undefined} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? sceneSrc : sceneSrc}/>
               </div>
             </div>
           </div>
@@ -1131,8 +1136,8 @@ const PuzzleSvg=React.forwardRef<
   const headline = headlineFor(locale,puzzle);
   const headlineSize = headline.length > 36 ? 13 : headline.length > 28 ? 16 : headline.length > 22 ? 18 : 20;
   const questionRows = puzzleQuestionRows(puzzle.diagram);
-  const animeCouple = visualPack === "anime" && puzzle.kind === "math";
-  const compactDebate = animeCouple || COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
+  const framedCouple = visualPack !== "classic" && puzzle.kind === "math";
+  const compactDebate = framedCouple || COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
   if (sceneImage && presentation!=="debate") {
     const safeX = safeArea?.x ?? 160;
     const safeY = safeArea?.y ?? 34;
@@ -1148,7 +1153,7 @@ const PuzzleSvg=React.forwardRef<
       const titleSize = matchCopy.title.length > 22 ? 15 : matchCopy.title.length > 16 ? 17 : 20;
       const puzzleTitleSize = puzzleTitle.length > 30 ? 12 : puzzleTitle.length > 22 ? 13 : 15;
       const instructionSize = instruction.length > 34 ? 9 : instruction.length > 25 ? 10 : 11;
-      if (visualPack === "anime") {
+      if (visualPack !== "classic") {
         return (
           <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
             <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
@@ -1221,18 +1226,18 @@ const PuzzleSvg=React.forwardRef<
     const debateColors = ["#2563eb","#dc2626","#7c3aed","#0f766e","#db2777","#ea580c"];
     const colorSeed = Array.from(puzzle.id).reduce((sum,char)=>sum+char.charCodeAt(0),0);
     const questionY = compactDebate ? 106 : 184;
-    const answerY = animeCouple ? 161 : compactDebate ? 157 : 118;
+    const answerY = framedCouple ? 161 : compactDebate ? 157 : 118;
     const expressionTokens = questionRows.join(" ").split(/(\s+)/).filter(Boolean);
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <image href={debateImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-        <text x={animeCouple ? 182 : 180} y={questionY} textAnchor="middle" dominantBaseline={animeCouple ? "middle" : undefined} fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900">
+        <text x={framedCouple ? 182 : 180} y={questionY} textAnchor="middle" dominantBaseline={framedCouple ? "middle" : undefined} fontFamily="Arial,sans-serif" fontSize={questionSize} fontWeight="900">
           {expressionTokens.map((token,index)=>(
             <tspan key={index} fill={debateColors[(colorSeed+index)%debateColors.length]}>{token}</tspan>
           ))}
         </text>
-        <text x={animeCouple ? 74 : 78} y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={answer.length>10?11:20} fontWeight="900" fill="#2563eb">{answer}</text>
-        <text x={animeCouple ? 287 : 282} y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={cleanDebateValue(puzzle.commonWrong).length>10?11:20} fontWeight="900" fill="#dc2626">{cleanDebateValue(puzzle.commonWrong)}</text>
+        <text x={framedCouple ? 74 : 78} y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={answer.length>10?11:20} fontWeight="900" fill="#2563eb">{answer}</text>
+        <text x={framedCouple ? 287 : 282} y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={cleanDebateValue(puzzle.commonWrong).length>10?11:20} fontWeight="900" fill="#dc2626">{cleanDebateValue(puzzle.commonWrong)}</text>
       </svg>
     );
   }
