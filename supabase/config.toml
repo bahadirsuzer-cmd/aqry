@@ -1,0 +1,11 @@
+project_id = "aqryo"
+
+# These functions verify user access (or Paddle HMAC signatures) in their own handlers.
+[functions.visual-pack-checkout]
+verify_jwt = false
+
+[functions.visual-pack-assets]
+verify_jwt = false
+
+[functions.paddle-webhook]
+verify_jwt = false

@@ -8,6 +8,9 @@ import { ANIME_COUPLE_TEMPLATES } from "@/lib/animeCoupleTemplates";
 import { ANIME_SCENE_TEMPLATES, ANIME_SCENE_SAFE_AREA } from "@/lib/animeSceneTemplates";
 import { MAGIC_SINGLE_TEMPLATES, MAGIC_COUPLE_TEMPLATES, MAGIC_SCENE_TEMPLATES, MAGIC_SINGLE_SAFE_AREA, MAGIC_SCENE_SAFE_AREA } from "@/lib/magicAcademyTemplates";
 import { ARENA_SINGLE_TEMPLATES, ARENA_COUPLE_TEMPLATES, ARENA_SCENE_TEMPLATES, ARENA_SINGLE_SAFE_AREA, ARENA_SCENE_SAFE_AREA } from "@/lib/fightingArenaTemplates";
+import { canUseVisualPack, clearVisualPackAssets, getVisualPackAccess, getVisualPackOrder, purchaseVisualPack, resolveVisualPackAsset, type PackAccess, type PaidVisualPack } from "@/services/visual-packs";
+import { visualPackCopy, visualPackName } from "@/lib/visualPackCopy";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import React, { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -45,10 +48,12 @@ async function loadDebateTemplate(templateId: number, pack: VisualPack = "classi
     ? { src: templates[templateId - 1] ?? templates[0], column: 0 }
     : debateSprite(templateId);
   const image = new Image();
+  image.crossOrigin = "anonymous";
+  const imageSrc = await resolveVisualPackAsset(src, pack);
   await new Promise<void>((resolve, reject) => {
     image.onload = () => resolve();
     image.onerror = () => reject(new Error("Debate template could not be loaded"));
-    image.src = src;
+    image.src = imageSrc;
   });
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
@@ -65,6 +70,11 @@ async function loadDebateTemplate(templateId: number, pack: VisualPack = "classi
 }
 
 const ALGEBRA_TEMPLATE_IDS = Array.from({ length: 10 }, (_, index) => index + 1);
+
+const UNDETERMINED_SHORT: Record<AqryoLocale, string> = {
+  tr: "Belirsiz", en: "Unknown", es: "Indefinido", pt: "Indefinido", fr: "Indéterminé", de: "Unbestimmt", it: "Indefinito",
+  ar: "غير محدد", hi: "अनिश्चित", id: "Tidak pasti", ru: "Не определено", bn: "অনির্ধারিত", ur: "غیر متعین", vi: "Không xác định", fil: "Di matukoy",
+};
 
 function pickAlgebraTemplate(previous?: number) {
   const pool = ALGEBRA_TEMPLATE_IDS.filter((id) => id !== previous);
@@ -357,10 +367,12 @@ function nextSceneTemplate(current?: number, kind?: ViralKind, pack: VisualPack 
 
 async function loadSceneTemplate(templateIndex: number, kind: ViralKind, pack: VisualPack = "classic") {
   const image = new Image();
+  image.crossOrigin = "anonymous";
+  const imageSrc = await resolveVisualPackAsset(sceneTemplateSrc(kind, templateIndex, pack), pack);
   await new Promise<void>((resolve, reject) => {
     image.onload = () => resolve();
     image.onerror = () => reject(new Error("Scene template could not be loaded"));
-    image.src = sceneTemplateSrc(kind, templateIndex, pack);
+    image.src = imageSrc;
   });
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
@@ -829,7 +841,15 @@ function PuzzleBuilderPage() {
   const [algebraChallenge,setAlgebraChallenge]=useState(()=>pickAlgebraChallenge());
   const [algebraImage,setAlgebraImage]=useState<{template:number;dataUrl:string}|null>(null);
   const [visualPack,setVisualPack]=useState<VisualPack>("classic");
-  const activePack = (supportsAnimeSingle(kind) || kind === "math" || kind === "matchstick") ? visualPack : "classic";
+  const [packAccess, setPackAccess] = useState<PackAccess | null>(null);
+  const [purchasePack, setPurchasePack] = useState<PaidVisualPack | null>(null);
+  const [purchaseBusy, setPurchaseBusy] = useState(false);
+  const [packError, setPackError] = useState(false);
+  const [pendingOrder, setPendingOrder] = useState<string | null>(null);
+  const [paymentWaiting, setPaymentWaiting] = useState(false);
+  const [orderCheck, setOrderCheck] = useState(0);
+  const packCopy = visualPackCopy(locale);
+  const activePack = (supportsAnimeSingle(kind) || kind === "math" || kind === "matchstick") && canUseVisualPack(visualPack, packAccess) ? visualPack : "classic";
   const [sceneTemplate,setSceneTemplate]=useState(()=>nextSceneTemplate());
   const [sceneImage,setSceneImage]=useState<{src:string;dataUrl:string}|null>(null);
   const sceneSrc = sceneTemplateSrc(kind, sceneTemplate, activePack);
@@ -849,6 +869,82 @@ function PuzzleBuilderPage() {
       });
     return()=>{cancelled=true};
   },[]);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function refreshAccess() {
+      try {
+        const access = await getVisualPackAccess();
+        if (!cancelled) { setPackAccess(access); setPackError(false); }
+      } catch { if (!cancelled) setPackError(true); }
+    }
+    void refreshAccess();
+    const returnedOrder = new URL(window.location.href).searchParams.get("pack_order");
+    if (returnedOrder && /^[0-9a-f-]{36}$/i.test(returnedOrder)) { setPendingOrder(returnedOrder); setPaymentWaiting(true); }
+    window.addEventListener("focus", refreshAccess);
+    return () => { cancelled = true; window.removeEventListener("focus", refreshAccess); clearVisualPackAssets(); };
+  }, []);
+
+  useEffect(() => {
+    if (!pendingOrder) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    let checks = 0;
+    async function checkOrder() {
+      try {
+        const order = await getVisualPackOrder(pendingOrder!);
+        if (cancelled) return;
+        if (!order) { setPackError(true); setPaymentWaiting(false); return; }
+        if (order.status === "completed") {
+          const access = await getVisualPackAccess();
+          if (cancelled) return;
+          clearVisualPackAssets(); setPackAccess(access); setVisualPack(order.pack_id);
+          setSceneTemplate(0); setDebateTemplate(1); setPurchasePack(null); setPendingOrder(null);
+          setPaymentWaiting(false); setPackError(false);
+          const url = new URL(window.location.href); url.searchParams.delete("pack_order"); window.history.replaceState(null, "", url);
+          return;
+        }
+        if (order.status === "refunded" || order.status === "canceled") {
+          setPaymentWaiting(false); setPackError(true); return;
+        }
+      } catch { if (!cancelled) setPackError(true); }
+      if (!cancelled && ++checks < 30) timer = setTimeout(checkOrder, 2000);
+    }
+    void checkOrder();
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [pendingOrder, orderCheck]);
+
+  useEffect(() => {
+    const onPayment = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      if (detail?.name === "checkout.completed" && pendingOrder) {
+        setPaymentWaiting(true); setOrderCheck((value) => value + 1);
+      } else if (detail?.name === "checkout.closed") {
+        setPurchaseBusy(false);
+      }
+    };
+    window.addEventListener("aqryo:paddle-event", onPayment);
+    return () => window.removeEventListener("aqryo:paddle-event", onPayment);
+  }, [pendingOrder]);
+
+  function chooseVisualPack(pack: VisualPack) {
+    if (!canUseVisualPack(pack, packAccess)) { if (pack !== "classic") setPurchasePack(pack); return; }
+    setVisualPack(pack); setSceneTemplate(0); setDebateTemplate(1);
+  }
+
+  async function buyPack() {
+    if (!purchasePack || purchaseBusy) return;
+    setPurchaseBusy(true); setPackError(false);
+    try {
+      const result = await purchaseVisualPack(purchasePack);
+      if (result.alreadyOwned) {
+        setPackAccess(await getVisualPackAccess()); setVisualPack(purchasePack);
+        setSceneTemplate(0); setDebateTemplate(1); setPurchasePack(null);
+      } else if (result.orderId) {
+        setPendingOrder(result.orderId); setPaymentWaiting(false);
+      }
+    } catch { setPackError(true); } finally { setPurchaseBusy(false); }
+  }
 
   useEffect(()=>{
     setSocialText(ctaFor(locale,puzzle));
@@ -999,6 +1095,10 @@ function PuzzleBuilderPage() {
     if(sharing) return;
     try{
       setSharing(true);
+      if (activePack !== "classic") {
+        const access = await getVisualPackAccess(); setPackAccess(access);
+        if (!canUseVisualPack(activePack, access)) { clearVisualPackAssets(); setPurchasePack(activePack); return; }
+      }
       const file = shareImage?.key === shareImageKey ? shareImage.file : null;
       if(!file) throw new Error("Visual unavailable");
       const canShareFile =
@@ -1039,6 +1139,18 @@ function PuzzleBuilderPage() {
   return (
     <main className="min-h-screen bg-[#f7f5fb] text-foreground">
       <CreatorNavigation onSignOut={async()=>{await signOutCreator();window.location.href="/creator-auth";}}/>
+      <Dialog open={purchasePack !== null} onOpenChange={(open) => { if (!open) setPurchasePack(null); }}>
+        <DialogContent className="max-w-[420px] rounded-3xl">
+          <DialogTitle className="text-2xl font-black">{purchasePack ? visualPackName(purchasePack, locale) : ""}</DialogTitle>
+          <DialogDescription>{packCopy.contents}</DialogDescription>
+          <p className="text-4xl font-black text-violet-700">$0.99</p>
+          <p className="text-sm text-muted-foreground">{packCopy.permanent}</p>
+          {packError && <p className="text-sm text-red-700" role="alert">{packCopy.error}</p>}
+          {purchasePack && !packAccess?.catalog.find((entry) => entry.id === purchasePack)?.checkout_available && <p className="text-sm text-muted-foreground">{packCopy.unavailable}</p>}
+          <button type="button" disabled={purchaseBusy || !packAccess?.catalog.find((entry) => entry.id === purchasePack)?.checkout_available} onClick={() => void buyPack()}
+            className="rounded-full bg-violet-600 px-6 py-3 font-bold text-white disabled:opacity-50">{purchaseBusy ? packCopy.loading : packCopy.buy}</button>
+        </DialogContent>
+      </Dialog>
 
       <div className="mx-auto max-w-[980px] px-4 py-6 sm:px-6 lg:py-9">
         <section className="space-y-5">
@@ -1055,17 +1167,20 @@ function PuzzleBuilderPage() {
             {(supportsAnimeSingle(kind) || kind === "math" || kind === "matchstick") && (
               <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label={locale === "tr" ? "Görsel paketi" : "Visual pack"}>
                 {(["classic", "anime", "magic", "arena"] as const).map((pack) => (
-                  <button key={pack} type="button" aria-pressed={visualPack === pack}
-                    onClick={() => { setVisualPack(pack); setSceneTemplate(0); setDebateTemplate(1); }}
+                  <button key={pack} type="button" aria-pressed={activePack === pack} disabled={pack !== "classic" && !packAccess}
+                    onClick={() => chooseVisualPack(pack)}
                     className={`rounded-full border px-4 py-2 text-[14px] font-bold ${visualPack === pack ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-900"}`}>
-                    {pack === "arena" ? (locale === "tr" ? "Dövüş Arenası" : "Fighting Arena") : pack === "magic" ? (locale === "tr" ? "Büyü Akademisi" : "Magic Academy") : pack === "anime" ? "Anime" : locale === "tr" ? "Klasik" : "Classic"}
+                    {visualPackName(pack, locale)}
+                    {pack !== "classic" && packAccess?.owned.includes(pack) ? " ✓" : pack !== "classic" && packAccess?.catalog.find((entry) => entry.id === pack)?.sale_enabled ? " · $0.99" : ""}
                   </button>
                 ))}
               </div>
             )}
+            {packError && <div className="mb-3 text-sm text-red-700" role="alert">{packCopy.error} <button className="font-bold underline" onClick={() => { void getVisualPackAccess().then((access) => { setPackAccess(access); setPackError(false); }).catch(() => setPackError(true)); setOrderCheck((value) => value + 1); }}>{packCopy.refresh}</button></div>}
+            {paymentWaiting && <div className="mb-3 rounded-xl bg-violet-100 p-3 text-sm text-violet-900" role="status">{packCopy.pending} <button className="font-bold underline" onClick={() => setOrderCheck((value) => value + 1)}>{packCopy.refresh}</button></div>}
             <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} visualPack={activePack} safeArea={activePack === "arena" ? (kind === "matchstick" ? ARENA_SCENE_SAFE_AREA : ARENA_SINGLE_SAFE_AREA) : activePack === "magic" ? (kind === "matchstick" ? MAGIC_SCENE_SAFE_AREA : MAGIC_SINGLE_SAFE_AREA) : activePack === "anime" ? (kind === "matchstick" ? ANIME_SCENE_SAFE_AREA : ANIME_SINGLE_TEMPLATES[sceneTemplate]?.safeArea) : undefined} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? sceneSrc : sceneSrc}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} visualPack={activePack} safeArea={activePack === "arena" ? (kind === "matchstick" ? ARENA_SCENE_SAFE_AREA : ARENA_SINGLE_SAFE_AREA) : activePack === "magic" ? (kind === "matchstick" ? MAGIC_SCENE_SAFE_AREA : MAGIC_SINGLE_SAFE_AREA) : activePack === "anime" ? (kind === "matchstick" ? ANIME_SCENE_SAFE_AREA : ANIME_SINGLE_TEMPLATES[sceneTemplate]?.safeArea) : undefined} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? null : activePack === "classic" ? sceneSrc : null}/>
               </div>
             </div>
           </div>

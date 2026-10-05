@@ -5,12 +5,13 @@ const PADDLE_PRICE_ID = "pri_01m3scg1p4er1jab3sjr25j1g7";
 const PADDLE_SCRIPT_ID = "aqryo-paddle-js";
 
 type PaddleApi = {
-  Initialize: (options: { token: string }) => void;
+  Initialize: (options: { token: string; eventCallback?: (event: { name: string; data?: { transaction_id?: string } }) => void }) => void;
   Checkout: {
     open: (options: {
-      items: Array<{ priceId: string; quantity: number }>;
+      items?: Array<{ priceId: string; quantity: number }>;
+      transactionId?: string;
       customer?: { email: string };
-      customData: Record<string, string>;
+      customData?: Record<string, string>;
       settings?: {
         displayMode?: "overlay";
         theme?: "light" | "dark";
@@ -45,17 +46,30 @@ async function loadPaddle(): Promise<PaddleApi> {
       script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
       script.async = true;
       script.onload = () => resolve();
-      script.onerror = () => reject(new Error("Paddle yüklenemedi."));
+      script.onerror = () => { script.remove(); reject(new Error("Paddle yüklenemedi.")); };
       document.head.appendChild(script);
     });
   }
 
   if (!window.Paddle) throw new Error("Paddle başlatılamadı.");
   if (!window.__aqryoPaddleInitialized) {
-    window.Paddle.Initialize({ token: PADDLE_CLIENT_TOKEN });
+    window.Paddle.Initialize({ token: PADDLE_CLIENT_TOKEN, eventCallback: (event) => {
+      window.dispatchEvent(new CustomEvent("aqryo:paddle-event", { detail: event }));
+    } });
     window.__aqryoPaddleInitialized = true;
   }
   return window.Paddle;
+}
+
+export async function openVisualPackCheckout(transactionId: string, orderId: string) {
+  const paddle = await loadPaddle();
+  paddle.Checkout.open({
+    transactionId,
+    settings: {
+      displayMode: "overlay", theme: "light",
+      successUrl: `${window.location.origin}/puzzle-builder?pack_order=${encodeURIComponent(orderId)}`,
+    },
+  });
 }
 
 export async function openAqryoProCheckout() {
