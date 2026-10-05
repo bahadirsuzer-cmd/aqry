@@ -5,6 +5,7 @@ import { makeViralPuzzle, VIRAL_FAMILIES, type ViralKind, type ViralPuzzle } fro
 import { localizedPuzzleSteps } from "@/lib/puzzleSolutionI18n";
 import { ANIME_SINGLE_TEMPLATES, supportsAnimeSingle, type VisualPack, type PuzzleSafeArea } from "@/lib/animeSingleTemplates";
 import { ANIME_COUPLE_TEMPLATES } from "@/lib/animeCoupleTemplates";
+import { ANIME_SCENE_TEMPLATES, ANIME_SCENE_SAFE_AREA } from "@/lib/animeSceneTemplates";
 import React, { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -330,6 +331,7 @@ function visualAccessLabel(locale: AqryoLocale, kind: PuzzleKind, presentation: 
 }
 
 function sceneTemplatesFor(kind?: ViralKind, pack: VisualPack = "classic") {
+  if (pack === "anime" && kind === "matchstick") return ANIME_SCENE_TEMPLATES;
   if (pack === "anime" && kind && supportsAnimeSingle(kind)) return ANIME_SINGLE_TEMPLATES.map((template) => template.src);
   return kind === "matchstick" ? MATCHSTICK_TEMPLATES : SCENE_TEMPLATES;
 }
@@ -819,7 +821,7 @@ function PuzzleBuilderPage() {
   const [algebraChallenge,setAlgebraChallenge]=useState(()=>pickAlgebraChallenge());
   const [algebraImage,setAlgebraImage]=useState<{template:number;dataUrl:string}|null>(null);
   const [visualPack,setVisualPack]=useState<VisualPack>("classic");
-  const activePack = (supportsAnimeSingle(kind) || kind === "math") ? visualPack : "classic";
+  const activePack = (supportsAnimeSingle(kind) || kind === "math" || kind === "matchstick") ? visualPack : "classic";
   const [sceneTemplate,setSceneTemplate]=useState(()=>nextSceneTemplate());
   const [sceneImage,setSceneImage]=useState<{src:string;dataUrl:string}|null>(null);
   const sceneSrc = sceneTemplateSrc(kind, sceneTemplate, activePack);
@@ -1042,7 +1044,7 @@ function PuzzleBuilderPage() {
                 {sharing ? "..." : t("share")} →
               </button>
             </div>
-            {(supportsAnimeSingle(kind) || kind === "math") && (
+            {(supportsAnimeSingle(kind) || kind === "math" || kind === "matchstick") && (
               <div className="mb-3 flex items-center gap-2" role="group" aria-label={locale === "tr" ? "Görsel paketi" : "Visual pack"}>
                 {(["classic", "anime"] as const).map((pack) => (
                   <button key={pack} type="button" aria-pressed={visualPack === pack}
@@ -1055,7 +1057,7 @@ function PuzzleBuilderPage() {
             )}
             <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} visualPack={activePack} safeArea={activePack === "anime" ? ANIME_SINGLE_TEMPLATES[sceneTemplate]?.safeArea : undefined} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? sceneSrc : sceneSrc}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} visualPack={activePack} safeArea={activePack === "anime" ? (kind === "matchstick" ? ANIME_SCENE_SAFE_AREA : ANIME_SINGLE_TEMPLATES[sceneTemplate]?.safeArea) : undefined} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? sceneSrc : sceneSrc}/>
               </div>
             </div>
           </div>
@@ -1146,6 +1148,19 @@ const PuzzleSvg=React.forwardRef<
       const titleSize = matchCopy.title.length > 22 ? 15 : matchCopy.title.length > 16 ? 17 : 20;
       const puzzleTitleSize = puzzleTitle.length > 30 ? 12 : puzzleTitle.length > 22 ? 13 : 15;
       const instructionSize = instruction.length > 34 ? 9 : instruction.length > 25 ? 10 : 11;
+      if (visualPack === "anime") {
+        return (
+          <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
+            <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
+            <text x="180" y={safeY + 15} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={Math.min(titleSize, 16)} fontWeight="900" fill="#17101f">{matchCopy.title}</text>
+            <text x="180" y={safeY + 35} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={puzzleTitleSize} textLength={puzzleTitle.length > 35 ? safeW - 8 : undefined} lengthAdjust="spacingAndGlyphs" fontWeight="900" fill="#17101f">{puzzleTitle}</text>
+            <text x="180" y={safeY + 52} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={instructionSize} textLength={instruction.length > 45 ? safeW - 8 : undefined} lengthAdjust="spacingAndGlyphs" fontWeight="700" fill="#51485d">{instruction}</text>
+            <svg x={safeX} y={safeY + 60} width={safeW} height={safeH - 60} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+              <g dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
+            </svg>
+          </svg>
+        );
+      }
       return (
         <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
           <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
