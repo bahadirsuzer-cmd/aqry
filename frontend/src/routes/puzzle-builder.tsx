@@ -3,6 +3,7 @@ import { getCurrentCreator, signOutCreator } from "@/services/auth";
 import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
 import { makeViralPuzzle, VIRAL_FAMILIES, type ViralKind, type ViralPuzzle } from "@/lib/viralPuzzleBank";
 import { localizedPuzzleSteps } from "@/lib/puzzleSolutionI18n";
+import { ANIME_SINGLE_TEMPLATES, supportsAnimeSingle, type VisualPack, type PuzzleSafeArea } from "@/lib/animeSingleTemplates";
 import React, { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -324,27 +325,28 @@ function visualAccessLabel(locale: AqryoLocale, kind: PuzzleKind, presentation: 
   return sceneTemplate < FREE_GENERAL_SCENE_COUNT ? free : premium;
 }
 
-function sceneTemplatesFor(kind?: ViralKind) {
+function sceneTemplatesFor(kind?: ViralKind, pack: VisualPack = "classic") {
+  if (pack === "anime" && kind && supportsAnimeSingle(kind)) return ANIME_SINGLE_TEMPLATES.map((template) => template.src);
   return kind === "matchstick" ? MATCHSTICK_TEMPLATES : SCENE_TEMPLATES;
 }
 
-function sceneTemplateSrc(kind: ViralKind, templateIndex: number) {
-  const templates = sceneTemplatesFor(kind);
+function sceneTemplateSrc(kind: ViralKind, templateIndex: number, pack: VisualPack = "classic") {
+  const templates = sceneTemplatesFor(kind, pack);
   return templates[templateIndex] ?? templates[0];
 }
 
-function nextSceneTemplate(current?: number, kind?: ViralKind) {
-  const templates = sceneTemplatesFor(kind);
+function nextSceneTemplate(current?: number, kind?: ViralKind, pack: VisualPack = "classic") {
+  const templates = sceneTemplatesFor(kind, pack);
   if (typeof current !== "number") return Math.floor(Math.random() * templates.length);
   return (current + 1) % templates.length;
 }
 
-async function loadSceneTemplate(templateIndex: number, kind: ViralKind) {
+async function loadSceneTemplate(templateIndex: number, kind: ViralKind, pack: VisualPack = "classic") {
   const image = new Image();
   await new Promise<void>((resolve, reject) => {
     image.onload = () => resolve();
     image.onerror = () => reject(new Error("Scene template could not be loaded"));
-    image.src = sceneTemplateSrc(kind, templateIndex);
+    image.src = sceneTemplateSrc(kind, templateIndex, pack);
   });
   const canvas = document.createElement("canvas");
   canvas.width = 1080;
@@ -812,8 +814,11 @@ function PuzzleBuilderPage() {
   const [algebraTemplate,setAlgebraTemplate]=useState(()=>pickAlgebraTemplate());
   const [algebraChallenge,setAlgebraChallenge]=useState(()=>pickAlgebraChallenge());
   const [algebraImage,setAlgebraImage]=useState<{template:number;dataUrl:string}|null>(null);
+  const [visualPack,setVisualPack]=useState<VisualPack>("classic");
+  const activePack = supportsAnimeSingle(kind) ? visualPack : "classic";
   const [sceneTemplate,setSceneTemplate]=useState(()=>nextSceneTemplate());
-  const [sceneImage,setSceneImage]=useState<{template:number;dataUrl:string}|null>(null);
+  const [sceneImage,setSceneImage]=useState<{src:string;dataUrl:string}|null>(null);
+  const sceneSrc = sceneTemplateSrc(kind, sceneTemplate, activePack);
   const previewRef=useRef<HTMLDivElement|null>(null);
   const svgRef=useRef<SVGSVGElement|null>(null);
 
@@ -865,11 +870,11 @@ function PuzzleBuilderPage() {
 
   useEffect(()=>{
     let cancelled=false;
-    void loadSceneTemplate(sceneTemplate, kind)
-      .then((dataUrl)=>{ if(!cancelled) setSceneImage({template:sceneTemplate,dataUrl}); })
+    void loadSceneTemplate(sceneTemplate, kind, activePack)
+      .then((dataUrl)=>{ if(!cancelled) setSceneImage({src:sceneSrc,dataUrl}); })
       .catch((error)=>{ if(!cancelled) console.error(error); });
     return()=>{cancelled=true};
-  },[kind,sceneTemplate]);
+  },[kind,sceneTemplate,activePack,sceneSrc]);
 
   function remember(next:Puzzle){
     setRecent((old)=>{
@@ -891,7 +896,7 @@ function PuzzleBuilderPage() {
       setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
       setAlgebraChallenge((current)=>pickAlgebraChallenge(current));
     }
-    setSceneTemplate((current)=>nextSceneTemplate(current, next));
+    setSceneTemplate((current)=>nextSceneTemplate(current, next, visualPack));
     remember(fresh);
     window.setTimeout(()=>previewRef.current?.scrollIntoView({behavior:"smooth",block:"start"}),80);
   }
@@ -910,7 +915,7 @@ function PuzzleBuilderPage() {
       setAlgebraTemplate((current)=>pickAlgebraTemplate(current));
       setAlgebraChallenge((current)=>pickAlgebraChallenge(current));
     }
-    setSceneTemplate((current)=>nextSceneTemplate(current, kind));
+    setSceneTemplate((current)=>nextSceneTemplate(current, kind, activePack));
     setPuzzle(fresh);
     remember(fresh);
     setCopied(false);
@@ -924,8 +929,8 @@ function PuzzleBuilderPage() {
 
   const debateImageReady = debateImage?.template === debateTemplate;
   const algebraImageReady = algebraImage?.template === algebraTemplate;
-  const sceneImageReady = sceneImage?.template === sceneTemplate;
-  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImageReady?"ready":"loading"}:${algebraTemplate}:${algebraChallenge}:${algebraImageReady?"algebra-ready":"algebra-loading"}:${sceneTemplate}:${sceneImageReady?"scene-ready":"scene-loading"}`;
+  const sceneImageReady = sceneImage?.src === sceneSrc;
+  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImageReady?"ready":"loading"}:${algebraTemplate}:${algebraChallenge}:${algebraImageReady?"algebra-ready":"algebra-loading"}:${activePack}:${sceneTemplate}:${sceneImageReady?"scene-ready":"scene-loading"}`;
   useEffect(() => {
     let cancelled = false;
     if(presentation==="debate" && !debateImageReady) return;
@@ -1033,9 +1038,20 @@ function PuzzleBuilderPage() {
                 {sharing ? "..." : t("share")} →
               </button>
             </div>
+            {supportsAnimeSingle(kind) && (
+              <div className="mb-3 flex items-center gap-2" role="group" aria-label={locale === "tr" ? "Görsel paketi" : "Visual pack"}>
+                {(["classic", "anime"] as const).map((pack) => (
+                  <button key={pack} type="button" aria-pressed={visualPack === pack}
+                    onClick={() => { setVisualPack(pack); setSceneTemplate(0); }}
+                    className={`rounded-full border px-4 py-2 text-[14px] font-bold ${visualPack === pack ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-900"}`}>
+                    {pack === "anime" ? "Anime" : locale === "tr" ? "Klasik" : "Classic"}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} algebraChallenge={algebraChallenge} algebraImage={algebraImage} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? sceneTemplateSrc(kind, sceneTemplate) : sceneTemplateSrc(kind, sceneTemplate)}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} safeArea={activePack === "anime" ? ANIME_SINGLE_TEMPLATES[sceneTemplate]?.safeArea : undefined} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? sceneSrc : sceneSrc}/>
               </div>
             </div>
           </div>
@@ -1056,7 +1072,7 @@ function PuzzleBuilderPage() {
               </div>
             ) : kind==="algebra" ? (
               <div className="mt-7 rounded-[18px] border border-cyan-200 bg-cyan-50 px-4 py-3 text-[12px] font-black text-cyan-900">
-                {locale==="tr" ? "Cebir görseli: iki düşünen kişi + beyaz tahta" : "Algebra visual: two thinkers + whiteboard"}
+                {locale==="tr" ? "Cebir görseli: tek karakter + soru alanı" : "Algebra visual: one character + puzzle area"}
               </div>
             ) : null}
 
@@ -1097,8 +1113,8 @@ function PuzzleBuilderPage() {
 
 const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
-  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;sceneImage:string|null}
->(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,sceneImage},ref){
+  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;sceneImage:string|null;safeArea?:PuzzleSafeArea}
+>(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,sceneImage,safeArea},ref){
   const cleanDebateValue = (value: string) => {
     const numeric = Number(value);
     return Number.isFinite(numeric) && !Number.isInteger(numeric)
@@ -1111,10 +1127,10 @@ const PuzzleSvg=React.forwardRef<
   const questionRows = puzzleQuestionRows(puzzle.diagram);
   const compactDebate = COMPACT_DEBATE_TEMPLATES.has(debateTemplate);
   if (sceneImage && presentation!=="debate") {
-    const safeX = 160;
-    const safeY = 34;
-    const safeW = 186;
-    const safeH = 318;
+    const safeX = safeArea?.x ?? 160;
+    const safeY = safeArea?.y ?? 34;
+    const safeW = safeArea?.width ?? 186;
+    const safeH = safeArea?.height ?? 318;
     const rows = (puzzle.patternRows?.length ? puzzle.patternRows : questionRows).slice(0, 7);
     const colors = ["#2563eb","#dc2626","#7c3aed","#0f766e","#db2777","#ea580c","#f59e0b"];
 
@@ -1141,12 +1157,12 @@ const PuzzleSvg=React.forwardRef<
     }
 
     if (puzzle.kind==="pattern") {
-      const gap = rows.length >= 6 ? 45 : 54;
+      const gap = safeArea ? Math.min(54, (safeH - 80) / Math.max(1, rows.length - 1)) : rows.length >= 6 ? 45 : 54;
       const startY = safeY + 58;
       return (
         <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
           <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-          <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize="13" fontWeight="900" fill="#17101f">{headline}</text>
+          <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize="13" textLength={safeArea ? safeW - 8 : undefined} lengthAdjust="spacingAndGlyphs" fontWeight="900" fill="#17101f">{headline}</text>
           {rows.map((row,index)=>(
             <text
               key={`${puzzle.id}-pattern-${index}`}
@@ -1172,7 +1188,7 @@ const PuzzleSvg=React.forwardRef<
     return (
       <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 450" className="w-full rounded-[24px]">
         <image href={sceneImage} x="0" y="0" width="360" height="450" preserveAspectRatio="none"/>
-        <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?14:12} fontWeight="900" fill="#17101f">{headline}</text>
+        <text x={safeX+safeW/2} y={safeY+20} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={headlineSize>16?14:12} textLength={safeArea ? safeW - 8 : undefined} lengthAdjust="spacingAndGlyphs" fontWeight="900" fill="#17101f">{headline}</text>
         <svg x={safeX} y={safeY+30} width={safeW} height={safeH-35} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet" overflow="hidden">
           <g transform={puzzle.kind==="geometry" ? "translate(-27 -20.25) scale(1.15)" : undefined} dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
         </svg>
