@@ -1155,7 +1155,7 @@ const PuzzleSvg=React.forwardRef<
             <text x="180" y={safeY + 15} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={Math.min(titleSize, 16)} fontWeight="900" fill="#17101f">{matchCopy.title}</text>
             <text x="180" y={safeY + 35} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={puzzleTitleSize} textLength={puzzleTitle.length > 35 ? safeW - 8 : undefined} lengthAdjust="spacingAndGlyphs" fontWeight="900" fill="#17101f">{puzzleTitle}</text>
             <text x="180" y={safeY + 52} textAnchor="middle" fontFamily="Arial,sans-serif" fontSize={instructionSize} textLength={instruction.length > 45 ? safeW - 8 : undefined} lengthAdjust="spacingAndGlyphs" fontWeight="700" fill="#51485d">{instruction}</text>
-            <svg x={safeX} y={safeY + 60} width={safeW} height={safeH - 60} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet" overflow="hidden">
+            <svg x={safeX} y={safeY + 60} width={safeW} height={safeH - 60} viewBox="0 60 360 150" preserveAspectRatio="xMidYMid meet" overflow="hidden">
               <g dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
             </svg>
           </svg>
