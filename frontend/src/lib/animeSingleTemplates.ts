@@ -1,6 +1,6 @@
 import type { ViralKind } from "./viralPuzzleBank";
 
-export type VisualPack = "classic" | "anime" | "magic";
+export type VisualPack = "classic" | "anime" | "magic" | "arena";
 export type PuzzleSafeArea = { x: number; y: number; width: number; height: number };
 
 export function supportsAnimeSingle(kind: ViralKind) {

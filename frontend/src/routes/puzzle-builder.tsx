@@ -7,6 +7,7 @@ import { ANIME_SINGLE_TEMPLATES, supportsAnimeSingle, type VisualPack, type Puzz
 import { ANIME_COUPLE_TEMPLATES } from "@/lib/animeCoupleTemplates";
 import { ANIME_SCENE_TEMPLATES, ANIME_SCENE_SAFE_AREA } from "@/lib/animeSceneTemplates";
 import { MAGIC_SINGLE_TEMPLATES, MAGIC_COUPLE_TEMPLATES, MAGIC_SCENE_TEMPLATES, MAGIC_SINGLE_SAFE_AREA, MAGIC_SCENE_SAFE_AREA } from "@/lib/magicAcademyTemplates";
+import { ARENA_SINGLE_TEMPLATES, ARENA_COUPLE_TEMPLATES, ARENA_SCENE_TEMPLATES, ARENA_SINGLE_SAFE_AREA, ARENA_SCENE_SAFE_AREA } from "@/lib/fightingArenaTemplates";
 import React, { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
@@ -24,7 +25,7 @@ const DEBATE_TEMPLATE_IDS = Array.from({ length: 40 }, (_, index) => index + 1).
 const COMPACT_DEBATE_TEMPLATES = new Set(DEBATE_TEMPLATE_IDS);
 
 function pickDebateTemplate(previous?: number, pack: VisualPack = "classic") {
-  const templates = pack === "magic" ? MAGIC_COUPLE_TEMPLATES : ANIME_COUPLE_TEMPLATES;
+  const templates = pack === "arena" ? ARENA_COUPLE_TEMPLATES : pack === "magic" ? MAGIC_COUPLE_TEMPLATES : ANIME_COUPLE_TEMPLATES;
   const ids = pack !== "classic" ? templates.map((_, index) => index + 1) : DEBATE_TEMPLATE_IDS;
   const pool = ids.filter((id) => id !== previous);
   return pool[Math.floor(Math.random() * pool.length)] ?? 1;
@@ -39,7 +40,7 @@ function debateSprite(templateId: number) {
 }
 
 async function loadDebateTemplate(templateId: number, pack: VisualPack = "classic") {
-  const templates = pack === "magic" ? MAGIC_COUPLE_TEMPLATES : ANIME_COUPLE_TEMPLATES;
+  const templates = pack === "arena" ? ARENA_COUPLE_TEMPLATES : pack === "magic" ? MAGIC_COUPLE_TEMPLATES : ANIME_COUPLE_TEMPLATES;
   const { src, column } = pack !== "classic"
     ? { src: templates[templateId - 1] ?? templates[0], column: 0 }
     : debateSprite(templateId);
@@ -334,6 +335,8 @@ function visualAccessLabel(locale: AqryoLocale, kind: PuzzleKind, presentation: 
 }
 
 function sceneTemplatesFor(kind?: ViralKind, pack: VisualPack = "classic") {
+  if (pack === "arena" && kind === "matchstick") return ARENA_SCENE_TEMPLATES;
+  if (pack === "arena" && kind && supportsAnimeSingle(kind)) return ARENA_SINGLE_TEMPLATES;
   if (pack === "magic" && kind === "matchstick") return MAGIC_SCENE_TEMPLATES;
   if (pack === "magic" && kind && supportsAnimeSingle(kind)) return MAGIC_SINGLE_TEMPLATES;
   if (pack === "anime" && kind === "matchstick") return ANIME_SCENE_TEMPLATES;
@@ -1051,18 +1054,18 @@ function PuzzleBuilderPage() {
             </div>
             {(supportsAnimeSingle(kind) || kind === "math" || kind === "matchstick") && (
               <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label={locale === "tr" ? "Görsel paketi" : "Visual pack"}>
-                {(["classic", "anime", "magic"] as const).map((pack) => (
+                {(["classic", "anime", "magic", "arena"] as const).map((pack) => (
                   <button key={pack} type="button" aria-pressed={visualPack === pack}
                     onClick={() => { setVisualPack(pack); setSceneTemplate(0); setDebateTemplate(1); }}
                     className={`rounded-full border px-4 py-2 text-[14px] font-bold ${visualPack === pack ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-900"}`}>
-                    {pack === "magic" ? (locale === "tr" ? "Büyü Akademisi" : "Magic Academy") : pack === "anime" ? "Anime" : locale === "tr" ? "Klasik" : "Classic"}
+                    {pack === "arena" ? (locale === "tr" ? "Dövüş Arenası" : "Fighting Arena") : pack === "magic" ? (locale === "tr" ? "Büyü Akademisi" : "Magic Academy") : pack === "anime" ? "Anime" : locale === "tr" ? "Klasik" : "Classic"}
                   </button>
                 ))}
               </div>
             )}
             <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} visualPack={activePack} safeArea={activePack === "magic" ? (kind === "matchstick" ? MAGIC_SCENE_SAFE_AREA : MAGIC_SINGLE_SAFE_AREA) : activePack === "anime" ? (kind === "matchstick" ? ANIME_SCENE_SAFE_AREA : ANIME_SINGLE_TEMPLATES[sceneTemplate]?.safeArea) : undefined} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? sceneSrc : sceneSrc}/>
+                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} visualPack={activePack} safeArea={activePack === "arena" ? (kind === "matchstick" ? ARENA_SCENE_SAFE_AREA : ARENA_SINGLE_SAFE_AREA) : activePack === "magic" ? (kind === "matchstick" ? MAGIC_SCENE_SAFE_AREA : MAGIC_SINGLE_SAFE_AREA) : activePack === "anime" ? (kind === "matchstick" ? ANIME_SCENE_SAFE_AREA : ANIME_SINGLE_TEMPLATES[sceneTemplate]?.safeArea) : undefined} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? sceneSrc : sceneSrc}/>
               </div>
             </div>
           </div>
