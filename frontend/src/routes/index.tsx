@@ -43,31 +43,35 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:image",
-        content: "https://aqryo.com/aqryo-logo.png",
+        content: "https://www.aqryo.com/aqryo-social-cover-v1.jpg",
+      },
+      {
+        property: "og:image:secure_url",
+        content: "https://www.aqryo.com/aqryo-social-cover-v1.jpg",
       },
       {
         property: "og:image:type",
-        content: "image/png",
+        content: "image/jpeg",
       },
       {
         property: "og:image:width",
-        content: "1057",
+        content: "1200",
       },
       {
         property: "og:image:height",
-        content: "238",
+        content: "600",
       },
       {
         property: "og:image:alt",
-        content: "AQRYO — Create and share interactive content",
+        content: "AQRYO — Create your content in 5 seconds",
       },
       {
         name: "twitter:image",
-        content: "https://aqryo.com/aqryo-logo.png",
+        content: "https://www.aqryo.com/aqryo-social-cover-v1.jpg",
       },
       {
         name: "twitter:image:alt",
-        content: "AQRYO — Create and share interactive content",
+        content: "AQRYO — Create your content in 5 seconds",
       },
       {
         name: "twitter:card",
