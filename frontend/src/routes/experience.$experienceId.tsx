@@ -1,4 +1,6 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useImageShare } from "@/components/ImageShareDialog";
+import { createResultShareAsset, revokeResultShareAsset } from "@/services/resultShareCards";
+import { useEffect, useRef, useState } from "react";
 import { getParticipantKey, saveCompletion } from "@/services/completions";
 import type { ExperienceBlueprint } from "@/types/experienceBlueprint";
 import { calculateTestResult } from "@/services/test-result-engine";
@@ -1740,6 +1742,7 @@ function StoryResultScreen({
   onRestart: () => void;
   onComplete: () => void;
 }) {
+  const { openImageShare, imageShareDialog } = useImageShare();
   const story = experience.story;
   const [sharing, setSharing] = useState(false);
 
@@ -1775,36 +1778,7 @@ function StoryResultScreen({
         { type: "image/png" },
       );
 
-      const canShareFile =
-        typeof navigator.share === "function" &&
-        typeof navigator.canShare === "function" &&
-        navigator.canShare({ files: [file] });
-
-      if (canShareFile) {
-        await navigator.share({
-          files: [file],
-          text: shareText,
-          title: "AQRYO",
-        });
-        return;
-      }
-
-      const objectUrl = URL.createObjectURL(file);
-      const anchor = document.createElement("a");
-      anchor.href = objectUrl;
-      anchor.download = file.name;
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      URL.revokeObjectURL(objectUrl);
-
-      const x = new URL("https://x.com/intent/tweet");
-      x.searchParams.set("text", shareText);
-      window.open(
-        x.toString(),
-        "_blank",
-        "noopener,noreferrer",
-      );
+      openImageShare(file, `${shareText}\n\n${getPublicShareUrl(experience.id)}`);
     } catch (error) {
       if (
         !(
@@ -1821,6 +1795,7 @@ function StoryResultScreen({
 
   return (
     <article className="rounded-[30px] border border-border bg-white p-6 text-center shadow-[0_24px_70px_rgba(35,16,55,0.12)] sm:p-7">
+      {imageShareDialog}
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-teal-50 text-[26px] text-teal-700">
         ✓
       </div>
@@ -2329,6 +2304,8 @@ function ResultScreen({
   onComplete: () => void;
   onRestart: () => void;
 }) {
+  const { openImageShare, imageShareDialog } = useImageShare();
+  const [sharingImage, setSharingImage] = useState(false);
   const isArchetypeTest =
     experienceType === "test" &&
     (testStrategy === "archetype" || testMode === "archetype");
@@ -2374,46 +2351,26 @@ function ResultScreen({
       });
   }
 
-  function shareResult() {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: experienceTitle,
-          text: shareText,
-          url: publicShareUrl,
-        })
-        .catch(() => {
-          // Kullanıcı paylaşım ekranını kapatırsa işlem yapılmaz.
-        });
-
-      return;
-    }
-
-    copyResultLink();
+  async function shareResult() {
+    if (sharingImage) return;
+    try {
+      setSharingImage(true);
+      const asset = await createResultShareAsset({
+        experienceTitle, resultTitle: displayResultTitle,
+        resultDescription: displayResultDescription,
+        score: isArchetypeTest ? null : score,
+        type: experienceType, shareUrl: publicShareUrl,
+      });
+      openImageShare(asset.file, shareText);
+      revokeResultShareAsset(asset);
+    } catch (error) {
+      console.error(error);
+      window.alert(error instanceof Error ? error.message : "Sonuç görseli oluşturulamadı.");
+    } finally { setSharingImage(false); }
   }
-
-  function shareOnX() {
-    const shareUrl = new URL(
-      "https://x.com/intent/tweet",
-    );
-
-    shareUrl.searchParams.set(
-      "text",
-      `${shareText}\n\n#AQRYO`,
-    );
-    shareUrl.searchParams.set(
-      "url",
-      publicShareUrl,
-    );
-
-    window.open(
-      shareUrl.toString(),
-      "_blank",
-      "noopener,noreferrer",
-    );
-  }
+  function shareOnX() { void shareResult(); }
   return (
-    <article className="overflow-hidden rounded-[30px] border border-border bg-white pb-3 shadow-[0_24px_70px_rgba(35,16,55,0.13)]">     <div className="bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 p-7 text-white">
+    <article className="overflow-hidden rounded-[30px] border border-border bg-white pb-3 shadow-[0_24px_70px_rgba(35,16,55,0.13)]">{imageShareDialog}     <div className="bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 p-7 text-white">
         <p className="text-[12px] font-bold uppercase tracking-[0.15em] text-white/75">
           {experienceType === "compatibility"
             ? "Uyum sonucun"
@@ -2473,7 +2430,8 @@ function ResultScreen({
   <div className="mt-3 grid grid-cols-2 gap-2">
     <button
       type="button"
-      onClick={shareResult}
+      disabled={sharingImage}
+      onClick={() => void shareResult()}
       className="flex h-11 items-center justify-center rounded-full bg-primary px-3 text-[13px] font-bold text-white"
     >
       Sonucumu paylaş
@@ -2481,6 +2439,7 @@ function ResultScreen({
 
     <button
       type="button"
+      disabled={sharingImage}
       onClick={shareOnX}
       className="flex h-11 items-center justify-center rounded-full bg-black px-3 text-[13px] font-bold text-white"
     >

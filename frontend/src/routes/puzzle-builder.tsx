@@ -9,7 +9,7 @@ import { ANIME_SCENE_TEMPLATES, ANIME_SCENE_SAFE_AREA } from "@/lib/animeSceneTe
 import { MAGIC_SINGLE_TEMPLATES, MAGIC_COUPLE_TEMPLATES, MAGIC_SCENE_TEMPLATES, MAGIC_SINGLE_SAFE_AREA, MAGIC_SCENE_SAFE_AREA } from "@/lib/magicAcademyTemplates";
 import { ARENA_SINGLE_TEMPLATES, ARENA_COUPLE_TEMPLATES, ARENA_SCENE_TEMPLATES, ARENA_SINGLE_SAFE_AREA, ARENA_SCENE_SAFE_AREA } from "@/lib/fightingArenaTemplates";
 import { canUseVisualPack, clearVisualPackAssets, getVisualPackAccess, getVisualPackOrder, purchaseVisualPack, resolveVisualPackAsset, type PackAccess, type PaidVisualPack } from "@/services/visual-packs";
-import { SOCIAL_CHANNELS, channelLabel, type SocialChannel } from "@/services/socialShare";
+import { useImageShare } from "@/components/ImageShareDialog";
 import { visualPackCopy, visualPackName } from "@/lib/visualPackCopy";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import React, { useEffect, useRef, useState } from "react";
@@ -860,37 +860,6 @@ function CreatorStamp({ handle }: { handle: string | null }) {
   </g>;
 }
 
-const PUZZLE_SHARE_COPY: Record<AqryoLocale, [string, string, string]> = {
-  tr: ["PNG’yi indir, metni kopyala ve platformunu seç. Platform bağlantıları görseli otomatik eklemez; indirdiğin PNG’yi paylaşımına ekle.", "Diğer uygulamalar", "İşlem tamamlanamadı. Tekrar dene veya metni aşağıdan kopyala."],
-  en: ["Download the PNG, copy the text and choose a platform. Platform links do not attach the image automatically; add the downloaded PNG to your post.", "Other apps", "Could not complete the action. Retry or copy the text below."],
-  es: ["Descarga el PNG, copia el texto y elige una plataforma. Los enlaces no adjuntan la imagen automáticamente; añádela a tu publicación.", "Otras aplicaciones", "No se pudo completar. Reintenta o copia el texto de abajo."],
-  pt: ["Baixe o PNG, copie o texto e escolha uma plataforma. Os links não anexam a imagem automaticamente; adicione-a à publicação.", "Outros aplicativos", "Não foi possível concluir. Tente novamente ou copie o texto abaixo."],
-  fr: ["Téléchargez le PNG, copiez le texte et choisissez une plateforme. Les liens ne joignent pas l’image automatiquement ; ajoutez-la à votre publication.", "Autres applications", "Action impossible. Réessayez ou copiez le texte ci-dessous."],
-  de: ["Lade das PNG herunter, kopiere den Text und wähle eine Plattform. Links hängen das Bild nicht automatisch an; füge es deinem Beitrag hinzu.", "Andere Apps", "Aktion fehlgeschlagen. Erneut versuchen oder den Text unten kopieren."],
-  it: ["Scarica il PNG, copia il testo e scegli una piattaforma. I link non allegano automaticamente l’immagine; aggiungila al post.", "Altre app", "Operazione non riuscita. Riprova o copia il testo qui sotto."],
-  ar: ["نزّل PNG وانسخ النص واختر المنصة. الروابط لا ترفق الصورة تلقائيًا؛ أضف الصورة إلى منشورك.", "تطبيقات أخرى", "تعذر إكمال الإجراء. حاول مجددًا أو انسخ النص أدناه."],
-  hi: ["PNG डाउनलोड करें, टेक्स्ट कॉपी करें और प्लेटफ़ॉर्म चुनें। लिंक अपने आप चित्र नहीं जोड़ते; डाउनलोड किया चित्र पोस्ट में जोड़ें।", "अन्य ऐप", "प्रक्रिया पूरी नहीं हुई। फिर प्रयास करें या नीचे का टेक्स्ट कॉपी करें।"],
-  id: ["Unduh PNG, salin teks dan pilih platform. Tautan tidak melampirkan gambar otomatis; tambahkan PNG ke postingan Anda.", "Aplikasi lain", "Tidak dapat menyelesaikan. Coba lagi atau salin teks di bawah."],
-  ru: ["Скачайте PNG, скопируйте текст и выберите платформу. Ссылки не прикрепляют изображение автоматически; добавьте его к публикации.", "Другие приложения", "Не удалось завершить. Повторите или скопируйте текст ниже."],
-  bn: ["PNG ডাউনলোড করুন, টেক্সট কপি করুন এবং প্ল্যাটফর্ম বাছুন। লিঙ্ক ছবিটি স্বয়ংক্রিয়ভাবে যোগ করে না; পোস্টে PNG যোগ করুন।", "অন্য অ্যাপ", "সম্পূর্ণ করা যায়নি। আবার চেষ্টা করুন বা নিচের টেক্সট কপি করুন।"],
-  ur: ["PNG ڈاؤنلوڈ کریں، متن کاپی کریں اور پلیٹ فارم منتخب کریں۔ لنکس خود تصویر شامل نہیں کرتے؛ پوسٹ میں PNG شامل کریں۔", "دیگر ایپس", "مکمل نہیں ہو سکا۔ دوبارہ کوشش کریں یا نیچے کا متن کاپی کریں۔"],
-  vi: ["Tải PNG, sao chép văn bản và chọn nền tảng. Liên kết không tự đính kèm ảnh; hãy thêm PNG vào bài đăng.", "Ứng dụng khác", "Không thể hoàn tất. Thử lại hoặc sao chép văn bản bên dưới."],
-  fil: ["I-download ang PNG, kopyahin ang text at pumili ng platform. Hindi awtomatikong kasama ang larawan sa link; idagdag ang PNG sa post.", "Ibang apps", "Hindi makumpleto. Subukan muli o kopyahin ang text sa ibaba."],
-};
-
-function puzzleShareDestination(channel: SocialChannel, text: string) {
-  if (channel === "x") {
-    const url = new URL("https://x.com/intent/tweet"); url.searchParams.set("text", text); return url.toString();
-  }
-  if (channel === "whatsapp") {
-    const url = new URL("https://wa.me/"); url.searchParams.set("text", text); return url.toString();
-  }
-  if (channel === "telegram") {
-    return "https://web.telegram.org/";
-  }
-  return { instagram: "https://www.instagram.com/", facebook: "https://www.facebook.com/", linkedin: "https://www.linkedin.com/feed/" }[channel];
-}
-
 function PuzzleBuilderPage() {
   const { locale, t } = useAqryoLocale();
   const copy = COPY[locale] ?? COPY.en;
@@ -902,17 +871,8 @@ function PuzzleBuilderPage() {
   const [socialText,setSocialText]=useState("");
   const [copied,setCopied]=useState(false);
   const [sharing,setSharing]=useState(false);
-  const [shareDialog, setShareDialog] = useState<{ file: File; text: string } | null>(null);
-  const [sharePreview, setSharePreview] = useState<string | null>(null);
+  const { openImageShare, imageShareDialog } = useImageShare();
   const [shareError, setShareError] = useState(false);
-  const nativeShareHandoff = useRef(false);
-  const shareCopy = PUZZLE_SHARE_COPY[locale] ?? PUZZLE_SHARE_COPY.en;
-  useEffect(() => {
-    if (!shareDialog) { setSharePreview(null); return; }
-    const url = URL.createObjectURL(shareDialog.file);
-    setSharePreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [shareDialog]);
   const [shareImage,setShareImage]=useState<{key:string;file:File}|null>(null);
   const [debateTemplate,setDebateTemplate]=useState(()=>pickDebateTemplate());
   const [debateImage,setDebateImage]=useState<{template:number;pack:VisualPack;dataUrl:string}|null>(null);
@@ -1186,46 +1146,18 @@ function PuzzleBuilderPage() {
       if (activePack !== "classic" || creatorHandle) {
         const access = await getVisualPackAccess(); setPackAccess(access);
         if (creatorHandle && !access.owned.length) { setPackError(true); return; }
-        if (!canUseVisualPack(activePack, access)) { clearVisualPackAssets(); setPurchasePack(activePack); return; }
+        if (activePack !== "classic" && !canUseVisualPack(activePack, access)) { clearVisualPackAssets(); setPurchasePack(activePack); return; }
       }
       const file = shareImage?.key === shareImageKey ? shareImage.file : null;
       if(!file) throw new Error("Visual unavailable");
       setShareError(false); setCopied(false);
-      setShareDialog({ file, text: socialText });
+      openImageShare(file, socialText);
     }catch(error){
       if(!(error instanceof DOMException && error.name==="AbortError")) { console.error(error); setShareError(true); }
     }finally{
       setSharing(false);
     }
   }
-
-  async function copyShareText() {
-    if (!shareDialog) return;
-    try {
-      await navigator.clipboard.writeText(shareDialog.text);
-      setCopied(true); setShareError(false);
-      window.setTimeout(() => setCopied(false), 1200);
-    } catch { setShareError(true); }
-  }
-
-  async function shareWithOtherApps() {
-    if (!shareDialog || sharing) return;
-    const snapshot = shareDialog;
-    // Release the host modal before the system share sheet takes focus.
-    nativeShareHandoff.current = true;
-    flushSync(() => { setSharing(true); setShareDialog(null); });
-    try {
-      await navigator.share({ files: [snapshot.file], text: snapshot.text, title: "AQRYO" });
-    } catch (error) {
-      setShareDialog(snapshot);
-      if (!(error instanceof DOMException && error.name === "AbortError")) setShareError(true);
-    } finally { nativeShareHandoff.current = false; setSharing(false); }
-  }
-
-  const canShareWithOtherApps = (() => {
-    try { return Boolean(shareDialog && typeof navigator !== "undefined" && navigator.share && navigator.canShare?.({ files: [shareDialog.file] })); }
-    catch { return false; }
-  })();
 
   if(loading) return <LoadingScreen/>;
 
@@ -1257,27 +1189,7 @@ function PuzzleBuilderPage() {
         </DialogContent>}
       </Dialog>
 
-      <Dialog open={shareDialog !== null} onOpenChange={(open) => { if (!open) setShareDialog(null); }}>
-        {shareDialog && <DialogContent onCloseAutoFocus={(event) => { if (nativeShareHandoff.current) event.preventDefault(); }} className="max-h-[92dvh] w-[calc(100%-2rem)] max-w-[650px] overflow-y-auto rounded-3xl p-4 sm:p-6">
-          <DialogTitle className="text-2xl font-black">{t("shareVisual")}</DialogTitle>
-          <DialogDescription>{shareCopy[0]}</DialogDescription>
-          <div className="grid gap-4 sm:grid-cols-[190px_1fr]">
-            <div className="flex justify-center rounded-2xl bg-violet-50 p-2">
-              {sharePreview && <img src={sharePreview} alt={t("shareVisual")} className="max-h-[30dvh] w-auto rounded-xl object-contain sm:max-h-[280px]" />}
-            </div>
-            <div className="space-y-3">
-              <button type="button" onClick={() => downloadPng(shareDialog.file)} className="w-full rounded-xl bg-violet-600 px-4 py-3 font-bold text-white">↓ {t("downloadSvg").replace("SVG", "PNG")}</button>
-              <textarea readOnly value={shareDialog.text} aria-label={t("cta")} rows={3} className="w-full resize-none rounded-xl border border-violet-200 p-3 text-sm" />
-              <button type="button" onClick={() => void copyShareText()} className="w-full rounded-xl border border-violet-200 px-4 py-3 font-bold text-violet-900">{copied ? "✓" : t("copyText")}</button>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {SOCIAL_CHANNELS.map((channel) => <a key={channel} href={puzzleShareDestination(channel, shareDialog.text)} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-center font-bold text-violet-950 hover:bg-violet-100">{channelLabel(channel)} ↗</a>)}
-          </div>
-          {canShareWithOtherApps && <button type="button" disabled={sharing} onClick={() => void shareWithOtherApps()} className="rounded-xl border border-border px-4 py-3 font-bold">{shareCopy[1]}</button>}
-          {shareError && <p role="alert" className="text-sm text-red-700">{shareCopy[2]}</p>}
-        </DialogContent>}
-      </Dialog>
+      {imageShareDialog}
 
       <div className="mx-auto max-w-[980px] px-4 py-6 sm:px-6 lg:py-9">
         <section className="space-y-5">
@@ -1314,7 +1226,7 @@ function PuzzleBuilderPage() {
               </div>}
               {(!canStamp || stampEnabled) && <p id="creator-stamp-help" className="mt-2 text-xs text-muted-foreground">{stampCopy[2]}</p>}
             </div>
-            {shareError && !shareDialog && <p role="alert" className="mb-3 text-sm text-red-700">{shareCopy[2]}</p>}
+            {shareError && <p role="alert" className="mb-3 text-sm text-red-700">{packCopy.error}</p>}
             {packError && <div className="mb-3 text-sm text-red-700" role="alert">{packCopy.error} <button className="font-bold underline" onClick={() => { void getVisualPackAccess().then((access) => { setPackAccess(access); setPackError(false); }).catch(() => setPackError(true)); setOrderCheck((value) => value + 1); }}>{packCopy.refresh}</button></div>}
             {paymentWaiting && <div className="mb-3 rounded-xl bg-violet-100 p-3 text-sm text-violet-900" role="status">{packCopy.pending} <button className="font-bold underline" onClick={() => setOrderCheck((value) => value + 1)}>{packCopy.refresh}</button></div>}
             <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">

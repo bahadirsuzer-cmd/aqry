@@ -1,3 +1,5 @@
+import { useImageShare } from "@/components/ImageShareDialog";
+import { createResultShareAsset, revokeResultShareAsset } from "@/services/resultShareCards";
 import { useEffect, useState } from "react";
 import { saveCompletion } from "@/services/completions";
 import type { ExperienceBlueprint } from "@/types/experienceBlueprint";
@@ -2029,6 +2031,8 @@ function ResultScreen({
   onOffer: () => void;
   onRestart: () => void;
 }) {
+  const { openImageShare, imageShareDialog } = useImageShare();
+  const [sharingImage, setSharingImage] = useState(false);
   const isArchetypeTest =
     experienceType === "test" &&
     (
@@ -2103,40 +2107,24 @@ function ResultScreen({
       });
   }
 
-  function shareResult() {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: experienceTitle,
-          text: shareText,
-          url: window.location.href,
-        })
-        .catch(() => {
-          // Kullanıcı paylaşım ekranını kapatırsa işlem yapılmaz.
-        });
-
-      return;
-    }
-
-    copyResultLink();
+  async function shareResult() {
+    if (sharingImage) return;
+    try {
+      setSharingImage(true);
+      const asset = await createResultShareAsset({ experienceTitle,
+        resultTitle: displayResultTitle, resultDescription: displayResultDescription,
+        score: isArchetypeTest ? null : score, type: experienceType,
+        shareUrl: window.location.href,
+      });
+      openImageShare(asset.file, shareText);
+      revokeResultShareAsset(asset);
+    } catch (error) { console.error(error); window.alert(error instanceof Error ? error.message : "PNG oluşturulamadı."); }
+    finally { setSharingImage(false); }
   }
-
-  function shareOnX() {
-    const shareUrl = new URL(
-      "https://twitter.com/intent/tweet",
-    );
-
-    shareUrl.searchParams.set("text", shareText);
-    shareUrl.searchParams.set("url", window.location.href);
-
-    window.open(
-      shareUrl.toString(),
-      "_blank",
-      "noopener,noreferrer",
-    );
-  }
+  function shareOnX() { void shareResult(); }
   return (
-    <article className="overflow-hidden rounded-[30px] border border-border bg-white pb-3 shadow-[0_24px_70px_rgba(35,16,55,0.13)]">     <div className="bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 p-7 text-white">
+    <article className="overflow-hidden rounded-[30px] border border-border bg-white pb-3 shadow-[0_24px_70px_rgba(35,16,55,0.13)]">
+      {imageShareDialog}     <div className="bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 p-7 text-white">
         <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/70">
           {experienceType === "compatibility"
             ? "Uyum sonucun"
@@ -2196,7 +2184,8 @@ function ResultScreen({
   <div className="mt-3 grid grid-cols-2 gap-2">
     <button
       type="button"
-      onClick={shareResult}
+      disabled={sharingImage}
+      onClick={() => void shareResult()}
       className="flex h-10 items-center justify-center rounded-full bg-primary px-3 text-[9px] font-bold text-white"
     >
       Sonucumu paylaş
@@ -2204,6 +2193,7 @@ function ResultScreen({
 
     <button
       type="button"
+      disabled={sharingImage}
       onClick={shareOnX}
       className="flex h-10 items-center justify-center rounded-full bg-black px-3 text-[9px] font-bold text-white"
     >

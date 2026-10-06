@@ -1,3 +1,4 @@
+import { useImageShare } from "@/components/ImageShareDialog";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -748,6 +749,8 @@ function ExperienceDetails({
   experience: CreatorExperience;
   compact?: boolean;
 }) {
+  const { openImageShare, imageShareDialog } = useImageShare();
+  const [sharingImage, setSharingImage] = useState(false);
   const [panel, setPanel] = useState<
     "actions" | "participants" | "share"
   >("actions");
@@ -1629,6 +1632,8 @@ async function toggleExperienceStatus() {
   }
 
   async function shareNativeV2() {
+    if (sharingImage) return;
+    setSharingImage(true);
     try {
       const blob = await createShareCardBlob(
         {
@@ -1648,80 +1653,17 @@ async function toggleExperienceStatus() {
         { type: "image/png" },
       );
 
-      const canShareFile =
-        typeof navigator.share === "function" &&
-        typeof navigator.canShare === "function" &&
-        navigator.canShare({ files: [file] });
-
-      if (canShareFile) {
-        await navigator.share({
-          files: [file],
-          text: `${getShareText()}\n${experienceUrl}`,
-          title: "AQRYO",
-        });
-        return;
-      }
-
-      const objectUrl = URL.createObjectURL(file);
-      const anchor = document.createElement("a");
-      anchor.href = objectUrl;
-      anchor.download = file.name;
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      URL.revokeObjectURL(objectUrl);
-
-      const shareUrl = new URL("https://x.com/intent/tweet");
-      shareUrl.searchParams.set(
-        "text",
-        `${getShareText()}\n${experienceUrl}`,
-      );
-      window.open(shareUrl.toString(), "_blank", "noopener,noreferrer");
+      openImageShare(file, `${getShareText()}\n${experienceUrl}`);
     } catch (error) {
       if (!(error instanceof DOMException && error.name === "AbortError")) {
         console.error("V2 paylaşım başarısız:", error);
+        window.alert(error instanceof Error ? error.message : "PNG oluşturulamadı.");
       }
-    }
+    } finally { setSharingImage(false); }
   }
 
-  function shareOnWhatsApp() {
-    const shareUrl = new URL(
-      "https://wa.me/",
-    );
-
-    shareUrl.searchParams.set(
-      "text",
-      `${getShareText()}\n${experienceUrl}`,
-    );
-
-    window.open(
-      shareUrl.toString(),
-      "_blank",
-      "noopener,noreferrer",
-    );
-  }
-
-  function shareOnTelegram() {
-    const shareUrl = new URL(
-      "https://t.me/share/url",
-    );
-
-    shareUrl.searchParams.set(
-      "url",
-      experienceUrl,
-    );
-
-    shareUrl.searchParams.set(
-      "text",
-      getShareText(),
-    );
-
-    window.open(
-      shareUrl.toString(),
-      "_blank",
-      "noopener,noreferrer",
-    );
-  }
+  function shareOnWhatsApp() { void shareNativeV2(); }
+  function shareOnTelegram() { void shareNativeV2(); }
 
   const qrImageUrl =
     experience.status === "published"
@@ -1742,6 +1684,7 @@ async function toggleExperienceStatus() {
           : "rounded-[18px] border border-border bg-white p-4 shadow-[0_10px_30px_rgba(22,12,34,0.035)]"
       }
     >
+      {imageShareDialog}
       {!compact && (
         <>
           <div className="flex items-start justify-between gap-3">

@@ -1,3 +1,4 @@
+import { useImageShare } from "@/components/ImageShareDialog";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
@@ -21,11 +22,6 @@ import {
   getPublicShareUrl,
 } from "@/services/shareAssets";
 import {
-  openSocialShare,
-  shareToInstagram,
-  type SocialChannel,
-} from "@/services/socialShare";
-import {
   getExistingPushSubscription,
 } from "@/services/pushNotifications";
 
@@ -47,6 +43,8 @@ export const Route = createFileRoute(
 });
 
 function PublishSuccessPage() {
+  const { openImageShare, imageShareDialog } = useImageShare();
+  const [sharingImage, setSharingImage] = useState(false);
   const navigate = useNavigate();
   const { experienceId } = Route.useParams();
 
@@ -491,50 +489,20 @@ useEffect(() => {
           : `${experience.title}\n\nSenin sonucun ne çıkacak?\n\n#AQRYO`;
   }
 
-  async function shareOnChannel(channel: Exclude<SocialChannel, "instagram">) {
-    if (!experience) return;
-
-    const url = shareAssetsReady ? publicShareUrl : experienceUrl;
-
-    if (channel === "x") {
-      const source = getShareSource();
-      if (source && navigator.share) {
-        try {
-          const blob = await createShareCardBlob(source, "square");
-          const file = new File([blob], `aqryo-${experience.id}.png`, {
-            type: "image/png",
-          });
-
-          if (!navigator.canShare || navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              files: [file],
-              text: getShareText(),
-              url,
-            });
-            void maybeShowNotificationNudge();
-            return;
-          }
-        } catch (error) {
-          if (error instanceof DOMException && error.name === "AbortError") return;
-          console.error("X görsel paylaşımı açılamadı:", error);
-        }
-      }
-    }
-
-    openSocialShare(channel, getShareText(), url);
-    void maybeShowNotificationNudge();
-  }
-
-  async function shareOnInstagram() {
-    if (!experience) return;
-
-    const url = shareAssetsReady ? publicShareUrl : experienceUrl;
-    await shareToInstagram({
-      text: getShareText(),
-      shareUrl: url,
-    });
-
-    void maybeShowNotificationNudge();
+  async function openPublishedShare() {
+    if (!experience || sharingImage) return;
+    const source = getShareSource();
+    if (!source) return;
+    try {
+      setSharingImage(true);
+      const blob = await createShareCardBlob(source, experience.type === "story" ? "story" : "square");
+      const file = new File([blob], `aqryo-${experience.id}.png`, { type: "image/png" });
+      openImageShare(file, `${getShareText()}\n\n${shareAssetsReady ? publicShareUrl : experienceUrl}`);
+      void maybeShowNotificationNudge();
+    } catch (error) {
+      console.error(error);
+      window.alert(error instanceof Error ? error.message : "PNG oluşturulamadı.");
+    } finally { setSharingImage(false); }
   }
 
   const qrTargetUrl =
@@ -640,6 +608,7 @@ useEffect(() => {
 
   return (
   <div className="min-h-screen bg-[#faf8fb]">
+    {imageShareDialog}
     <CreatorNavigation
       onSignOut={async () => {
         await signOutCreator();
@@ -710,14 +679,7 @@ useEffect(() => {
               </button>
             </div>
 
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              <button type="button" onClick={() => void shareOnChannel("x")} className="flex h-11 items-center justify-center rounded-full bg-black text-xs font-bold text-white transition hover:bg-primary">X</button>
-              <button type="button" onClick={() => void shareOnChannel("linkedin")} className="flex h-11 items-center justify-center rounded-full border border-sky-200 bg-sky-50 text-xs font-bold text-sky-700">LinkedIn</button>
-              <button type="button" onClick={() => void shareOnChannel("whatsapp")} className="flex h-11 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-xs font-bold text-emerald-700">WhatsApp</button>
-              <button type="button" onClick={() => void shareOnChannel("facebook")} className="flex h-11 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-xs font-bold text-blue-700">Facebook</button>
-              <button type="button" onClick={() => void shareOnChannel("telegram")} className="flex h-11 items-center justify-center rounded-full border border-cyan-200 bg-cyan-50 text-xs font-bold text-cyan-700">Telegram</button>
-              <button type="button" onClick={() => void shareOnInstagram()} className="flex h-11 items-center justify-center rounded-full border border-pink-200 bg-pink-50 text-xs font-bold text-pink-700">Instagram</button>
-            </div>
+            <button type="button" disabled={sharingImage} onClick={() => void openPublishedShare()} className="mt-3 flex h-12 w-full items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white disabled:opacity-50">{sharingImage ? "PNG hazırlanıyor…" : "Görselle paylaş ↗"}</button>
 
 {shareAssetsError ? (
   <p className="mt-2 text-center text-[9px] font-bold text-red-500">

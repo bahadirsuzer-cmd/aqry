@@ -1,3 +1,4 @@
+import { useImageShare } from "@/components/ImageShareDialog";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
 import {
@@ -17,6 +18,7 @@ type InboxFilter = "all" | "question" | "confession";
 type InboxItem = AnonymousInboxItem;
 
 function CreatorInboxPage() {
+  const { openImageShare, imageShareDialog } = useImageShare();
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState<InboxItem[]>([]);
   const [filter, setFilter] = useState<InboxFilter>("all");
@@ -236,31 +238,7 @@ function CreatorInboxPage() {
       setSharingId(item.id);
       const file = await createAnswerCard(item);
 
-      if (
-        navigator.share &&
-        (!navigator.canShare || navigator.canShare({ files: [file] }))
-      ) {
-        await navigator.share({
-          files: [file],
-          title: "AQRYO",
-        });
-        return;
-      }
-
-      const fileUrl = URL.createObjectURL(file);
-      const anchor = document.createElement("a");
-      anchor.href = fileUrl;
-      anchor.download = file.name;
-      document.body.appendChild(anchor);
-      anchor.click();
-      anchor.remove();
-      URL.revokeObjectURL(fileUrl);
-
-      window.alert(
-        isTr
-          ? "PNG kaydedildi. Instagram Story, WhatsApp Durum veya istediğin uygulamada paylaşabilirsin."
-          : "PNG saved. You can share it to Instagram Story, WhatsApp Status, or any app.",
-      );
+      openImageShare(file, "");
     } catch (shareError) {
       if (shareError instanceof DOMException && shareError.name === "AbortError") return;
       console.error("AQRYO cevap kartı paylaşılamadı:", shareError);
@@ -294,6 +272,7 @@ function CreatorInboxPage() {
 
   return (
     <main className="min-h-screen bg-[#f7f5fb] text-foreground">
+      {imageShareDialog}
       <CreatorNavigation
         onSignOut={async () => {
           await signOutCreator();
