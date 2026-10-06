@@ -32,13 +32,16 @@ import { Route as CreatorFollowingRouteImport } from './routes/creator-following
 import { Route as CreatorGiftsRouteImport } from './routes/creator-gifts'
 import { Route as CreatorInboxRouteImport } from './routes/creator-inbox'
 import { Route as CreatorLegalRouteImport } from './routes/creator-legal'
+import { Route as CreatorNotificationsRouteImport } from './routes/creator-notifications'
 import { Route as CreatorPaymentsRouteImport } from './routes/creator-payments'
 import { Route as CreatorPrivacyRouteImport } from './routes/creator-privacy'
 import { Route as CreatorProfileRouteImport } from './routes/creator-profile'
+import { Route as CreatorPublishRouteImport } from './routes/creator-publish'
 import { Route as CreatorPurchasesRouteImport } from './routes/creator-purchases'
 import { Route as CreatorResetPasswordRouteImport } from './routes/creator-reset-password'
 import { Route as CreatorSecurityRouteImport } from './routes/creator-security'
 import { Route as CreatorSentGiftsRouteImport } from './routes/creator-sent-gifts'
+import { Route as CreatorSocialRouteImport } from './routes/creator-social'
 import { Route as CreatorStudioRouteImport } from './routes/creator-studio'
 import { Route as CreatorTermsRouteImport } from './routes/creator-terms'
 import { Route as DeliveryRefundRouteImport } from './routes/delivery-refund'
@@ -47,6 +50,7 @@ import { Route as ExamplesRouteImport } from './routes/examples'
 import { Route as GuessBuilderRouteImport } from './routes/guess-builder'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as InternettenParaKazanmaRouteImport } from './routes/internetten-para-kazanma'
+import { Route as OpsVault7q4m9x2kRouteImport } from './routes/ops-vault-7q4m9x2k'
 import { Route as PaymentTermsRouteImport } from './routes/payment-terms'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -184,6 +188,11 @@ const CreatorLegalRoute = CreatorLegalRouteImport.update({
   path: '/creator-legal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreatorNotificationsRoute = CreatorNotificationsRouteImport.update({
+  id: '/creator-notifications',
+  path: '/creator-notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreatorPaymentsRoute = CreatorPaymentsRouteImport.update({
   id: '/creator-payments',
   path: '/creator-payments',
@@ -197,6 +206,11 @@ const CreatorPrivacyRoute = CreatorPrivacyRouteImport.update({
 const CreatorProfileRoute = CreatorProfileRouteImport.update({
   id: '/creator-profile',
   path: '/creator-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorPublishRoute = CreatorPublishRouteImport.update({
+  id: '/creator-publish',
+  path: '/creator-publish',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreatorPurchasesRoute = CreatorPurchasesRouteImport.update({
@@ -217,6 +231,11 @@ const CreatorSecurityRoute = CreatorSecurityRouteImport.update({
 const CreatorSentGiftsRoute = CreatorSentGiftsRouteImport.update({
   id: '/creator-sent-gifts',
   path: '/creator-sent-gifts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorSocialRoute = CreatorSocialRouteImport.update({
+  id: '/creator-social',
+  path: '/creator-social',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreatorStudioRoute = CreatorStudioRouteImport.update({
@@ -257,6 +276,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
 const InternettenParaKazanmaRoute = InternettenParaKazanmaRouteImport.update({
   id: '/internetten-para-kazanma',
   path: '/internetten-para-kazanma',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OpsVault7q4m9x2kRoute = OpsVault7q4m9x2kRouteImport.update({
+  id: '/ops-vault-7q4m9x2k',
+  path: '/ops-vault-7q4m9x2k',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PaymentTermsRoute = PaymentTermsRouteImport.update({
@@ -392,13 +416,16 @@ export interface FileRoutesByFullPath {
   '/creator-gifts': typeof CreatorGiftsRoute
   '/creator-inbox': typeof CreatorInboxRoute
   '/creator-legal': typeof CreatorLegalRoute
+  '/creator-notifications': typeof CreatorNotificationsRoute
   '/creator-payments': typeof CreatorPaymentsRoute
   '/creator-privacy': typeof CreatorPrivacyRoute
   '/creator-profile': typeof CreatorProfileRoute
+  '/creator-publish': typeof CreatorPublishRoute
   '/creator-purchases': typeof CreatorPurchasesRoute
   '/creator-reset-password': typeof CreatorResetPasswordRoute
   '/creator-security': typeof CreatorSecurityRoute
   '/creator-sent-gifts': typeof CreatorSentGiftsRoute
+  '/creator-social': typeof CreatorSocialRoute
   '/creator-studio': typeof CreatorStudioRoute
   '/creator-terms': typeof CreatorTermsRoute
   '/delivery-refund': typeof DeliveryRefundRoute
@@ -407,6 +434,7 @@ export interface FileRoutesByFullPath {
   '/guess-builder': typeof GuessBuilderRoute
   '/how-it-works': typeof HowItWorksRoute
   '/internetten-para-kazanma': typeof InternettenParaKazanmaRoute
+  '/ops-vault-7q4m9x2k': typeof OpsVault7q4m9x2kRoute
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -453,13 +481,16 @@ export interface FileRoutesByTo {
   '/creator-gifts': typeof CreatorGiftsRoute
   '/creator-inbox': typeof CreatorInboxRoute
   '/creator-legal': typeof CreatorLegalRoute
+  '/creator-notifications': typeof CreatorNotificationsRoute
   '/creator-payments': typeof CreatorPaymentsRoute
   '/creator-privacy': typeof CreatorPrivacyRoute
   '/creator-profile': typeof CreatorProfileRoute
+  '/creator-publish': typeof CreatorPublishRoute
   '/creator-purchases': typeof CreatorPurchasesRoute
   '/creator-reset-password': typeof CreatorResetPasswordRoute
   '/creator-security': typeof CreatorSecurityRoute
   '/creator-sent-gifts': typeof CreatorSentGiftsRoute
+  '/creator-social': typeof CreatorSocialRoute
   '/creator-studio': typeof CreatorStudioRoute
   '/creator-terms': typeof CreatorTermsRoute
   '/delivery-refund': typeof DeliveryRefundRoute
@@ -468,6 +499,7 @@ export interface FileRoutesByTo {
   '/guess-builder': typeof GuessBuilderRoute
   '/how-it-works': typeof HowItWorksRoute
   '/internetten-para-kazanma': typeof InternettenParaKazanmaRoute
+  '/ops-vault-7q4m9x2k': typeof OpsVault7q4m9x2kRoute
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -514,13 +546,16 @@ export interface FileRoutesById {
   '/creator-gifts': typeof CreatorGiftsRoute
   '/creator-inbox': typeof CreatorInboxRoute
   '/creator-legal': typeof CreatorLegalRoute
+  '/creator-notifications': typeof CreatorNotificationsRoute
   '/creator-payments': typeof CreatorPaymentsRoute
   '/creator-privacy': typeof CreatorPrivacyRoute
   '/creator-profile': typeof CreatorProfileRoute
+  '/creator-publish': typeof CreatorPublishRoute
   '/creator-purchases': typeof CreatorPurchasesRoute
   '/creator-reset-password': typeof CreatorResetPasswordRoute
   '/creator-security': typeof CreatorSecurityRoute
   '/creator-sent-gifts': typeof CreatorSentGiftsRoute
+  '/creator-social': typeof CreatorSocialRoute
   '/creator-studio': typeof CreatorStudioRoute
   '/creator-terms': typeof CreatorTermsRoute
   '/delivery-refund': typeof DeliveryRefundRoute
@@ -529,6 +564,7 @@ export interface FileRoutesById {
   '/guess-builder': typeof GuessBuilderRoute
   '/how-it-works': typeof HowItWorksRoute
   '/internetten-para-kazanma': typeof InternettenParaKazanmaRoute
+  '/ops-vault-7q4m9x2k': typeof OpsVault7q4m9x2kRoute
   '/payment-terms': typeof PaymentTermsRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -577,13 +613,16 @@ export interface FileRouteTypes {
     | '/creator-gifts'
     | '/creator-inbox'
     | '/creator-legal'
+    | '/creator-notifications'
     | '/creator-payments'
     | '/creator-privacy'
     | '/creator-profile'
+    | '/creator-publish'
     | '/creator-purchases'
     | '/creator-reset-password'
     | '/creator-security'
     | '/creator-sent-gifts'
+    | '/creator-social'
     | '/creator-studio'
     | '/creator-terms'
     | '/delivery-refund'
@@ -592,6 +631,7 @@ export interface FileRouteTypes {
     | '/guess-builder'
     | '/how-it-works'
     | '/internetten-para-kazanma'
+    | '/ops-vault-7q4m9x2k'
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
@@ -638,13 +678,16 @@ export interface FileRouteTypes {
     | '/creator-gifts'
     | '/creator-inbox'
     | '/creator-legal'
+    | '/creator-notifications'
     | '/creator-payments'
     | '/creator-privacy'
     | '/creator-profile'
+    | '/creator-publish'
     | '/creator-purchases'
     | '/creator-reset-password'
     | '/creator-security'
     | '/creator-sent-gifts'
+    | '/creator-social'
     | '/creator-studio'
     | '/creator-terms'
     | '/delivery-refund'
@@ -653,6 +696,7 @@ export interface FileRouteTypes {
     | '/guess-builder'
     | '/how-it-works'
     | '/internetten-para-kazanma'
+    | '/ops-vault-7q4m9x2k'
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
@@ -698,13 +742,16 @@ export interface FileRouteTypes {
     | '/creator-gifts'
     | '/creator-inbox'
     | '/creator-legal'
+    | '/creator-notifications'
     | '/creator-payments'
     | '/creator-privacy'
     | '/creator-profile'
+    | '/creator-publish'
     | '/creator-purchases'
     | '/creator-reset-password'
     | '/creator-security'
     | '/creator-sent-gifts'
+    | '/creator-social'
     | '/creator-studio'
     | '/creator-terms'
     | '/delivery-refund'
@@ -713,6 +760,7 @@ export interface FileRouteTypes {
     | '/guess-builder'
     | '/how-it-works'
     | '/internetten-para-kazanma'
+    | '/ops-vault-7q4m9x2k'
     | '/payment-terms'
     | '/pricing'
     | '/privacy'
@@ -760,13 +808,16 @@ export interface RootRouteChildren {
   CreatorGiftsRoute: typeof CreatorGiftsRoute
   CreatorInboxRoute: typeof CreatorInboxRoute
   CreatorLegalRoute: typeof CreatorLegalRoute
+  CreatorNotificationsRoute: typeof CreatorNotificationsRoute
   CreatorPaymentsRoute: typeof CreatorPaymentsRoute
   CreatorPrivacyRoute: typeof CreatorPrivacyRoute
   CreatorProfileRoute: typeof CreatorProfileRoute
+  CreatorPublishRoute: typeof CreatorPublishRoute
   CreatorPurchasesRoute: typeof CreatorPurchasesRoute
   CreatorResetPasswordRoute: typeof CreatorResetPasswordRoute
   CreatorSecurityRoute: typeof CreatorSecurityRoute
   CreatorSentGiftsRoute: typeof CreatorSentGiftsRoute
+  CreatorSocialRoute: typeof CreatorSocialRoute
   CreatorStudioRoute: typeof CreatorStudioRoute
   CreatorTermsRoute: typeof CreatorTermsRoute
   DeliveryRefundRoute: typeof DeliveryRefundRoute
@@ -775,6 +826,7 @@ export interface RootRouteChildren {
   GuessBuilderRoute: typeof GuessBuilderRoute
   HowItWorksRoute: typeof HowItWorksRoute
   InternettenParaKazanmaRoute: typeof InternettenParaKazanmaRoute
+  OpsVault7q4m9x2kRoute: typeof OpsVault7q4m9x2kRoute
   PaymentTermsRoute: typeof PaymentTermsRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -958,6 +1010,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreatorLegalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/creator-notifications': {
+      id: '/creator-notifications'
+      path: '/creator-notifications'
+      fullPath: '/creator-notifications'
+      preLoaderRoute: typeof CreatorNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/creator-payments': {
       id: '/creator-payments'
       path: '/creator-payments'
@@ -977,6 +1036,13 @@ declare module '@tanstack/react-router' {
       path: '/creator-profile'
       fullPath: '/creator-profile'
       preLoaderRoute: typeof CreatorProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creator-publish': {
+      id: '/creator-publish'
+      path: '/creator-publish'
+      fullPath: '/creator-publish'
+      preLoaderRoute: typeof CreatorPublishRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/creator-purchases': {
@@ -1005,6 +1071,13 @@ declare module '@tanstack/react-router' {
       path: '/creator-sent-gifts'
       fullPath: '/creator-sent-gifts'
       preLoaderRoute: typeof CreatorSentGiftsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creator-social': {
+      id: '/creator-social'
+      path: '/creator-social'
+      fullPath: '/creator-social'
+      preLoaderRoute: typeof CreatorSocialRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/creator-studio': {
@@ -1061,6 +1134,13 @@ declare module '@tanstack/react-router' {
       path: '/internetten-para-kazanma'
       fullPath: '/internetten-para-kazanma'
       preLoaderRoute: typeof InternettenParaKazanmaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ops-vault-7q4m9x2k': {
+      id: '/ops-vault-7q4m9x2k'
+      path: '/ops-vault-7q4m9x2k'
+      fullPath: '/ops-vault-7q4m9x2k'
+      preLoaderRoute: typeof OpsVault7q4m9x2kRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/payment-terms': {
@@ -1253,13 +1333,16 @@ const rootRouteChildren: RootRouteChildren = {
   CreatorGiftsRoute: CreatorGiftsRoute,
   CreatorInboxRoute: CreatorInboxRoute,
   CreatorLegalRoute: CreatorLegalRoute,
+  CreatorNotificationsRoute: CreatorNotificationsRoute,
   CreatorPaymentsRoute: CreatorPaymentsRoute,
   CreatorPrivacyRoute: CreatorPrivacyRoute,
   CreatorProfileRoute: CreatorProfileRoute,
+  CreatorPublishRoute: CreatorPublishRoute,
   CreatorPurchasesRoute: CreatorPurchasesRoute,
   CreatorResetPasswordRoute: CreatorResetPasswordRoute,
   CreatorSecurityRoute: CreatorSecurityRoute,
   CreatorSentGiftsRoute: CreatorSentGiftsRoute,
+  CreatorSocialRoute: CreatorSocialRoute,
   CreatorStudioRoute: CreatorStudioRoute,
   CreatorTermsRoute: CreatorTermsRoute,
   DeliveryRefundRoute: DeliveryRefundRoute,
@@ -1268,6 +1351,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuessBuilderRoute: GuessBuilderRoute,
   HowItWorksRoute: HowItWorksRoute,
   InternettenParaKazanmaRoute: InternettenParaKazanmaRoute,
+  OpsVault7q4m9x2kRoute: OpsVault7q4m9x2kRoute,
   PaymentTermsRoute: PaymentTermsRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
