@@ -1,49 +1,153 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PublicPageShell } from "@/components/public/PublicPageShell";
 import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
+import { visualPackCopy, visualPackName } from "@/lib/visualPackCopy";
 
 export const Route = createFileRoute("/pricing")({ component: PricingPage });
-
-type Copy={eyebrow:string;title:string;description:string;freeLabel:string;freeTitle:string;freeText:string;proLabel:string;proTitle:string;proText:string;socialLabel:string;socialTitle:string;socialText:string;ctaTitle:string;ctaText:string;cta:string};
-const COPY:Record<AqryoLocale,Copy>={
-tr:{eyebrow:"Fiyatlandırma",title:"Ücretsiz başla. Tüm AQRYO’ya erişmek istediğinde yükselt.",description:"AQRYO’nun temel araçlarını ücretsiz kullanabilirsin. 4.99 planı, sosyal medya hesaplarını bağlama ve tüm içerik formatlarına sınırsız erişim sağlar.",freeLabel:"Ücretsiz",freeTitle:"Başlangıç",freeText:"AQRYO’yu ücretsiz kullanmaya başlayabilirsin. Bazı içerik formatları ve gelişmiş özellikler ücretli planda kilitli olabilir.",proLabel:"Tam erişim",proTitle:"4.99",proText:"Tüm içerik formatlarına sınırsız eriş. Ücretli plana dahil olan formatları kullanım limiti olmadan oluştur.",socialLabel:"Bağlantılar",socialTitle:"Sosyal medya hesaplarını bağla",socialText:"Desteklenen sosyal medya hesaplarını AQRYO’ya bağla ve creator akışını tek yerden yönet.",ctaTitle:"Önce ücretsiz dene.",ctaText:"İhtiyacın olduğunda 4.99 plana geçerek sosyal medya bağlantılarını ve sınırsız içerik erişimini aç.",cta:"Creator girişi →"},
-en:{eyebrow:"Pricing",title:"Start free. Upgrade when you want full AQRYO access.",description:"Use AQRYO’s core tools for free. The 4.99 plan unlocks social account connections and unlimited access to all content formats.",freeLabel:"Free",freeTitle:"Start",freeText:"Start using AQRYO for free. Some content formats and advanced features may remain locked to the paid plan.",proLabel:"Full access",proTitle:"4.99",proText:"Get unlimited access to all content formats included in the paid plan, with no usage limit.",socialLabel:"Connections",socialTitle:"Connect social accounts",socialText:"Connect supported social media accounts to AQRYO and manage your creator flow from one place.",ctaTitle:"Try it free first.",ctaText:"When you need more, switch to the 4.99 plan to unlock social connections and unlimited content access.",cta:"Creator login →"},
-de:{eyebrow:"Preise",title:"Kostenlos starten. Für vollen AQRYO-Zugang upgraden.",description:"Nutze die Kernfunktionen kostenlos. Der 4.99-Tarif schaltet Social-Media-Verknüpfungen und unbegrenzten Zugriff auf alle Inhaltsformate frei.",freeLabel:"Kostenlos",freeTitle:"Start",freeText:"Starte AQRYO kostenlos. Einige Inhaltsformate und erweiterte Funktionen können dem kostenpflichtigen Tarif vorbehalten sein.",proLabel:"Voller Zugriff",proTitle:"4.99",proText:"Unbegrenzter Zugriff auf alle im kostenpflichtigen Tarif enthaltenen Inhaltsformate – ohne Nutzungslimit.",socialLabel:"Verknüpfungen",socialTitle:"Social-Media-Konten verbinden",socialText:"Verbinde unterstützte Social-Media-Konten mit AQRYO und verwalte deinen Creator-Flow zentral.",ctaTitle:"Erst kostenlos testen.",ctaText:"Wechsle bei Bedarf zum 4.99-Tarif und schalte Social-Verknüpfungen sowie unbegrenzten Inhaltszugriff frei.",cta:"Creator-Login →"},
-es:{eyebrow:"Precios",title:"Empieza gratis. Mejora cuando quieras acceso completo a AQRYO.",description:"Usa gratis las herramientas principales de AQRYO. El plan 4.99 desbloquea conexiones con redes sociales y acceso ilimitado a todos los formatos.",freeLabel:"Gratis",freeTitle:"Inicio",freeText:"Empieza a usar AQRYO gratis. Algunos formatos y funciones avanzadas pueden estar reservados al plan de pago.",proLabel:"Acceso total",proTitle:"4.99",proText:"Accede sin límites a todos los formatos incluidos en el plan de pago.",socialLabel:"Conexiones",socialTitle:"Conecta tus redes sociales",socialText:"Conecta las cuentas compatibles a AQRYO y gestiona tu flujo de creador desde un solo lugar.",ctaTitle:"Pruébalo gratis primero.",ctaText:"Cuando lo necesites, pasa al plan 4.99 para activar conexiones sociales y acceso ilimitado al contenido.",cta:"Acceso creator →"},
-pt:{eyebrow:"Preços",title:"Comece grátis. Faça upgrade quando quiser acesso completo à AQRYO.",description:"Use gratuitamente as ferramentas principais. O plano 4.99 libera conexões com redes sociais e acesso ilimitado a todos os formatos.",freeLabel:"Grátis",freeTitle:"Começar",freeText:"Comece a usar a AQRYO grátis. Alguns formatos e recursos avançados podem ficar disponíveis apenas no plano pago.",proLabel:"Acesso total",proTitle:"4.99",proText:"Acesse sem limites todos os formatos incluídos no plano pago.",socialLabel:"Conexões",socialTitle:"Conecte suas redes sociais",socialText:"Conecte contas sociais compatíveis à AQRYO e gerencie seu fluxo de creator em um só lugar.",ctaTitle:"Experimente grátis primeiro.",ctaText:"Quando precisar, passe para o plano 4.99 e libere conexões sociais e acesso ilimitado ao conteúdo.",cta:"Login do creator →"},
-fr:{eyebrow:"Tarifs",title:"Commence gratuitement. Passe à l’offre complète quand tu veux.",description:"Utilise gratuitement les outils essentiels d’AQRYO. L’offre 4.99 débloque les connexions aux réseaux sociaux et l’accès illimité à tous les formats.",freeLabel:"Gratuit",freeTitle:"Démarrer",freeText:"Commence gratuitement avec AQRYO. Certains formats et fonctions avancées peuvent rester réservés à l’offre payante.",proLabel:"Accès complet",proTitle:"4.99",proText:"Accède sans limite à tous les formats inclus dans l’offre payante.",socialLabel:"Connexions",socialTitle:"Connecte tes réseaux sociaux",socialText:"Connecte les comptes compatibles à AQRYO et gère ton activité de créateur au même endroit.",ctaTitle:"Essaie d’abord gratuitement.",ctaText:"Passe à l’offre 4.99 lorsque tu veux débloquer les connexions sociales et l’accès illimité aux contenus.",cta:"Connexion creator →"},
-it:{eyebrow:"Prezzi",title:"Inizia gratis. Passa all’accesso completo quando vuoi.",description:"Usa gratuitamente gli strumenti principali di AQRYO. Il piano 4.99 sblocca i collegamenti social e l’accesso illimitato a tutti i formati.",freeLabel:"Gratis",freeTitle:"Inizia",freeText:"Inizia a usare AQRYO gratis. Alcuni formati e funzioni avanzate possono restare riservati al piano a pagamento.",proLabel:"Accesso completo",proTitle:"4.99",proText:"Accedi senza limiti a tutti i formati inclusi nel piano a pagamento.",socialLabel:"Collegamenti",socialTitle:"Collega i tuoi account social",socialText:"Collega gli account supportati ad AQRYO e gestisci il flusso creator da un unico posto.",ctaTitle:"Provalo prima gratis.",ctaText:"Quando ti serve, passa al piano 4.99 per sbloccare collegamenti social e accesso illimitato ai contenuti.",cta:"Accesso creator →"},
-ar:{eyebrow:"الأسعار",title:"ابدأ مجانًا، وقم بالترقية عند رغبتك في الوصول الكامل إلى AQRYO.",description:"استخدم أدوات AQRYO الأساسية مجانًا. تتيح خطة 4.99 ربط حسابات التواصل الاجتماعي والوصول غير المحدود إلى جميع صيغ المحتوى.",freeLabel:"مجاني",freeTitle:"ابدأ",freeText:"ابدأ باستخدام AQRYO مجانًا. قد تبقى بعض صيغ المحتوى والميزات المتقدمة متاحة فقط في الخطة المدفوعة.",proLabel:"وصول كامل",proTitle:"4.99",proText:"وصول غير محدود إلى جميع صيغ المحتوى المشمولة في الخطة المدفوعة.",socialLabel:"الربط",socialTitle:"اربط حسابات التواصل",socialText:"اربط الحسابات المدعومة بـ AQRYO وأدر تدفق عملك كصانع محتوى من مكان واحد.",ctaTitle:"جرّبه مجانًا أولًا.",ctaText:"عند الحاجة، انتقل إلى خطة 4.99 لفتح ربط الحسابات والوصول غير المحدود إلى المحتوى.",cta:"دخول صانع المحتوى →"},
-hi:{eyebrow:"मूल्य",title:"मुफ़्त शुरू करें। पूरे AQRYO एक्सेस के लिए अपग्रेड करें।",description:"AQRYO के मुख्य टूल मुफ़्त इस्तेमाल करें। 4.99 प्लान सोशल मीडिया अकाउंट कनेक्शन और सभी कंटेंट फ़ॉर्मेट का असीमित एक्सेस खोलता है।",freeLabel:"मुफ़्त",freeTitle:"शुरुआत",freeText:"AQRYO मुफ़्त शुरू करें। कुछ कंटेंट फ़ॉर्मेट और उन्नत सुविधाएँ पेड प्लान में लॉक हो सकती हैं।",proLabel:"पूरा एक्सेस",proTitle:"4.99",proText:"पेड प्लान में शामिल सभी कंटेंट फ़ॉर्मेट का बिना उपयोग सीमा एक्सेस पाएँ।",socialLabel:"कनेक्शन",socialTitle:"सोशल अकाउंट जोड़ें",socialText:"समर्थित सोशल मीडिया अकाउंट AQRYO से जोड़ें और creator flow एक जगह से संभालें।",ctaTitle:"पहले मुफ़्त आज़माएँ।",ctaText:"ज़रूरत होने पर 4.99 प्लान लेकर सोशल कनेक्शन और असीमित कंटेंट एक्सेस खोलें।",cta:"Creator लॉगिन →"},
-id:{eyebrow:"Harga",title:"Mulai gratis. Upgrade saat ingin akses penuh AQRYO.",description:"Gunakan alat inti AQRYO secara gratis. Paket 4.99 membuka koneksi akun media sosial dan akses tanpa batas ke semua format konten.",freeLabel:"Gratis",freeTitle:"Mulai",freeText:"Mulai gunakan AQRYO gratis. Beberapa format dan fitur lanjutan dapat tetap terkunci di paket berbayar.",proLabel:"Akses penuh",proTitle:"4.99",proText:"Akses tanpa batas ke semua format konten yang termasuk dalam paket berbayar.",socialLabel:"Koneksi",socialTitle:"Hubungkan akun sosial",socialText:"Hubungkan akun media sosial yang didukung ke AQRYO dan kelola alur kreator dari satu tempat.",ctaTitle:"Coba gratis dulu.",ctaText:"Saat dibutuhkan, pindah ke paket 4.99 untuk membuka koneksi sosial dan akses konten tanpa batas.",cta:"Login creator →"},
-ru:{eyebrow:"Цены",title:"Начните бесплатно. Перейдите на полный доступ, когда понадобится.",description:"Основные инструменты AQRYO доступны бесплатно. План 4.99 открывает подключение соцсетей и безлимитный доступ ко всем форматам контента.",freeLabel:"Бесплатно",freeTitle:"Старт",freeText:"Начните пользоваться AQRYO бесплатно. Некоторые форматы и расширенные функции могут быть доступны только в платном плане.",proLabel:"Полный доступ",proTitle:"4.99",proText:"Безлимитный доступ ко всем форматам контента, включённым в платный план.",socialLabel:"Подключения",socialTitle:"Подключите соцсети",socialText:"Подключите поддерживаемые аккаунты к AQRYO и управляйте creator-процессом в одном месте.",ctaTitle:"Сначала попробуйте бесплатно.",ctaText:"При необходимости перейдите на план 4.99, чтобы открыть соцсети и безлимитный доступ к контенту.",cta:"Вход creator →"},
-bn:{eyebrow:"মূল্য",title:"বিনামূল্যে শুরু করুন। পূর্ণ AQRYO অ্যাক্সেস চাইলে আপগ্রেড করুন।",description:"AQRYO-এর মূল টুল বিনামূল্যে ব্যবহার করুন। 4.99 প্ল্যান সোশ্যাল মিডিয়া অ্যাকাউন্ট সংযোগ ও সব কনটেন্ট ফরম্যাটে সীমাহীন অ্যাক্সেস দেয়।",freeLabel:"বিনামূল্যে",freeTitle:"শুরু",freeText:"AQRYO বিনামূল্যে শুরু করুন। কিছু কনটেন্ট ফরম্যাট ও উন্নত ফিচার পেইড প্ল্যানে লক থাকতে পারে।",proLabel:"পূর্ণ অ্যাক্সেস",proTitle:"4.99",proText:"পেইড প্ল্যানে অন্তর্ভুক্ত সব কনটেন্ট ফরম্যাট সীমাহীনভাবে ব্যবহার করুন।",socialLabel:"সংযোগ",socialTitle:"সোশ্যাল অ্যাকাউন্ট যুক্ত করুন",socialText:"সমর্থিত সোশ্যাল মিডিয়া অ্যাকাউন্ট AQRYO-তে যুক্ত করে creator flow এক জায়গা থেকে পরিচালনা করুন।",ctaTitle:"আগে বিনামূল্যে চেষ্টা করুন।",ctaText:"প্রয়োজন হলে 4.99 প্ল্যানে গিয়ে সোশ্যাল সংযোগ ও সীমাহীন কনটেন্ট অ্যাক্সেস চালু করুন।",cta:"Creator লগইন →"},
-ur:{eyebrow:"قیمت",title:"مفت شروع کریں۔ مکمل AQRYO رسائی کے لیے اپ گریڈ کریں۔",description:"AQRYO کے بنیادی ٹول مفت استعمال کریں۔ 4.99 پلان سوشل میڈیا اکاؤنٹس جوڑنے اور تمام مواد فارمیٹس تک لامحدود رسائی دیتا ہے۔",freeLabel:"مفت",freeTitle:"آغاز",freeText:"AQRYO مفت شروع کریں۔ کچھ مواد فارمیٹس اور جدید فیچرز صرف پیڈ پلان میں دستیاب ہو سکتے ہیں۔",proLabel:"مکمل رسائی",proTitle:"4.99",proText:"پیڈ پلان میں شامل تمام مواد فارمیٹس تک بغیر استعمال کی حد کے رسائی حاصل کریں۔",socialLabel:"کنکشنز",socialTitle:"سوشل اکاؤنٹس جوڑیں",socialText:"معاون سوشل میڈیا اکاؤنٹس AQRYO سے جوڑیں اور creator flow ایک جگہ سے سنبھالیں۔",ctaTitle:"پہلے مفت آزمائیں۔",ctaText:"ضرورت پر 4.99 پلان لے کر سوشل کنکشنز اور لامحدود مواد رسائی کھولیں۔",cta:"Creator لاگ اِن →"},
-vi:{eyebrow:"Bảng giá",title:"Bắt đầu miễn phí. Nâng cấp khi bạn muốn dùng đầy đủ AQRYO.",description:"Dùng miễn phí các công cụ cốt lõi của AQRYO. Gói 4.99 mở kết nối tài khoản mạng xã hội và quyền truy cập không giới hạn vào mọi định dạng nội dung.",freeLabel:"Miễn phí",freeTitle:"Bắt đầu",freeText:"Bắt đầu dùng AQRYO miễn phí. Một số định dạng và tính năng nâng cao có thể chỉ dành cho gói trả phí.",proLabel:"Toàn quyền",proTitle:"4.99",proText:"Truy cập không giới hạn mọi định dạng nội dung có trong gói trả phí.",socialLabel:"Kết nối",socialTitle:"Kết nối tài khoản xã hội",socialText:"Kết nối các tài khoản được hỗ trợ với AQRYO và quản lý quy trình creator tại một nơi.",ctaTitle:"Thử miễn phí trước.",ctaText:"Khi cần, chuyển sang gói 4.99 để mở kết nối xã hội và quyền truy cập nội dung không giới hạn.",cta:"Đăng nhập creator →"},
-fil:{eyebrow:"Presyo",title:"Magsimula nang libre. Mag-upgrade kapag gusto mo ng buong AQRYO access.",description:"Gamitin nang libre ang core tools ng AQRYO. Binubuksan ng 4.99 plan ang social media connections at unlimited access sa lahat ng content formats.",freeLabel:"Libre",freeTitle:"Simula",freeText:"Magsimula sa AQRYO nang libre. Maaaring naka-lock sa paid plan ang ilang content formats at advanced features.",proLabel:"Full access",proTitle:"4.99",proText:"Unlimited access sa lahat ng content formats na kasama sa paid plan, nang walang usage limit.",socialLabel:"Connections",socialTitle:"Ikonekta ang social accounts",socialText:"Ikonekta ang supported social media accounts sa AQRYO at pamahalaan ang creator flow sa iisang lugar.",ctaTitle:"Subukan muna nang libre.",ctaText:"Kapag kailangan, lumipat sa 4.99 plan para i-unlock ang social connections at unlimited content access.",cta:"Creator login →"}
+type Copy = [title: string, description: string, free: string, tax: string, launch: string, cta: string];
+const COPY: Record<AqryoLocale, Copy> = {
+  "tr": [
+    "Ücretsiz oluştur. Görsel paketini seç.",
+    "Üç paket ayrı satılır; her biri AQRYO içinde 30 dijital şablon açar.",
+    "Temel içerik üretimi ve Klasik görseller ücretsizdir.",
+    "USD - Vergiler dahil - Paket başına",
+    "Satın alma yakında açılacak. Şu anda paketleri deneyebilirsin.",
+    "İçerik oluştur →"
+  ],
+  "en": [
+    "Create for free. Choose your visual pack.",
+    "Three packs sold separately; each unlocks 30 digital templates within AQRYO.",
+    "Core content creation and Classic visuals are free.",
+    "USD - Tax included - Per pack",
+    "Paid checkout is coming soon. You can currently try the packs.",
+    "Create content →"
+  ],
+  "de": [
+    "Kostenlos erstellen. Bildpaket wählen.",
+    "Drei einzeln verkaufte Pakete mit je 30 digitalen Vorlagen für AQRYO.",
+    "Grundfunktionen und klassische Bilder sind kostenlos.",
+    "USD - Inklusive Steuern - Pro Paket",
+    "Der Kauf wird bald verfügbar. Pakete jetzt ausprobieren.",
+    "Inhalt erstellen →"
+  ],
+  "es": [
+    "Crea gratis. Elige tu paquete visual.",
+    "Tres paquetes vendidos por separado, con 30 plantillas digitales para AQRYO cada uno.",
+    "La creación básica y las imágenes clásicas son gratuitas.",
+    "USD - Impuestos incluidos - Por paquete",
+    "La compra estará disponible pronto. Ya puedes probar los paquetes.",
+    "Crear contenido →"
+  ],
+  "pt": [
+    "Crie grátis. Escolha seu pacote visual.",
+    "Três pacotes vendidos separadamente, com 30 modelos digitais para AQRYO em cada um.",
+    "A criação básica e os visuais clássicos são gratuitos.",
+    "USD - Impostos incluídos - Por pacote",
+    "A compra estará disponível em breve. Já pode experimentar os pacotes.",
+    "Criar conteúdo →"
+  ],
+  "fr": [
+    "Créez gratuitement. Choisissez votre pack visuel.",
+    "Trois packs vendus séparément, chacun avec 30 modèles numériques pour AQRYO.",
+    "La création de base et les visuels classiques sont gratuits.",
+    "USD - Taxes incluses - Par pack",
+    "L’achat sera bientôt disponible. Vous pouvez déjà essayer les packs.",
+    "Créer du contenu →"
+  ],
+  "it": [
+    "Crea gratis. Scegli il pacchetto visivo.",
+    "Tre pacchetti venduti separatamente, ciascuno con 30 modelli digitali per AQRYO.",
+    "La creazione di base e le immagini classiche sono gratuite.",
+    "USD - Imposte incluse - Per pacchetto",
+    "L’acquisto sarà presto disponibile. Puoi già provare i pacchetti.",
+    "Crea contenuti →"
+  ],
+  "ar": [
+    "أنشئ مجانًا. اختر حزمة الصور.",
+    "ثلاث حزم تباع منفصلة، كل منها يفتح 30 قالبًا رقميًا داخل AQRYO.",
+    "إنشاء المحتوى الأساسي والصور الكلاسيكية مجانيان.",
+    "USD - شامل الضرائب - لكل حزمة",
+    "الشراء متاح قريبًا. يمكنك حاليًا تجربة الحزم.",
+    "إنشاء محتوى ←"
+  ],
+  "hi": [
+    "मुफ़्त बनाएँ। विज़ुअल पैक चुनें।",
+    "तीन पैक अलग बिकते हैं; हर पैक AQRYO में 30 डिजिटल टेम्पलेट खोलता है।",
+    "बुनियादी कंटेंट निर्माण और क्लासिक विज़ुअल मुफ़्त हैं।",
+    "USD - कर शामिल - प्रति पैक",
+    "खरीदारी जल्द उपलब्ध होगी। अभी पैक आज़मा सकते हैं।",
+    "कंटेंट बनाएँ →"
+  ],
+  "id": [
+    "Buat gratis. Pilih paket visualmu.",
+    "Tiga paket dijual terpisah, masing-masing membuka 30 templat digital di AQRYO.",
+    "Pembuatan konten dasar dan visual Klasik gratis.",
+    "USD - Termasuk pajak - Per paket",
+    "Pembelian segera tersedia. Saat ini kamu bisa mencoba paket.",
+    "Buat konten →"
+  ],
+  "ru": [
+    "Создавайте бесплатно. Выберите пакет изображений.",
+    "Три пакета продаются отдельно; каждый открывает 30 цифровых шаблонов в AQRYO.",
+    "Базовое создание контента и классические изображения бесплатны.",
+    "USD - Налоги включены - За пакет",
+    "Покупки скоро откроются. Сейчас пакеты можно попробовать.",
+    "Создать контент →"
+  ],
+  "bn": [
+    "বিনামূল্যে তৈরি করুন। ভিজ্যুয়াল প্যাক বেছে নিন।",
+    "তিনটি প্যাক আলাদা বিক্রি হয়; প্রতিটি AQRYO-তে 30টি ডিজিটাল টেমপ্লেট খুলে দেয়।",
+    "সাধারণ কনটেন্ট তৈরি এবং ক্লাসিক ছবি বিনামূল্যে।",
+    "USD - কর অন্তর্ভুক্ত - প্রতি প্যাক",
+    "কেনাকাটা শীঘ্রই চালু হবে। এখন প্যাক চেষ্টা করতে পারেন।",
+    "কনটেন্ট তৈরি করুন →"
+  ],
+  "ur": [
+    "مفت بنائیں۔ بصری پیک منتخب کریں۔",
+    "تین پیک الگ فروخت ہوتے ہیں؛ ہر پیک AQRYO میں 30 ڈیجیٹل ٹیمپلیٹس کھولتا ہے۔",
+    "بنیادی مواد کی تیاری اور کلاسک تصاویر مفت ہیں۔",
+    "USD - ٹیکس شامل - فی پیک",
+    "خریداری جلد دستیاب ہوگی۔ ابھی پیک آزما سکتے ہیں۔",
+    "مواد بنائیں ←"
+  ],
+  "vi": [
+    "Tạo miễn phí. Chọn gói hình ảnh.",
+    "Ba gói bán riêng; mỗi gói mở khóa 30 mẫu kỹ thuật số trong AQRYO.",
+    "Tạo nội dung cơ bản và hình ảnh Cổ điển miễn phí.",
+    "USD - Đã gồm thuế - Mỗi gói",
+    "Thanh toán sẽ sớm mở. Hiện bạn có thể dùng thử các gói.",
+    "Tạo nội dung →"
+  ],
+  "fil": [
+    "Gumawa nang libre. Piliin ang visual pack.",
+    "Tatlong pack ang hiwalay na ibinebenta; bawat isa ay may 30 digital template sa AQRYO.",
+    "Libre ang pangunahing paggawa ng content at Classic visuals.",
+    "USD - Kasama ang buwis - Bawat pack",
+    "Malapit nang buksan ang pagbili. Maaari mong subukan ang mga pack ngayon.",
+    "Gumawa ng content →"
+  ]
 };
-
-
-const CURRENT_MODEL: Record<AqryoLocale, Partial<Copy>> = {
-  tr:{title:"İçerik üretimi ücretsiz. Sosyal hesap bağlantıları 4.99.",description:"AQRYO’daki içerik formatlarını şu an ücretsiz kullanabilirsin. 4.99 yalnızca desteklenen sosyal medya hesaplarını AQRYO’ya bağlama özelliğini açar.",freeText:"Tüm içerik formatları şu an açık. Kibrit Bulmaca, Kaç Şekil Var ve Örüntü sınırlı süre ücretsizdir.",proLabel:"Sosyal bağlantılar",proText:"4.99 ile desteklenen sosyal medya hesaplarını AQRYO’ya bağla. Bu ücret içerik üretimi için değildir.",ctaText:"İçerik üretmeye ücretsiz başla. Sosyal medya hesaplarını AQRYO’ya bağlamak istediğinde 4.99 seçeneğini kullan."},
-  en:{title:"Content creation is free. Social account connections are 4.99.",description:"All AQRYO content formats are currently free to use. 4.99 only unlocks connecting supported social media accounts to AQRYO.",freeText:"All content formats are currently open. Matchstick Puzzle, Count the Shapes and Pattern are free for a limited time.",proLabel:"Social connections",proText:"Connect supported social media accounts to AQRYO for 4.99. This charge is not for content creation.",ctaText:"Start creating for free. Choose 4.99 only when you want to connect social media accounts to AQRYO."},
-  de:{title:"Inhalte erstellen ist kostenlos. Social-Konto-Verknüpfungen kosten 4.99.",description:"Alle AQRYO-Inhaltsformate sind derzeit kostenlos. 4.99 schaltet nur die Verbindung unterstützter Social-Media-Konten frei.",freeText:"Alle Inhaltsformate sind derzeit offen. Streichholz-Rätsel, Formen zählen und Muster sind für kurze Zeit kostenlos.",proLabel:"Social-Verknüpfungen",proText:"Verbinde unterstützte Social-Media-Konten für 4.99 mit AQRYO. Diese Gebühr gilt nicht für die Inhaltserstellung.",ctaText:"Erstelle Inhalte kostenlos. Nutze 4.99 nur, wenn du Social-Media-Konten mit AQRYO verbinden möchtest."},
-  es:{title:"Crear contenido es gratis. Conectar cuentas sociales cuesta 4.99.",description:"Todos los formatos de AQRYO son gratuitos actualmente. 4.99 solo activa la conexión de cuentas sociales compatibles.",freeText:"Todos los formatos están abiertos. Cerillas, Contar figuras y Patrones son gratis por tiempo limitado.",proLabel:"Conexiones sociales",proText:"Conecta cuentas sociales compatibles a AQRYO por 4.99. Este pago no es por crear contenido.",ctaText:"Empieza a crear gratis. Usa 4.99 solo cuando quieras conectar tus cuentas sociales a AQRYO."},
-  pt:{title:"Criar conteúdo é grátis. Conectar contas sociais custa 4.99.",description:"Todos os formatos da AQRYO estão gratuitos agora. 4.99 libera apenas a conexão de contas sociais compatíveis.",freeText:"Todos os formatos estão abertos. Palitos, Contar formas e Padrões são grátis por tempo limitado.",proLabel:"Conexões sociais",proText:"Conecte contas sociais compatíveis à AQRYO por 4.99. Essa cobrança não é pela criação de conteúdo.",ctaText:"Comece a criar grátis. Use 4.99 apenas quando quiser conectar contas sociais à AQRYO."},
-  fr:{title:"Créer du contenu est gratuit. Connecter des comptes sociaux coûte 4.99.",description:"Tous les formats AQRYO sont actuellement gratuits. 4.99 débloque uniquement la connexion des comptes sociaux compatibles.",freeText:"Tous les formats sont ouverts. Allumettes, Compter les formes et Motifs sont gratuits pour une durée limitée.",proLabel:"Connexions sociales",proText:"Connecte les comptes sociaux compatibles à AQRYO pour 4.99. Ce tarif ne concerne pas la création de contenu.",ctaText:"Commence à créer gratuitement. Choisis 4.99 seulement pour connecter tes comptes sociaux à AQRYO."},
-  it:{title:"Creare contenuti è gratis. Collegare account social costa 4.99.",description:"Tutti i formati AQRYO sono attualmente gratuiti. 4.99 sblocca solo il collegamento degli account social supportati.",freeText:"Tutti i formati sono aperti. Fiammiferi, Conta le forme e Sequenze sono gratis per un periodo limitato.",proLabel:"Collegamenti social",proText:"Collega gli account social supportati ad AQRYO per 4.99. Il costo non riguarda la creazione di contenuti.",ctaText:"Inizia a creare gratis. Usa 4.99 solo quando vuoi collegare account social ad AQRYO."},
-  ar:{title:"إنشاء المحتوى مجاني. ربط حسابات التواصل بسعر 4.99.",description:"جميع صيغ محتوى AQRYO مجانية حاليًا. يفتح 4.99 فقط ربط حسابات التواصل الاجتماعي المدعومة.",freeText:"جميع صيغ المحتوى متاحة الآن. ألغاز أعواد الثقاب وعدّ الأشكال والأنماط مجانية لفترة محدودة.",proLabel:"ربط الحسابات الاجتماعية",proText:"اربط حسابات التواصل المدعومة بـ AQRYO مقابل 4.99. هذه الرسوم ليست لإنشاء المحتوى.",ctaText:"ابدأ إنشاء المحتوى مجانًا. اختر 4.99 فقط عندما تريد ربط حسابات التواصل بـ AQRYO."},
-  hi:{title:"कंटेंट बनाना मुफ़्त है। सोशल अकाउंट कनेक्शन 4.99 है।",description:"AQRYO के सभी कंटेंट फ़ॉर्मेट अभी मुफ़्त हैं। 4.99 केवल समर्थित सोशल मीडिया अकाउंट जोड़ने की सुविधा खोलता है।",freeText:"सभी कंटेंट फ़ॉर्मेट अभी खुले हैं। माचिस पहेली, आकृतियाँ गिनें और पैटर्न सीमित समय के लिए मुफ़्त हैं।",proLabel:"सोशल कनेक्शन",proText:"4.99 में समर्थित सोशल मीडिया अकाउंट AQRYO से जोड़ें। यह शुल्क कंटेंट बनाने के लिए नहीं है।",ctaText:"मुफ़्त बनाना शुरू करें। 4.99 केवल तब चुनें जब सोशल मीडिया अकाउंट AQRYO से जोड़ना हो।"},
-  id:{title:"Membuat konten gratis. Koneksi akun sosial 4.99.",description:"Semua format konten AQRYO saat ini gratis. 4.99 hanya membuka koneksi akun media sosial yang didukung.",freeText:"Semua format sedang terbuka. Korek Api, Hitung Bentuk, dan Pola gratis untuk waktu terbatas.",proLabel:"Koneksi sosial",proText:"Hubungkan akun sosial yang didukung ke AQRYO seharga 4.99. Biaya ini bukan untuk membuat konten.",ctaText:"Mulai membuat konten gratis. Pilih 4.99 hanya saat ingin menghubungkan akun sosial ke AQRYO."},
-  ru:{title:"Создание контента бесплатно. Подключение соцсетей — 4.99.",description:"Все форматы AQRYO сейчас бесплатны. 4.99 открывает только подключение поддерживаемых аккаунтов соцсетей.",freeText:"Все форматы сейчас открыты. Спички, Подсчёт фигур и Закономерности бесплатны ограниченное время.",proLabel:"Подключение соцсетей",proText:"Подключите поддерживаемые соцсети к AQRYO за 4.99. Эта плата не относится к созданию контента.",ctaText:"Начните создавать бесплатно. Выбирайте 4.99 только для подключения соцсетей к AQRYO."},
-  bn:{title:"কনটেন্ট তৈরি বিনামূল্যে। সোশ্যাল অ্যাকাউন্ট সংযোগ 4.99।",description:"AQRYO-এর সব কনটেন্ট ফরম্যাট এখন বিনামূল্যে। 4.99 শুধু সমর্থিত সোশ্যাল মিডিয়া অ্যাকাউন্ট সংযোগ চালু করে।",freeText:"সব কনটেন্ট ফরম্যাট এখন খোলা। ম্যাচস্টিক, আকৃতি গণনা ও প্যাটার্ন সীমিত সময়ের জন্য বিনামূল্যে।",proLabel:"সোশ্যাল সংযোগ",proText:"4.99 দিয়ে সমর্থিত সোশ্যাল অ্যাকাউন্ট AQRYO-তে যুক্ত করুন। এই মূল্য কনটেন্ট তৈরির জন্য নয়।",ctaText:"বিনামূল্যে তৈরি শুরু করুন। সোশ্যাল অ্যাকাউন্ট যুক্ত করতে চাইলে শুধু তখন 4.99 বেছে নিন।"},
-  ur:{title:"مواد بنانا مفت ہے۔ سوشل اکاؤنٹ کنکشن 4.99 ہے۔",description:"AQRYO کے تمام مواد فارمیٹس فی الحال مفت ہیں۔ 4.99 صرف معاون سوشل میڈیا اکاؤنٹس جوڑنے کی سہولت کھولتا ہے۔",freeText:"تمام مواد فارمیٹس ابھی کھلے ہیں۔ ماچس، شکلیں گنیں اور پیٹرن محدود وقت کے لیے مفت ہیں۔",proLabel:"سوشل کنکشنز",proText:"4.99 میں معاون سوشل اکاؤنٹس AQRYO سے جوڑیں۔ یہ فیس مواد بنانے کے لیے نہیں ہے۔",ctaText:"مفت مواد بنانا شروع کریں۔ 4.99 صرف سوشل اکاؤنٹس AQRYO سے جوڑنے کے لیے منتخب کریں۔"},
-  vi:{title:"Tạo nội dung miễn phí. Kết nối tài khoản xã hội là 4.99.",description:"Tất cả định dạng nội dung AQRYO hiện đều miễn phí. 4.99 chỉ mở tính năng kết nối các tài khoản mạng xã hội được hỗ trợ.",freeText:"Tất cả định dạng đang mở. Que diêm, Đếm hình và Quy luật miễn phí trong thời gian giới hạn.",proLabel:"Kết nối xã hội",proText:"Kết nối tài khoản xã hội được hỗ trợ với AQRYO với giá 4.99. Khoản phí này không dành cho việc tạo nội dung.",ctaText:"Bắt đầu tạo miễn phí. Chỉ chọn 4.99 khi muốn kết nối tài khoản xã hội với AQRYO."},
-  fil:{title:"Libre ang paggawa ng content. 4.99 ang social account connections.",description:"Libre ngayon ang lahat ng AQRYO content formats. Ang 4.99 ay para lamang sa pagkonekta ng supported social media accounts.",freeText:"Bukas ngayon ang lahat ng content formats. Posporo, Bilangin ang Hugis at Pattern ay libre sa limitadong panahon.",proLabel:"Social connections",proText:"Ikonekta ang supported social accounts sa AQRYO sa halagang 4.99. Hindi ito bayad para sa paggawa ng content.",ctaText:"Magsimulang gumawa nang libre. Piliin lang ang 4.99 kapag gusto mong ikonekta ang social accounts sa AQRYO."}
-};
-
-function PricingPage(){const {locale}=useAqryoLocale();const x={...COPY[locale],...CURRENT_MODEL[locale]};return <PublicPageShell eyebrow={x.eyebrow} title={x.title} description={x.description}><section className="mx-auto w-full max-w-[1180px] px-5 py-12 sm:px-7 lg:px-10"><div className="grid gap-5 lg:grid-cols-3">
-<article className="rounded-[26px] border border-border bg-white p-6"><span className="text-[10px] font-black uppercase tracking-[0.1em] text-primary">{x.freeLabel}</span><h2 className="mt-3 text-[22px] font-black tracking-[-0.04em]">{x.freeTitle}</h2><p className="mt-3 text-[12px] leading-6 text-muted-foreground">{x.freeText}</p></article>
-<article className="rounded-[26px] border border-primary/15 bg-violet-50/60 p-6"><span className="text-[10px] font-black uppercase tracking-[0.1em] text-primary">{x.proLabel}</span><h2 className="mt-3 text-[22px] font-black tracking-[-0.04em]">{x.proTitle}</h2><p className="mt-3 text-[12px] leading-6 text-muted-foreground">{x.proText}</p></article>
-<article className="rounded-[26px] border border-border bg-white p-6"><span className="text-[10px] font-black uppercase tracking-[0.1em] text-primary">{x.socialLabel}</span><h2 className="mt-3 text-[22px] font-black tracking-[-0.04em]">{x.socialTitle}</h2><p className="mt-3 text-[12px] leading-6 text-muted-foreground">{x.socialText}</p></article>
-</div><div className="mt-10 flex flex-col items-start justify-between gap-5 rounded-[28px] bg-black p-6 text-white sm:flex-row sm:items-center sm:p-8"><div><h2 className="text-[24px] font-black tracking-[-0.04em]">{x.ctaTitle}</h2><p className="mt-2 max-w-xl text-[11px] leading-5 text-white/65">{x.ctaText}</p></div><Link to="/creator-auth" className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-white px-6 text-[11px] font-black text-black">{x.cta}</Link></div></section></PublicPageShell>;}
+const PACKS = ["anime", "magic", "arena"] as const;
+function PricingPage() {
+  const { locale } = useAqryoLocale();
+  const [title, description, free, tax, launch, cta] = COPY[locale];
+  const packCopy = visualPackCopy(locale);
+  return <PublicPageShell title={title} description={description}>
+    <section className="mx-auto w-full max-w-[1180px] px-5 py-12 sm:px-7 lg:px-10">
+      <p className="mb-7 text-base text-muted-foreground">{free}</p>
+      <div className="grid gap-5 lg:grid-cols-3">
+        {PACKS.map(pack => <article key={pack} className="rounded-[26px] border border-primary/15 bg-violet-50/60 p-6">
+          <h2 className="text-[24px] font-black tracking-[-0.04em]">{visualPackName(pack, locale)}</h2>
+          <p className="mt-5 text-[40px] font-black text-primary" dir="ltr">$0.99</p>
+          <p className="mt-1 text-sm text-muted-foreground">{tax}</p>
+          <p className="mt-5 text-sm font-bold">{packCopy.permanent}</p>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">{packCopy.contents}</p>
+        </article>)}
+      </div>
+      <div className="mt-10 flex flex-col items-start justify-between gap-5 rounded-[28px] bg-black p-6 text-white sm:flex-row sm:items-center sm:p-8">
+        <p className="max-w-xl text-sm leading-6 text-white/80">{launch}</p>
+        <Link to="/puzzle-builder" className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-white px-6 text-sm font-black text-black">{cta}</Link>
+      </div>
+    </section>
+  </PublicPageShell>;
+}
