@@ -992,6 +992,7 @@ const [linkCopied, setLinkCopied] =
         window.sessionStorage.setItem(
           "aqry-guess-builder",
           JSON.stringify({
+            templateId: typeof story.templateId === "string" ? story.templateId : undefined,
             title:
               typeof data.title ===
               "string"
@@ -1238,6 +1239,7 @@ const [linkCopied, setLinkCopied] =
         window.sessionStorage.setItem(
           "aqry-story-builder",
           JSON.stringify({
+            templateId: typeof story.templateId === "string" ? story.templateId : undefined,
             title:
               typeof data.title ===
               "string"

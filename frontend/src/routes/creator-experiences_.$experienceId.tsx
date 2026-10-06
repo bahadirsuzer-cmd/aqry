@@ -1,3 +1,4 @@
+import { StoryPage } from "@/components/story/StoryPage";
 import { getPublicShareUrl } from "@/services/shareAssets";
 import { useImageShare } from "@/components/ImageShareDialog";
 import { createResultShareAsset, revokeResultShareAsset } from "@/services/resultShareCards";
@@ -240,6 +241,7 @@ type PublishedExperience = {
     retryEnabled: boolean;
   } | null;
   story: {
+    templateId?: string;
     items: Array<
       | {
           id: string;
@@ -347,6 +349,7 @@ function PublishedExperiencePage() {
             retryEnabled?: boolean;
           } | null;
           story?: {
+            templateId?: string;
             items?: Array<
               | {
                   id: string;
@@ -506,6 +509,7 @@ function PublishedExperiencePage() {
           : null,
         story: content?.story
           ? {
+              templateId: content.story.templateId,
               items:
                 content.story.items ??
                 (content.story.blocks &&
@@ -1523,6 +1527,7 @@ function StoryContentScreen({
         <div className="flex min-h-0 flex-1 flex-col px-5 pb-5 sm:px-6 sm:pb-6">
           {active.type ===
           "text" ? (
+            story.templateId ? <StoryPage text={active.text} title={experience.title} templateId={story.templateId} page={index + 1} total={slides.length} className="flex-1" /> :
             <div className="flex min-h-0 flex-1 items-center rounded-[24px] bg-[#f7f7f8] px-6 py-10 sm:px-9">
               <p className="w-full whitespace-pre-wrap text-left text-[17px] font-black leading-[1.55] tracking-[-0.02em] text-foreground sm:text-[20px]">
                 {active.text}
@@ -2367,6 +2372,7 @@ function PaidStoryContinuation({
         <div className="flex min-h-0 flex-1 flex-col px-5 pb-5 sm:px-6 sm:pb-6">
           {active.type ===
           "text" ? (
+            story.templateId ? <StoryPage text={active.text} title={experience.title} templateId={story.templateId} page={index + 1} total={slides.length} className="flex-1" /> :
             <div className="flex min-h-0 flex-1 items-center rounded-[24px] bg-[#f7f7f8] px-6 py-10 sm:px-9">
               <p className="w-full whitespace-pre-wrap text-left text-[17px] font-black leading-[1.55] tracking-[-0.02em] sm:text-[20px]">
                 {active.text}

@@ -74,6 +74,7 @@ interface PublishedExperienceInput {
   };
 
   story?: {
+    templateId?: string;
     items: Array<
       | {
           id: string;

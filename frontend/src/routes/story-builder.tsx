@@ -1,3 +1,6 @@
+import { QuickStoryComposer } from "@/components/story/QuickStoryComposer";
+import { StoryPage } from "@/components/story/StoryPage";
+import { splitStoryText, suggestStoryTitle, createStoryCoverFile, type StoryTemplateId } from "@/lib/storyTemplates";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import {
   getCurrentCreator,
@@ -72,6 +75,8 @@ const BUILDER_STEPS: BuilderPanel[] = [
 
 type StoryBuilderState = {
   sourceExperienceId: string | null;
+  sourceText?: string;
+  templateId?: StoryTemplateId;
   title: string;
   description: string;
   coverImageUrl: string;
@@ -139,6 +144,8 @@ const STORY_TEXT_EXAMPLES = [
 function StoryBuilderPage() {
   const { locale } = useAqryoLocale();
   const ui = locale === "tr" ? storyCopy.tr : locale === "de" ? storyCopy.de : storyCopy.en;
+  const [quickMode, setQuickMode] = useState(true);
+  const [manualTitle, setManualTitle] = useState(false);
   const [loading, setLoading] =
     useState(true);
 
@@ -301,6 +308,8 @@ function StoryBuilderPage() {
                       )
                     : DEFAULT_STATE.items;
 
+            setQuickMode(Boolean(parsed.templateId) || !restoredItems.some((item) => item.type === "image" && item.imageUrl));
+            setManualTitle(Boolean(parsed.title));
             setState({
               ...DEFAULT_STATE,
               ...parsed,
@@ -591,6 +600,13 @@ function StoryBuilderPage() {
       const experienceId =
         crypto.randomUUID();
 
+      const templateId = quickMode ? (state.templateId ?? "paper") : state.templateId;
+      let coverImageUrl = state.coverImageUrl.trim();
+      if (templateId && (quickMode || !coverImageUrl)) {
+        const file = await createStoryCoverFile(templateId, state.title);
+        const uploaded = await uploadExperienceImage(creatorId, file);
+        coverImageUrl = uploaded.publicUrl;
+      }
       await savePublishedExperience({
         id: experienceId,
         creatorId,
@@ -605,7 +621,7 @@ function StoryBuilderPage() {
           style: "purple",
           label: "Story / İçerik",
           imageUrl:
-            state.coverImageUrl.trim(),
+            coverImageUrl,
         },
         questions: [],
         results: [
@@ -627,6 +643,7 @@ function StoryBuilderPage() {
         },
         story: {
           items: cleanItems,
+          templateId,
           resultTitle:
             state.resultTitle.trim() ||
             "Sonuna geldin.",
@@ -804,6 +821,7 @@ function StoryBuilderPage() {
   ) {
     setState((current) => ({
       ...current,
+      sourceText: undefined,
       ...(premium
         ? {
             premiumItems:
@@ -1162,6 +1180,19 @@ function StoryBuilderPage() {
     );
   }
 
+  if (quickMode) {
+    const fullText = state.sourceText ?? state.items.filter((item): item is StoryTextItem => item.type === "text").map((item) => item.text).join("\n\n");
+    const pages = state.items.filter((item): item is StoryTextItem => item.type === "text" && Boolean(item.text.trim())).map((item) => item.text);
+    return <main className="min-h-screen bg-[#f7f5fb] text-foreground">
+      <CreatorNavigation onSignOut={async () => { await signOutCreator(); window.location.href = "/creator-auth"; }} />
+      <QuickStoryComposer locale={locale} text={fullText} title={state.title} templateId={state.templateId ?? "paper"} pages={pages} items={state.items} publishing={publishing} sourceVersion={Boolean(state.sourceExperienceId)}
+        onText={(text) => setState((current) => ({ ...current, sourceText: text, templateId: current.templateId ?? "paper", title: manualTitle ? current.title : suggestStoryTitle(text), items: [...splitStoryText(text).map((page, index) => ({ id: `story-page-${index}`, type: "text" as const, text: page })), ...current.items.filter((item) => item.type === "image")] }))}
+        onTitle={(title) => { setManualTitle(Boolean(title)); setState((current) => ({ ...current, title })); }}
+        onTemplate={(templateId) => setState((current) => ({ ...current, templateId, coverImageUrl: "" }))}
+        onAdvanced={() => { setQuickMode(false); setActivePanel("content"); }} onPublish={() => void publishStory()} />
+    </main>;
+  }
+
   return (
     <main className="min-h-screen bg-[#fbfbfd] text-foreground">
       <CreatorNavigation
@@ -1171,6 +1202,7 @@ function StoryBuilderPage() {
         }}
       />
 
+      <div className="mx-auto max-w-[1500px] px-4 pt-4"><button type="button" onClick={() => { setState((current) => ({ ...current, sourceText: undefined })); setQuickMode(true); }} className="rounded-full border bg-white px-4 py-2 text-sm font-bold">{locale === "tr" ? "← Hızlı hikâye oluştur" : "← Quick story composer"}</button></div>
       <header className="sticky top-16 z-30 border-b border-border/80 bg-[#fbfbfd]/95 backdrop-blur-xl">
         <div className="mx-auto flex h-[58px] max-w-[1500px] items-center justify-between gap-3 px-4 sm:px-7">
           <div className="min-w-0">
@@ -1375,7 +1407,7 @@ function StoryBuilderPage() {
                 ) : previewStage === "items" ? (
                   <div>
                     <p className="text-[14px] font-black text-teal-600">{previewItemIndex + 1}/{cleanFreeItems.length}</p>
-                    {cleanFreeItems[previewItemIndex]?.type === "text" ? <p className="mt-5 whitespace-pre-wrap text-[16px] font-semibold leading-7">{cleanFreeItems[previewItemIndex].text}</p> : cleanFreeItems[previewItemIndex]?.type === "image" ? <div className="mt-5 flex min-h-[280px] items-center justify-center rounded-[18px] bg-[#f3f3f5] p-3"><img src={cleanFreeItems[previewItemIndex].imageUrl} alt="" className="max-h-[420px] max-w-full object-contain" /></div> : null}
+                    {cleanFreeItems[previewItemIndex]?.type === "text" && state.templateId ? <StoryPage text={cleanFreeItems[previewItemIndex].text} title={state.title} templateId={state.templateId} page={previewItemIndex + 1} total={cleanFreeItems.length} /> : cleanFreeItems[previewItemIndex]?.type === "text" ? <p className="mt-5 whitespace-pre-wrap text-[16px] font-semibold leading-7">{cleanFreeItems[previewItemIndex].text}</p> : cleanFreeItems[previewItemIndex]?.type === "image" ? <div className="mt-5 flex min-h-[280px] items-center justify-center rounded-[18px] bg-[#f3f3f5] p-3"><img src={cleanFreeItems[previewItemIndex].imageUrl} alt="" className="max-h-[420px] max-w-full object-contain" /></div> : null}
                     <div className="mt-5 flex items-center justify-between"><button type="button" onClick={() => { if (previewItemIndex > 0) setPreviewItemIndex((v) => v - 1); else setPreviewStage("entry"); }} className="h-10 rounded-full border border-border px-4 text-[14px] font-black">←</button><button type="button" onClick={previewNext} className="h-10 rounded-full bg-black px-5 text-[14px] font-black text-white">Devam →</button></div>
                   </div>
                 ) : previewStage === "result" ? (
