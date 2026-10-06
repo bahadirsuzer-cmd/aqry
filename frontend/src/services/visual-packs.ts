@@ -21,13 +21,15 @@ export function canUseVisualPack(pack: VisualPack, access: PackAccess | null) {
   return Boolean(entry && (!entry.sale_enabled || access?.owned.includes(pack)));
 }
 
-export async function purchaseVisualPack(pack: PaidVisualPack) {
+export async function purchaseVisualPack(pack: PaidVisualPack, beforeCheckout: () => void) {
   const { data, error } = await supabase.functions.invoke<{ already_owned?: boolean; order_id?: string; transaction_id?: string }>(
     "visual-pack-checkout", { body: { pack_id: pack } },
   );
   if (error || !data) throw new Error("pack_checkout_unavailable");
   if (data.already_owned) return { alreadyOwned: true };
   if (!data.transaction_id || !data.order_id) throw new Error("pack_checkout_unavailable");
+  // Release the host dialog's focus/pointer lock before Paddle mounts its overlay.
+  beforeCheckout();
   await openVisualPackCheckout(data.transaction_id, data.order_id);
   return { alreadyOwned: false, orderId: data.order_id, transactionId: data.transaction_id };
 }
