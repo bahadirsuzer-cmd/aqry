@@ -1222,7 +1222,7 @@ function PuzzleBuilderPage() {
               </label>
               {canStamp && stampEnabled && <div className="mt-3">
                 <label htmlFor="creator-stamp-username" className="text-sm font-semibold">{stampCopy[1]}</label>
-                <input id="creator-stamp-username" value={stampUsername} onChange={(event) => setStampUsername(event.target.value)} maxLength={31} placeholder="@kralkaybetmezse_" autoComplete="off" autoCapitalize="none" spellCheck={false} dir="ltr" aria-invalid={Boolean(stampUsername && !creatorHandle)} aria-describedby="creator-stamp-help" className="mt-1 block w-full rounded-xl border border-violet-200 px-3 py-2 text-base outline-none focus:border-violet-600" />
+                <input id="creator-stamp-username" value={stampUsername} onChange={(event) => setStampUsername(event.target.value)} maxLength={31} placeholder="@example" autoComplete="off" autoCapitalize="none" spellCheck={false} dir="ltr" aria-invalid={Boolean(stampUsername && !creatorHandle)} aria-describedby="creator-stamp-help" className="mt-1 block w-full rounded-xl border border-violet-200 px-3 py-2 text-base outline-none focus:border-violet-600" />
               </div>}
               {(!canStamp || stampEnabled) && <p id="creator-stamp-help" className="mt-2 text-xs text-muted-foreground">{stampCopy[2]}</p>}
             </div>
