@@ -4,18 +4,18 @@ Anime, Magic Academy and Fighting Arena each cost USD 0.99, including tax. Each 
 
 ## Current release state
 
-The three packs have `sale_enabled = false`. Existing signed-in creators retain launch access. Checkout returns `checkout_not_ready` until the live Paddle API key is configured and launch is enabled. No real charge has been made by these implementation tests.
+The three packs have `sale_enabled = false`. Existing signed-in creators retain launch access. The live API key and webhook secret are configured. Checkout still returns `checkout_not_ready` while sales remain disabled. Paddle account verification currently shows Not started; domain approval and real checkout remain unverified. No real charge has been made by these implementation tests.
 
 The original 90 assets were copied to the private `visual-packs` Storage bucket and verified against SHA-256 hashes. The builder gets signed URLs through `visual-pack-assets`; static originals are removed from the current website. Assets already downloaded or cached before this change cannot be recalled. Signed URLs expire after five minutes.
 
 ## Paddle configuration before activating sales
 
-1. Store a live server-side `PADDLE_API_KEY` in the project's Edge Function secrets. At minimum it needs `transaction.write` for non-catalog, non-recurring transactions. Never put it in a `VITE_*` variable or source control.
+1. Store a live server-side `PADDLE_API_KEY` in the project's Edge Function secrets. At minimum it needs `transaction.write` for catalog, non-recurring transactions. Never put it in a `VITE_*` variable or source control.
 2. Keep the existing `PADDLE_WEBHOOK_SECRET`. The existing webhook URL is `https://hburwzezggdgxuissjej.supabase.co/functions/v1/paddle-webhook`.
 3. In Paddle, verify this destination receives `transaction.completed`, `transaction.payment_failed`, `transaction.canceled`, `adjustment.created` and `adjustment.updated`, while preserving its current subscription events.
-4. Enable the appropriate `digital-goods` tax category in Paddle. `PADDLE_PACK_TAX_CATEGORY` may override it only if the replacement accurately describes the product.
+4. Use the reviewed catalog prices: Anime `pri_01m4836qgmhwf660152jre819f`, Magic Academy `pri_01m483gaf7f1k8x49tmzcgkggp`, Fighting Arena `pri_01m483nvtkjcdzvwf8cd6y36kc`. Each is USD 0.99, inclusive of tax, one-time. Checkout validates the returned price, quantity, currency, tax mode and absence of recurring billing before exposing its transaction ID.
 5. Ensure `https://www.aqryo.com/puzzle-builder` is an approved checkout URL. Checkout uses the existing live client-side token but never the monthly Pro price.
-6. With these settings in place, verify a draft transaction shows USD 0.99 inclusive of tax, quantity one and no billing cycle. Verify a completed test payment opens the intended pack after webhook confirmation, survives signing in again, and does not open other packs. Verify a full approved refund revokes access. Account-specific Paddle permissions and notification subscriptions remain unverified until the server key is provided.
+6. With these settings in place, verify a draft transaction shows USD 0.99 inclusive of tax, quantity one and no billing cycle. Verify a completed test payment opens the intended pack after webhook confirmation, survives signing in again, and does not open other packs. Verify a full approved refund revokes access. The five pack events and six existing subscription events are selected in the production notification destination. A real signed delivery and API key transaction permission still need end-to-end verification.
 7. Only after verification, enable sales with `update public.visual_pack_catalog set sale_enabled = true;`. This changes launch access into an ownership check. If the API key later expires, paid access remains restricted and existing purchases continue to work.
 
 ## Payment processing
@@ -35,10 +35,14 @@ The original 90 assets were copied to the private `visual-packs` Storage bucket 
 - Disposable account API checks: invalid origin/unknown pack rejected; no-purchase access denied when sales are enabled; all 30 templates opened after a simulated purchase; repeat checkout returned already-owned; full refund denied future URLs.
 - All 90 signed asset downloads matched the source hashes and allowed image CORS. Public bucket access was denied.
 - Disposable account and synthetic orders/events were deleted. Temporary transfer/test handlers were removed from the deployed function.
-- The repository-wide TypeScript check has existing failures outside this change; a pre-existing undefined `UNDETERMINED_SHORT` in the touched puzzle route was fixed. Real Paddle checkout cannot be exercised without the server key.
+- The repository-wide TypeScript check has existing failures outside this change; a pre-existing undefined `UNDETERMINED_SHORT` in the touched puzzle route was fixed. Real Paddle checkout and webhook-based fulfillment remain unverified pending account and domain approval.
 
 Run the webhook regression harness from the repository root:
 
 ```sh
 node supabase/tests/paddle-webhook.cjs
 ```
+
+## Catalog binding verification (2026-10-06)
+
+`node supabase/tests/visual-pack-checkout.cjs` verifies all three server-side catalog bindings, ignores client-supplied prices, blocks altered amounts and recurring/tax-exclusive prices, and preserves authentication and sale gates. The webhook regression harness also passes. These tests mock Paddle; they are not proof of a completed live payment.
