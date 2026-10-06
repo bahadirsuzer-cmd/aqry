@@ -11,7 +11,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "Üç paket ayrı satılır; her biri AQRYO içinde 30 dijital şablon açar.",
     "Temel içerik üretimi ve Klasik görseller ücretsizdir.",
     "USD - Vergiler dahil - Paket başına",
-    "Satın alma yakında açılacak. Şu anda paketleri deneyebilirsin.",
+    "Paketini içerik oluşturma ekranından seç ve tek seferlik ödeme ile aç.",
     "İçerik oluştur →"
   ],
   "en": [
@@ -19,7 +19,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "Three packs sold separately; each unlocks 30 digital templates within AQRYO.",
     "Core content creation and Classic visuals are free.",
     "USD - Tax included - Per pack",
-    "Paid checkout is coming soon. You can currently try the packs.",
+    "Choose your pack in the content builder and unlock it with a one-time payment.",
     "Create content →"
   ],
   "de": [
@@ -27,7 +27,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "Drei einzeln verkaufte Pakete mit je 30 digitalen Vorlagen für AQRYO.",
     "Grundfunktionen und klassische Bilder sind kostenlos.",
     "USD - Inklusive Steuern - Pro Paket",
-    "Der Kauf wird bald verfügbar. Pakete jetzt ausprobieren.",
+    "Wähle dein Paket im Inhaltseditor und schalte es mit einer einmaligen Zahlung frei.",
     "Inhalt erstellen →"
   ],
   "es": [
@@ -35,7 +35,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "Tres paquetes vendidos por separado, con 30 plantillas digitales para AQRYO cada uno.",
     "La creación básica y las imágenes clásicas son gratuitas.",
     "USD - Impuestos incluidos - Por paquete",
-    "La compra estará disponible pronto. Ya puedes probar los paquetes.",
+    "Elige tu paquete en el creador de contenido y desbloquéalo con un pago único.",
     "Crear contenido →"
   ],
   "pt": [
@@ -43,7 +43,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "Três pacotes vendidos separadamente, com 30 modelos digitais para AQRYO em cada um.",
     "A criação básica e os visuais clássicos são gratuitos.",
     "USD - Impostos incluídos - Por pacote",
-    "A compra estará disponível em breve. Já pode experimentar os pacotes.",
+    "Escolha seu pacote no criador de conteúdo e desbloqueie com um pagamento único.",
     "Criar conteúdo →"
   ],
   "fr": [
@@ -51,7 +51,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "Trois packs vendus séparément, chacun avec 30 modèles numériques pour AQRYO.",
     "La création de base et les visuels classiques sont gratuits.",
     "USD - Taxes incluses - Par pack",
-    "L’achat sera bientôt disponible. Vous pouvez déjà essayer les packs.",
+    "Choisissez votre pack dans le créateur de contenu et débloquez-le avec un paiement unique.",
     "Créer du contenu →"
   ],
   "it": [
@@ -59,7 +59,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "Tre pacchetti venduti separatamente, ciascuno con 30 modelli digitali per AQRYO.",
     "La creazione di base e le immagini classiche sono gratuite.",
     "USD - Imposte incluse - Per pacchetto",
-    "L’acquisto sarà presto disponibile. Puoi già provare i pacchetti.",
+    "Scegli il pacchetto nel creatore di contenuti e sbloccalo con un pagamento unico.",
     "Crea contenuti →"
   ],
   "ar": [
@@ -67,7 +67,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "ثلاث حزم تباع منفصلة، كل منها يفتح 30 قالبًا رقميًا داخل AQRYO.",
     "إنشاء المحتوى الأساسي والصور الكلاسيكية مجانيان.",
     "USD - شامل الضرائب - لكل حزمة",
-    "الشراء متاح قريبًا. يمكنك حاليًا تجربة الحزم.",
+    "اختر حزمتك في منشئ المحتوى وافتحها بدفعة واحدة.",
     "إنشاء محتوى ←"
   ],
   "hi": [
@@ -75,7 +75,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "तीन पैक अलग बिकते हैं; हर पैक AQRYO में 30 डिजिटल टेम्पलेट खोलता है।",
     "बुनियादी कंटेंट निर्माण और क्लासिक विज़ुअल मुफ़्त हैं।",
     "USD - कर शामिल - प्रति पैक",
-    "खरीदारी जल्द उपलब्ध होगी। अभी पैक आज़मा सकते हैं।",
+    "कंटेंट बिल्डर में अपना पैक चुनें और एकमुश्त भुगतान से खोलें।",
     "कंटेंट बनाएँ →"
   ],
   "id": [
@@ -83,7 +83,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "Tiga paket dijual terpisah, masing-masing membuka 30 templat digital di AQRYO.",
     "Pembuatan konten dasar dan visual Klasik gratis.",
     "USD - Termasuk pajak - Per paket",
-    "Pembelian segera tersedia. Saat ini kamu bisa mencoba paket.",
+    "Pilih paket di pembuat konten dan buka dengan pembayaran satu kali.",
     "Buat konten →"
   ],
   "ru": [
@@ -91,7 +91,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "Три пакета продаются отдельно; каждый открывает 30 цифровых шаблонов в AQRYO.",
     "Базовое создание контента и классические изображения бесплатны.",
     "USD - Налоги включены - За пакет",
-    "Покупки скоро откроются. Сейчас пакеты можно попробовать.",
+    "Выберите пакет в редакторе контента и откройте его разовым платежом.",
     "Создать контент →"
   ],
   "bn": [
@@ -99,7 +99,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "তিনটি প্যাক আলাদা বিক্রি হয়; প্রতিটি AQRYO-তে 30টি ডিজিটাল টেমপ্লেট খুলে দেয়।",
     "সাধারণ কনটেন্ট তৈরি এবং ক্লাসিক ছবি বিনামূল্যে।",
     "USD - কর অন্তর্ভুক্ত - প্রতি প্যাক",
-    "কেনাকাটা শীঘ্রই চালু হবে। এখন প্যাক চেষ্টা করতে পারেন।",
+    "কনটেন্ট বিল্ডারে প্যাক বেছে নিন এবং এককালীন অর্থপ্রদানে খুলুন।",
     "কনটেন্ট তৈরি করুন →"
   ],
   "ur": [
@@ -107,7 +107,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "تین پیک الگ فروخت ہوتے ہیں؛ ہر پیک AQRYO میں 30 ڈیجیٹل ٹیمپلیٹس کھولتا ہے۔",
     "بنیادی مواد کی تیاری اور کلاسک تصاویر مفت ہیں۔",
     "USD - ٹیکس شامل - فی پیک",
-    "خریداری جلد دستیاب ہوگی۔ ابھی پیک آزما سکتے ہیں۔",
+    "مواد بنانے والے صفحے پر اپنا پیک منتخب کریں اور ایک بار ادائیگی سے کھولیں۔",
     "مواد بنائیں ←"
   ],
   "vi": [
@@ -115,7 +115,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "Ba gói bán riêng; mỗi gói mở khóa 30 mẫu kỹ thuật số trong AQRYO.",
     "Tạo nội dung cơ bản và hình ảnh Cổ điển miễn phí.",
     "USD - Đã gồm thuế - Mỗi gói",
-    "Thanh toán sẽ sớm mở. Hiện bạn có thể dùng thử các gói.",
+    "Chọn gói trong trình tạo nội dung và mở khóa bằng thanh toán một lần.",
     "Tạo nội dung →"
   ],
   "fil": [
@@ -123,7 +123,7 @@ const COPY: Record<AqryoLocale, Copy> = {
     "Tatlong pack ang hiwalay na ibinebenta; bawat isa ay may 30 digital template sa AQRYO.",
     "Libre ang pangunahing paggawa ng content at Classic visuals.",
     "USD - Kasama ang buwis - Bawat pack",
-    "Malapit nang buksan ang pagbili. Maaari mong subukan ang mga pack ngayon.",
+    "Piliin ang pack sa content builder at i-unlock sa isang beses na pagbabayad.",
     "Gumawa ng content →"
   ]
 };
