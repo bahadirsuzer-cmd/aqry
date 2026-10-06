@@ -14,6 +14,8 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import React, { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+const VisualPackPreviewGallery = React.lazy(() => import("@/components/VisualPackPreviewGallery"));
+
 export const Route = createFileRoute("/puzzle-builder")({
   component: PuzzleBuilderPage,
 });
@@ -1140,9 +1142,12 @@ function PuzzleBuilderPage() {
     <main className="min-h-screen bg-[#f7f5fb] text-foreground">
       <CreatorNavigation onSignOut={async()=>{await signOutCreator();window.location.href="/creator-auth";}}/>
       <Dialog open={purchasePack !== null} onOpenChange={(open) => { if (!open) setPurchasePack(null); }}>
-        <DialogContent className="max-w-[420px] rounded-3xl">
+        <DialogContent className="max-h-[92dvh] w-[calc(100%-2rem)] max-w-[520px] gap-3 overflow-y-auto rounded-3xl p-4 sm:p-6">
           <DialogTitle className="text-2xl font-black">{purchasePack ? visualPackName(purchasePack, locale) : ""}</DialogTitle>
           <DialogDescription>{packCopy.contents}</DialogDescription>
+          {purchasePack && <React.Suspense fallback={<div className="h-[30dvh] animate-pulse rounded-2xl bg-violet-50" aria-label={packCopy.loading} />}>
+            <VisualPackPreviewGallery key={purchasePack} pack={purchasePack} label={packCopy.preview} />
+          </React.Suspense>}
           <p className="text-4xl font-black text-violet-700">$0.99</p>
           <p className="text-sm text-muted-foreground">{packCopy.permanent}</p>
           {packError && <p className="text-sm text-red-700" role="alert">{packCopy.error}</p>}
