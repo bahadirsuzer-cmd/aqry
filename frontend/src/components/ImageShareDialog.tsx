@@ -56,6 +56,31 @@ const PASTE_IMAGE: Record<AqryoLocale, string> = {
   fil: "Kinokopya ang larawan kapag pumili ng platform. I-paste gamit ang Ctrl+V (Mac: ⌘V). Kung hindi suportado, i-download at idagdag ang PNG.",
 };
 
+// Touch devices use the system share sheet; desktop platform links stay unchanged.
+function isTouchDevice() {
+  return typeof navigator !== "undefined" && (
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+}
+const MOBILE_SHARE: Record<AqryoLocale, [string, string, string]> = {
+  tr: ["Görseli paylaş", "Görsel ve metinle paylaşmak için telefonunun paylaşım menüsünden uygulamanı seç.", "Bu tarayıcı görsel paylaşımını desteklemiyor. PNG’yi indir ve uygulamanda gönderine ekle."],
+  en: ["Share image", "Choose an app in your phone’s share menu to share the image and text.", "This browser cannot share image files. Download the PNG and attach it in your app."],
+  es: ["Compartir imagen", "Elige una aplicación en el menú del teléfono para compartir la imagen y el texto.", "Descarga el PNG y adjúntalo en tu aplicación; este navegador no admite compartir imágenes."],
+  pt: ["Compartilhar imagem", "Escolha um aplicativo no menu do celular para compartilhar a imagem e o texto.", "Este navegador não compartilha imagens. Baixe o PNG e anexe no aplicativo."],
+  fr: ["Partager l’image", "Choisissez une application dans le menu de partage du téléphone pour partager l’image et le texte.", "Ce navigateur ne partage pas les images. Téléchargez le PNG et joignez-le dans votre application."],
+  de: ["Bild teilen", "Wähle eine App im Teilen-Menü deines Telefons, um Bild und Text zu teilen.", "Dieser Browser kann keine Bilder teilen. Lade das PNG herunter und füge es in deiner App hinzu."],
+  it: ["Condividi immagine", "Scegli un’app nel menu di condivisione del telefono per condividere immagine e testo.", "Questo browser non condivide immagini. Scarica il PNG e allegalo nella tua app."],
+  ar: ["مشاركة الصورة", "اختر تطبيقًا من قائمة المشاركة في هاتفك لمشاركة الصورة والنص.", "هذا المتصفح لا يدعم مشاركة الصور. نزّل PNG وأرفقه في تطبيقك."],
+  hi: ["चित्र साझा करें", "चित्र और टेक्स्ट साझा करने के लिए फ़ोन के शेयर मेन्यू में ऐप चुनें।", "यह ब्राउज़र चित्र साझा नहीं कर सकता। PNG डाउनलोड करके ऐप में जोड़ें।"],
+  id: ["Bagikan gambar", "Pilih aplikasi di menu berbagi ponsel untuk membagikan gambar dan teks.", "Browser ini tidak mendukung berbagi gambar. Unduh PNG dan lampirkan di aplikasi."],
+  ru: ["Поделиться изображением", "Выберите приложение в меню телефона, чтобы поделиться изображением и текстом.", "Браузер не поддерживает отправку изображений. Скачайте PNG и прикрепите его в приложении."],
+  bn: ["ছবি শেয়ার করুন", "ছবি ও টেক্সট শেয়ার করতে ফোনের শেয়ার মেনুতে অ্যাপ বাছুন।", "এই ব্রাউজার ছবি শেয়ার করতে পারে না। PNG ডাউনলোড করে অ্যাপে যোগ করুন।"],
+  ur: ["تصویر شیئر کریں", "تصویر اور متن شیئر کرنے کے لیے فون کے شیئر مینو میں ایپ منتخب کریں۔", "یہ براؤزر تصویر شیئر نہیں کر سکتا۔ PNG ڈاؤنلوڈ کر کے ایپ میں شامل کریں۔"],
+  vi: ["Chia sẻ ảnh", "Chọn ứng dụng trong menu chia sẻ của điện thoại để chia sẻ ảnh và văn bản.", "Trình duyệt không hỗ trợ chia sẻ ảnh. Tải PNG và đính kèm trong ứng dụng."],
+  fil: ["Ibahagi ang larawan", "Pumili ng app sa share menu ng telepono para ibahagi ang larawan at text.", "Hindi suportado ng browser ang pagbabahagi ng larawan. I-download ang PNG at idagdag sa app."],
+};
+
 export async function copyShareImage(file: Blob) {
   if (typeof ClipboardItem === "undefined" || !navigator.clipboard?.write) throw new Error("image_clipboard_unavailable");
   await navigator.clipboard.write([new ClipboardItem({ "image/png": file })]);
@@ -73,11 +98,14 @@ export function useImageShare() {
 function ImageShareDialog({ snapshot, onChange }: { snapshot: ShareSnapshot | null; onChange: (snapshot: ShareSnapshot | null) => void }) {
   const { locale, t } = useAqryoLocale();
   const copy = SHARE_COPY[locale] ?? SHARE_COPY.en;
+  const mobile = isTouchDevice();
+  const mobileCopy = MOBILE_SHARE[locale] ?? MOBILE_SHARE.en;
   const [preview, setPreview] = useState<string | null>(null);
   const [copied, setCopied] = useState<"image" | "text" | null>(null);
   const [error, setError] = useState<File | null>(null);
   const [sharing, setSharing] = useState(false);
   const nativeHandoff = useRef(false);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     setCopied(null);
     if (!snapshot) { setPreview(null); return; }
@@ -97,6 +125,7 @@ function ImageShareDialog({ snapshot, onChange }: { snapshot: ShareSnapshot | nu
   async function nativeShare() {
     if (!snapshot || sharing) return;
     const saved = snapshot;
+    setError(null);
     nativeHandoff.current = true;
     flushSync(() => { setSharing(true); onChange(null); });
     try { await navigator.share({ files: [saved.file], text: saved.text, title: "AQRYO" }); }
@@ -108,25 +137,27 @@ function ImageShareDialog({ snapshot, onChange }: { snapshot: ShareSnapshot | nu
   let nativeAvailable = false;
   try { nativeAvailable = Boolean(snapshot && typeof navigator !== "undefined" && typeof navigator.share === "function" && navigator.canShare?.({ files: [snapshot.file] })); } catch {}
   return <Dialog open={snapshot !== null} onOpenChange={(open) => { if (!open) onChange(null); }}>
-    {snapshot && <DialogContent onCloseAutoFocus={(event) => { if (nativeHandoff.current) event.preventDefault(); }} className="max-h-[92dvh] w-[calc(100%-2rem)] max-w-[650px] overflow-y-auto rounded-3xl p-4 sm:p-6">
-      <DialogTitle className="text-2xl font-black">{t("shareVisual")}</DialogTitle>
-      <DialogDescription>{copy[0]}</DialogDescription>
+    {snapshot && <DialogContent onOpenAutoFocus={(event) => { if (mobile) { event.preventDefault(); titleRef.current?.focus({ preventScroll: true }); } }} onCloseAutoFocus={(event) => { if (nativeHandoff.current) event.preventDefault(); }} overlayClassName="z-[110]" className="top-[max(0.75rem,env(safe-area-inset-top))] z-[120] max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-[calc(100%-2rem)] max-w-[650px] translate-y-0 overflow-y-auto rounded-3xl p-4 md:top-1/2 md:max-h-[92dvh] md:-translate-y-1/2 sm:p-6">
+      <DialogTitle ref={titleRef} tabIndex={-1} className="pr-8 text-2xl font-black">{t("shareVisual")}</DialogTitle>
+      <DialogDescription>{mobile ? (nativeAvailable ? mobileCopy[1] : mobileCopy[2]) : copy[0]}</DialogDescription>
       <div className="grid gap-4 sm:grid-cols-[190px_1fr]">
         <div className="flex justify-center rounded-2xl bg-violet-50 p-2">
           {preview && <img src={preview} alt={t("shareVisual")} className="max-h-[30dvh] w-auto rounded-xl object-contain sm:max-h-[280px]" />}
         </div>
         <div className="space-y-3">
-          <button type="button" onClick={() => void copyImage()} className="w-full rounded-xl bg-violet-600 px-4 py-3 font-bold text-white">{copied === "image" ? "✓ " : ""}{COPY_IMAGE[locale]}</button>
+          {mobile && nativeAvailable ?
+            <button type="button" disabled={sharing} onClick={() => void nativeShare()} className="w-full rounded-xl bg-violet-600 px-4 py-3 font-bold text-white disabled:opacity-60">{mobileCopy[0]}</button> :
+            !mobile && <button type="button" onClick={() => void copyImage()} className="w-full rounded-xl bg-violet-600 px-4 py-3 font-bold text-white">{copied === "image" ? "✓ " : ""}{COPY_IMAGE[locale]}</button>}
           <button type="button" onClick={() => downloadShareFile(snapshot.file)} className="w-full rounded-xl border border-violet-200 px-4 py-3 font-bold text-violet-900">↓ {t("downloadSvg").replace("SVG", "PNG")}</button>
           <textarea readOnly value={snapshot.text} aria-label={t("cta")} rows={3} className="w-full resize-none rounded-xl border border-violet-200 p-3 text-sm" />
           <button type="button" onClick={() => void copyText()} className="w-full rounded-xl border border-violet-200 px-4 py-3 font-bold text-violet-900">{copied === "text" ? "✓ " : ""}{t("copyText")}</button>
         </div>
       </div>
-      <p className="rounded-xl bg-violet-50 p-3 text-sm text-violet-950">{PASTE_IMAGE[locale]}</p>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+      {!mobile && <p className="rounded-xl bg-violet-50 p-3 text-sm text-violet-950">{PASTE_IMAGE[locale]}</p>}
+      {!mobile && <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {SOCIAL_CHANNELS.map((channel) => <a key={channel} href={imageShareDestination(channel, snapshot.text)} onClick={() => { if (copied !== "image") void copyImage(); }} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-center font-bold text-violet-950 hover:bg-violet-100">{channelLabel(channel)} ↗</a>)}
-      </div>
-      {nativeAvailable && <button type="button" disabled={sharing} onClick={() => void nativeShare()} className="rounded-xl border border-border px-4 py-3 font-bold">{copy[1]}</button>}
+      </div>}
+      {!mobile && nativeAvailable && <button type="button" disabled={sharing} onClick={() => void nativeShare()} className="rounded-xl border border-border px-4 py-3 font-bold">{copy[1]}</button>}
       {error === snapshot.file && <p role="alert" className="text-sm text-red-700">{copy[2]} {t("downloadSvg").replace("SVG", "PNG")}</p>}
       {copied === "image" && <p role="status" className="text-sm font-bold text-violet-900">✓ {COPY_IMAGE[locale]} · Ctrl+V / ⌘V</p>}
     </DialogContent>}
