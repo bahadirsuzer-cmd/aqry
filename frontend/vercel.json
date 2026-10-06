@@ -1,0 +1,51 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Twitterbot|twitterbot|facebookexternalhit|Facebot|WhatsApp|LinkedInBot|Slackbot|TelegramBot|Discordbot).*"
+        }
+      ],
+      "destination": "/aqryo-social-preview.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/aqryo-social-preview.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Vary",
+          "value": "User-Agent"
+        },
+        {
+          "key": "X-Aqryo-Social-Preview",
+          "value": "cdn-home-v1"
+        }
+      ]
+    },
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(Twitterbot|twitterbot|facebookexternalhit|Facebot|WhatsApp|LinkedInBot|Slackbot|TelegramBot|Discordbot).*"
+        }
+      ],
+      "headers": [
+        {
+          "key": "Vary",
+          "value": "User-Agent"
+        }
+      ]
+    }
+  ]
+}
