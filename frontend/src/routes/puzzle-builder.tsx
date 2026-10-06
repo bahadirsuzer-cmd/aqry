@@ -12,6 +12,7 @@ import { canUseVisualPack, clearVisualPackAssets, getVisualPackAccess, getVisual
 import { visualPackCopy, visualPackName } from "@/lib/visualPackCopy";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import React, { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 const VisualPackPreviewGallery = React.lazy(() => import("@/components/VisualPackPreviewGallery"));
@@ -930,22 +931,26 @@ function PuzzleBuilderPage() {
   }, [pendingOrder]);
 
   function chooseVisualPack(pack: VisualPack) {
+    if (purchaseBusy) return;
     if (!canUseVisualPack(pack, packAccess)) { if (pack !== "classic") setPurchasePack(pack); return; }
     setVisualPack(pack); setSceneTemplate(0); setDebateTemplate(1);
   }
 
   async function buyPack() {
     if (!purchasePack || purchaseBusy) return;
+    const pack = purchasePack;
     setPurchaseBusy(true); setPackError(false);
     try {
-      const result = await purchaseVisualPack(purchasePack);
+      const result = await purchaseVisualPack(pack, () => {
+        flushSync(() => setPurchasePack(null));
+      });
       if (result.alreadyOwned) {
-        setPackAccess(await getVisualPackAccess()); setVisualPack(purchasePack);
+        setPackAccess(await getVisualPackAccess()); setVisualPack(pack);
         setSceneTemplate(0); setDebateTemplate(1); setPurchasePack(null);
       } else if (result.orderId) {
         setPendingOrder(result.orderId); setPaymentWaiting(false);
       }
-    } catch { setPackError(true); } finally { setPurchaseBusy(false); }
+    } catch { setPurchasePack(pack); setPackError(true); } finally { setPurchaseBusy(false); }
   }
 
   useEffect(()=>{
@@ -1142,7 +1147,7 @@ function PuzzleBuilderPage() {
     <main className="min-h-screen bg-[#f7f5fb] text-foreground">
       <CreatorNavigation onSignOut={async()=>{await signOutCreator();window.location.href="/creator-auth";}}/>
       <Dialog open={purchasePack !== null} onOpenChange={(open) => { if (!open) setPurchasePack(null); }}>
-        <DialogContent className="max-h-[92dvh] w-[calc(100%-2rem)] max-w-[520px] gap-3 overflow-y-auto rounded-3xl p-4 sm:p-6">
+        {purchasePack !== null && <DialogContent onCloseAutoFocus={(event) => { if (purchaseBusy) event.preventDefault(); }} className="max-h-[92dvh] w-[calc(100%-2rem)] max-w-[520px] gap-3 overflow-y-auto rounded-3xl p-4 sm:p-6">
           <DialogTitle className="text-2xl font-black">{purchasePack ? visualPackName(purchasePack, locale) : ""}</DialogTitle>
           <DialogDescription>{packCopy.contents}</DialogDescription>
           {purchasePack && <React.Suspense fallback={<div className="h-[30dvh] animate-pulse rounded-2xl bg-violet-50" aria-label={packCopy.loading} />}>
@@ -1154,7 +1159,7 @@ function PuzzleBuilderPage() {
           {purchasePack && !packAccess?.catalog.find((entry) => entry.id === purchasePack)?.checkout_available && <p className="text-sm text-muted-foreground">{packCopy.unavailable}</p>}
           <button type="button" disabled={purchaseBusy || !packAccess?.catalog.find((entry) => entry.id === purchasePack)?.checkout_available} onClick={() => void buyPack()}
             className="rounded-full bg-violet-600 px-6 py-3 font-bold text-white disabled:opacity-50">{purchaseBusy ? packCopy.loading : packCopy.buy}</button>
-        </DialogContent>
+        </DialogContent>}
       </Dialog>
 
       <div className="mx-auto max-w-[980px] px-4 py-6 sm:px-6 lg:py-9">
@@ -1172,7 +1177,7 @@ function PuzzleBuilderPage() {
             {(supportsAnimeSingle(kind) || kind === "math" || kind === "matchstick") && (
               <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label={locale === "tr" ? "Görsel paketi" : "Visual pack"}>
                 {(["classic", "anime", "magic", "arena"] as const).map((pack) => (
-                  <button key={pack} type="button" aria-pressed={activePack === pack} disabled={pack !== "classic" && !packAccess}
+                  <button key={pack} type="button" aria-pressed={activePack === pack} disabled={purchaseBusy || (pack !== "classic" && !packAccess)}
                     onClick={() => chooseVisualPack(pack)}
                     className={`rounded-full border px-4 py-2 text-[14px] font-bold ${visualPack === pack ? "border-violet-600 bg-violet-600 text-white" : "border-violet-200 bg-white text-violet-900"}`}>
                     {visualPackName(pack, locale)}
