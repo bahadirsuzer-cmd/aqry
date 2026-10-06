@@ -826,6 +826,39 @@ function accessLabelFor(locale: AqryoLocale, kind: PuzzleKind) {
   return kind === "count" || kind === "pattern" || kind === "matchstick" ? labels.limited : labels.free;
 }
 
+const CREATOR_STAMP_COPY: Record<AqryoLocale, [string, string, string]> = {
+  tr: ["Görsele Pro Creator damgamı ekle", "X kullanıcı adın", "En az bir paket sahibi olmalısın. Kullanıcı adı 1–30 harf, rakam veya alt çizgi olabilir."],
+  en: ["Add my Pro Creator stamp", "Your X username", "Requires ownership of a pack. Use 1–30 letters, numbers or underscores."],
+  es: ["Añadir mi sello Pro Creator", "Tu usuario de X", "Requiere un paquete. Usa 1–30 letras, números o guiones bajos."],
+  pt: ["Adicionar meu selo Pro Creator", "Seu usuário do X", "Requer um pacote. Use 1–30 letras, números ou sublinhados."],
+  fr: ["Ajouter mon badge Pro Creator", "Votre identifiant X", "Nécessite un pack. Utilisez 1–30 lettres, chiffres ou traits de soulignement."],
+  de: ["Meinen Pro Creator-Stempel hinzufügen", "Dein X-Nutzername", "Ein Paket ist erforderlich. Verwende 1–30 Buchstaben, Ziffern oder Unterstriche."],
+  it: ["Aggiungi il mio badge Pro Creator", "Il tuo nome utente X", "Richiede un pacchetto. Usa 1–30 lettere, numeri o trattini bassi."],
+  ar: ["إضافة شارة Pro Creator", "اسم المستخدم على X", "يتطلب امتلاك حزمة. استخدم 1–30 حرفًا لاتينيًا أو رقمًا أو شرطة سفلية."],
+  hi: ["मेरा Pro Creator बैज जोड़ें", "आपका X उपयोगकर्ता नाम", "एक पैक आवश्यक है। 1–30 अक्षर, अंक या अंडरस्कोर लिखें।"],
+  id: ["Tambahkan lencana Pro Creator saya", "Nama pengguna X Anda", "Memerlukan paket. Gunakan 1–30 huruf, angka atau garis bawah."],
+  ru: ["Добавить мой значок Pro Creator", "Ваше имя пользователя X", "Нужен пакет. Используйте 1–30 латинских букв, цифр или подчёркиваний."],
+  bn: ["আমার Pro Creator ব্যাজ যোগ করুন", "আপনার X ব্যবহারকারীর নাম", "একটি প্যাক প্রয়োজন। ১–৩০টি ইংরেজি অক্ষর, সংখ্যা বা আন্ডারস্কোর লিখুন।"],
+  ur: ["میرا Pro Creator بیج شامل کریں", "آپ کا X صارف نام", "ایک پیک ضروری ہے۔ 1–30 انگریزی حروف، اعداد یا انڈر اسکور لکھیں۔"],
+  vi: ["Thêm huy hiệu Pro Creator của tôi", "Tên người dùng X của bạn", "Cần sở hữu một gói. Dùng 1–30 chữ cái, chữ số hoặc dấu gạch dưới."],
+  fil: ["Idagdag ang aking Pro Creator badge", "Iyong X username", "Kailangan ng isang pack. Gumamit ng 1–30 letra, numero o underscore."],
+};
+
+function creatorStampHandle(enabled: boolean, username: string, access: PackAccess | null) {
+  const handle = username.trim().replace(/^@/, "");
+  return enabled && Boolean(access?.owned.length) && /^[A-Za-z0-9_]{1,30}$/.test(handle) ? handle : null;
+}
+
+function CreatorStamp({ handle }: { handle: string | null }) {
+  if (!handle) return null;
+  return <g aria-label={`Created by @${handle} · Pro Creator`} transform="translate(12 10)">
+    <rect width="222" height="32" rx="10" fill="#170e2a" fillOpacity="0.88" stroke="#e9c46a" strokeOpacity="0.75" strokeWidth="0.7" />
+    <path d="M10 11 L14 15 L19 8 L24 15 L28 11 L26 23 H12 Z" fill="#f4c95d" />
+    <text x="36" y="14" fontFamily="Arial,sans-serif" fontSize={Math.min(10, 174 / ((handle.length + 13) * 0.6))} fontWeight="700" fill="white">Created by: @{handle}</text>
+    <text x="36" y="25" fontFamily="Arial,sans-serif" fontSize="7" fontWeight="700" letterSpacing="1.2" fill="#f4c95d">PRO CREATOR</text>
+  </g>;
+}
+
 function PuzzleBuilderPage() {
   const { locale, t } = useAqryoLocale();
   const copy = COPY[locale] ?? COPY.en;
@@ -845,6 +878,11 @@ function PuzzleBuilderPage() {
   const [algebraImage,setAlgebraImage]=useState<{template:number;dataUrl:string}|null>(null);
   const [visualPack,setVisualPack]=useState<VisualPack>("classic");
   const [packAccess, setPackAccess] = useState<PackAccess | null>(null);
+  const [stampEnabled, setStampEnabled] = useState(false);
+  const [stampUsername, setStampUsername] = useState("");
+  const canStamp = Boolean(packAccess?.owned.length);
+  const creatorHandle = creatorStampHandle(stampEnabled, stampUsername, packAccess);
+  const stampCopy = CREATOR_STAMP_COPY[locale] ?? CREATOR_STAMP_COPY.en;
   const [purchasePack, setPurchasePack] = useState<PaidVisualPack | null>(null);
   const [purchaseBusy, setPurchaseBusy] = useState(false);
   const [packError, setPackError] = useState(false);
@@ -1047,7 +1085,7 @@ function PuzzleBuilderPage() {
   const debateImageReady = debateImage?.template === debateTemplate && debateImage?.pack === activePack;
   const algebraImageReady = algebraImage?.template === algebraTemplate;
   const sceneImageReady = sceneImage?.src === sceneSrc;
-  const shareImageKey = `${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImageReady?"ready":"loading"}:${algebraTemplate}:${algebraChallenge}:${algebraImageReady?"algebra-ready":"algebra-loading"}:${activePack}:${sceneTemplate}:${sceneImageReady?"scene-ready":"scene-loading"}`;
+  const shareImageKey = `${creatorHandle ?? "no-stamp"}:${puzzle.id}:${presentation}:${locale}:${presentation==="debate"?debateTemplate:0}:${debateImageReady?"ready":"loading"}:${algebraTemplate}:${algebraChallenge}:${algebraImageReady?"algebra-ready":"algebra-loading"}:${activePack}:${sceneTemplate}:${sceneImageReady?"scene-ready":"scene-loading"}`;
   useEffect(() => {
     let cancelled = false;
     if(presentation==="debate" && !debateImageReady) return;
@@ -1102,8 +1140,9 @@ function PuzzleBuilderPage() {
     if(sharing) return;
     try{
       setSharing(true);
-      if (activePack !== "classic") {
+      if (activePack !== "classic" || creatorHandle) {
         const access = await getVisualPackAccess(); setPackAccess(access);
+        if (creatorHandle && !access.owned.length) { setPackError(true); return; }
         if (!canUseVisualPack(activePack, access)) { clearVisualPackAssets(); setPurchasePack(activePack); return; }
       }
       const file = shareImage?.key === shareImageKey ? shareImage.file : null;
@@ -1186,11 +1225,22 @@ function PuzzleBuilderPage() {
                 ))}
               </div>
             )}
+            <div className="mb-3 rounded-2xl border border-violet-200 bg-white p-3">
+              <label className="flex items-center gap-2 text-sm font-bold text-violet-950">
+                <input type="checkbox" checked={stampEnabled && canStamp} disabled={!canStamp} onChange={(event) => setStampEnabled(event.target.checked)} className="h-4 w-4 accent-violet-600" />
+                {stampCopy[0]}
+              </label>
+              {canStamp && stampEnabled && <div className="mt-3">
+                <label htmlFor="creator-stamp-username" className="text-sm font-semibold">{stampCopy[1]}</label>
+                <input id="creator-stamp-username" value={stampUsername} onChange={(event) => setStampUsername(event.target.value)} maxLength={31} placeholder="@kralkaybetmezse_" autoComplete="off" autoCapitalize="none" spellCheck={false} dir="ltr" aria-invalid={Boolean(stampUsername && !creatorHandle)} aria-describedby="creator-stamp-help" className="mt-1 block w-full rounded-xl border border-violet-200 px-3 py-2 text-base outline-none focus:border-violet-600" />
+              </div>}
+              {(!canStamp || stampEnabled) && <p id="creator-stamp-help" className="mt-2 text-xs text-muted-foreground">{stampCopy[2]}</p>}
+            </div>
             {packError && <div className="mb-3 text-sm text-red-700" role="alert">{packCopy.error} <button className="font-bold underline" onClick={() => { void getVisualPackAccess().then((access) => { setPackAccess(access); setPackError(false); }).catch(() => setPackError(true)); setOrderCheck((value) => value + 1); }}>{packCopy.refresh}</button></div>}
             {paymentWaiting && <div className="mb-3 rounded-xl bg-violet-100 p-3 text-sm text-violet-900" role="status">{packCopy.pending} <button className="font-bold underline" onClick={() => setOrderCheck((value) => value + 1)}>{packCopy.refresh}</button></div>}
             <div className="relative overflow-hidden rounded-[34px] border border-violet-100 bg-white p-3 shadow-[0_24px_70px_rgba(56,27,90,0.11)] sm:p-4">
               <div className="mx-auto max-w-[620px]">
-                <PuzzleSvg ref={svgRef} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} visualPack={activePack} safeArea={activePack === "arena" ? (kind === "matchstick" ? ARENA_SCENE_SAFE_AREA : ARENA_SINGLE_SAFE_AREA) : activePack === "magic" ? (kind === "matchstick" ? MAGIC_SCENE_SAFE_AREA : MAGIC_SINGLE_SAFE_AREA) : activePack === "anime" ? (kind === "matchstick" ? ANIME_SCENE_SAFE_AREA : ANIME_SINGLE_TEMPLATES[sceneTemplate]?.safeArea) : undefined} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? null : activePack === "classic" ? sceneSrc : null}/>
+                <PuzzleSvg ref={svgRef} creatorHandle={creatorHandle} puzzle={puzzle} presentation={presentation} copy={copy} locale={locale} debateImage={debateImageReady ? debateImage?.dataUrl ?? null : null} debateTemplate={debateTemplate} visualPack={activePack} safeArea={activePack === "arena" ? (kind === "matchstick" ? ARENA_SCENE_SAFE_AREA : ARENA_SINGLE_SAFE_AREA) : activePack === "magic" ? (kind === "matchstick" ? MAGIC_SCENE_SAFE_AREA : MAGIC_SINGLE_SAFE_AREA) : activePack === "anime" ? (kind === "matchstick" ? ANIME_SCENE_SAFE_AREA : ANIME_SINGLE_TEMPLATES[sceneTemplate]?.safeArea) : undefined} sceneImage={sceneImageReady ? sceneImage?.dataUrl ?? null : activePack === "classic" ? sceneSrc : null}/>
               </div>
             </div>
           </div>
@@ -1252,8 +1302,8 @@ function PuzzleBuilderPage() {
 
 const PuzzleSvg=React.forwardRef<
   SVGSVGElement,
-  {puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;sceneImage:string|null;safeArea?:PuzzleSafeArea;visualPack:VisualPack}
->(function PuzzleSvg({puzzle,presentation,copy,locale,debateImage,debateTemplate,sceneImage,safeArea,visualPack},ref){
+  {creatorHandle:string|null;puzzle:Puzzle;presentation:Presentation;copy:PuzzleCopy;locale:AqryoLocale;debateImage:string|null;debateTemplate:number;sceneImage:string|null;safeArea?:PuzzleSafeArea;visualPack:VisualPack}
+>(function PuzzleSvg({creatorHandle,puzzle,presentation,copy,locale,debateImage,debateTemplate,sceneImage,safeArea,visualPack},ref){
   const cleanDebateValue = (value: string) => {
     const numeric = Number(value);
     return Number.isFinite(numeric) && !Number.isInteger(numeric)
@@ -1291,6 +1341,7 @@ const PuzzleSvg=React.forwardRef<
             <svg x={safeX} y={safeY + 60} width={safeW} height={safeH - 60} viewBox="0 60 360 150" preserveAspectRatio="xMidYMid meet" overflow="hidden">
               <g dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
             </svg>
+            <CreatorStamp handle={creatorHandle} />
           </svg>
         );
       }
@@ -1305,6 +1356,7 @@ const PuzzleSvg=React.forwardRef<
           <svg x="18" y="164" width="324" height="235" viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet" overflow="visible">
             <g dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
           </svg>
+          <CreatorStamp handle={creatorHandle} />
         </svg>
       );
     }
@@ -1334,6 +1386,7 @@ const PuzzleSvg=React.forwardRef<
               {row}
             </text>
           ))}
+          <CreatorStamp handle={creatorHandle} />
         </svg>
       );
     }
@@ -1345,6 +1398,7 @@ const PuzzleSvg=React.forwardRef<
         <svg x={safeX} y={safeY+30} width={safeW} height={safeH-35} viewBox="0 0 360 270" preserveAspectRatio="xMidYMid meet" overflow="hidden">
           <g transform={puzzle.kind==="geometry" ? "translate(-27 -20.25) scale(1.15)" : undefined} dangerouslySetInnerHTML={{__html:puzzle.diagram}} />
         </svg>
+        <CreatorStamp handle={creatorHandle} />
       </svg>
     );
   }
@@ -1366,6 +1420,7 @@ const PuzzleSvg=React.forwardRef<
         </text>
         <text x={framedCouple ? 74 : 78} y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={answer.length>10?11:20} fontWeight="900" fill="#2563eb">{answer}</text>
         <text x={framedCouple ? 287 : 282} y={answerY} textAnchor="middle" dominantBaseline="middle" fontFamily="Arial,sans-serif" fontSize={cleanDebateValue(puzzle.commonWrong).length>10?11:20} fontWeight="900" fill="#dc2626">{cleanDebateValue(puzzle.commonWrong)}</text>
+        <CreatorStamp handle={creatorHandle} />
       </svg>
     );
   }
@@ -1390,6 +1445,7 @@ const PuzzleSvg=React.forwardRef<
           <text x="180" y="462" textAnchor="middle" fontSize="18" fontWeight="900" fill="#6d28d9">{copy.debateQuestion}</text>
         </>
       ) : <text x="180" y="440" textAnchor="middle" fontSize="16" fontWeight="900" fill="#6b7280">{subtitleFor(locale,puzzle.kind,copy)}</text>}
+      <CreatorStamp handle={creatorHandle} />
     </svg>
   );
 });
