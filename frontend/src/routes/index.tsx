@@ -42,6 +42,34 @@ export const Route = createFileRoute("/")({
         content: "https://aqryo.com/",
       },
       {
+        property: "og:image",
+        content: "https://aqryo.com/aqryo-logo.png",
+      },
+      {
+        property: "og:image:type",
+        content: "image/png",
+      },
+      {
+        property: "og:image:width",
+        content: "1057",
+      },
+      {
+        property: "og:image:height",
+        content: "238",
+      },
+      {
+        property: "og:image:alt",
+        content: "AQRYO — Create and share interactive content",
+      },
+      {
+        name: "twitter:image",
+        content: "https://aqryo.com/aqryo-logo.png",
+      },
+      {
+        name: "twitter:image:alt",
+        content: "AQRYO — Create and share interactive content",
+      },
+      {
         name: "twitter:card",
         content: "summary_large_image",
       },
