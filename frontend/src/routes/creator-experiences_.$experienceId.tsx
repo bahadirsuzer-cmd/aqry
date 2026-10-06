@@ -1,3 +1,4 @@
+import { getPublicShareUrl } from "@/services/shareAssets";
 import { useImageShare } from "@/components/ImageShareDialog";
 import { createResultShareAsset, revokeResultShareAsset } from "@/services/resultShareCards";
 import { useEffect, useState } from "react";
@@ -1153,6 +1154,7 @@ useEffect(() => {
             />
           ) : screen === "result" ? (
             <ResultScreen
+              experienceId={experience.id}
   score={resultScore}
   result={result}
   experienceTitle={experience.title}
@@ -2005,6 +2007,7 @@ function calculateBlueprintTestOutcome(
 }
 
 function ResultScreen({
+  experienceId,
   score,
   result,
   experienceTitle,
@@ -2016,6 +2019,7 @@ function ResultScreen({
   onOffer,
   onRestart,
 }: {
+  experienceId: string;
   score: number;
   result: ResultDefinition;
   experienceTitle: string;
@@ -2031,7 +2035,7 @@ function ResultScreen({
   onOffer: () => void;
   onRestart: () => void;
 }) {
-  const { openImageShare, imageShareDialog } = useImageShare();
+  const { openImageShare, openLinkShare, imageShareDialog } = useImageShare();
   const [sharingImage, setSharingImage] = useState(false);
   const isArchetypeTest =
     experienceType === "test" &&
@@ -2108,6 +2112,7 @@ function ResultScreen({
   }
 
   async function shareResult() {
+    if (experienceType === "compatibility") { openLinkShare(getPublicShareUrl(experienceId), shareText); return; }
     if (sharingImage) return;
     try {
       setSharingImage(true);

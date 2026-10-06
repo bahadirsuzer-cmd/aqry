@@ -1,3 +1,4 @@
+import { getPublicShareUrl } from "@/services/shareAssets";
 import { useImageShare } from "@/components/ImageShareDialog";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { useEffect, useMemo, useState } from "react";
@@ -749,7 +750,7 @@ function ExperienceDetails({
   experience: CreatorExperience;
   compact?: boolean;
 }) {
-  const { openImageShare, imageShareDialog } = useImageShare();
+  const { openImageShare, openLinkShare, imageShareDialog } = useImageShare();
   const [sharingImage, setSharingImage] = useState(false);
   const [panel, setPanel] = useState<
     "actions" | "participants" | "share"
@@ -785,7 +786,9 @@ const [linkCopied, setLinkCopied] =
   const experienceUrl =
     typeof window === "undefined"
       ? ""
-      : `${window.location.origin}/experience/${experience.id}`;
+      : ["compatibility", "question_confession", "story"].includes(experience.type)
+        ? getPublicShareUrl(experience.id)
+        : `${window.location.origin}/experience/${experience.id}`;
 
   async function openParticipants() {
     if (panel === "participants") {
@@ -1618,7 +1621,9 @@ async function toggleExperienceStatus() {
   }
 
   function getShareText() {
-    return experience.type === "compatibility"
+    return experience.type === "question_confession"
+      ? `Bana anonim soru sor veya itiraf et 👀 #AQRYO`
+      : experience.type === "compatibility"
       ? `“${experience.title}” — uyumunu gör 👀 #AQRYO`
       : experience.type === "guess"
         ? `“${experience.title}” — doğru cevabı bulabilecek misin? 👀 #AQRYO`
@@ -1632,6 +1637,10 @@ async function toggleExperienceStatus() {
   }
 
   async function shareNativeV2() {
+    if (["compatibility", "question_confession", "story"].includes(experience.type)) {
+      openLinkShare(getPublicShareUrl(experience.id), getShareText());
+      return;
+    }
     if (sharingImage) return;
     setSharingImage(true);
     try {

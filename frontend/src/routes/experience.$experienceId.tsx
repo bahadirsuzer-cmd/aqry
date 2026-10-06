@@ -1742,9 +1742,8 @@ function StoryResultScreen({
   onRestart: () => void;
   onComplete: () => void;
 }) {
-  const { openImageShare, imageShareDialog } = useImageShare();
+  const { openLinkShare, imageShareDialog } = useImageShare();
   const story = experience.story;
-  const [sharing, setSharing] = useState(false);
 
   if (!story) {
     return null;
@@ -1753,44 +1752,7 @@ function StoryResultScreen({
   const shareText = `“${experience.title}” — devamını gör 👀 #AQRYO`;
 
   async function shareStory() {
-    if (sharing) {
-      return;
-    }
-
-    try {
-      setSharing(true);
-
-      const blob = await createShareCardBlob(
-        {
-          id: experience.id,
-          title: experience.title,
-          type: "story",
-          coverImageUrl: experience.cover.imageUrl,
-          coverLabel: experience.cover.label,
-          testMode: null,
-        },
-        "story",
-      );
-
-      const file = new File(
-        [blob],
-        `aqryo-story-${experience.id}.png`,
-        { type: "image/png" },
-      );
-
-      openImageShare(file, `${shareText}\n\n${getPublicShareUrl(experience.id)}`);
-    } catch (error) {
-      if (
-        !(
-          error instanceof DOMException &&
-          error.name === "AbortError"
-        )
-      ) {
-        console.error("Hikâye paylaşımı başarısız:", error);
-      }
-    } finally {
-      setSharing(false);
-    }
+    openLinkShare(getPublicShareUrl(experience.id), shareText);
   }
 
   return (
@@ -1814,11 +1776,10 @@ function StoryResultScreen({
 
       <button
         type="button"
-        disabled={sharing}
-        onClick={() => void shareStory()}
+                onClick={() => void shareStory()}
         className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-black text-[14px] font-black text-white disabled:opacity-50"
       >
-        {sharing ? "Görsel hazırlanıyor…" : "Paylaş ↗"}
+        {"Bağlantıyı paylaş ↗"}
       </button>
 
       <button
@@ -2304,7 +2265,7 @@ function ResultScreen({
   onComplete: () => void;
   onRestart: () => void;
 }) {
-  const { openImageShare, imageShareDialog } = useImageShare();
+  const { openImageShare, openLinkShare, imageShareDialog } = useImageShare();
   const [sharingImage, setSharingImage] = useState(false);
   const isArchetypeTest =
     experienceType === "test" &&
@@ -2352,6 +2313,7 @@ function ResultScreen({
   }
 
   async function shareResult() {
+    if (experienceType === "compatibility") { openLinkShare(publicShareUrl, shareText); return; }
     if (sharingImage) return;
     try {
       setSharingImage(true);

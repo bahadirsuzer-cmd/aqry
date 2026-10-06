@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { SOCIAL_CHANNELS, channelLabel, downloadShareFile, type SocialChannel } from "@/services/socialShare";
+import { SOCIAL_CHANNELS, channelLabel, downloadShareFile, openSocialShare, shareToInstagram, type SocialChannel } from "@/services/socialShare";
 
 const SHARE_COPY: Record<AqryoLocale, [string, string, string]> = {
   tr: ["PNG’yi indir, metni kopyala ve platformunu seç. Platform bağlantıları görseli otomatik eklemez; indirdiğin PNG’yi paylaşımına ekle.", "Diğer uygulamalar", "İşlem tamamlanamadı. Tekrar dene veya metni aşağıdan kopyala."],
@@ -89,9 +89,11 @@ export async function copyShareImage(file: Blob) {
 type ShareSnapshot = { file: File; text: string };
 export function useImageShare() {
   const [snapshot, setSnapshot] = useState<ShareSnapshot | null>(null);
+  const [link, setLink] = useState<{ url: string; text: string } | null>(null);
   return {
-    openImageShare: (file: File, text: string) => setSnapshot({ file, text }),
-    imageShareDialog: <ImageShareDialog snapshot={snapshot} onChange={setSnapshot} />,
+    openImageShare: (file: File, text: string) => { setLink(null); setSnapshot({ file, text }); },
+    openLinkShare: (url: string, text: string) => { setSnapshot(null); setLink({ url, text }); },
+    imageShareDialog: <><ImageShareDialog snapshot={snapshot} onChange={setSnapshot} /><LinkShareDialog link={link} onChange={setLink} /></>,
   };
 }
 
@@ -160,6 +162,59 @@ function ImageShareDialog({ snapshot, onChange }: { snapshot: ShareSnapshot | nu
       {!mobile && nativeAvailable && <button type="button" disabled={sharing} onClick={() => void nativeShare()} className="rounded-xl border border-border px-4 py-3 font-bold">{copy[1]}</button>}
       {error === snapshot.file && <p role="alert" className="text-sm text-red-700">{copy[2]} {t("downloadSvg").replace("SVG", "PNG")}</p>}
       {copied === "image" && <p role="status" className="text-sm font-bold text-violet-900">✓ {COPY_IMAGE[locale]} · Ctrl+V / ⌘V</p>}
+    </DialogContent>}
+  </Dialog>;
+}
+
+
+const LINK_COPY: Record<AqryoLocale, [string, string]> = {
+  tr: ["Bağlantıyı paylaş", "Kapak görseli bağlantının önizlemesinde görünür. İçeriği açmak için bağlantıya dokunulur."],
+  en: ["Share link", "The cover appears in the link preview. Tap the link to open the experience."],
+  es: ["Compartir enlace", "La portada aparece en la vista previa. Toca el enlace para abrir el contenido."],
+  pt: ["Compartilhar link", "A capa aparece na prévia do link. Toque no link para abrir o conteúdo."],
+  fr: ["Partager le lien", "La couverture apparaît dans l’aperçu du lien. Touchez le lien pour ouvrir le contenu."],
+  de: ["Link teilen", "Das Titelbild erscheint in der Linkvorschau. Tippe auf den Link, um den Inhalt zu öffnen."],
+  it: ["Condividi link", "La copertina appare nell’anteprima del link. Tocca il link per aprire il contenuto."],
+  ar: ["مشاركة الرابط", "تظهر صورة الغلاف في معاينة الرابط. اضغط على الرابط لفتح المحتوى."],
+  hi: ["लिंक साझा करें", "कवर लिंक के प्रीव्यू में दिखता है। सामग्री खोलने के लिए लिंक पर टैप करें।"],
+  id: ["Bagikan tautan", "Sampul muncul di pratinjau tautan. Ketuk tautan untuk membuka konten."],
+  ru: ["Поделиться ссылкой", "Обложка отображается в предпросмотре ссылки. Нажмите на ссылку, чтобы открыть материал."],
+  bn: ["লিঙ্ক শেয়ার করুন", "কভার লিঙ্কের প্রিভিউতে দেখা যায়। বিষয়বস্তু খুলতে লিঙ্কে ট্যাপ করুন।"],
+  ur: ["لنک شیئر کریں", "سرورق لنک کے پیش نظارے میں دکھتا ہے۔ مواد کھولنے کے لیے لنک پر ٹیپ کریں۔"],
+  vi: ["Chia sẻ liên kết", "Ảnh bìa xuất hiện trong bản xem trước liên kết. Nhấn liên kết để mở nội dung."],
+  fil: ["Ibahagi ang link", "Makikita ang cover sa preview ng link. I-tap ang link para buksan ang nilalaman."],
+};
+
+type LinkSnapshot = { url: string; text: string };
+function LinkShareDialog({ link, onChange }: { link: LinkSnapshot | null; onChange: (link: LinkSnapshot | null) => void }) {
+  const { locale, t } = useAqryoLocale();
+  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState(false);
+  const nativeHandoff = useRef(false);
+  useEffect(() => { setCopied(false); setError(false); }, [link]);
+  const linkCopy = LINK_COPY[locale];
+  async function nativeShare() {
+    if (!link || nativeHandoff.current) return;
+    const saved = link;
+    setError(false);
+    nativeHandoff.current = true;
+    flushSync(() => onChange(null));
+    try { await navigator.share({ title: "AQRYO", text: saved.text, url: saved.url }); }
+    catch (err) { onChange(saved); if (!(err instanceof DOMException && err.name === "AbortError")) setError(true); }
+    finally { nativeHandoff.current = false; }
+  }
+  return <Dialog open={link !== null} onOpenChange={(open) => { if (!open) onChange(null); }}>
+    {link && <DialogContent overlayClassName="z-[110]" className="z-[120] max-h-[90dvh] overflow-y-auto rounded-3xl" onCloseAutoFocus={(event) => { if (nativeHandoff.current) event.preventDefault(); }}>
+      <DialogTitle className="pr-8">{linkCopy[0]}</DialogTitle>
+      <DialogDescription>{linkCopy[1]}</DialogDescription>
+      <textarea readOnly value={`${link.text}\n\n${link.url}`} aria-label={t("cta")} rows={4} className="w-full resize-none rounded-xl border p-3" />
+      {typeof navigator !== "undefined" && typeof navigator.share === "function" && <button type="button" onClick={() => void nativeShare()} className="rounded-xl bg-violet-600 px-4 py-3 font-bold text-white">{linkCopy[0]}</button>}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">{SOCIAL_CHANNELS.map((channel) => <button key={channel} type="button" onClick={() => {
+        if (channel === "instagram") void shareToInstagram({ text: link.text, shareUrl: link.url }).catch(() => setError(true));
+        else openSocialShare(channel, link.text, link.url);
+      }} className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 font-bold text-violet-950">{channelLabel(channel)} ↗</button>)}</div>
+      <button type="button" onClick={() => { void navigator.clipboard.writeText(`${link.text}\n\n${link.url}`).then(() => { setCopied(true); setError(false); }).catch(() => setError(true)); }} className="rounded-xl border px-4 py-3 font-bold">{copied ? "✓ " : ""}{t("copyText")}</button>
+      {error && <p role="alert" className="text-sm text-red-700">{SHARE_COPY[locale][2]}</p>}
     </DialogContent>}
   </Dialog>;
 }

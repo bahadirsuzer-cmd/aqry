@@ -43,7 +43,7 @@ export const Route = createFileRoute(
 });
 
 function PublishSuccessPage() {
-  const { openImageShare, imageShareDialog } = useImageShare();
+  const { openImageShare, openLinkShare, imageShareDialog } = useImageShare();
   const [sharingImage, setSharingImage] = useState(false);
   const navigate = useNavigate();
   const { experienceId } = Route.useParams();
@@ -491,6 +491,21 @@ useEffect(() => {
 
   async function openPublishedShare() {
     if (!experience || sharingImage) return;
+    if (["compatibility", "question_confession", "story"].includes(experience.type)) {
+      try {
+        setSharingImage(true);
+        if (!shareAssetsReady) {
+          const source = getShareSource();
+          if (!source) return;
+          await ensureExperienceShareAssets(experience.creatorId, source);
+          setShareAssetsReady(true);
+        }
+        openLinkShare(publicShareUrl, getShareText());
+      } catch (error) {
+        window.alert(error instanceof Error ? error.message : "Paylaşım kapağı hazırlanamadı.");
+      } finally { setSharingImage(false); }
+      return;
+    }
     const source = getShareSource();
     if (!source) return;
     try {
@@ -679,7 +694,7 @@ useEffect(() => {
               </button>
             </div>
 
-            <button type="button" disabled={sharingImage} onClick={() => void openPublishedShare()} className="mt-3 flex h-12 w-full items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white disabled:opacity-50">{sharingImage ? "PNG hazırlanıyor…" : "Görselle paylaş ↗"}</button>
+            <button type="button" disabled={sharingImage} onClick={() => void openPublishedShare()} className="mt-3 flex h-12 w-full items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white disabled:opacity-50">{sharingImage ? "Paylaşım hazırlanıyor…" : ["compatibility", "question_confession", "story"].includes(experience.type) ? "Bağlantıyı paylaş ↗" : "Görselle paylaş ↗"}</button>
 
 {shareAssetsError ? (
   <p className="mt-2 text-center text-[9px] font-bold text-red-500">
