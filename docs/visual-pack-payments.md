@@ -4,7 +4,9 @@ Anime, Magic Academy and Fighting Arena each cost USD 0.99, including tax. Each 
 
 ## Current release state
 
-The three packs have `sale_enabled = false`. Existing signed-in creators retain launch access. The live API key and webhook secret are configured. Checkout still returns `checkout_not_ready` while sales remain disabled. Paddle account verification currently shows Not started; domain approval and real checkout remain unverified. No real charge has been made by these implementation tests.
+Sales were enabled on 2026-10-06 for Anime, Magic Academy and Fighting Arena at USD 0.99 each. Paddle showed `Verification passed` for the business and `Approved` for aqryo.com. The live API key and webhook secret are configured; the production catalog endpoint reports `checkout_available = true` for all three packs. Paid templates now require ownership; Classic templates remain free. The public pricing page links creators to the builder to purchase a pack.
+
+The checkout catalog and webhook regression harnesses pass. A completed live card payment, actual Paddle webhook delivery and its resulting pack unlock have not yet been verified end-to-end. Cloud Browser credential protection prevented inspecting the live checkout overlay during activation. No real charge was made during activation.
 
 The original 90 assets were copied to the private `visual-packs` Storage bucket and verified against SHA-256 hashes. The builder gets signed URLs through `visual-pack-assets`; static originals are removed from the current website. Assets already downloaded or cached before this change cannot be recalled. Signed URLs expire after five minutes.
 
@@ -35,7 +37,7 @@ The original 90 assets were copied to the private `visual-packs` Storage bucket 
 - Disposable account API checks: invalid origin/unknown pack rejected; no-purchase access denied when sales are enabled; all 30 templates opened after a simulated purchase; repeat checkout returned already-owned; full refund denied future URLs.
 - All 90 signed asset downloads matched the source hashes and allowed image CORS. Public bucket access was denied.
 - Disposable account and synthetic orders/events were deleted. Temporary transfer/test handlers were removed from the deployed function.
-- The repository-wide TypeScript check has existing failures outside this change; a pre-existing undefined `UNDETERMINED_SHORT` in the touched puzzle route was fixed. Real Paddle checkout and webhook-based fulfillment remain unverified pending account and domain approval.
+- The repository-wide TypeScript check has existing failures outside this change; a pre-existing undefined `UNDETERMINED_SHORT` in the touched puzzle route was fixed. Real Paddle checkout and webhook-based fulfillment remain unverified end-to-end; account and domain approval are complete.
 
 Run the webhook regression harness from the repository root:
 
