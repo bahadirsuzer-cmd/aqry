@@ -1,6 +1,11 @@
 import { createClient } from "npm:@supabase/supabase-js@2.111.0";
 
 const allowedOrigins = new Set(["https://aqryo.com", "https://www.aqryo.com", "http://localhost:5173"]);
+const paddlePrices: Record<string, string> = {
+  anime: "pri_01m4836qgmhwf660152jre819f",
+  magic: "pri_01m483gaf7f1k8x49tmzcgkggp",
+  arena: "pri_01m483nvtkjcdzvwf8cd6y36kc",
+};
 
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get("origin") ?? "";
@@ -37,6 +42,8 @@ Deno.serve(async (req: Request) => {
   try { body = await req.json(); } catch { return json({ error: "invalid_json" }, 400); }
   const pack = packs?.find((entry) => entry.id === body.pack_id);
   if (!pack) return json({ error: "unknown_pack" }, 400);
+  const priceId = paddlePrices[pack.id];
+  if (!priceId) return json({ error: "checkout_not_ready" }, 503);
 
   const { data: owned, error: ownedError } = await admin.from("visual_pack_orders").select("id")
     .eq("user_id", auth.user.id).eq("pack_id", pack.id).eq("status", "completed").limit(1);
@@ -54,26 +61,26 @@ Deno.serve(async (req: Request) => {
   if (!claim.claimed) return json({ error: "checkout_preparing" }, 409);
 
   try {
-    // Non-catalog one-time prices avoid reusing the monthly Pro subscription price.
+    // Use the reviewed one-time catalog prices, never the archived Pro subscription.
     const response = await fetch("https://api.paddle.com/transactions", {
       method: "POST",
       headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json", "Paddle-Version": "1" },
       body: JSON.stringify({
         collection_mode: "automatic", currency_code: pack.currency,
         custom_data: { aqryo_order_id: claim.order_id, aqryo_pack: pack.id },
-        items: [{ quantity: 1, price: {
-          description: `AQRYO ${pack.name}: 30 visuals, permanent access`,
-          name: "One-time purchase", billing_cycle: null, trial_period: null,
-          tax_mode: "internal", unit_price: { amount: String(pack.amount_minor), currency_code: pack.currency },
-          product: { name: `AQRYO ${pack.name}`, description: "10 Single + 10 Couple + 10 Scene puzzle visuals. Permanent access in AQRYO.",
-            tax_category: Deno.env.get("PADDLE_PACK_TAX_CATEGORY") ?? "digital-goods" },
-        } }],
+        items: [{ quantity: 1, price_id: priceId }],
         checkout: { url: "https://www.aqryo.com/puzzle-builder" },
       }),
       signal: AbortSignal.timeout(20000),
     });
     const result = await response.json();
-    if (!response.ok || !result.data?.id) {
+    const item = result.data?.items?.[0];
+    const validPrice = result.data?.items?.length === 1 && item?.quantity === 1 &&
+      item.price?.id === priceId && item.price?.unit_price?.amount === String(pack.amount_minor) &&
+      item.price?.unit_price?.currency_code === pack.currency && item.price?.tax_mode === "internal" &&
+      item.price?.billing_cycle === null && item.price?.trial_period === null &&
+      result.data?.currency_code === pack.currency && !result.data?.subscription_id;
+    if (!response.ok || !result.data?.id || !validPrice) {
       console.error("Paddle pack checkout rejected", response.status, result.error?.code ?? "unknown");
       await admin.from("visual_pack_orders").update({ status: "failed", updated_at: new Date().toISOString() })
         .eq("id", claim.order_id).eq("status", "pending");
