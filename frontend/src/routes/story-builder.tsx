@@ -1,5 +1,6 @@
 import { QuickStoryComposer } from "@/components/story/QuickStoryComposer";
 import { StoryPage } from "@/components/story/StoryPage";
+import { reflowStoryItems, placeStoryImage, type StoryTextItem, type StoryImageItem, type StoryItem } from "@/lib/storyItems";
 import { splitStoryText, suggestStoryTitle, createStoryCoverFile, type StoryTemplateId } from "@/lib/storyTemplates";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import {
@@ -13,7 +14,7 @@ import {
   savePublishedExperience,
 } from "@/services/experiences";
 import { supabase } from "@/services/supabase";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useAqryoLocale } from "@/lib/i18n";
 
@@ -22,22 +23,6 @@ export const Route = createFileRoute(
 )({
   component: StoryBuilderPage,
 });
-
-type StoryTextItem = {
-  id: string;
-  type: "text";
-  text: string;
-};
-
-type StoryImageItem = {
-  id: string;
-  type: "image";
-  imageUrl: string;
-};
-
-type StoryItem =
-  | StoryTextItem
-  | StoryImageItem;
 
 type CropTarget =
   | {
@@ -145,6 +130,8 @@ function StoryBuilderPage() {
   const { locale } = useAqryoLocale();
   const ui = locale === "tr" ? storyCopy.tr : locale === "de" ? storyCopy.de : storyCopy.en;
   const [quickMode, setQuickMode] = useState(true);
+  const quickUploadRef = useRef(false);
+  const [quickUploadError, setQuickUploadError] = useState("");
   const [manualTitle, setManualTitle] = useState(false);
   const [loading, setLoading] =
     useState(true);
@@ -530,7 +517,9 @@ function StoryBuilderPage() {
     if (
       !creatorId ||
       !canContinue ||
-      publishing
+      publishing ||
+      uploadingId !== null ||
+      quickUploadRef.current
     ) {
       return;
     }
@@ -697,6 +686,30 @@ function StoryBuilderPage() {
             ],
           }),
     }));
+  }
+
+  async function uploadQuickImages(files: File[]) {
+    if (!creatorId || publishing || uploadingId !== null || quickUploadRef.current || !files.length) return;
+    setQuickUploadError("");
+    if (files.some(file => !["image/jpeg", "image/png"].includes(file.type) || file.size > 8 * 1024 * 1024)) {
+      setQuickUploadError(locale === "tr" ? "Her görsel JPG veya PNG olmalı ve 8 MB'ı geçmemeli." : "Each image must be JPG or PNG and no larger than 8 MB.");
+      return;
+    }
+    quickUploadRef.current = true;
+    setUploadingId("quick-images");
+    try {
+      // Sequential uploads preserve the order selected and retain successful uploads on failure.
+      for (const file of files) {
+        const uploaded = await uploadExperienceImage(creatorId, file);
+        const image: StoryImageItem = { id: crypto.randomUUID(), type: "image", imageUrl: uploaded.publicUrl };
+        setState(current => ({ ...current, templateId: current.templateId ?? "paper", items: [...current.items, image] }));
+      }
+    } catch {
+      setQuickUploadError(locale === "tr" ? "Yükleme tamamlanamadı. Eklenen görseller korundu; eksik görselleri tekrar seçebilirsin." : "Upload could not finish. Added images were kept; select the missing images again.");
+    } finally {
+      quickUploadRef.current = false;
+      setUploadingId(null);
+    }
   }
 
   function addImageItem(
@@ -1186,7 +1199,11 @@ function StoryBuilderPage() {
     return <main className="min-h-screen bg-[#f7f5fb] text-foreground">
       <CreatorNavigation onSignOut={async () => { await signOutCreator(); window.location.href = "/creator-auth"; }} />
       <QuickStoryComposer locale={locale} text={fullText} title={state.title} templateId={state.templateId ?? "paper"} pages={pages} items={state.items} publishing={publishing} sourceVersion={Boolean(state.sourceExperienceId)}
-        onText={(text) => setState((current) => ({ ...current, sourceText: text, templateId: current.templateId ?? "paper", title: manualTitle ? current.title : suggestStoryTitle(text), items: [...splitStoryText(text).map((page, index) => ({ id: `story-page-${index}`, type: "text" as const, text: page })), ...current.items.filter((item) => item.type === "image")] }))}
+        uploading={uploadingId !== null} uploadError={quickUploadError}
+        onImages={(files) => void uploadQuickImages(files)}
+        onRemoveImage={(id) => setState(current => ({ ...current, items: current.items.filter(item => item.id !== id) }))}
+        onImagePosition={(id, afterPage) => setState(current => ({ ...current, items: placeStoryImage(current.items, id, afterPage) }))}
+        onText={(text) => setState((current) => ({ ...current, sourceText: text, templateId: current.templateId ?? "paper", title: manualTitle ? current.title : suggestStoryTitle(text), items: reflowStoryItems(current.items, splitStoryText(text)) }))}
         onTitle={(title) => { setManualTitle(Boolean(title)); setState((current) => ({ ...current, title })); }}
         onTemplate={(templateId) => setState((current) => ({ ...current, templateId, coverImageUrl: "" }))}
         onAdvanced={() => { setQuickMode(false); setActivePanel("content"); }} onPublish={() => void publishStory()} />
