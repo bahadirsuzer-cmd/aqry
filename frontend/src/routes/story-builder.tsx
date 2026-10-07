@@ -65,6 +65,7 @@ type StoryBuilderState = {
   title: string;
   description: string;
   coverImageUrl: string;
+  quickCoverImageId?: string;
   items: StoryItem[];
   premiumItems: StoryItem[];
   resultTitle: string;
@@ -526,6 +527,7 @@ function StoryBuilderPage() {
 
     const cleanItems =
       state.items
+        .filter(item => item.id !== state.quickCoverImageId)
         .map((item) =>
           item.type === "text"
             ? {
@@ -591,7 +593,7 @@ function StoryBuilderPage() {
 
       const templateId = quickMode ? (state.templateId ?? "paper") : state.templateId;
       let coverImageUrl = state.coverImageUrl.trim();
-      if (templateId && (quickMode || !coverImageUrl)) {
+      if (templateId && !coverImageUrl) {
         const file = await createStoryCoverFile(templateId, state.title);
         const uploaded = await uploadExperienceImage(creatorId, file);
         coverImageUrl = uploaded.publicUrl;
@@ -1198,14 +1200,22 @@ function StoryBuilderPage() {
     const pages = state.items.filter((item): item is StoryTextItem => item.type === "text" && Boolean(item.text.trim())).map((item) => item.text);
     return <main className="min-h-screen bg-[#f7f5fb] text-foreground">
       <CreatorNavigation onSignOut={async () => { await signOutCreator(); window.location.href = "/creator-auth"; }} />
-      <QuickStoryComposer locale={locale} text={fullText} title={state.title} templateId={state.templateId ?? "paper"} pages={pages} items={state.items} publishing={publishing} sourceVersion={Boolean(state.sourceExperienceId)}
+      <QuickStoryComposer locale={locale} text={fullText} title={state.title} templateId={state.templateId ?? "paper"} pages={pages} items={state.items} coverImageId={state.quickCoverImageId} coverImageUrl={state.coverImageUrl} publishing={publishing} sourceVersion={Boolean(state.sourceExperienceId)}
         uploading={uploadingId !== null} uploadError={quickUploadError}
         onImages={(files) => void uploadQuickImages(files)}
-        onRemoveImage={(id) => setState(current => ({ ...current, items: current.items.filter(item => item.id !== id) }))}
-        onImagePosition={(id, afterPage) => setState(current => ({ ...current, items: placeStoryImage(current.items, id, afterPage) }))}
+        onRemoveImage={(id) => setState(current => ({ ...current, items: current.items.filter(item => item.id !== id), ...(current.quickCoverImageId === id ? { quickCoverImageId: undefined, coverImageUrl: "" } : {}) }))}
+        onImagePosition={(id, afterPage) => setState(current => {
+          const image = current.items.find((item): item is StoryImageItem => item.id === id && item.type === "image");
+          if (!image) return current;
+          const items = afterPage === 0 && current.quickCoverImageId && current.quickCoverImageId !== id
+            ? placeStoryImage(current.items, current.quickCoverImageId, Math.max(1, pages.length)) : current.items;
+          return { ...current, items: placeStoryImage(items, id, afterPage), ...(afterPage === 0
+            ? { quickCoverImageId: id, coverImageUrl: image.imageUrl }
+            : current.quickCoverImageId === id ? { quickCoverImageId: undefined, coverImageUrl: "" } : {}) };
+        })}
         onText={(text) => setState((current) => ({ ...current, sourceText: text, templateId: current.templateId ?? "paper", title: manualTitle ? current.title : suggestStoryTitle(text), items: reflowStoryItems(current.items, splitStoryText(text)) }))}
         onTitle={(title) => { setManualTitle(Boolean(title)); setState((current) => ({ ...current, title })); }}
-        onTemplate={(templateId) => setState((current) => ({ ...current, templateId, coverImageUrl: "" }))}
+        onTemplate={(templateId) => setState((current) => ({ ...current, templateId }))}
         onAdvanced={() => { setQuickMode(false); setActivePanel("content"); }} onPublish={() => void publishStory()} />
     </main>;
   }
