@@ -8,7 +8,8 @@ import {
 } from "@tanstack/react-router";
 import { supabase } from "@/services/supabase";
 import { createShareCardBlob } from "@/services/shareCards";
-import { useAqryoLocale } from "@/lib/i18n";
+import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
+import { getCreatorExperienceCopy } from "@/lib/creatorExperienceCopy";
 import {
   getExperienceStats,
   type ExperienceStats,
@@ -96,7 +97,7 @@ export const Route = createFileRoute(
 
 function CreatorExperiencesPage() {
   const { locale } = useAqryoLocale();
-  const ui = locale === "tr" ? experienceCopy.tr : locale === "de" ? experienceCopy.de : experienceCopy.en;
+  const ui = getCreatorExperienceCopy(locale);
   const [experiences, setExperiences] = useState<
     CreatorExperience[]
   >([]);
@@ -281,7 +282,7 @@ const totalEngagements = useMemo(
       const normalizedSearch =
         searchValue
           .trim()
-          .toLocaleLowerCase("tr-TR");
+          .toLocaleLowerCase(locale);
 
       const matchingExperiences =
         experiences.filter(
@@ -302,14 +303,14 @@ const totalEngagements = useMemo(
             return (
               experience.title
                 .toLocaleLowerCase(
-                  "tr-TR",
+                  locale,
                 )
                 .includes(
                   normalizedSearch,
                 ) ||
               experience.type
                 .toLocaleLowerCase(
-                  "tr-TR",
+                  locale,
                 )
                 .includes(
                   normalizedSearch,
@@ -317,9 +318,10 @@ const totalEngagements = useMemo(
               formatExperienceType(
                 experience.type,
                 experience.testMode,
+              locale,
               )
                 .toLocaleLowerCase(
-                  "tr-TR",
+                  locale,
                 )
                 .includes(
                   normalizedSearch,
@@ -380,6 +382,7 @@ const totalEngagements = useMemo(
       searchValue,
       sortMode,
       statusFilter,
+      locale,
     ]);
 
   function toggleExperience(
@@ -420,7 +423,7 @@ const totalEngagements = useMemo(
 
         <section className="mt-4 grid grid-cols-4 gap-1.5 sm:gap-2">
           <SummaryMetric
-  label="Experience"
+  label={ui.experiences}
   value={formatCompactNumber(
     experiences.length,
   )}
@@ -561,7 +564,7 @@ const totalEngagements = useMemo(
             experiences.length > 0 && (
               <div>
                 <div className="hidden grid-cols-[minmax(220px,1fr)_82px_78px_78px_78px_110px_24px] items-center gap-3 border-b border-border bg-[#fafafa] px-4 py-2.5 text-[11px] font-black uppercase tracking-[0.06em] text-muted-foreground lg:grid">
-                  <span>Experience</span>
+                  <span>{ui.experiences}</span>
                   <span>{ui.status}</span>
                   <span>{ui.views}</span>
                   <span>{ui.engagement}</span>
@@ -619,6 +622,8 @@ function ExperienceListItem({
   selected: boolean;
   onToggle: () => void;
 }) {
+  const { locale } = useAqryoLocale();
+  const ui = getCreatorExperienceCopy(locale);
   return (
     <article className="border-b border-border last:border-b-0">
       <button
@@ -649,12 +654,10 @@ function ExperienceListItem({
           {formatExperienceType(
             experience.type,
             experience.testMode,
+            locale,
           )}{" "}
           ·{" "}
-          {formatShortDate(
-            experience.published_at ??
-              experience.created_at,
-          )} tarihinde yayınlandı
+          {ui.publishedOn.replace("{date}", formatShortDate(experience.published_at ?? experience.created_at, locale))}
         </p>
       </div>
     </div>
@@ -686,8 +689,9 @@ function ExperienceListItem({
       : experience.stats.latestCompletionAt
         ? formatShortDate(
             experience.stats.latestCompletionAt,
+          locale,
           )
-        : "Henüz yok"}
+        : ui.noActivity}
   </p>
 
   <span
@@ -706,24 +710,24 @@ function ExperienceListItem({
             : "grid-cols-3"
         }`}>
   <MobileMetric
-    label="Görüntüleme"
+    label={ui.views}
     value={`${experience.stats.totalViews}`}
   />
 
   {experience.type === "question_confession" ? (
     <MobileMetric
-      label="Gelen"
+      label={ui.responses}
       value={`${experience.stats.totalResponses}`}
     />
   ) : (
     <>
       <MobileMetric
-        label="Başlatma"
+        label={ui.starts}
         value={`${experience.stats.totalStarts}`}
       />
 
       <MobileMetric
-        label="Tamamlama"
+        label={ui.completions}
         value={`${experience.stats.totalCompletions}`}
       />
     </>
@@ -750,6 +754,8 @@ function ExperienceDetails({
   experience: CreatorExperience;
   compact?: boolean;
 }) {
+  const { locale } = useAqryoLocale();
+  const ui = getCreatorExperienceCopy(locale);
   const { openImageShare, openLinkShare, imageShareDialog } = useImageShare();
   const [sharingImage, setSharingImage] = useState(false);
   const [panel, setPanel] = useState<
@@ -1711,6 +1717,7 @@ async function toggleExperienceStatus() {
                   {formatExperienceType(
                     experience.type,
                     experience.testMode,
+                  locale,
                   )}
                 </p>
 
@@ -1739,24 +1746,24 @@ async function toggleExperienceStatus() {
               : "grid-cols-3"
           }`}>
             <DetailMetric
-              label="Görüntüleme"
+              label={ui.views}
               value={`${experience.stats.totalViews}`}
             />
 
             {experience.type === "question_confession" ? (
               <DetailMetric
-                label="Gelen"
+                label={ui.responses}
                 value={`${experience.stats.totalResponses}`}
               />
             ) : (
               <>
                 <DetailMetric
-                  label="Başlatma"
+                  label={ui.starts}
                   value={`${experience.stats.totalStarts}`}
                 />
 
                 <DetailMetric
-                  label="Tamamlama"
+                  label={ui.completions}
                   value={`${experience.stats.totalCompletions}`}
                 />
               </>
@@ -1769,13 +1776,13 @@ async function toggleExperienceStatus() {
         experience.moderated_at) && (
         <div className="mt-4 rounded-[14px] border border-red-200 bg-red-50 px-4 py-3">
           <p className="text-[13px] font-black text-red-700">
-            Bu Experience AQRYO moderasyonu tarafından durduruldu.
+            {ui.moderationPaused}
           </p>
 
           <p className="mt-1 text-[8px] leading-4 text-red-600">
-            Yeniden yayınlama işlemi creator tarafından yapılamaz.
+            {ui.cannotRepublish}
             {experience.pause_reason
-              ? ` Neden: ${experience.pause_reason}`
+              ? ` ${ui.reason}: ${experience.pause_reason}`
               : ""}
           </p>
         </div>
@@ -1788,7 +1795,7 @@ async function toggleExperienceStatus() {
           rel="noreferrer"
           className="flex h-10 items-center justify-center rounded-full border border-border bg-white px-4 text-[13px] font-black text-foreground transition hover:border-primary hover:text-primary"
         >
-          Gör ↗
+          {ui.view}
         </a>
 
         <button
@@ -1798,8 +1805,8 @@ async function toggleExperienceStatus() {
           className="flex h-10 items-center justify-center rounded-full border border-border bg-white px-4 text-[13px] font-black text-foreground transition enabled:hover:border-primary enabled:hover:text-primary disabled:cursor-wait disabled:opacity-60"
         >
           {editLoading
-            ? "İçerik açılıyor..."
-            : "İçeriği düzenle"}
+            ? ui.opening
+            : ui.edit}
         </button>
 
         {(
@@ -1824,13 +1831,13 @@ async function toggleExperienceStatus() {
             }`}
           >
             {statusLoading
-              ? "Güncelleniyor..."
+              ? ui.updating
               : experience.paused_by === "moderation" ||
                   experience.moderated_at
-                ? "Moderasyon kilidi"
+                ? ui.moderationLock
                 : experience.status === "published"
-                  ? "Pasife al"
-                  : "Yeniden yayınla"}
+                  ? ui.pause
+                  : ui.republish}
           </button>
         )}
 
@@ -1847,8 +1854,8 @@ async function toggleExperienceStatus() {
           }`}
         >
           {panel === "share"
-            ? "Paylaşımı kapat"
-            : "Paylaş"}
+            ? ui.closeShare
+            : ui.share}
         </button>
       </div>
 
@@ -1857,15 +1864,15 @@ async function toggleExperienceStatus() {
           <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:items-start">
             <div>
               <p className="text-[12px] font-black uppercase tracking-[0.09em] text-primary">
-                Paylaş
+                {ui.share}
               </p>
 
               <h3 className="mt-2 text-[16px] font-black tracking-[-0.03em]">
-                Experience’ını dışarı taşı.
+                {ui.shareHeading}
               </h3>
 
               <p className="mt-1 text-[9px] leading-4 text-muted-foreground">
-                Linki kopyala veya doğrudan sosyal kanallarda paylaş.
+                {ui.shareHint}
               </p>
 
               <div className="mt-4 flex min-w-0 items-center gap-2 rounded-[14px] border border-border bg-[#fafafa] p-2">
@@ -1884,8 +1891,8 @@ async function toggleExperienceStatus() {
                   className="h-9 shrink-0 rounded-full bg-black px-4 text-[12px] font-black text-white transition hover:bg-primary"
                 >
                   {linkCopied
-                    ? "Kopyalandı ✓"
-                    : "Linki kopyala"}
+                    ? ui.copied
+                    : ui.copyLink}
                 </button>
               </div>
 
@@ -1895,7 +1902,7 @@ async function toggleExperienceStatus() {
                   onClick={shareOnX}
                   className="flex h-10 items-center justify-center rounded-full bg-black px-4 text-[13px] font-black text-white transition hover:bg-primary"
                 >
-                  X’te paylaş
+                  {ui.shareOnX}
                 </button>
 
                 <button
@@ -1918,19 +1925,19 @@ async function toggleExperienceStatus() {
 
             <div className="rounded-[16px] border border-border bg-[#fafafa] p-4 text-center">
               <p className="text-[12px] font-black uppercase tracking-[0.08em] text-muted-foreground">
-                QR kod
+                {ui.qrCode}
               </p>
 
               <div className="mx-auto mt-3 flex h-[160px] w-[160px] items-center justify-center overflow-hidden rounded-[12px] bg-white p-2">
                 <img
                   src={qrImageUrl}
-                  alt="Experience QR kodu"
+                  alt={ui.qrAlt}
                   className="h-full w-full object-contain"
                 />
               </div>
 
               <p className="mt-3 text-[8px] leading-4 text-muted-foreground">
-                Fiziksel ortamda veya başka bir görselin üzerinde kullan.
+                {ui.qrHint}
               </p>
 
               <a
@@ -1939,7 +1946,7 @@ async function toggleExperienceStatus() {
                 rel="noreferrer"
                 className="mt-3 inline-flex h-9 items-center justify-center rounded-full border border-border bg-white px-4 text-[12px] font-black transition hover:border-primary hover:text-primary"
               >
-                QR’ı aç ↗
+                {ui.openQr}
               </a>
             </div>
           </div>
@@ -1951,11 +1958,11 @@ async function toggleExperienceStatus() {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[14px] font-black">
-                Katılımcılar
+                {ui.participants}
               </p>
 
               <p className="mt-1 text-[12px] text-muted-foreground">
-                En yeni tamamlamalar önce gösterilir.
+                {ui.participantsHint}
               </p>
             </div>
 
@@ -1969,7 +1976,7 @@ async function toggleExperienceStatus() {
 
           {participantsLoading && (
             <p className="py-8 text-center text-[13px] font-bold text-muted-foreground">
-              Katılımcılar yükleniyor...
+              {ui.loadingParticipants}
             </p>
           )}
 
@@ -1986,7 +1993,7 @@ async function toggleExperienceStatus() {
             !participantsError &&
             participants.length === 0 && (
               <p className="py-8 text-center text-[13px] font-bold text-muted-foreground">
-                Henüz tamamlayan yok.
+                {ui.noParticipants}
               </p>
             )}
 
@@ -2018,7 +2025,7 @@ async function toggleExperienceStatus() {
                         >
                           <div className="min-w-0">
                             <p className="truncate text-[14px] font-black">
-                              Anonim #
+                              {ui.anonymous} #
                               {participant.participant_key
                                 .slice(0, 6)
                                 .toUpperCase()}
@@ -2026,26 +2033,27 @@ async function toggleExperienceStatus() {
 
                             <p className="mt-0.5 truncate text-[12px] text-muted-foreground">
                               {participant.result_key ??
-                                "Sonuç"}
+                                ui.result}
                             </p>
                           </div>
 
                           <p className="text-[17px] font-black">
                             {experience.type ===
                             "story"
-                              ? "Tamamlandı"
+                              ? ui.completed
                               : experience.type ===
                                   "guess"
-                                ? "Doğru"
+                                ? ui.correct
                                 : experience.testMode ===
                                     "archetype"
-                                  ? "Sonuç"
+                                  ? ui.result
                                   : `%${participant.score}`}
                           </p>
 
                           <p className="text-right text-[12px] font-bold text-muted-foreground">
                             {formatFullDate(
                               participant.completed_at,
+                            locale,
                             )}
                           </p>
 
@@ -2063,7 +2071,7 @@ async function toggleExperienceStatus() {
                         {open && (
                           <div className="border-t border-border bg-[#fafafa] p-3">
                             <p className="text-[12px] font-black uppercase tracking-[0.07em] text-primary">
-                              Verilen cevaplar
+                              {ui.answers}
                             </p>
 
                             {participant.answers.length ===
@@ -2071,11 +2079,11 @@ async function toggleExperienceStatus() {
                               <p className="mt-2 rounded-[11px] border border-border bg-white px-3 py-3 text-[9px] font-semibold text-muted-foreground">
                                 {experience.type ===
                                 "story"
-                                  ? "Bu Experience soru-cevap verisi üretmiyor."
+                                  ? ui.storyNoData
                                   : experience.type ===
                                       "guess"
-                                    ? "Tahmin tamamlandı. Serbest cevap metni bu kayıtta saklanmıyor."
-                                    : "Bu tamamlamada cevap detayı yok."}
+                                    ? ui.guessNoData
+                                    : ui.completionNoData}
                               </p>
                             ) : (
                             <div className="mt-2 grid gap-2">
@@ -2100,24 +2108,24 @@ async function toggleExperienceStatus() {
                                       className="rounded-[11px] border border-border bg-white px-3 py-3"
                                     >
                                       <p className="text-[11px] font-black uppercase tracking-[0.06em] text-muted-foreground">
-                                        Soru{" "}
+                                        {ui.question}{" "}
                                         {answerIndex +
                                           1}
                                       </p>
 
                                       <p className="mt-1.5 text-[14px] font-black leading-4 text-foreground">
                                         {question?.text ??
-                                          `Soru ${answerIndex + 1}`}
+                                          `${ui.question} ${answerIndex + 1}`}
                                       </p>
 
                                       <div className="mt-2 rounded-[9px] bg-primary/[0.055] px-3 py-2">
                                         <p className="text-[11px] font-black uppercase tracking-[0.06em] text-primary">
-                                          Katılımcının cevabı
+                                          {ui.participantAnswer}
                                         </p>
 
                                         <p className="mt-1 text-[10px] font-bold leading-4">
                                           {answerText ??
-                                            `Seçenek ${String.fromCharCode(
+                                            `${ui.option} ${String.fromCharCode(
                                               65 + answer,
                                             )}`}
                                         </p>
@@ -2180,19 +2188,21 @@ function StatusBadge({
   pausedBy?: string | null;
   moderatedAt?: string | null;
 }) {
+  const { locale } = useAqryoLocale();
+  const ui = getCreatorExperienceCopy(locale);
   const moderationLocked =
     pausedBy === "moderation" ||
     Boolean(moderatedAt);
 
   const label = moderationLocked
-    ? "Moderasyon"
+    ? ui.moderation
     : status === "published"
-      ? "Aktif"
+      ? ui.active
       : status === "paused"
-        ? "Pasif"
+        ? ui.paused
         : status === "archived"
-          ? "Arşiv"
-          : "Taslak";
+          ? ui.archived
+          : ui.draft;
 
   const className = moderationLocked
     ? "bg-red-50 text-red-700"
@@ -2253,6 +2263,8 @@ function DetailMetric({
 }
 
 function EmptyExperiences() {
+  const { locale } = useAqryoLocale();
+  const ui = getCreatorExperienceCopy(locale);
   return (
     <div className="p-10 text-center sm:p-14">
       <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background text-lg">
@@ -2260,20 +2272,18 @@ function EmptyExperiences() {
       </div>
 
       <h2 className="mt-4 text-lg font-black">
-        Henüz Experience yok
+        {ui.emptyTitle}
       </h2>
 
       <p className="mx-auto mt-1 max-w-sm text-[14px] leading-6 text-muted-foreground">
-        İlk Experience’ını
-        yayınladığında burada
-        görünecek.
+        {ui.emptyHint}
       </p>
 
       <Link
         to="/"
         className="mx-auto mt-4 flex h-10 w-full max-w-[210px] items-center justify-center rounded-full bg-black text-[14px] font-black text-white transition hover:bg-primary"
       >
-        Yeni Experience
+        {ui.newExperience}
       </Link>
     </div>
   );
@@ -2396,38 +2406,40 @@ function getTestModeFromContent(
 function formatExperienceType(
   type: string,
   testMode: CreatorTestMode = null,
+  locale: AqryoLocale = "en",
 ) {
+  const ui = getCreatorExperienceCopy(locale);
   const normalized = type
-    .toLocaleLowerCase("tr-TR")
+    .toLocaleLowerCase(locale)
     .replace(/[-_]/g, " ")
     .trim();
 
   if (normalized === "test") {
     if (testMode === "spectrum") {
-      return "Ne kadar X’sin?";
+      return ui.spectrum;
     }
 
     if (testMode === "archetype") {
-      return "Hangi X’sin?";
+      return ui.archetype;
     }
 
-    return "Doğru cevap / Skor";
+    return ui.score;
   }
 
   const labels: Record<string, string> = {
-    question_confession: "Soru mu İtiraf mı?",
-    "question confession": "Soru mu İtiraf mı?",
+    question_confession: ui.questionConfession,
+    "question confession": ui.questionConfession,
     compatibility:
-      "Bana ne kadar yakınsın?",
-    guess: "Tahmin et / Bu nedir?",
-    story: "Story / İçerik",
-    stories: "Story / İçerik",
-    content: "Story / İçerik",
-    recommendation: "Öneri",
-    recommendations: "Öneri",
-    decision: "Görüş & Karar",
-    opinion: "Görüş & Karar",
-    guided: "Yönlendirmeli",
+      ui.compatibility,
+    guess: ui.guess,
+    story: ui.story,
+    stories: ui.story,
+    content: ui.story,
+    recommendation: ui.recommendation,
+    recommendations: ui.recommendation,
+    decision: ui.decision,
+    opinion: ui.decision,
+    guided: ui.guided,
   };
 
   return labels[normalized] ?? normalized;
@@ -2435,6 +2447,7 @@ function formatExperienceType(
 
 function formatShortDate(
   value: string,
+  locale: AqryoLocale,
 ) {
   const date = new Date(value);
 
@@ -2443,7 +2456,7 @@ function formatShortDate(
   }
 
   return new Intl.DateTimeFormat(
-    "tr-TR",
+    locale,
     {
       day: "2-digit",
       month: "short",
@@ -2454,15 +2467,16 @@ function formatShortDate(
 
 function formatFullDate(
   value: string,
+  locale: AqryoLocale,
 ) {
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) {
-    return "Bilinmiyor";
+    return getCreatorExperienceCopy(locale).unknown;
   }
 
   return new Intl.DateTimeFormat(
-    "tr-TR",
+    locale,
     {
       dateStyle: "medium",
       timeStyle: "short",
@@ -2501,8 +2515,3 @@ function formatCompactDecimal(
     ? value.toString()
     : value.toFixed(1);
 }
-const experienceCopy = {
- tr:{mine:"Experience’larım",active:"Aktif",views:"Görüntüleme",engagement:"Etkileşim",completions:"Tamamlama",allExperiences:"Tüm Experience’lar",search:"Experience ara",statusFilter:"Experience durum filtresi",allStatuses:"Tüm durumlar",paused:"Pasif",draft:"Taslak",sort:"Experience sıralaması",newest:"En yeni",oldest:"En eski",mostViewed:"En çok görüntülenen",mostEngaged:"En çok etkileşim",mostCompleted:"En çok tamamlanan",loading:"Experience’lar yükleniyor...",status:"Durum",lastActivity:"Son aktivite",noResults:"Sonuç bulunamadı",changeFilters:"Arama veya filtrelerini değiştir."},
- en:{mine:"My experiences",active:"Active",views:"Views",engagement:"Engagement",completions:"Completions",allExperiences:"All experiences",search:"Search experiences",statusFilter:"Experience status filter",allStatuses:"All statuses",paused:"Paused",draft:"Draft",sort:"Sort experiences",newest:"Newest",oldest:"Oldest",mostViewed:"Most viewed",mostEngaged:"Most engagement",mostCompleted:"Most completed",loading:"Loading experiences...",status:"Status",lastActivity:"Last activity",noResults:"No results found",changeFilters:"Change your search or filters."},
- de:{mine:"Meine Erlebnisse",active:"Aktiv",views:"Aufrufe",engagement:"Interaktionen",completions:"Abschlüsse",allExperiences:"Alle Erlebnisse",search:"Erlebnisse suchen",statusFilter:"Status filtern",allStatuses:"Alle Status",paused:"Pausiert",draft:"Entwurf",sort:"Erlebnisse sortieren",newest:"Neueste",oldest:"Älteste",mostViewed:"Meiste Aufrufe",mostEngaged:"Meiste Interaktionen",mostCompleted:"Meiste Abschlüsse",loading:"Erlebnisse werden geladen...",status:"Status",lastActivity:"Letzte Aktivität",noResults:"Keine Ergebnisse",changeFilters:"Ändere deine Suche oder Filter."}
-} as const;
