@@ -21,7 +21,7 @@ const uses = [
   },
   {
     title: "İçerik desteği",
-    text: "Sorular, seçenekler, hikaye akışı veya metin varyasyonları üret.",
+    text: "Sorular, seçenekler, akış veya metin varyasyonları üret.",
   },
   {
     title: "Düzenleme",

@@ -1,3 +1,5 @@
+import { useAqryoLocale } from "@/lib/i18n";
+import { getFlowCopy } from "@/lib/flowCopy";
 import { StoryPage } from "@/components/story/StoryPage";
 import { getPublicShareUrl } from "@/services/shareAssets";
 import { useImageShare } from "@/components/ImageShareDialog";
@@ -1202,6 +1204,7 @@ function EntryScreen({
   experience: PublishedExperience;
   onStart: () => void;
 }) {
+  const { locale } = useAqryoLocale();
   const coverClass = getCoverClass(
     experience.cover.style,
   );
@@ -1275,7 +1278,7 @@ function EntryScreen({
                 : experience.type === "guess"
                   ? "AQRYO Tahmin"
                   : experience.type === "story"
-                    ? "AQRYO Story"
+                    ? "AQRYO " + getFlowCopy(locale).name
                     : "AQRYO Experience"}
             </p>
           </div>

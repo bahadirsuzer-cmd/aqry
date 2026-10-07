@@ -1,3 +1,4 @@
+import { getFlowCopy } from "./flowCopy";
 import type { CSSProperties } from "react";
 
 export const STORY_TEMPLATES = [
@@ -52,7 +53,7 @@ export function suggestStoryTitle(raw: string): string {
   return (space > 45 ? shortened.slice(0, space) : shortened) + "…";
 }
 
-export async function createStoryCoverFile(templateId: string, title: string): Promise<File> {
+export async function createStoryCoverFile(templateId: string, title: string, locale: string = "en"): Promise<File> {
   const t = getStoryTemplate(templateId);
   const canvas = document.createElement("canvas");
   canvas.width = 1200; canvas.height = 1500;
@@ -68,7 +69,7 @@ export async function createStoryCoverFile(templateId: string, title: string): P
     if (t.pattern !== "lines") for (let x = 0; x < 1200; x += t.pattern === "grid" ? 70 : 11) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 1500); ctx.stroke(); }
   }
   ctx.globalAlpha = 1; ctx.strokeStyle = t.accent; ctx.lineWidth = 3; ctx.strokeRect(70, 70, 1060, 1360);
-  ctx.fillStyle = t.accent; ctx.font = "bold 32px Arial"; ctx.fillText("AQRYO / STORY", 130, 180);
+  ctx.fillStyle = t.accent; ctx.font = "bold 32px Arial"; ctx.fillText("AQRYO / " + getFlowCopy(locale).name, 130, 180);
   ctx.fillStyle = t.ink; ctx.font = `bold 76px ${t.font}`;
   const lines: string[] = []; let line = "";
   for (const word of title.split(/\s+/)) {

@@ -19,7 +19,7 @@ const participantSteps = [
   {
     number: "02",
     title: "Experience’a katıl",
-    text: "Testi çöz, hikayeyi ilerlet, bulmacayı çöz veya Experience’ın etkileşimini tamamla.",
+    text: "Testi çöz, akışı ilerlet, bulmacayı çöz veya Experience’ın etkileşimini tamamla.",
   },
   {
     number: "03",

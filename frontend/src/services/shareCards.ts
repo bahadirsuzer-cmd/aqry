@@ -1,3 +1,4 @@
+import { getFlowCopy } from "@/lib/flowCopy";
 export type ShareExperienceType =
   | "question_confession"
   | "compatibility"
@@ -143,12 +144,13 @@ export function getShareTheme(
 function getShareCopy(
   source: ShareCardSource,
 ) {
+  const flow = getFlowCopy(typeof document === "undefined" ? "en" : document.documentElement.lang);
   const label =
-    source.coverLabel?.trim() ||
+    (source.type === "story" ? flow.name : source.coverLabel?.trim()) ||
     (source.type === "question_confession"
       ? "SORU MU İTİRAF MI?"
       : source.type === "story"
-      ? "HİKÂYE"
+      ? flow.name
       : source.type === "guess"
         ? "TAHMİN"
         : source.type === "compatibility"
@@ -161,7 +163,7 @@ function getShareCopy(
     source.type === "question_confession"
       ? "Anonim mesaj bırak"
       : source.type === "story"
-      ? "Hikâyeyi aç"
+      ? flow.open
       : source.type === "guess"
         ? "Tahmin et"
         : source.type === "compatibility"

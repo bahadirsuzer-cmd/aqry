@@ -1,3 +1,5 @@
+import { useAqryoLocale } from "@/lib/i18n";
+import { getFlowCopy } from "@/lib/flowCopy";
 import { useImageShare } from "@/components/ImageShareDialog";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -43,6 +45,7 @@ export const Route = createFileRoute(
 });
 
 function PublishSuccessPage() {
+  const { locale } = useAqryoLocale();
   const { openImageShare, openLinkShare, imageShareDialog } = useImageShare();
   const [sharingImage, setSharingImage] = useState(false);
   const navigate = useNavigate();
@@ -483,7 +486,7 @@ useEffect(() => {
     return experience.type === "question_confession"
       ? `Bana söyleyemediğin ne varsa buraya bırak 👀\nİsmini göremiyorum. Gerçekten anonim.\n\n👇 Soru sor veya itiraf et\n\n#AQRYO`
       : experience.type === "story"
-        ? `${experience.title}\n\nHikâyeye göz at 👀\n\n#AQRYO`
+        ? `${experience.title}\n\n${getFlowCopy(locale).open} 👀\n\n#AQRYO`
         : experience.type === "compatibility"
           ? `${experience.title}\n\nUyumumuz kaç çıkacak? ❤️\n\n#AQRYO`
           : `${experience.title}\n\nSenin sonucun ne çıkacak?\n\n#AQRYO`;

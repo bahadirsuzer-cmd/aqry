@@ -1,3 +1,4 @@
+import { getFlowCopy } from "@/lib/flowCopy";
 import { QuickStoryComposer } from "@/components/story/QuickStoryComposer";
 import { StoryPage } from "@/components/story/StoryPage";
 import { reflowStoryItems, placeStoryImage, type StoryTextItem, type StoryImageItem, type StoryItem } from "@/lib/storyItems";
@@ -112,13 +113,13 @@ const DEFAULT_STATE: StoryBuilderState = {
 
 const STORY_TOPIC_IDEAS = [
   "Şaşırtıcı bir anı",
-  "İlişki hikâyesi",
+  "İlişkiler üzerine",
   "Gizem / ters köşe",
   "Mini rehber",
   "Liste / maddeler",
   "Öncesi / sonrası",
   "İtiraf / gerçek olay",
-  "Devamı merak edilen hikâye",
+  "Devamı merak edilen akış",
 ];
 
 const STORY_TEXT_EXAMPLES = [
@@ -129,7 +130,8 @@ const STORY_TEXT_EXAMPLES = [
 
 function StoryBuilderPage() {
   const { locale } = useAqryoLocale();
-  const ui = locale === "tr" ? storyCopy.tr : locale === "de" ? storyCopy.de : storyCopy.en;
+  const flow = getFlowCopy(locale);
+  const ui = { ...(locale === "tr" ? storyCopy.tr : locale === "de" ? storyCopy.de : storyCopy.en), newStory: flow.newFlow, createStory: flow.create, freeFinal: flow.ending, previewHint: flow.review };
   const [quickMode, setQuickMode] = useState(true);
   const quickUploadRef = useRef(false);
   const [quickUploadError, setQuickUploadError] = useState("");
@@ -367,7 +369,7 @@ function StoryBuilderPage() {
 
             if (premiumError) {
               console.error(
-                "Premium Story akışı yüklenemedi:",
+                "Premium akış yüklenemedi:",
                 premiumError,
               );
             } else if (
@@ -471,7 +473,7 @@ function StoryBuilderPage() {
       setGuide({
         title: "Şimdi finali hazırlayalım",
         description:
-          "Story tamamlandığında kullanıcı ücretsiz bir final görecek. Bu bölüm hikâyenin doğal sonu olmalı ve tek başına anlamlı olmalı.",
+          "Akış tamamlandığında kullanıcı ücretsiz bir final görecek. Bu bölüm akışın doğal sonu olmalı ve tek başına anlamlı olmalı.",
         next: "result",
       });
       return;
@@ -594,7 +596,7 @@ function StoryBuilderPage() {
       const templateId = quickMode ? (state.templateId ?? "paper") : state.templateId;
       let coverImageUrl = state.coverImageUrl.trim();
       if (templateId && !coverImageUrl) {
-        const file = await createStoryCoverFile(templateId, state.title);
+        const file = await createStoryCoverFile(templateId, state.title, locale);
         const uploaded = await uploadExperienceImage(creatorId, file);
         coverImageUrl = uploaded.publicUrl;
       }
@@ -610,7 +612,7 @@ function StoryBuilderPage() {
           state.description.trim(),
         cover: {
           style: "purple",
-          label: "Story / İçerik",
+          label: flow.name,
           imageUrl:
             coverImageUrl,
         },
@@ -1229,12 +1231,12 @@ function StoryBuilderPage() {
         }}
       />
 
-      <div className="mx-auto max-w-[1500px] px-4 pt-4"><button type="button" onClick={() => { setState((current) => ({ ...current, sourceText: undefined })); setQuickMode(true); }} className="rounded-full border bg-white px-4 py-2 text-sm font-bold">{locale === "tr" ? "← Hızlı hikâye oluştur" : "← Quick story composer"}</button></div>
+      <div className="mx-auto max-w-[1500px] px-4 pt-4"><button type="button" onClick={() => { setState((current) => ({ ...current, sourceText: undefined })); setQuickMode(true); }} className="rounded-full border bg-white px-4 py-2 text-sm font-bold">{"← " + flow.create}</button></div>
       <header className="sticky top-16 z-30 border-b border-border/80 bg-[#fbfbfd]/95 backdrop-blur-xl">
         <div className="mx-auto flex h-[58px] max-w-[1500px] items-center justify-between gap-3 px-4 sm:px-7">
           <div className="min-w-0">
             <p className="text-[14px] font-black uppercase tracking-[0.15em] text-teal-600">
-              {state.sourceExperienceId ? "Yeni sürüm oluşturuluyor" : "Story / İçerik"}
+              {state.sourceExperienceId ? "Yeni sürüm oluşturuluyor" : flow.name}
             </p>
             <p className="truncate text-[14px] font-bold">{state.title || ui.newStory}</p>
           </div>
@@ -1311,7 +1313,7 @@ function StoryBuilderPage() {
                     Konu fikri lazım mı?
                   </p>
                   <p className="mt-1 text-[13px] leading-6 text-muted-foreground">
-                    Story sadece hikâye değil. Metin ve görsellerle ilerleyen her türlü kısa içerik akışını oluşturabilirsin.
+                    Metin ve görsellerle bilgi, yorum, analiz ve daha fazlasını paylaşabilirsin.
                   </p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {STORY_TOPIC_IDEAS.map((topic) => (
@@ -1427,7 +1429,7 @@ function StoryBuilderPage() {
                 {previewStage === "entry" ? (
                   <div>
                     {state.coverImageUrl ? <img src={state.coverImageUrl} alt="" className="h-52 w-full rounded-[20px] object-cover" /> : <div className="h-52 rounded-[20px] bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500" />}
-                    <h2 className="mt-5 text-[26px] font-black tracking-[-0.05em]">{state.title || "Story başlığı"}</h2>
+                    <h2 className="mt-5 text-[26px] font-black tracking-[-0.05em]">{state.title || flow.title}</h2>
                     <p className="mt-2 text-[13px] leading-6 text-muted-foreground">{state.description}</p>
                     <button type="button" onClick={previewNext} className="mt-5 h-11 w-full rounded-full bg-black text-[15px] font-black text-white">Başla →</button>
                   </div>
@@ -1448,7 +1450,7 @@ function StoryBuilderPage() {
                 <div className="relative min-h-[220px] overflow-hidden bg-gradient-to-br from-teal-500 via-cyan-500 to-blue-500">
                   {state.coverImageUrl ? <img src={state.coverImageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" /> : null}
                   <div className="absolute inset-0 bg-black/15" />
-                  <div className="relative z-10 flex min-h-[220px] flex-col justify-end p-6 text-white"><p className="text-[14px] font-black uppercase tracking-[0.13em] text-white/75">AQRYO Story</p><h2 className="mt-2 text-[28px] font-black leading-[0.98] tracking-[-0.05em]">{state.title || "İçerik başlığı"}</h2>{state.description ? <p className="mt-3 text-[13px] leading-6 text-white/75">{state.description}</p> : null}</div>
+                  <div className="relative z-10 flex min-h-[220px] flex-col justify-end p-6 text-white"><p className="text-[14px] font-black uppercase tracking-[0.13em] text-white/75">AQRYO {flow.name}</p><h2 className="mt-2 text-[28px] font-black leading-[0.98] tracking-[-0.05em]">{state.title || "İçerik başlığı"}</h2>{state.description ? <p className="mt-3 text-[13px] leading-6 text-white/75">{state.description}</p> : null}</div>
                 </div>
                 <div className="max-h-[420px] space-y-4 overflow-y-auto p-5">{state.items.map((item, index) => <div key={item.id} className="rounded-[16px] border border-border bg-[#fafafa] p-3"><p className="text-[15px] font-black uppercase tracking-[0.08em] text-teal-600">{index + 1}. {item.type === "text" ? "Metin" : "Görsel"}</p>{item.type === "image" && item.imageUrl ? <div className="mt-2 flex min-h-[120px] items-center justify-center rounded-[12px] bg-[#efeff2] p-2"><img src={item.imageUrl} alt="" className="max-h-[220px] max-w-full object-contain" /></div> : null}{item.type === "text" && item.text ? <p className="mt-2 whitespace-pre-wrap text-left text-[14px] font-semibold leading-5 text-foreground/80">{item.text}</p> : null}</div>)}</div>
               </>
@@ -1675,7 +1677,7 @@ function SmallButton({
   );
 }
 const storyCopy={
-tr:{newStory:"Yeni Hikâye",createStory:"Hikâyeni oluştur",createHint:"Başlığı, kapağı ve ziyaretçinin sırayla göreceği metin ve görselleri hazırla.",changeCover:"Kapak görselini değiştir",uploadCover:"Kapak görseli yükle",arrange:"Metin ve görselleri sırala",arrangeHint:"Her öğe ziyaretçide ayrı bir ekran olur.",freeFinal:"Hikâyenin ücretsiz finali",freeFinalHint:"Kullanıcı ana içeriği tamamladığında karşılığını burada almalı.",previewTitle:"Yayınlamadan önce bir kez yaşa",previewHint:"Hikâyeyi ziyaretçi gibi baştan sona kontrol et. Hazırsa tek dokunuşla yayınla.",publishing:"Yayınlanıyor...",publishNew:"Yeni sürümü yayınla",publish:"Yayınla",realExperience:"Gerçek deneyim",livePreview:"Canlı önizleme"},
-en:{newStory:"New story",createStory:"Create your story",createHint:"Prepare the title, cover, text and images visitors will see in sequence.",changeCover:"Change cover image",uploadCover:"Upload cover image",arrange:"Arrange text and images",arrangeHint:"Each item becomes a separate screen for the visitor.",freeFinal:"Free story ending",freeFinalHint:"Give visitors a meaningful ending when they finish the main content.",previewTitle:"Experience it before publishing",previewHint:"Go through the story from start to finish like a visitor. Publish when it feels right.",publishing:"Publishing...",publishNew:"Publish new version",publish:"Publish",realExperience:"Real experience",livePreview:"Live preview"},
-de:{newStory:"Neue Geschichte",createStory:"Erstelle deine Geschichte",createHint:"Bereite Titel, Cover, Texte und Bilder in der Reihenfolge vor, in der Besucher sie sehen.",changeCover:"Coverbild ändern",uploadCover:"Coverbild hochladen",arrange:"Texte und Bilder anordnen",arrangeHint:"Jedes Element wird für Besucher zu einem eigenen Bildschirm.",freeFinal:"Kostenloses Finale",freeFinalHint:"Gib Besuchern nach dem Hauptinhalt einen stimmigen Abschluss.",previewTitle:"Vor dem Veröffentlichen selbst erleben",previewHint:"Gehe die Geschichte wie ein Besucher von Anfang bis Ende durch und veröffentliche sie anschließend.",publishing:"Wird veröffentlicht...",publishNew:"Neue Version veröffentlichen",publish:"Veröffentlichen",realExperience:"Echtes Erlebnis",livePreview:"Live-Vorschau"}
+tr:{newStory:"Yeni Akış",createStory:"Akışını oluştur",createHint:"Başlığı, kapağı ve ziyaretçinin sırayla göreceği metin ve görselleri hazırla.",changeCover:"Kapak görselini değiştir",uploadCover:"Kapak görseli yükle",arrange:"Metin ve görselleri sırala",arrangeHint:"Her öğe ziyaretçide ayrı bir ekran olur.",freeFinal:"Akışın ücretsiz finali",freeFinalHint:"Kullanıcı ana içeriği tamamladığında karşılığını burada almalı.",previewTitle:"Yayınlamadan önce bir kez yaşa",previewHint:"Akışı ziyaretçi gibi baştan sona kontrol et. Hazırsa tek dokunuşla yayınla.",publishing:"Yayınlanıyor...",publishNew:"Yeni sürümü yayınla",publish:"Yayınla",realExperience:"Gerçek deneyim",livePreview:"Canlı önizleme"},
+en:{newStory:"New flow",createStory:"Create your flow",createHint:"Prepare the title, cover, text and images visitors will see in sequence.",changeCover:"Change cover image",uploadCover:"Upload cover image",arrange:"Arrange text and images",arrangeHint:"Each item becomes a separate screen for the visitor.",freeFinal:"Flow ending",freeFinalHint:"Give visitors a meaningful ending when they finish the main content.",previewTitle:"Experience it before publishing",previewHint:"Go through the flow from start to finish like a visitor. Publish when it feels right.",publishing:"Publishing...",publishNew:"Publish new version",publish:"Publish",realExperience:"Real experience",livePreview:"Live preview"},
+de:{newStory:"Neuer Fluss",createStory:"Erstelle deinen Fluss",createHint:"Bereite Titel, Cover, Texte und Bilder in der Reihenfolge vor, in der Besucher sie sehen.",changeCover:"Coverbild ändern",uploadCover:"Coverbild hochladen",arrange:"Texte und Bilder anordnen",arrangeHint:"Jedes Element wird für Besucher zu einem eigenen Bildschirm.",freeFinal:"Kostenloses Finale",freeFinalHint:"Gib Besuchern nach dem Hauptinhalt einen stimmigen Abschluss.",previewTitle:"Vor dem Veröffentlichen selbst erleben",previewHint:"Gehe den Fluss wie ein Besucher von Anfang bis Ende durch und veröffentliche sie anschließend.",publishing:"Wird veröffentlicht...",publishNew:"Neue Version veröffentlichen",publish:"Veröffentlichen",realExperience:"Echtes Erlebnis",livePreview:"Live-Vorschau"}
 } as const;

@@ -1,3 +1,4 @@
+import { useAqryoLocale } from "@/lib/i18n";
 import type {
   HomeExperienceCard,
 } from "./homeData";
@@ -13,7 +14,7 @@ function typeClass(type: HomeExperienceCard["type"]) {
     return "bg-pink-500 text-white";
   }
 
-  if (type === "HİKAYE") {
+  if (type === "AKIŞ") {
     return "bg-violet-600 text-white";
   }
 
@@ -25,6 +26,7 @@ export function ExperiencePreviewCard({
   className = "",
   compact = false,
 }: ExperiencePreviewCardProps) {
+  const { t } = useAqryoLocale();
   return (
     <article
       className={`group relative overflow-hidden rounded-[26px] border border-black/5 bg-gradient-to-br ${experience.accent} shadow-[0_18px_48px_rgba(35,16,55,0.14)] ${className}`}
@@ -49,7 +51,7 @@ export function ExperiencePreviewCard({
           <span
             className={`inline-flex rounded-full px-2.5 py-1 text-[9px] font-black tracking-[0.05em] ${typeClass(experience.type)}`}
           >
-            {experience.type}
+            {experience.type === "AKIŞ" ? t("story") : experience.type}
           </span>
         </div>
 

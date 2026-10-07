@@ -5,7 +5,7 @@ const title =
   "AQRYO | Takipçilerinle Etkileşimli İçerikler Oluştur";
 
 const description =
-  "AQRYO ile Soru mu İtiraf mı, Aşk Metre, hikaye ve puzzle içerikleri oluştur. Linkini paylaş, takipçilerini etkileşime davet et.";
+  "AQRYO ile Soru mu İtiraf mı, Aşk Metre, akış ve puzzle içerikleri oluştur. Linkini paylaş, takipçilerini etkileşime davet et.";
 
 export const Route = createFileRoute("/")({
   head: () => ({

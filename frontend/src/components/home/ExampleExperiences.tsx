@@ -25,9 +25,9 @@ function normalizeType(
 
   if (
     normalized.includes("story") ||
-    normalized.includes("hikaye")
+    (normalized.includes("hikaye") || normalized.includes("akış"))
   ) {
-    return "HİKAYE";
+    return "AKIŞ";
   }
 
   if (
@@ -55,7 +55,7 @@ function accentForSlot(
 function symbolForType(
   type: HomeExperienceCard["type"],
 ) {
-  if (type === "HİKAYE") {
+  if (type === "AKIŞ") {
     return "✦";
   }
 
@@ -177,7 +177,7 @@ export function ExampleExperiences() {
           </h2>
 
           <p className="mt-2 max-w-[720px] text-[15px] leading-6 text-muted-foreground">
-            Testlerden hikayelere, bulmacalardan kişilik deneyimlerine.
+            Testlerden akışlara, bulmacalardan kişilik deneyimlerine.
           </p>
         </div>
 

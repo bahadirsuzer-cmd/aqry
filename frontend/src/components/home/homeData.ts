@@ -1,6 +1,6 @@
 export type HomeExperienceType =
   | "TEST"
-  | "HİKAYE"
+  | "AKIŞ"
   | "BULMACA";
 
 export interface HomeExperienceCard {
@@ -16,7 +16,7 @@ export interface HomeExperienceCard {
 export const featuredExperiences: HomeExperienceCard[] = [
   {
     id: "story-2341",
-    type: "HİKAYE",
+    type: "AKIŞ",
     title: "23:41’de Gelen Mesaj",
     meta: "5 bölüm",
     accent:
@@ -73,7 +73,7 @@ export const popularExperiences: HomeExperienceCard[] = [
   },
   {
     id: "story-2341",
-    type: "HİKAYE",
+    type: "AKIŞ",
     title: "23:41’de Gelen Mesaj",
     meta: "5 bölüm",
     accent:
