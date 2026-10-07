@@ -63,7 +63,7 @@ export function QuickStoryComposer({ locale, text, title, templateId, pages, ite
         <div className="sticky bottom-3 z-20 flex flex-wrap items-center gap-3 rounded-2xl border bg-white/95 p-3 shadow-lg backdrop-blur">
           <button type="button" disabled={!slides.length} onClick={() => { setPreview(!preview); setSelected(0); previewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }); }} className="flex-1 rounded-xl border px-4 py-3 font-bold disabled:opacity-40">{tr ? "Önizle" : "Preview"}</button>
           <button type="button" disabled={!slides.length || !title.trim() || busy} onClick={onPublish} className="flex-1 rounded-xl bg-violet-600 px-4 py-3 font-bold text-white disabled:opacity-40">{publishing ? (tr ? "Yayınlanıyor…" : "Publishing…") : sourceVersion ? (tr ? "Yeni sürümü yayınla" : "Publish new version") : (tr ? "Yayınla →" : "Publish →")}</button>
-          <p className="w-full text-center text-xs text-muted-foreground">{tr ? "Kapak görseli görünen V2 bağlantısıyla paylaşılır." : "Share a V2 link with its cover preview."}</p>
+          <p className="w-full text-center text-xs text-muted-foreground">{tr ? "Hikâyen, kapak görseliyle birlikte bağlantı olarak paylaşılır." : "Share your story as a link with its cover preview."}</p>
         </div>
       </section>
       <aside ref={previewRef} className="scroll-mt-64 min-w-0 lg:sticky lg:top-56 lg:self-start">
