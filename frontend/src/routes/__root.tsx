@@ -100,7 +100,7 @@ export const Route =
         {
           name: "description",
           content:
-            "Creator'lar için anonim etkileşim, Aşk Metre, akış ve sosyal puzzle içerikleri üretme aracı.",
+            "Creator'lar için anonim etkileşim, Uyum Metre, akış ve sosyal puzzle içerikleri üretme aracı.",
         },
         {
           name: "author",

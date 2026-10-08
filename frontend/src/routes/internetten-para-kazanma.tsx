@@ -17,7 +17,7 @@ function LegacyCreatorGuidePage() {
     <PublicPageShell
       eyebrow="AQRYO"
       title="AQRYO artık etkileşim odaklı."
-      description="Soru mu İtiraf mı, Aşk Metre, Akış ve Puzzle formatlarıyla takipçilerinle paylaşabileceğin içerikler oluştur."
+      description="Soru mu İtiraf mı, Uyum Metre, Akış ve Puzzle formatlarıyla takipçilerinle paylaşabileceğin içerikler oluştur."
     >
       <section className="mx-auto w-full max-w-[900px] px-5 py-14 sm:px-7">
         <div className="rounded-[28px] border border-border bg-white p-6 sm:p-8">

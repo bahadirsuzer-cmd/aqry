@@ -35,7 +35,7 @@ const HOME_CARD_HTML = `<!doctype html>
 <nav>
 <a href="/question-confession-builder">Question or Confession?</a>
 <a href="/puzzle-builder">Puzzle</a>
-<a href="/compatibility-builder">Love Meter</a>
+<a href="/compatibility-builder">Match Meter</a>
 <a href="/story-builder">Flow</a>
 </nav>
 </body></html>`;

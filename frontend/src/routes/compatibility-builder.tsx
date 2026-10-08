@@ -1,8 +1,13 @@
+import { useAqryoLocale } from "@/lib/i18n";
+import { getCompatibilityCopy } from "@/lib/compatibilityCopy";
+import { compatibilityInputError, type CompatibilityInput } from "@/lib/compatibilityComposer";
+import { generateCompatibility } from "@/services/compatibilityComposer";
+import { QuickCompatibilityComposer } from "@/components/creator/QuickCompatibilityComposer";
 import {
   getCurrentCreator,
   signOutCreator,
 } from "@/services/auth";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { savePublishedExperience } from "@/services/experiences";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
@@ -29,28 +34,12 @@ type ResultDefinition = {
 
 const STANDARD_OFFER_PRICE = 0;
 const BUILDER_STORAGE_KEY = "aqry-compatibility-builder-v2";
-const initialQuestions: Question[] = [
-  {
-    id: 1,
-    text: "",
-    options: ["", "", "", ""],
-  },
-  {
-    id: 2,
-    text: "",
-    options: ["", "", "", ""],
-  },
-  {
-    id: 3,
-    text: "",
-    options: ["", "", "", ""],
-  },
-];
+const initialQuestions: Question[] = Array.from({ length: 5 }, (_, index) => ({ id: index + 1, text: "", options: ["", "", "", ""] }));
 
 const QUESTION_EXAMPLES = [
-  "Örn. Bir ilişkide sana en çok ne güven verir?",
-  "Örn. Bir tartışma çıktığında nasıl davranırsın?",
-  "Örn. Birlikte geçirilen ideal bir gün senin için nasıl olur?",
+  "Örn. Bir plan bozulduğunda ne yaparsın?",
+  "Örn. Risk almaya nasıl bakarsın?",
+  "Örn. Seni en çok ne motive eder?",
 ];
 
 const TOPIC_IDEAS = [
@@ -139,32 +128,43 @@ const initialResults: ResultDefinition[] = [
     range: "%80–100",
     title: "Güçlü uyum",
     description:
-      "İletişim ve ilişki beklentileriniz büyük ölçüde uyuşuyor. Ortak bir ritim yakalama ihtimaliniz oldukça yüksek.",
+      "Cevapların referans cevaplarla büyük ölçüde eşleşiyor.",
   },
   {
     id: "good",
     range: "%60–79",
     title: "İyi uyum",
     description:
-      "Birçok konuda benzer düşünüyorsunuz. Bazı farklılıklarınız ilişkinizi daha ilgi çekici hâle getirebilir.",
+      "Cevaplarının çoğu eşleşiyor; bazı konularda farklı tercihler yapıyorsun.",
   },
   {
     id: "mixed",
     range: "%40–59",
     title: "Karışık uyum",
     description:
-      "Bazı güçlü ortak noktalarınız var ancak ilişki beklentileriniz belirli konularda ayrışıyor.",
+      "Bazı cevapların eşleşiyor, bazı tercihlerde farklı düşünüyorsun.",
   },
   {
     id: "different",
     range: "%0–39",
     title: "Farklı dünyalar",
     description:
-      "İlişki yaklaşımınız ve beklentileriniz birçok konuda farklı. Birbirinizi anlamak için daha fazla iletişim gerekebilir.",
+      "Cevapların referans cevaplardan farklı bir yaklaşım gösteriyor.",
   },
 ];
 
 function CompatibilityBuilderPage() {
+  const { locale } = useAqryoLocale();
+  const copy = getCompatibilityCopy(locale);
+  const [quickMode, setQuickMode] = useState(true);
+  const [quickInputs, setQuickInputs] = useState<CompatibilityInput[]>(() => Array.from({ length: 5 }, () => ({ question: "", answer: "" })));
+  const [quickReady, setQuickReady] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [quickError, setQuickError] = useState("");
+  const [publishing, setPublishing] = useState(false);
+  const publishingRef = useRef(false);
+  const generatingRef = useRef(false);
+
   const [activePanel, setActivePanel] =
     useState<BuilderPanel>("content");
 
@@ -182,10 +182,10 @@ function CompatibilityBuilderPage() {
   const [answersLocked, setAnswersLocked] = useState(false);
 
   const [coverStyle, setCoverStyle] =
-    useState<CoverStyle>("pink");
+    useState<CoverStyle>("purple");
 
   const [coverImageUrl, setCoverImageUrl] = useState("");
-  const [coverLabel, setCoverLabel] = useState("Aşk Metre");
+  const [coverLabel, setCoverLabel] = useState(copy.name);
 
   const [results, setResults] =
     useState<ResultDefinition[]>(initialResults);
@@ -244,6 +244,9 @@ function CompatibilityBuilderPage() {
     try {
       const savedData = JSON.parse(storedBuilderData) as {
         title?: string;
+        quickMode?: boolean;
+        quickInputs?: CompatibilityInput[];
+        quickReady?: boolean;
         description?: string;
         questions?: Question[];
         creatorAnswers?: Record<number, number>;
@@ -258,6 +261,14 @@ function CompatibilityBuilderPage() {
         sourceExperienceId?: string;
       };
 
+      if (Array.isArray(savedData.quickInputs) && savedData.quickInputs.length >= 5 && savedData.quickInputs.length <= 10 && savedData.quickInputs.every(item => typeof item.question === "string" && typeof item.answer === "string")) {
+        setQuickInputs(savedData.quickInputs);
+        setQuickReady(savedData.quickReady === true);
+        setQuickMode(savedData.quickMode !== false);
+      } else if (savedData.questions?.some(question => question.text?.trim())) {
+        // Existing published content/drafts retain the original editor and scoring.
+        setQuickMode(false);
+      }
       if (typeof savedData.title === "string") {
         setTitle(savedData.title);
       }
@@ -298,7 +309,7 @@ function CompatibilityBuilderPage() {
       }
 
       if (typeof savedData.coverLabel === "string") {
-        setCoverLabel(savedData.coverLabel);
+        setCoverLabel(["Aşk Metre", "Love Meter"].includes(savedData.coverLabel) ? copy.name : savedData.coverLabel);
       }
 
       if (
@@ -360,6 +371,7 @@ useEffect(() => {
     }
 
     const builderData = {
+      quickMode, quickInputs, quickReady,
       title,
       description,
       questions,
@@ -381,6 +393,7 @@ useEffect(() => {
       JSON.stringify(builderData),
     );
   }, [
+    quickMode, quickInputs, quickReady,
     builderLoaded,
     title,
     description,
@@ -425,6 +438,7 @@ useEffect(() => {
 
    const canPublish = useMemo(
     () =>
+      !generating && !publishing && (!quickMode || quickReady) &&
       title.trim().length > 0 &&
       description.trim().length > 0 &&
       questions.length >= 2 &&
@@ -433,6 +447,7 @@ useEffect(() => {
       answersLocked &&
       resultsAreValid,
     [
+      generating, publishing, quickMode, quickReady,
       allAnswersSelected,
       answersLocked,
       description,
@@ -458,7 +473,7 @@ useEffect(() => {
     );
     setCreatorAnswers({});
     setAnswersLocked(false);
-    setCoverLabel("Aşk Metre");
+    setCoverLabel(copy.name);
     window.setTimeout(() => {
       document.getElementById("love-questions")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 80);
@@ -516,6 +531,7 @@ useEffect(() => {
   }
 
   function addQuestion() {
+    if (questions.length >= 10) return;
     const nextId =
       questions.length === 0
         ? 1
@@ -771,82 +787,60 @@ useEffect(() => {
 }
 
 async function handlePublish() {
-  if (!canPublish) {
-    return;
-  }
-const creator = await getCurrentCreator();
-
-if (!creator) {
-  window.location.href = "/creator-auth";
-  return;
-}
-  const experienceId = crypto.randomUUID();
-  const normalizedExperience = getNormalizedExperienceData();
-const publishedExperience = {
-  id: experienceId,
-  creatorId: creator.id,
-  type: "compatibility",
-    status: "published",
-    publishedAt: new Date().toISOString(),
-    title,
-    description,
-    cover: {
-      style: coverStyle,
-      imageUrl: coverImageUrl,
-      label: coverLabel,
-    },
-    questions: normalizedExperience.questions,
-    creatorAnswers: normalizedExperience.creatorAnswers,
-    results,
-    offer: {
-      enabled: false,
-      title: offerTitle,
-      description: offerDescription,
-      price: offerPrice,
-    },
-  };
-
+  if (!canPublish || publishingRef.current) return;
+  publishingRef.current = true;
+  setPublishing(true);
   try {
+    const creator = await getCurrentCreator();
+    if (!creator) { window.location.href = "/creator-auth"; return; }
+    const experienceId = crypto.randomUUID();
+    const normalized = getNormalizedExperienceData();
+    const publishedExperience = {
+      id: experienceId, creatorId: creator.id, type: "compatibility", status: "published", publishedAt: new Date().toISOString(), title, description,
+      cover: { style: coverStyle, imageUrl: coverImageUrl, label: coverLabel },
+      questions: normalized.questions, creatorAnswers: normalized.creatorAnswers, results,
+      offer: { enabled: false, title: offerTitle, description: offerDescription, price: offerPrice },
+    };
     await savePublishedExperience(publishedExperience);
-
-    const storageKey = "aqry-published-experiences";
-
-    const storedExperiences =
-      window.localStorage.getItem(storageKey);
-
-    let experiences: Record<string, unknown> = {};
-
-    if (storedExperiences) {
-      try {
-        experiences = JSON.parse(
-          storedExperiences,
-        ) as Record<string, unknown>;
-      } catch {
-        experiences = {};
-      }
-    }
-
-    experiences[experienceId] = publishedExperience;
-
-    window.localStorage.setItem(
-      storageKey,
-      JSON.stringify(experiences),
-    );
-
-    window.sessionStorage.removeItem(
-      BUILDER_STORAGE_KEY,
-    );
-
-    window.location.href =
-      `/publish-success/${experienceId}`;
+    try {
+      const stored = window.localStorage.getItem("aqry-published-experiences");
+      let experiences: Record<string, unknown> = {};
+      try { experiences = stored ? JSON.parse(stored) : {}; } catch { /* Malformed local cache is not authoritative. */ }
+      experiences[experienceId] = publishedExperience;
+      window.localStorage.setItem("aqry-published-experiences", JSON.stringify(experiences));
+    } catch { /* A full local cache must not prevent opening the saved publication. */ }
+    window.sessionStorage.removeItem(BUILDER_STORAGE_KEY);
+    window.location.href = `/publish-success/${experienceId}`;
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : "Experience yayınlanamadı.";
+    window.alert(error instanceof Error ? error.message : copy.error);
+  } finally {
+    publishingRef.current = false;
+    setPublishing(false);
+  }
+}
 
-    window.alert(message);
-    console.error(error);
+async function prepareQuick() {
+  if (generatingRef.current) return;
+  const error = compatibilityInputError(title, quickInputs);
+  if (error) { setQuickError(error === "title" || error === "incomplete" ? copy.required : copy.invalid); return; }
+  generatingRef.current = true;
+  setGenerating(true);
+  setQuickError("");
+  try {
+    const prepared = await generateCompatibility(title, quickInputs, locale);
+    setQuestions(prepared.questions);
+    setCreatorAnswers(prepared.creatorAnswers);
+    setResults(prepared.results);
+    setDescription(prepared.description);
+    setCoverLabel(copy.name);
+    setAnswersLocked(true);
+    setQuickReady(true);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    setQuickError(message === "INPUT_TOO_LONG" ? copy.long : copy.error);
+  } finally {
+    generatingRef.current = false;
+    setGenerating(false);
   }
 }
 
@@ -859,13 +853,19 @@ return (
       }}
     />
 
+    {quickMode ? <QuickCompatibilityComposer locale={locale} title={title} inputs={quickInputs} ready={quickReady} busy={generating} publishing={publishing} error={quickError} sourceVersion={Boolean(sourceExperienceId)} canPublish={canPublish} prepared={{ questions, creatorAnswers, results }}
+      onTitle={value => { setTitle(value); setQuickReady(false); setQuickError(""); }}
+      onInputs={value => { setQuickInputs(value); setQuickReady(false); setQuickError(""); }}
+      onPrepare={() => void prepareQuick()} onPreview={handlePreview} onPublish={() => void handlePublish()}
+      onAdvanced={() => { if (!quickReady) { setQuestions(quickInputs.map((item,index) => ({ id: index + 1, text: item.question, options: [item.answer, "", "", ""] }))); setCreatorAnswers(Object.fromEntries(quickInputs.map((item,index) => [index + 1, 0]))); setAnswersLocked(false); } setQuickMode(false); setActivePanel("content"); }} onResult={updateResult} /> : <>
+      <div className="mx-auto max-w-[1500px] px-4 pt-4"><button type="button" disabled={generating || publishing} onClick={() => { const inputs = questions.slice(0,10).map(question => ({ question: question.text, answer: question.options[creatorAnswers[question.id]] ?? "" })); while (inputs.length < 5) inputs.push({ question: "", answer: "" }); setQuickInputs(inputs); setQuickReady(false); setQuickMode(true); }} className="rounded-full border bg-white px-4 py-2 text-sm font-bold">← {copy.back}</button></div>
     <header className="sticky top-16 z-30 border-b border-border/80 bg-[#faf8fb]/95 backdrop-blur-xl">
       <div className="mx-auto flex h-[58px] max-w-[1500px] items-center justify-between gap-3 px-4 sm:px-7">
         <div className="min-w-0">
           <p className="text-[11px] font-black uppercase tracking-[0.15em] text-primary">
             {sourceExperienceId
               ? "Yeni sürüm oluşturuluyor"
-              : "Aşk Metre"}
+              : copy.name}
           </p>
           <p className="truncate text-[14px] font-extrabold">{title}</p>
         </div>
@@ -1046,6 +1046,7 @@ return (
         onConfirm={confirmGuidance}
       />
     )}
+    </>}
   </div>
 );
 }
@@ -1207,7 +1208,7 @@ function ContentEditor({
   return (
     <section>
       <SectionHeader
-        eyebrow="Aşk Metre"
+        eyebrow="Uyum Metre"
         title="Hazır set seç, 5 saniyede yayına hazırla"
         description="Bir tema seç. Sorular otomatik dolsun; sonra istediğin cümleyi değiştir."
       />
@@ -1268,14 +1269,14 @@ function ContentEditor({
 
               <div className="relative z-10 flex h-full flex-col justify-between p-4 text-white">
                 <span className="w-fit rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] backdrop-blur-md">
-                  {coverLabel || "Aşk Metre"}
+                  {coverLabel || "Uyum Metre"}
                 </span>
 
                 <div>
                   <span className="text-3xl">♥</span>
 
                   <p className="mt-2 text-xs font-black">
-                    {title || "Aşk Metre"}
+                    {title || "Uyum Metre"}
                   </p>
                 </div>
               </div>
@@ -1370,7 +1371,7 @@ function ContentEditor({
           </p>
 
           <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
-            Aşk Metre sadece romantik ilişki için değil. İki kişinin cevaplarını karşılaştırmak istediğin her konuda kullanabilirsin.
+            Uyum Metre; aşk, astroloji, borsa, dizi ve daha birçok konuda cevapları karşılaştırmak için kullanılabilir.
           </p>
 
           <div className="mt-3 flex flex-wrap gap-2">
@@ -1441,6 +1442,7 @@ function ContentEditor({
             <button
               type="button"
               onClick={addQuestion}
+              disabled={questions.length >= 10}
               className="inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-black px-4 text-[11px] font-bold text-white transition hover:bg-primary"
             >
               + Soru ekle
@@ -2025,7 +2027,7 @@ function LivePreview({
 
             <div className="relative z-10 flex h-full flex-col justify-between">
               <span className="w-fit rounded-full bg-white/15 px-3 py-1 text-[7px] font-bold uppercase tracking-[0.12em] backdrop-blur-md">
-                {coverLabel || "Aşk Metre"}
+                {coverLabel || "Uyum Metre"}
               </span>
 
               <div>
@@ -2040,7 +2042,7 @@ function LivePreview({
 
           <div className="p-5">
             <h3 className="text-[22px] font-black leading-[0.98] tracking-[-0.05em]">
-              {title || "Aşk Metre"}
+              {title || "Uyum Metre"}
             </h3>
 
             <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
