@@ -887,6 +887,7 @@ function PuzzleBuilderPage() {
   const creatorHandle = creatorStampHandle(stampEnabled, stampUsername, packAccess);
   const stampCopy = CREATOR_STAMP_COPY[locale] ?? CREATOR_STAMP_COPY.en;
   const [purchasePack, setPurchasePack] = useState<PaidVisualPack | null>(null);
+  const [bundleIntent, setBundleIntent] = useState(false);
   const [purchaseBusy, setPurchaseBusy] = useState(false);
   const [packError, setPackError] = useState(false);
   const [pendingOrder, setPendingOrder] = useState<string | null>(null);
@@ -973,6 +974,7 @@ function PuzzleBuilderPage() {
 
   function chooseVisualPack(pack: VisualPack) {
     if (purchaseBusy) return;
+    setBundleIntent(false);
     if (!canUseVisualPack(pack, packAccess)) { if (pack !== "classic") setPurchasePack(pack); return; }
     setVisualPack(pack); setSceneTemplate(0); setDebateTemplate(1);
   }
@@ -1174,11 +1176,11 @@ function PuzzleBuilderPage() {
   return (
     <main className="min-h-screen bg-[#f7f5fb] text-foreground">
       <CreatorNavigation onSignOut={async()=>{await signOutCreator();window.location.href="/creator-auth";}}/>
-      <Dialog open={purchasePack !== null} onOpenChange={(open) => { if (!open) setPurchasePack(null); }}>
+      <Dialog open={purchasePack !== null} onOpenChange={(open) => { if (!open) { setPurchasePack(null); setBundleIntent(false); } }}>
         {purchasePack !== null && <DialogContent onCloseAutoFocus={(event) => { if (purchaseBusy) event.preventDefault(); }} className="max-h-[92dvh] w-[calc(100%-2rem)] max-w-[520px] gap-3 overflow-y-auto rounded-3xl p-4 sm:p-6">
-          <DialogTitle className="text-2xl font-black">{purchasePack ? visualPackName(purchasePack, locale) : ""}</DialogTitle>
-          <DialogDescription>{packCopy.contents}</DialogDescription>
-          {purchasePack && <React.Suspense fallback={<div className="h-[30dvh] animate-pulse rounded-2xl bg-violet-50" aria-label={packCopy.loading} />}>
+          <DialogTitle className="text-2xl font-black">{bundleIntent ? packCopy.bundle : purchasePack ? visualPackName(purchasePack, locale) : ""}</DialogTitle>
+          <DialogDescription>{bundleIntent ? packCopy.bundleContents : packCopy.contents}</DialogDescription>
+          {purchasePack && !bundleIntent && <React.Suspense fallback={<div className="h-[30dvh] animate-pulse rounded-2xl bg-violet-50" aria-label={packCopy.loading} />}>
             <VisualPackPreviewGallery key={purchasePack} pack={purchasePack} label={packCopy.preview} />
           </React.Suspense>}
           {visualBundleAmount(packAccess) !== null && <section className="space-y-3 rounded-2xl border-2 border-violet-500 bg-violet-50 p-4">
@@ -1187,18 +1189,18 @@ function PuzzleBuilderPage() {
             <p className="text-sm">Anime · {packCopy.magic} · {packCopy.arena}</p>
             <p className="text-3xl font-black text-violet-700" dir="ltr">${((visualBundleAmount(packAccess) ?? 199) / 100).toFixed(2)}</p>
             <p className="text-sm text-muted-foreground">{packCopy.permanent}</p>
-            {(["anime", "magic", "arena"] as const).filter((pack) => pack !== purchasePack).map((pack) => <details key={pack} className="rounded-xl bg-white p-3">
+            {(["anime", "magic", "arena"] as const).filter((pack) => bundleIntent || pack !== purchasePack).map((pack) => <details key={pack} className="rounded-xl bg-white p-3">
               <summary className="cursor-pointer font-bold">{visualPackName(pack, locale)} · {packCopy.preview}</summary>
               <React.Suspense fallback={<p>{packCopy.loading}</p>}><VisualPackPreviewGallery pack={pack} label={packCopy.preview} /></React.Suspense>
             </details>)}
             <button type="button" disabled={purchaseBusy} onClick={() => void buyPack(true)} className="w-full rounded-full bg-violet-600 px-5 py-3 font-bold text-white disabled:opacity-50">{purchaseBusy ? packCopy.loading : packCopy.buy}</button>
           </section>}
-          <p className="text-lg font-bold">{purchasePack ? visualPackName(purchasePack, locale) : ""} · <span dir="ltr">$0.99</span></p>
-          <p className="text-sm text-muted-foreground">{packCopy.permanent}</p>
+          {!bundleIntent && <><p className="text-lg font-bold">{purchasePack ? visualPackName(purchasePack, locale) : ""} · <span dir="ltr">$0.99</span></p>
+          <p className="text-sm text-muted-foreground">{packCopy.permanent}</p></>}
           {packError && <p className="text-sm text-red-700" role="alert">{packCopy.error}</p>}
           {purchasePack && !packAccess?.catalog.find((entry) => entry.id === purchasePack)?.checkout_available && <p className="text-sm text-muted-foreground">{packCopy.unavailable}</p>}
-          <button type="button" disabled={purchaseBusy || !packAccess?.catalog.find((entry) => entry.id === purchasePack)?.checkout_available} onClick={() => void buyPack()}
-            className="rounded-full bg-violet-600 px-6 py-3 font-bold text-white disabled:opacity-50">{purchaseBusy ? packCopy.loading : packCopy.buy}</button>
+          {!bundleIntent && <button type="button" disabled={purchaseBusy || !packAccess?.catalog.find((entry) => entry.id === purchasePack)?.checkout_available} onClick={() => void buyPack()}
+            className="rounded-full bg-violet-600 px-6 py-3 font-bold text-white disabled:opacity-50">{purchaseBusy ? packCopy.loading : packCopy.buy}</button>}
         </DialogContent>}
       </Dialog>
 
@@ -1226,6 +1228,14 @@ function PuzzleBuilderPage() {
                     {pack !== "classic" && packAccess?.owned.includes(pack) ? " ✓" : pack !== "classic" && packAccess?.catalog.find((entry) => entry.id === pack)?.sale_enabled ? " · $0.99" : ""}
                   </button>
                 ))}
+                {visualBundleAmount(packAccess) !== null && <button type="button" disabled={purchaseBusy}
+                  onClick={() => {
+                    const remaining = (["anime", "magic", "arena"] as const).find((pack) => !packAccess?.owned.includes(pack));
+                    if (remaining) { setBundleIntent(true); setPurchasePack(remaining); }
+                  }}
+                  className="rounded-full border-2 border-violet-600 bg-violet-50 px-4 py-2 text-[14px] font-black text-violet-900 disabled:opacity-50">
+                  {packAccess?.owned.length ? packCopy.complete : packCopy.bundleContents.split(" · ")[0]} · <span dir="ltr">${((visualBundleAmount(packAccess) ?? 199) / 100).toFixed(2)}</span>
+                </button>}
               </div>
             )}
             <div className="mb-3 rounded-2xl border border-violet-200 bg-white p-3">
