@@ -23,6 +23,9 @@ const SHARE_COPY: Record<AqryoLocale, [string, string, string]> = {
 };
 
 function imageShareDestination(channel: SocialChannel, text: string) {
+  if (channel === "threads") {
+    const url = new URL("https://www.threads.com/intent/post"); url.searchParams.set("text", text); return url.toString();
+  }
   if (channel === "x") {
     const url = new URL("https://x.com/intent/tweet"); url.searchParams.set("text", text); return url.toString();
   }

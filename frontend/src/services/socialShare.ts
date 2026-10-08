@@ -1,6 +1,7 @@
 // deploy-retry: 2026-09-26
 export type SocialChannel =
   | "x"
+  | "threads"
   | "linkedin"
   | "whatsapp"
   | "facebook"
@@ -20,6 +21,14 @@ export function openSocialShare(
   text: string,
   shareUrl: string,
 ) {
+  if (channel === "threads") {
+    const url = new URL("https://www.threads.com/intent/post");
+    url.searchParams.set("text", text);
+    if (shareUrl) url.searchParams.set("url", shareUrl);
+    openPopup(url);
+    return;
+  }
+
   if (channel === "x") {
     const url = new URL("https://x.com/intent/tweet");
     url.searchParams.set("text", text);
@@ -118,6 +127,7 @@ export function downloadShareFile(file: File) {
 export function channelLabel(channel: SocialChannel) {
   return {
     x: "X",
+    threads: "Threads",
     linkedin: "LinkedIn",
     whatsapp: "WhatsApp",
     facebook: "Facebook",
@@ -128,6 +138,7 @@ export function channelLabel(channel: SocialChannel) {
 
 export const SOCIAL_CHANNELS: SocialChannel[] = [
   "x",
+  "threads",
   "linkedin",
   "whatsapp",
   "facebook",

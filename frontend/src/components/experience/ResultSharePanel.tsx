@@ -333,6 +333,7 @@ export function ResultSharePanel({
 
       <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
         <button type="button" onClick={() => void handleNativeShare()} className="flex h-10 items-center justify-center rounded-full bg-black px-3 text-[11px] font-black text-white">X</button>
+        <button type="button" onClick={() => handleShareChannel("threads")} className="flex h-10 items-center justify-center rounded-full bg-black px-3 text-[11px] font-black text-white">Threads</button>
         <button type="button" onClick={() => handleShareChannel("linkedin")} className="flex h-10 items-center justify-center rounded-full border border-sky-200 bg-sky-50 px-3 text-[11px] font-black text-sky-700">LinkedIn</button>
         <button type="button" onClick={() => handleShareChannel("whatsapp")} className="flex h-10 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 px-3 text-[11px] font-black text-emerald-700">WhatsApp</button>
         <button type="button" onClick={() => handleShareChannel("facebook")} className="flex h-10 items-center justify-center rounded-full border border-blue-200 bg-blue-50 px-3 text-[11px] font-black text-blue-700">Facebook</button>
