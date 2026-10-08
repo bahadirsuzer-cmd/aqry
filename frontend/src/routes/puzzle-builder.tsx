@@ -8,7 +8,7 @@ import { ANIME_COUPLE_TEMPLATES } from "@/lib/animeCoupleTemplates";
 import { ANIME_SCENE_TEMPLATES, ANIME_SCENE_SAFE_AREA } from "@/lib/animeSceneTemplates";
 import { MAGIC_SINGLE_TEMPLATES, MAGIC_COUPLE_TEMPLATES, MAGIC_SCENE_TEMPLATES, MAGIC_SINGLE_SAFE_AREA, MAGIC_SCENE_SAFE_AREA } from "@/lib/magicAcademyTemplates";
 import { ARENA_SINGLE_TEMPLATES, ARENA_COUPLE_TEMPLATES, ARENA_SCENE_TEMPLATES, ARENA_SINGLE_SAFE_AREA, ARENA_SCENE_SAFE_AREA } from "@/lib/fightingArenaTemplates";
-import { canUseVisualPack, clearVisualPackAssets, getVisualPackAccess, getVisualPackOrder, purchaseVisualPack, resolveVisualPackAsset, type PackAccess, type PaidVisualPack } from "@/services/visual-packs";
+import { visualBundleAmount, canUseVisualPack, clearVisualPackAssets, getVisualPackAccess, getVisualPackOrder, purchaseVisualPack, resolveVisualPackAsset, type PackAccess, type PaidVisualPack } from "@/services/visual-packs";
 import { useImageShare } from "@/components/ImageShareDialog";
 import { visualPackCopy, visualPackName } from "@/lib/visualPackCopy";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -942,7 +942,7 @@ function PuzzleBuilderPage() {
         if (order.status === "completed") {
           const access = await getVisualPackAccess();
           if (cancelled) return;
-          clearVisualPackAssets(); setPackAccess(access); setVisualPack(order.pack_id);
+          clearVisualPackAssets(); setPackAccess(access); setVisualPack(order.pack_id === "bundle" ? "anime" : order.pack_id);
           setSceneTemplate(0); setDebateTemplate(1); setPurchasePack(null); setPendingOrder(null);
           setPaymentWaiting(false); setPackError(false);
           const url = new URL(window.location.href); url.searchParams.delete("pack_order"); window.history.replaceState(null, "", url);
@@ -977,16 +977,17 @@ function PuzzleBuilderPage() {
     setVisualPack(pack); setSceneTemplate(0); setDebateTemplate(1);
   }
 
-  async function buyPack() {
+  async function buyPack(bundle = false) {
     if (!purchasePack || purchaseBusy) return;
-    const pack = purchasePack;
+    const pack = bundle ? "bundle" as const : purchasePack;
+    const selectedPack = purchasePack;
     setPurchaseBusy(true); setPackError(false);
     try {
       const result = await purchaseVisualPack(pack, () => {
         flushSync(() => setPurchasePack(null));
       });
       if (result.alreadyOwned) {
-        setPackAccess(await getVisualPackAccess()); setVisualPack(pack);
+        setPackAccess(await getVisualPackAccess()); setVisualPack(selectedPack);
         setSceneTemplate(0); setDebateTemplate(1); setPurchasePack(null);
       } else if (result.orderId) {
         setPendingOrder(result.orderId); setPaymentWaiting(false);
@@ -1180,7 +1181,19 @@ function PuzzleBuilderPage() {
           {purchasePack && <React.Suspense fallback={<div className="h-[30dvh] animate-pulse rounded-2xl bg-violet-50" aria-label={packCopy.loading} />}>
             <VisualPackPreviewGallery key={purchasePack} pack={purchasePack} label={packCopy.preview} />
           </React.Suspense>}
-          <p className="text-4xl font-black text-violet-700">$0.99</p>
+          {visualBundleAmount(packAccess) !== null && <section className="space-y-3 rounded-2xl border-2 border-violet-500 bg-violet-50 p-4">
+            <h3 className="text-xl font-black">{packAccess?.owned.length ? packCopy.complete : packCopy.bundle}</h3>
+            <p className="text-sm font-bold">{packCopy.bundleContents}</p>
+            <p className="text-sm">Anime · {packCopy.magic} · {packCopy.arena}</p>
+            <p className="text-3xl font-black text-violet-700" dir="ltr">${((visualBundleAmount(packAccess) ?? 199) / 100).toFixed(2)}</p>
+            <p className="text-sm text-muted-foreground">{packCopy.permanent}</p>
+            {(["anime", "magic", "arena"] as const).filter((pack) => pack !== purchasePack).map((pack) => <details key={pack} className="rounded-xl bg-white p-3">
+              <summary className="cursor-pointer font-bold">{visualPackName(pack, locale)} · {packCopy.preview}</summary>
+              <React.Suspense fallback={<p>{packCopy.loading}</p>}><VisualPackPreviewGallery pack={pack} label={packCopy.preview} /></React.Suspense>
+            </details>)}
+            <button type="button" disabled={purchaseBusy} onClick={() => void buyPack(true)} className="w-full rounded-full bg-violet-600 px-5 py-3 font-bold text-white disabled:opacity-50">{purchaseBusy ? packCopy.loading : packCopy.buy}</button>
+          </section>}
+          <p className="text-lg font-bold">{purchasePack ? visualPackName(purchasePack, locale) : ""} · <span dir="ltr">$0.99</span></p>
           <p className="text-sm text-muted-foreground">{packCopy.permanent}</p>
           {packError && <p className="text-sm text-red-700" role="alert">{packCopy.error}</p>}
           {purchasePack && !packAccess?.catalog.find((entry) => entry.id === purchasePack)?.checkout_available && <p className="text-sm text-muted-foreground">{packCopy.unavailable}</p>}

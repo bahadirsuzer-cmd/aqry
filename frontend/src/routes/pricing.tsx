@@ -132,9 +132,17 @@ function PricingPage() {
   const { locale } = useAqryoLocale();
   const [title, description, free, tax, launch, cta] = COPY[locale];
   const packCopy = visualPackCopy(locale);
-  return <PublicPageShell title={title} description={description}>
+  return <PublicPageShell title={title} description={description + " " + visualPackCopy(locale).bundleContents + " — $1.99"}>
     <section className="mx-auto w-full max-w-[1180px] px-5 py-12 sm:px-7 lg:px-10">
       <p className="mb-7 text-base text-muted-foreground">{free}</p>
+      <article className="mb-6 space-y-3 rounded-[26px] border-2 border-primary bg-violet-50 p-6">
+        <h2 className="text-2xl font-black">{packCopy.bundle}</h2>
+        <p className="font-bold">{packCopy.bundleContents}</p>
+        <p>Anime · {packCopy.magic} · {packCopy.arena}</p>
+        <p className="text-[40px] font-black text-primary" dir="ltr">$1.99</p>
+        <p className="text-sm">{packCopy.permanent}</p>
+        <Link to="/puzzle-builder" className="inline-flex rounded-full bg-primary px-6 py-3 font-bold text-white">{cta}</Link>
+      </article>
       <div className="grid gap-5 lg:grid-cols-3">
         {PACKS.map(pack => <article key={pack} className="rounded-[26px] border border-primary/15 bg-violet-50/60 p-6">
           <h2 className="text-[24px] font-black tracking-[-0.04em]">{visualPackName(pack, locale)}</h2>

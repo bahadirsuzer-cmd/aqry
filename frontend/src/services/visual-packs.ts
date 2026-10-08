@@ -3,7 +3,9 @@ import { openVisualPackCheckout } from "./paddle";
 import type { VisualPack } from "@/lib/animeSingleTemplates";
 
 export type PaidVisualPack = Exclude<VisualPack, "classic">;
-export type PackCatalogEntry = { id: PaidVisualPack; name: string; amount_minor: number; currency: string; sale_enabled: boolean; checkout_available: boolean };
+export type PurchaseVisualPack = PaidVisualPack | "bundle";
+export const BUNDLE_PACKS: PaidVisualPack[] = ["anime", "magic", "arena"];
+export type PackCatalogEntry = { id: PurchaseVisualPack; name: string; amount_minor: number; currency: string; sale_enabled: boolean; checkout_available: boolean };
 export type PackAccess = { catalog: PackCatalogEntry[]; owned: PaidVisualPack[] };
 
 export async function getVisualPackAccess(): Promise<PackAccess> {
@@ -12,7 +14,8 @@ export async function getVisualPackAccess(): Promise<PackAccess> {
     supabase.from("visual_pack_orders").select("pack_id").eq("status", "completed"),
   ]);
   if (catalogError || ordersError || !catalog?.packs) throw new Error("pack_access_unavailable");
-  return { catalog: catalog.packs, owned: [...new Set((orders ?? []).map((order) => order.pack_id as PaidVisualPack))] };
+  const ids = (orders ?? []).map((order) => order.pack_id);
+  return { catalog: catalog.packs, owned: ids.includes("bundle") ? [...BUNDLE_PACKS] : [...new Set(ids.filter((id): id is PaidVisualPack => BUNDLE_PACKS.includes(id as PaidVisualPack)))] };
 }
 
 export function canUseVisualPack(pack: VisualPack, access: PackAccess | null) {
@@ -21,7 +24,7 @@ export function canUseVisualPack(pack: VisualPack, access: PackAccess | null) {
   return Boolean(entry && (!entry.sale_enabled || access?.owned.includes(pack)));
 }
 
-export async function purchaseVisualPack(pack: PaidVisualPack, beforeCheckout: () => void) {
+export async function purchaseVisualPack(pack: PurchaseVisualPack, beforeCheckout: () => void) {
   const { data, error } = await supabase.functions.invoke<{ already_owned?: boolean; order_id?: string; transaction_id?: string }>(
     "visual-pack-checkout", { body: { pack_id: pack } },
   );
@@ -38,7 +41,7 @@ export async function getVisualPackOrder(orderId: string) {
   const { data, error } = await supabase.from("visual_pack_orders").select("id,pack_id,status,transaction_id")
     .eq("id", orderId).maybeSingle();
   if (error) throw new Error("pack_order_unavailable");
-  return data as { id: string; pack_id: PaidVisualPack; status: string; transaction_id: string | null } | null;
+  return data as { id: string; pack_id: PurchaseVisualPack; status: string; transaction_id: string | null } | null;
 }
 
 const assetsCache = new Map<VisualPack, { expires: number; assets: Record<string, string> }>();
@@ -68,4 +71,11 @@ export async function resolveVisualPackAsset(src: string, pack: VisualPack): Pro
   const url = cached.assets[src];
   if (!url) throw new Error("pack_asset_unknown");
   return url;
+}
+
+export function visualBundleAmount(access: PackAccess | null): number | null {
+  const bundle = access?.catalog.find((entry) => entry.id === "bundle");
+  if (!bundle?.checkout_available) return null;
+  const count = BUNDLE_PACKS.filter((pack) => access?.owned.includes(pack)).length;
+  return count < 2 ? bundle.amount_minor - count * 99 : null;
 }

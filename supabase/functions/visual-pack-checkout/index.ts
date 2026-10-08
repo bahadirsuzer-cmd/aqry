@@ -7,6 +7,38 @@ const paddlePrices: Record<string, string> = {
   arena: "pri_01m483nvtkjcdzvwf8cd6y36kc",
 };
 
+const makeBundlePrice = (amount: number) => ({
+    description: "AQRYO visual pack bundle — one-time access",
+    name: "3 packs · 90 visuals",
+    unit_price: { amount: String(amount), currency_code: "USD" },
+    tax_mode: "internal", billing_cycle: null, trial_period: null,
+    product: { name: "AQRYO — Anime + Magic Academy + Fighting Arena", tax_category: "standard", description: "Permanent access to all three visual packs within AQRYO: 90 digital templates. Existing owned packs are credited." },
+});
+
+let bundleCheck: { expires: number; pending: Promise<boolean> } | null = null;
+async function bundleAvailable(apiKey: string): Promise<boolean> {
+  if (bundleCheck && bundleCheck.expires > Date.now()) return bundleCheck.pending;
+  const pending = (async () => {
+    try {
+      const checks = await Promise.all([199, 100].map(async (amount) => {
+        const response = await fetch("https://api.paddle.com/transactions/preview", {
+          method: "POST", headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json", "Paddle-Version": "1" },
+          body: JSON.stringify({ currency_code: "USD", items: [{ quantity: 1, price: makeBundlePrice(amount) }] }),
+          signal: AbortSignal.timeout(10000),
+        });
+        const result = await response.json();
+        const price = result.data?.items?.[0]?.price;
+        if (!response.ok) console.error("Bundle price preview rejected", response.status, result.error?.code ?? "unknown");
+        return response.ok && result.data?.items?.length === 1 && price?.unit_price?.amount === String(amount) &&
+          price?.unit_price?.currency_code === "USD" && price?.tax_mode === "internal" && price?.billing_cycle === null && price?.trial_period === null;
+      }));
+      return checks.every(Boolean);
+    } catch { return false; }
+  })();
+  bundleCheck = { expires: Date.now() + 300000, pending };
+  return pending;
+}
+
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get("origin") ?? "";
   const headers: Record<string, string> = {
@@ -28,10 +60,13 @@ Deno.serve(async (req: Request) => {
   const { data: packs, error: catalogError } = await admin.from("visual_pack_catalog")
     .select("id,name,amount_minor,currency,sale_enabled").order("sort_order");
   if (catalogError) return json({ error: "catalog_unavailable" }, 503);
-  if (req.method === "GET") return json({
-    checkout_configured: configured,
-    packs: (packs ?? []).map((pack) => ({ ...pack, checkout_available: configured && pack.sale_enabled })),
-  });
+  if (req.method === "GET") {
+    const bundleReady = configured && packs?.some((pack) => pack.id === "bundle" && pack.sale_enabled)
+      ? await bundleAvailable(apiKey!) : false;
+    return json({ checkout_configured: configured,
+      packs: (packs ?? []).map((pack) => ({ ...pack, checkout_available: configured && pack.sale_enabled && (pack.id !== "bundle" || bundleReady) })),
+    });
+  }
 
   // Authenticate every purchase independently; never accept a user ID from the browser.
   const token = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
@@ -43,10 +78,10 @@ Deno.serve(async (req: Request) => {
   const pack = packs?.find((entry) => entry.id === body.pack_id);
   if (!pack) return json({ error: "unknown_pack" }, 400);
   const priceId = paddlePrices[pack.id];
-  if (!priceId) return json({ error: "checkout_not_ready" }, 503);
+  if (!priceId && pack.id !== "bundle") return json({ error: "checkout_not_ready" }, 503);
 
   const { data: owned, error: ownedError } = await admin.from("visual_pack_orders").select("id")
-    .eq("user_id", auth.user.id).eq("pack_id", pack.id).eq("status", "completed").limit(1);
+    .eq("user_id", auth.user.id).in("pack_id", [pack.id, "bundle"]).eq("status", "completed").limit(1);
   if (ownedError) return json({ error: "access_check_failed" }, 503);
   if (owned?.length) return json({ already_owned: true, pack_id: pack.id });
   if (!configured || !pack.sale_enabled) return json({ error: "checkout_not_ready" }, 503);
@@ -60,6 +95,10 @@ Deno.serve(async (req: Request) => {
   if (claim.transaction_id) return json({ order_id: claim.order_id, transaction_id: claim.transaction_id });
   if (!claim.claimed) return json({ error: "checkout_preparing" }, 409);
 
+  const amount = Number(claim.amount_minor ?? pack.amount_minor);
+  if (pack.id === "bundle" && ![100, 199].includes(amount)) return json({ error: "invalid_bundle_price" }, 503);
+  const bundlePrice = makeBundlePrice(amount);
+
   try {
     // Use the reviewed one-time catalog prices, never the archived Pro subscription.
     const response = await fetch("https://api.paddle.com/transactions", {
@@ -68,7 +107,7 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         collection_mode: "automatic", currency_code: pack.currency,
         custom_data: { aqryo_order_id: claim.order_id, aqryo_pack: pack.id },
-        items: [{ quantity: 1, price_id: priceId }],
+        items: [pack.id === "bundle" ? { quantity: 1, price: bundlePrice } : { quantity: 1, price_id: priceId }],
         checkout: { url: "https://www.aqryo.com/puzzle-builder" },
       }),
       signal: AbortSignal.timeout(20000),
@@ -76,7 +115,7 @@ Deno.serve(async (req: Request) => {
     const result = await response.json();
     const item = result.data?.items?.[0];
     const validPrice = result.data?.items?.length === 1 && item?.quantity === 1 &&
-      item.price?.id === priceId && item.price?.unit_price?.amount === String(pack.amount_minor) &&
+      (pack.id === "bundle" ? item.price?.type === "custom" && item.price?.name === bundlePrice.name : item.price?.id === priceId) && item.price?.unit_price?.amount === String(amount) &&
       item.price?.unit_price?.currency_code === pack.currency && item.price?.tax_mode === "internal" &&
       item.price?.billing_cycle === null && item.price?.trial_period === null &&
       result.data?.currency_code === pack.currency && !result.data?.subscription_id;

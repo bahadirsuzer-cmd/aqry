@@ -27,7 +27,7 @@ Deno.serve(async (req: Request) => {
   // Until checkout is activated, existing creators can continue using the launch preview.
   if (pack.sale_enabled) {
     const { data: owned, error } = await admin.from("visual_pack_orders").select("id")
-      .eq("user_id", auth.user.id).eq("pack_id", body.pack_id).eq("status", "completed").limit(1);
+      .eq("user_id", auth.user.id).in("pack_id", [body.pack_id, "bundle"]).eq("status", "completed").limit(1);
     if (error) return json({ error: "access_check_failed" }, 503);
     if (!owned?.length) return json({ error: "pack_not_owned" }, 403);
   }
