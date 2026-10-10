@@ -1,3 +1,4 @@
+import { anonymousModeFromLabel, anonymousName } from "@/lib/anonymousFormats";
 import { getPublicShareUrl } from "@/services/shareAssets";
 import { useImageShare } from "@/components/ImageShareDialog";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
@@ -319,6 +320,7 @@ const totalEngagements = useMemo(
                 experience.type,
                 experience.testMode,
               locale,
+                experience.coverLabel,
               )
                 .toLocaleLowerCase(
                   locale,
@@ -655,6 +657,7 @@ function ExperienceListItem({
             experience.type,
             experience.testMode,
             locale,
+                experience.coverLabel,
           )}{" "}
           ·{" "}
           {ui.publishedOn.replace("{date}", formatShortDate(experience.published_at ?? experience.created_at, locale))}
@@ -1718,6 +1721,7 @@ async function toggleExperienceStatus() {
                     experience.type,
                     experience.testMode,
                   locale,
+                experience.coverLabel,
                   )}
                 </p>
 
@@ -2407,7 +2411,10 @@ function formatExperienceType(
   type: string,
   testMode: CreatorTestMode = null,
   locale: AqryoLocale = "en",
+  coverLabel?: string,
 ) {
+  const mode = anonymousModeFromLabel(coverLabel);
+  if (type === "question_confession" && mode) return anonymousName(locale, mode);
   const ui = getCreatorExperienceCopy(locale);
   const normalized = type
     .toLocaleLowerCase(locale)

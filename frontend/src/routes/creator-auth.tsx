@@ -19,6 +19,8 @@ const APPLE_AUTH_ENABLED = false;
 
 const allowedNextRoutes = new Set([
   "/question-confession-builder",
+  "/question-confession-builder?mode=question",
+  "/question-confession-builder?mode=confession",
   "/puzzle-builder",
   "/compatibility-builder",
   "/story-builder",

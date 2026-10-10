@@ -1,3 +1,4 @@
+import { anonymousModeFromLabel, anonymousName } from "@/lib/anonymousFormats";
 import { getFlowCopy } from "@/lib/flowCopy";
 export type ShareExperienceType =
   | "question_confession"
@@ -159,9 +160,10 @@ function getShareCopy(
             ? "TEST"
             : "AQRYO");
 
+  const mode = anonymousModeFromLabel(source.coverLabel);
   const cta =
     source.type === "question_confession"
-      ? "Anonim mesaj bırak"
+      ? (mode ? anonymousName(typeof document === "undefined" ? "en" : document.documentElement.lang, mode) : "Anonim mesaj bırak")
       : source.type === "story"
       ? flow.open
       : source.type === "guess"
@@ -174,7 +176,7 @@ function getShareCopy(
 
   const helper =
     source.type === "question_confession"
-      ? "Soru sor ya da itirafını bırak. Kimliğin görünmez."
+      ? (mode ? "Kimliğin görünmez." : "Soru sor ya da itirafını bırak. Kimliğin görünmez.")
       : source.type === "story"
       ? "Devamını AQRYO’da gör."
       : source.type === "guess"
@@ -193,6 +195,8 @@ function getShareCopy(
 }
 
 function getQuestionConfessionHook(source: ShareCardSource) {
+  const mode = anonymousModeFromLabel(source.coverLabel);
+  if (mode) return source.title;
   const hooks = [
     "Bana söyleyemediğin ne var?",
     "Hakkımda gerçekten ne düşünüyorsun?",

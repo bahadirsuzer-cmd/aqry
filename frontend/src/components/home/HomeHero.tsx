@@ -1,3 +1,4 @@
+import { anonymousName } from "@/lib/anonymousFormats";
 import { Link } from "@tanstack/react-router";
 import { useAqryoLocale } from "@/lib/i18n";
 
@@ -9,10 +10,19 @@ interface HomeHeroProps {
 const formatCards = [
   {
     titleKey: "questionConfession",
+    anonymousMode: "question",
     descriptionKey: "questionConfessionDesc",
     to: "/question-confession-builder",
     symbol: "?",
     visual: "from-violet-500 via-purple-500 to-fuchsia-400",
+  },
+  {
+    titleKey: "questionConfession",
+    descriptionKey: "questionConfessionDesc",
+    anonymousMode: "confession",
+    to: "/question-confession-builder",
+    symbol: "♡",
+    visual: "from-rose-500 via-pink-500 to-fuchsia-400",
   },
   {
     titleKey: "puzzle",
@@ -41,7 +51,7 @@ export function HomeHero({
   isCreator = false,
   authChecked = true,
 }: HomeHeroProps) {
-  const { t } = useAqryoLocale();
+  const { t, locale } = useAqryoLocale();
   return (
     <section className="overflow-hidden bg-[#faf8ff]">
       <div className="mx-auto grid max-w-[1240px] gap-6 px-5 pb-8 pt-5 sm:px-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-16 lg:py-20">
@@ -64,9 +74,9 @@ export function HomeHero({
           <div className="relative grid grid-cols-2 gap-2.5 sm:gap-4">
             {formatCards.map((card) => (
               <Link
-                key={card.titleKey}
+                key={"anonymousMode" in card ? card.anonymousMode : card.titleKey}
                 to={isCreator ? card.to : "/creator-auth"}
-                search={isCreator ? undefined : { next: card.to }}
+                search={isCreator ? ("anonymousMode" in card ? { mode: card.anonymousMode } : undefined) : { next: card.to + ("anonymousMode" in card ? `?mode=${card.anonymousMode}` : "") }}
                 className="group relative aspect-[1/0.94] min-w-0 overflow-hidden rounded-[26px] border border-white/70 bg-white shadow-[0_18px_50px_rgba(48,31,75,.12)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(48,31,75,.18)] sm:rounded-[32px]"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.visual}`} />
@@ -79,10 +89,10 @@ export function HomeHero({
 
                 <div className="absolute inset-x-0 bottom-0 min-h-[46%] bg-gradient-to-t from-[#17101f]/90 via-[#17101f]/72 to-transparent px-4 pb-4 pt-9 text-white sm:px-6 sm:pb-6 sm:pt-12">
                   <h2 className="text-[clamp(1.15rem,2.4vw,1.75rem)] font-black tracking-[-0.045em]">
-                    {t(card.titleKey)}
+                    {"anonymousMode" in card ? anonymousName(locale, card.anonymousMode) : t(card.titleKey)}
                   </h2>
                   <p className="mt-1.5 line-clamp-2 text-[11px] font-semibold leading-4 text-white/80 sm:mt-2 sm:text-[13px] sm:leading-5">
-                    {t(card.descriptionKey)}
+                    {"anonymousMode" in card ? (locale === "tr" ? (card.anonymousMode === "question" ? "Takipçilerin anonim soru sorsun. Cevabını paylaş." : "Takipçilerin anonim itiraflarını bıraksın. İstediğini paylaş.") : anonymousName(locale, card.anonymousMode)) : t(card.descriptionKey)}
                   </p>
                 </div>
               </Link>

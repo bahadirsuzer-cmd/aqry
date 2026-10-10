@@ -66,6 +66,7 @@ interface PublishedExperienceInput {
   };
 
   questionConfession?: {
+    mode?: "question" | "confession";
     intro: string;
     questionLabel: string;
     confessionLabel: string;

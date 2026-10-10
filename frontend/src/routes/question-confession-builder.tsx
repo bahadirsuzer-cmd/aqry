@@ -1,3 +1,4 @@
+import { anonymousName } from "@/lib/anonymousFormats";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
 import { savePublishedExperience } from "@/services/experiences";
@@ -6,11 +7,11 @@ import { detectLocale, getQuestionConfessionDefaults, useAqryoLocale } from "@/l
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/question-confession-builder")({
+  validateSearch: (search: Record<string, unknown>): { mode?: "question" | "confession" } => ({ mode: search.mode === "confession" ? "confession" as const : "question" as const }),
   component: QuestionConfessionBuilderPage,
 });
 
 type Accent = "violet" | "rose" | "dark";
-type Mode = "question" | "confession";
 
 type BuilderState = {
   title: string;
@@ -30,14 +31,17 @@ const DEFAULT_STATE: BuilderState = {
 };
 
 function QuestionConfessionBuilderPage() {
+  const selectedMode = Route.useSearch().mode ?? "question";
+  const storageKey = `${STORAGE_KEY}-${selectedMode}`;
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState<BuilderState>(DEFAULT_STATE);
-  const [mode, setMode] = useState<Mode>("question");
+
   const [previewText, setPreviewText] = useState("");
   const [creatorId, setCreatorId] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
   const { locale } = useAqryoLocale();
-  const isTr = locale === "tr";
+  const formatName = anonymousName(locale, selectedMode);
+  const defaults = { ...getQuestionConfessionDefaults(locale), title: formatName, questionLabel: anonymousName(locale, "question"), confessionLabel: anonymousName(locale, "confession"), placeholder: selectedMode === "question" ? (locale === "tr" ? "Sorunu buraya yaz…" : getQuestionConfessionDefaults(locale).placeholder) : (locale === "tr" ? "İtirafını buraya yaz…" : getQuestionConfessionDefaults(locale).placeholder) };
   const ui = locale === "tr" ? qcCopy.tr : locale === "de" ? qcCopy.de : qcCopy.en;
 
   useEffect(() => {
@@ -54,12 +58,13 @@ function QuestionConfessionBuilderPage() {
         setCreatorId(creator.id);
       }
 
-      const stored = window.sessionStorage.getItem(STORAGE_KEY);
+      setState({ ...defaults, accent: "violet" });
+      const stored = window.sessionStorage.getItem(storageKey);
       if (stored) {
         try {
           setState({ ...DEFAULT_STATE, ...(JSON.parse(stored) as Partial<BuilderState>) });
         } catch {
-          window.sessionStorage.removeItem(STORAGE_KEY);
+          window.sessionStorage.removeItem(storageKey);
         }
       }
 
@@ -70,13 +75,13 @@ function QuestionConfessionBuilderPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [selectedMode]);
 
   useEffect(() => {
     if (!loading) {
-      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      window.sessionStorage.setItem(storageKey, JSON.stringify(state));
     }
-  }, [loading, state]);
+  }, [loading, state, storageKey]);
 
   async function publishExperience() {
     if (!creatorId || publishing) return;
@@ -91,11 +96,11 @@ function QuestionConfessionBuilderPage() {
         type: "question_confession",
         status: "published",
         publishedAt: new Date().toISOString(),
-        title: state.title.trim() || getQuestionConfessionDefaults(locale).title,
+        title: state.title.trim() || formatName,
         description: state.intro.trim(),
         cover: {
           style: state.accent === "dark" ? "dark" : state.accent === "rose" ? "pink" : "purple",
-          label: getQuestionConfessionDefaults(locale).title,
+          label: formatName,
           imageUrl: "",
         },
         questions: [],
@@ -107,6 +112,7 @@ function QuestionConfessionBuilderPage() {
           price: 0,
         },
         questionConfession: {
+          mode: selectedMode,
           intro: state.intro.trim(),
           questionLabel: state.questionLabel.trim() || getQuestionConfessionDefaults(locale).questionLabel,
           confessionLabel: state.confessionLabel.trim() || getQuestionConfessionDefaults(locale).confessionLabel,
@@ -125,7 +131,7 @@ function QuestionConfessionBuilderPage() {
   }
 
   function applyCurrentLanguage() {
-    const copy = getQuestionConfessionDefaults(locale);
+    const copy = defaults;
     setState((current) => ({ ...current, ...copy }));
   }
 
@@ -151,7 +157,7 @@ function QuestionConfessionBuilderPage() {
         <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <div>
             <p className="text-[13px] font-black uppercase tracking-[0.16em] text-primary">
-              {ui.mainFormat}
+              {formatName}
             </p>
             <h1 className="mt-1 text-[28px] font-black tracking-[-0.045em]">
               {state.title}
@@ -211,24 +217,24 @@ function QuestionConfessionBuilderPage() {
               2 · Seçim
             </p>
             <h2 className="mt-2 text-[25px] font-black tracking-[-0.045em]">
-              {ui.twoDoors}
+              {formatName}
             </h2>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Field label={ui.questionButton}>
+              {selectedMode === "question" && <Field label={ui.questionButton}>
                 <input
                   value={state.questionLabel}
                   onChange={(event) => setState((current) => ({ ...current, questionLabel: event.target.value }))}
                   className={inputClass}
                 />
-              </Field>
-              <Field label={ui.confessionButton}>
+              </Field>}
+              {selectedMode === "confession" && <Field label={ui.confessionButton}>
                 <input
                   value={state.confessionLabel}
                   onChange={(event) => setState((current) => ({ ...current, confessionLabel: event.target.value }))}
                   className={inputClass}
                 />
-              </Field>
+              </Field>}
             </div>
 
             <Field label={ui.textArea}>
@@ -269,7 +275,7 @@ function QuestionConfessionBuilderPage() {
           <div className="rounded-[24px] border border-violet-200 bg-violet-50/70 p-5">
             <p className="text-[13px] font-black text-violet-950">{ui.ready}</p>
             <p className="mt-1 text-[14px] leading-5 text-violet-900/65">
-              {ui.afterPublish}
+              {formatName} · {ui.identityHidden}
             </p>
             <button
               type="button"
@@ -300,45 +306,13 @@ function QuestionConfessionBuilderPage() {
               </div>
 
               <h3 className="mt-6 text-[27px] font-black leading-[0.98] tracking-[-0.055em]">
-                {state.title || "Soru mu İtiraf mı?"}
+                {state.title || formatName}
               </h3>
               <p className="mt-3 text-[13px] leading-5 text-muted-foreground">
                 {state.intro}
               </p>
 
-              <div className="mt-5 grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("question");
-                    setPreviewText("");
-                  }}
-                  className={`rounded-[18px] px-3 py-4 text-left transition ${
-                    mode === "question"
-                      ? "bg-violet-600 text-white"
-                      : "bg-violet-50 text-violet-950"
-                  }`}
-                >
-                  <span className="text-[19px] font-black">?</span>
-                  <p className="mt-3 text-[13px] font-black">{state.questionLabel}</p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("confession");
-                    setPreviewText("");
-                  }}
-                  className={`rounded-[18px] px-3 py-4 text-left transition ${
-                    mode === "confession"
-                      ? "bg-rose-500 text-white"
-                      : "bg-rose-50 text-rose-950"
-                  }`}
-                >
-                  <span className="text-[19px]">♡</span>
-                  <p className="mt-3 text-[13px] font-black">{state.confessionLabel}</p>
-                </button>
-              </div>
+              <div className="mt-5 rounded-[18px] bg-violet-50 px-4 py-4 font-black text-violet-950">{selectedMode === "question" ? state.questionLabel : state.confessionLabel}</div>
 
               <textarea
                 rows={5}

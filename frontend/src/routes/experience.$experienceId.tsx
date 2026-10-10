@@ -1,3 +1,4 @@
+import { anonymousMode } from "@/lib/anonymousFormats";
 import { StoryPage } from "@/components/story/StoryPage";
 import { useImageShare } from "@/components/ImageShareDialog";
 import { createResultShareAsset, revokeResultShareAsset } from "@/services/resultShareCards";
@@ -217,6 +218,7 @@ type PublishedExperience = {
   questionConfession: {
     intro: string;
     questionLabel: string;
+    mode?: "question" | "confession";
     confessionLabel: string;
     placeholder: string;
     accent: "violet" | "rose" | "dark";
@@ -374,6 +376,7 @@ function PublishedExperiencePage() {
             retryEnabled?: boolean;
           } | null;
           questionConfession?: {
+            mode?: "question" | "confession";
             intro?: string;
             questionLabel?: string;
             confessionLabel?: string;
@@ -527,6 +530,7 @@ function PublishedExperiencePage() {
           ? {
               intro: content.questionConfession.intro ?? "",
               questionLabel: content.questionConfession.questionLabel ?? "Soru sor",
+              mode: anonymousMode(content.questionConfession.mode),
               confessionLabel: content.questionConfession.confessionLabel ?? "İtiraf et",
               placeholder: content.questionConfession.placeholder ?? "Buraya yaz...",
               accent:
@@ -4140,7 +4144,7 @@ function QuestionConfessionPublicExperience({
   experience: PublishedExperience;
 }) {
   const config = experience.questionConfession!;
-  const [mode, setMode] = useState<"question" | "confession">("question");
+  const [mode, setMode] = useState<"question" | "confession">(config.mode ?? "question");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -4166,7 +4170,7 @@ function QuestionConfessionPublicExperience({
         source: "question_confession",
         metadata: {
           kind: "anonymous_message",
-          mode,
+          mode: config.mode ?? mode,
           message: clean,
           notification_nonce: notificationNonce,
         },
@@ -4260,7 +4264,7 @@ function QuestionConfessionPublicExperience({
             </div>
           ) : (
             <>
-              <div className="mt-6 grid grid-cols-2 gap-2">
+              {!config.mode ? <div className="mt-6 grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setMode("question")}
@@ -4285,7 +4289,7 @@ function QuestionConfessionPublicExperience({
                   <span className="text-[28px]">♡</span>
                   <p className="mt-3 text-[15px] font-black">{config.confessionLabel}</p>
                 </button>
-              </div>
+              </div> : <div className="mt-6 rounded-[20px] bg-violet-50 px-4 py-5 font-black text-violet-950">{config.mode === "question" ? config.questionLabel : config.confessionLabel}</div>}
 
               <textarea
                 rows={6}

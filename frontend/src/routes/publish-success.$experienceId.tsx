@@ -1,3 +1,4 @@
+import { anonymousModeFromLabel, anonymousName } from "@/lib/anonymousFormats";
 import { useAqryoLocale } from "@/lib/i18n";
 import { getFlowCopy } from "@/lib/flowCopy";
 import { useImageShare } from "@/components/ImageShareDialog";
@@ -484,7 +485,7 @@ useEffect(() => {
     if (!experience) return "";
 
     return experience.type === "question_confession"
-      ? `Bana söyleyemediğin ne varsa buraya bırak 👀\nİsmini göremiyorum. Gerçekten anonim.\n\n👇 Soru sor veya itiraf et\n\n#AQRYO`
+      ? `${experience.title}\n\n👇 ${anonymousModeFromLabel(experience.coverLabel) ? anonymousName(locale, anonymousModeFromLabel(experience.coverLabel)!) : "Soru sor veya itiraf et"}\n\n#AQRYO`
       : experience.type === "story"
         ? `${experience.title}\n\n${getFlowCopy(locale).open} 👀\n\n#AQRYO`
         : experience.type === "compatibility"
