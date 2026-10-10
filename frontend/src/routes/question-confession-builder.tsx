@@ -32,6 +32,10 @@ const DEFAULT_STATE: BuilderState = {
 
 function QuestionConfessionBuilderPage() {
   const selectedMode = Route.useSearch().mode ?? "question";
+  return <AnonymousBuilder key={selectedMode} selectedMode={selectedMode} />;
+}
+
+function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confession" }) {
   const storageKey = `${STORAGE_KEY}-${selectedMode}`;
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState<BuilderState>(DEFAULT_STATE);
