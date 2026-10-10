@@ -7,7 +7,7 @@ import { detectLocale, getQuestionConfessionDefaults, useAqryoLocale } from "@/l
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/question-confession-builder")({
-  validateSearch: (search: Record<string, unknown>): { mode?: "question" | "confession" } => ({ mode: search.mode === "confession" ? "confession" as const : "question" as const }),
+  validateSearch: (search: Record<string, unknown>): { mode?: "question" | "confession" } => ({ mode: search.mode === "confession" ? "confession" as const : search.mode === "question" ? "question" as const : undefined }),
   component: QuestionConfessionBuilderPage,
 });
 
@@ -31,8 +31,27 @@ const DEFAULT_STATE: BuilderState = {
 };
 
 function QuestionConfessionBuilderPage() {
-  const selectedMode = Route.useSearch().mode ?? "question";
-  return <AnonymousBuilder key={selectedMode} selectedMode={selectedMode} />;
+  const selectedMode = Route.useSearch().mode;
+  const { locale } = useAqryoLocale();
+  if (selectedMode) return <AnonymousBuilder key={selectedMode} selectedMode={selectedMode} />;
+  return (
+    <main className="min-h-screen bg-[#f7f5fb] text-foreground">
+      <CreatorNavigation onSignOut={async () => { await signOutCreator(); window.location.href = "/creator-auth"; }} />
+      <section className="mx-auto max-w-[900px] px-4 py-8 sm:px-6">
+        <h1 className="text-[32px] font-black tracking-[-0.045em]">{locale === "tr" ? "Anonim soru / itiraf" : getQuestionConfessionDefaults(locale).title}</h1>
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {(["question", "confession"] as const).map((mode) => (
+            <Link key={mode} to="/question-confession-builder" search={{ mode }}
+              className={`min-h-[230px] rounded-[28px] bg-gradient-to-br ${mode === "question" ? "from-violet-600 to-purple-900" : "from-rose-500 to-fuchsia-900"} p-7 text-white shadow-lg transition hover:-translate-y-1`}>
+              <span className="text-[52px] font-black">{mode === "question" ? "?" : "♡"}</span>
+              <h2 className="mt-5 text-[26px] font-black">{anonymousName(locale, mode)}</h2>
+              <p className="mt-3 text-sm leading-6 text-white/85">{getQuestionConfessionDefaults(locale).intro}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+    </main>
+  );
 }
 
 function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confession" }) {
