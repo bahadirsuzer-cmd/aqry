@@ -59,7 +59,7 @@ const PASTE_IMAGE: Record<AqryoLocale, string> = {
   fil: "Kinokopya ang larawan kapag pumili ng platform. I-paste gamit ang Ctrl+V (Mac: ⌘V). Kung hindi suportado, i-download at idagdag ang PNG.",
 };
 
-// Touch devices use the system share sheet; desktop platform links stay unchanged.
+// Touch devices hand image files to the system share sheet after choosing a channel.
 function isTouchDevice() {
   return typeof navigator !== "undefined" && (
     /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
@@ -159,6 +159,12 @@ function ImageShareDialog({ snapshot, onChange }: { snapshot: ShareSnapshot | nu
         </div>
       </div>
       {!mobile && <p className="rounded-xl bg-violet-50 p-3 text-sm text-violet-950">{PASTE_IMAGE[locale]}</p>}
+      {mobile && <div className="grid grid-cols-2 gap-2">
+        {(["instagram", "threads"] as const).map((channel) => nativeAvailable ?
+          <button key={channel} type="button" disabled={sharing} onClick={() => void nativeShare()} className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-center font-bold text-violet-950 disabled:opacity-60">{channelLabel(channel)} ↗</button> :
+          <a key={channel} href={imageShareDestination(channel, snapshot.text)} onClick={() => downloadShareFile(snapshot.file)} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-center font-bold text-violet-950">{channelLabel(channel)} ↗</a>
+        )}
+      </div>}
       {!mobile && <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {SOCIAL_CHANNELS.map((channel) => <a key={channel} href={imageShareDestination(channel, snapshot.text)} onClick={() => { if (copied !== "image") void copyImage(); }} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-center font-bold text-violet-950 hover:bg-violet-100">{channelLabel(channel)} ↗</a>)}
       </div>}
