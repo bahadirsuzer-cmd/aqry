@@ -1,3 +1,4 @@
+import { PUBLISH_UI_COPY } from "@/lib/publishUiCopy";
 import { ANONYMOUS_BUILDER_COPY } from "@/lib/anonymousBuilderCopy";
 import { anonymousName } from "@/lib/anonymousFormats";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
@@ -277,9 +278,9 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {([
-                ["violet", "Mor"],
-                ["rose", "Pembe"],
-                ["dark", "Gece"],
+                ["violet", PUBLISH_UI_COPY[locale].purple],
+                ["rose", PUBLISH_UI_COPY[locale].pink],
+                ["dark", PUBLISH_UI_COPY[locale].night],
               ] as Array<[Accent, string]>).map(([value, label]) => (
                 <button
                   key={value}
@@ -325,7 +326,7 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
                   Q
                 </div>
                 <div>
-                  <p className="text-[13px] font-black">Anonim kutu</p>
+                  <p className="text-[13px] font-black">AQRYO</p>
                   <p className="text-[13px] text-muted-foreground">AQRYO</p>
                 </div>
               </div>

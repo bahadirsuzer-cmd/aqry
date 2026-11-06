@@ -1,3 +1,7 @@
+import { PUBLISH_UI_COPY } from "@/lib/publishUiCopy";
+import { getCreatorExperienceCopy } from "@/lib/creatorExperienceCopy";
+import { getCompatibilityCopy } from "@/lib/compatibilityCopy";
+import { PUZZLE_UI_COPY } from "@/lib/puzzleUiCopy";
 import { anonymousModeFromLabel, anonymousName } from "@/lib/anonymousFormats";
 import { useAqryoLocale } from "@/lib/i18n";
 import { getFlowCopy } from "@/lib/flowCopy";
@@ -46,7 +50,10 @@ export const Route = createFileRoute(
 });
 
 function PublishSuccessPage() {
-  const { locale } = useAqryoLocale();
+  const { locale, t } = useAqryoLocale();
+  const ui = getCreatorExperienceCopy(locale);
+  const published = PUBLISH_UI_COPY[locale];
+  const common = getCompatibilityCopy(locale);
   const { openImageShare, openLinkShare, imageShareDialog } = useImageShare();
   const [sharingImage, setSharingImage] = useState(false);
   const navigate = useNavigate();
@@ -490,8 +497,8 @@ useEffect(() => {
       : experience.type === "story"
         ? `${experience.title}\n\n${getFlowCopy(locale).open} 👀\n\n#AQRYO`
         : experience.type === "compatibility"
-          ? `${experience.title}\n\nUyumumuz kaç çıkacak? ❤️\n\n#AQRYO`
-          : `${experience.title}\n\nSenin sonucun ne çıkacak?\n\n#AQRYO`;
+          ? `${experience.title}\n\n${common.name} ❤️\n\n#AQRYO`
+          : `${experience.title}\n\n${ui.result}\n\n#AQRYO`;
   }
 
   async function openPublishedShare() {
@@ -592,7 +599,7 @@ useEffect(() => {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#faf8fb]">
         <p className="text-sm font-bold text-muted-foreground">
-          AQRYO yükleniyor...
+          {ui.loading}
         </p>
       </main>
     );
@@ -607,11 +614,11 @@ useEffect(() => {
           </span>
 
           <h1 className="mt-8 text-2xl font-black">
-            Experience bulunamadı
+            {ui.noResults}
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            Yayınlanan Experience veritabanında bulunamadı.
+            {ui.changeFilters}
           </p>
 
           <button
@@ -619,7 +626,7 @@ useEffect(() => {
             onClick={returnToBuilder}
             className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-black text-sm font-bold text-white transition hover:bg-primary"
           >
-            Builder’a dön
+            {ui.edit}
           </button>
         </section>
       </main>
@@ -642,7 +649,7 @@ useEffect(() => {
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5">
         <div>
           <p className="text-[8px] font-black uppercase tracking-[0.14em] text-primary">
-            Yayın sonucu
+            {ui.status}
           </p>
 
           <p className="mt-0.5 text-[11px] font-bold">
@@ -651,7 +658,7 @@ useEffect(() => {
         </div>
 
         <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[9px] font-bold text-emerald-600">
-          Yayında
+          {published.published}
         </span>
       </div>
     </div>
@@ -659,7 +666,7 @@ useEffect(() => {
         <article className="w-full max-w-md overflow-hidden rounded-[32px] border border-border bg-white shadow-[0_24px_70px_rgba(35,16,55,0.13)]">
           <div className="bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 px-6 py-4 text-white">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/75">
-              Yayın başarılı
+              {published.published}
             </p>
 
             <div className="mt-8 flex items-center gap-3">
@@ -668,13 +675,12 @@ useEffect(() => {
   </span>
 
   <h1 className="text-4xl font-black tracking-[-0.05em]">
-    İçeriğin yayında
+    {published.title}
   </h1>
 </div>
 
             <p className="mt-2 text-xs leading-5 text-white/85">
-              Experience bağlantın hazır. Şimdi paylaşarak
-              katılımcılarını davet edebilirsin.
+              {published.intro}
             </p>
           </div>
 
@@ -694,12 +700,12 @@ useEffect(() => {
                 className="mt-3 flex h-11 w-full items-center justify-center rounded-full bg-primary text-xs font-bold text-white transition hover:opacity-90"
               >
                 {copied
-                  ? "Bağlantı kopyalandı ✓"
-                  : "Bağlantıyı kopyala"}
+                  ? ui.copied
+                  : ui.copyLink}
               </button>
             </div>
 
-            <button type="button" disabled={sharingImage} onClick={() => void openPublishedShare()} className="mt-3 flex h-12 w-full items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white disabled:opacity-50">{sharingImage ? "Paylaşım hazırlanıyor…" : ["compatibility", "question_confession", "story"].includes(experience.type) ? "Bağlantıyı paylaş ↗" : "Görselle paylaş ↗"}</button>
+            <button type="button" disabled={sharingImage} onClick={() => void openPublishedShare()} className="mt-3 flex h-12 w-full items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white disabled:opacity-50">{sharingImage ? common.preparing : ["compatibility", "question_confession", "story"].includes(experience.type) ? ui.share + " ↗" : t('shareVisual') + ' ↗'}</button>
 
 {shareAssetsError ? (
   <p className="mt-2 text-center text-[9px] font-bold text-red-500">
@@ -711,11 +717,11 @@ useEffect(() => {
   <div className="flex items-start justify-between gap-4">
     <div>
       <p className="text-[9px] font-black uppercase tracking-[0.12em] text-primary">
-        Paylaşım görselleri
+        {t('shareVisual')}
       </p>
 
       <p className="mt-1 text-[10px] leading-5 text-muted-foreground">
-        AQRYO paylaşım kartını otomatik hazırlar; sen sadece paylaş.
+        {ui.shareHint}
       </p>
     </div>
 
@@ -739,7 +745,7 @@ useEffect(() => {
       className="rounded-[16px] border border-border bg-white px-3 py-3 text-left transition hover:border-primary/30 disabled:opacity-50"
     >
       <span className="block text-[9px] font-black">
-        Kare · 1:1
+        1:1
       </span>
 
       <span className="mt-1 block text-[8px] leading-4 text-muted-foreground">
@@ -749,8 +755,8 @@ useEffect(() => {
       <span className="mt-2 block text-[9px] font-black text-primary">
         {generatingShare ===
         "square"
-          ? "Hazırlanıyor..."
-          : "PNG indir ↓"}
+          ? common.preparing
+          : t('downloadSvg').replace('SVG','PNG') + ' ↓'}
       </span>
     </button>
 
@@ -768,7 +774,7 @@ useEffect(() => {
       className="rounded-[16px] border border-border bg-white px-3 py-3 text-left transition hover:border-primary/30 disabled:opacity-50"
     >
       <span className="block text-[9px] font-black">
-        Dikey · 9:16
+        9:16
       </span>
 
       <span className="mt-1 block text-[8px] leading-4 text-muted-foreground">
@@ -778,8 +784,8 @@ useEffect(() => {
       <span className="mt-2 block text-[9px] font-black text-primary">
         {generatingShare ===
         "story"
-          ? "Hazırlanıyor..."
-          : "PNG indir ↓"}
+          ? common.preparing
+          : t('downloadSvg').replace('SVG','PNG') + ' ↓'}
       </span>
     </button>
   </div>
@@ -789,11 +795,11 @@ useEffect(() => {
   <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_150px] sm:items-center">
     <div>
       <p className="text-[9px] font-black uppercase tracking-[0.12em] text-primary">
-        QR kod
+        {ui.qrCode}
       </p>
 
       <p className="mt-1 text-[10px] leading-5 text-muted-foreground">
-        Experience bağlantını afişte, masada, ekranda veya fiziksel bir materyalde kullan.
+        {ui.qrHint}
       </p>
 
       <a
@@ -802,14 +808,14 @@ useEffect(() => {
         rel="noreferrer"
         className="mt-3 inline-flex h-9 items-center justify-center rounded-full border border-border bg-white px-4 text-[9px] font-black transition hover:border-primary hover:text-primary"
       >
-        QR’ı aç ↗
+        {ui.openQr}
       </a>
     </div>
 
     <div className="mx-auto flex h-[140px] w-[140px] items-center justify-center rounded-[16px] border border-border bg-white p-2">
       <img
         src={qrImageUrl}
-        alt="Experience QR kodu"
+        alt={ui.qrAlt}
         className="h-full w-full object-contain"
       />
     </div>
@@ -819,7 +825,7 @@ useEffect(() => {
 <div className="mt-3 grid grid-cols-3 gap-2">
   <div className="rounded-[16px] border border-border bg-background px-2 py-3 text-center">
     <p className="text-[8px] font-bold uppercase tracking-[0.08em] text-muted-foreground">
-      Görüntüleme
+      {ui.views}
     </p>
 
     <p className="mt-1 text-lg font-black">
@@ -831,7 +837,7 @@ useEffect(() => {
 
   <div className="rounded-[16px] border border-border bg-background px-2 py-3 text-center">
     <p className="text-[8px] font-bold uppercase tracking-[0.08em] text-muted-foreground">
-      Başlatma
+      {ui.starts}
     </p>
 
     <p className="mt-1 text-lg font-black">
@@ -843,7 +849,7 @@ useEffect(() => {
 
   <div className="rounded-[16px] border border-border bg-background px-2 py-3 text-center">
     <p className="text-[8px] font-bold uppercase tracking-[0.08em] text-muted-foreground">
-      Tamamlama
+      {ui.completions}
     </p>
 
     <p className="mt-1 text-lg font-black">
@@ -860,7 +866,7 @@ useEffect(() => {
     onClick={openExperience}
     className="flex h-10 w-full items-center justify-center rounded-full border border-border bg-white text-xs font-bold transition hover:bg-muted"
   >
-    Experience’ı görüntüle
+    {ui.view}
   </button>
 
   <button
@@ -868,7 +874,7 @@ useEffect(() => {
     onClick={openCreatorExperiences}
     className="flex h-10 w-full items-center justify-center rounded-full bg-black text-xs font-bold text-white transition hover:bg-primary"
   >
-    Experience’larıma git
+    {ui.mine}
   </button>
 </div>
 
@@ -877,7 +883,7 @@ useEffect(() => {
               onClick={returnToBuilder}
               className="mx-auto mt-2 flex h-8 w-[64%] items-center justify-center rounded-full text-[10px] font-bold text-muted-foreground transition hover:bg-muted"
             >
-              Düzenlemeye dön
+              {ui.edit}
             </button>
           </div>
         </article>
@@ -894,23 +900,22 @@ useEffect(() => {
                 type="button"
                 onClick={() => setShowNotificationNudge(false)}
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-background text-[18px] font-black text-muted-foreground"
-                aria-label="Kapat"
+                aria-label={PUZZLE_UI_COPY[locale].close}
               >
                 ×
               </button>
             </div>
 
             <p className="mt-5 text-[12px] font-black uppercase tracking-[0.15em] text-primary">
-              Paylaştın. Şimdi cevapları kaçırma.
+              {t('notifications')}
             </p>
 
             <h2 className="mt-2 text-[28px] font-black leading-[1.02] tracking-[-0.05em]">
-              Yeni soru gelince haber verelim mi?
+              {published.nudgeTitle}
             </h2>
 
             <p className="mt-3 text-[14px] font-semibold leading-6 text-muted-foreground">
-              Takipçin anonim soru veya itiraf bıraktığında AQRYO sana haber versin.
-              Gelen kutusunu tekrar tekrar kontrol etmene gerek kalmasın.
+              {published.nudgeHint}
             </p>
 
             <button
@@ -923,7 +928,7 @@ useEffect(() => {
               }}
               className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-violet-700 px-5 text-[14px] font-black text-white"
             >
-              Bildirimleri ayarla →
+              {published.notifications}
             </button>
 
             <button
@@ -931,7 +936,7 @@ useEffect(() => {
               onClick={() => setShowNotificationNudge(false)}
               className="mt-2 flex h-10 w-full items-center justify-center rounded-full text-[12px] font-black text-muted-foreground"
             >
-              Şimdilik değil
+              {published.later}
             </button>
           </section>
         </div>

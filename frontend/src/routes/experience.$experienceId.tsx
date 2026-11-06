@@ -1,3 +1,11 @@
+import { getCreatorExperienceCopy } from "@/lib/creatorExperienceCopy";
+import { getFlowCopy } from "@/lib/flowCopy";
+import { FLOW_EDITOR_COPY } from "@/lib/flowEditorCopy";
+import { localizedPath, useAqryoLocale } from "@/lib/i18n";
+import { ANONYMOUS_BUILDER_COPY } from "@/lib/anonymousBuilderCopy";
+import { PUBLISH_UI_COPY } from "@/lib/publishUiCopy";
+import { PARTICIPANT_UI_COPY } from "@/lib/participantUiCopy";
+import { getCompatibilityCopy } from "@/lib/compatibilityCopy";
 import { anonymousMode } from "@/lib/anonymousFormats";
 import { StoryPage } from "@/components/story/StoryPage";
 import { useImageShare } from "@/components/ImageShareDialog";
@@ -1389,6 +1397,10 @@ function EntryScreen({
   experience: PublishedExperience;
   onStart: () => void;
 }) {
+  const { locale, t } = useAqryoLocale();
+  const participant = PARTICIPANT_UI_COPY[locale];
+  const ui = getCreatorExperienceCopy(locale);
+
   const coverClass = getCoverClass(
     experience.cover.style,
   );
@@ -1468,16 +1480,16 @@ function EntryScreen({
               <>
                 <EntryMetric
                   icon="▤"
-                  label={`${experience.story?.items.length ?? 0} ekran`}
+                  label={`${experience.story?.items.length ?? 0} ${FLOW_EDITOR_COPY[locale].pages}`}
                 />
                 <EntryMetric
                   icon="↕"
-                  label="İçerik akışı"
+                  label={getFlowCopy(locale).name}
                   bordered
                 />
                 <EntryMetric
                   icon="♢"
-                  label="Ücretsiz sonuç"
+                  label={t('free')}
                   bordered
                 />
               </>
@@ -1494,7 +1506,7 @@ function EntryScreen({
                 />
                 <EntryMetric
                   icon="♢"
-                  label="Ücretsiz sonuç"
+                  label={t('free')}
                   bordered
                 />
               </>
@@ -1502,18 +1514,18 @@ function EntryScreen({
               <>
                 <EntryMetric
                   icon="☷"
-                  label={`${experience.questions.length} soru`}
+                  label={`${experience.questions.length} ${participant.question}`}
                 />
 
                 <EntryMetric
                   icon="◷"
-                  label={`~${estimatedMinutes} dakika`}
+                  label={`~${estimatedMinutes} min`}
                   bordered
                 />
 
                 <EntryMetric
                   icon="♢"
-                  label="Ücretsiz"
+                  label={t('free')}
                   bordered
                 />
               </>
@@ -1525,7 +1537,7 @@ function EntryScreen({
             onClick={onStart}
             className="mt-5 flex h-14 w-full items-center justify-center rounded-full bg-black text-[16px] font-black text-white transition hover:bg-primary"
           >
-            Başla →
+            {participant.start}
           </button>
         </div>
       </article>
@@ -1538,16 +1550,16 @@ function EntryScreen({
           }
           className="transition hover:text-foreground"
         >
-          ◇ AQRYO ile oluşturuldu
+          ◇ AQRYO
         </button>
 
         <span>·</span>
 
-        <span>Nasıl çalışır?</span>
+        <span>{t('howItWorks')}</span>
 
         <span>·</span>
 
-        <span>Gizlilik</span>
+        <span>{t('privacy')}</span>
       </div>
     </>
   );
@@ -1562,6 +1574,10 @@ function StoryContentScreen({
   onBack: () => void;
   onComplete: () => void;
 }) {
+  const { locale, t } = useAqryoLocale();
+  const participant = PARTICIPANT_UI_COPY[locale];
+  const ui = getCreatorExperienceCopy(locale);
+
   const story =
     experience.story;
 
@@ -1751,6 +1767,10 @@ function StoryResultScreen({
   onRestart: () => void;
   onComplete: () => void;
 }) {
+  const { locale, t } = useAqryoLocale();
+  const participant = PARTICIPANT_UI_COPY[locale];
+  const ui = getCreatorExperienceCopy(locale);
+
   const { openLinkShare, imageShareDialog } = useImageShare();
   const story = experience.story;
 
@@ -1804,7 +1824,7 @@ function StoryResultScreen({
         onClick={onRestart}
         className="mt-3 flex h-11 w-full items-center justify-center rounded-full border border-border bg-white text-[10px] font-black"
       >
-        Baştan gör
+        {participant.restart}
       </button>
     </article>
   );
@@ -2021,6 +2041,10 @@ function QuestionScreen({
   onSelectAnswer: (optionIndex: number) => void;
   onPrevious: () => void;
 }) {
+  const { locale, t } = useAqryoLocale();
+  const participant = PARTICIPANT_UI_COPY[locale];
+  const ui = getCreatorExperienceCopy(locale);
+
   return (
     <article className="rounded-[30px] border border-border bg-white p-5 shadow-[0_24px_70px_rgba(35,16,55,0.12)] sm:p-6">
       <div className="flex flex-col gap-2">
@@ -2088,7 +2112,7 @@ function QuestionScreen({
           onClick={onPrevious}
           className="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-border bg-white px-5 text-[12px] font-bold"
         >
-          ← Önceki soru
+          {participant.back}
         </button>
 
         <span className="text-right text-[10px] font-semibold leading-4 text-muted-foreground">
@@ -2274,6 +2298,10 @@ function ResultScreen({
   onComplete: () => void;
   onRestart: () => void;
 }) {
+  const { locale, t } = useAqryoLocale();
+  const participant = PARTICIPANT_UI_COPY[locale];
+  const ui = getCreatorExperienceCopy(locale);
+
   const { openImageShare, openLinkShare, imageShareDialog } = useImageShare();
   const [sharingImage, setSharingImage] = useState(false);
   const isArchetypeTest =
@@ -2301,8 +2329,9 @@ function ResultScreen({
       ? ""
       : getPublicShareUrl(experienceId);
 
-  const shareText =
-    isArchetypeTest
+  const shareText = locale !== "tr"
+    ? `${experienceTitle}\n${ui.result}: ${displayResultTitle}${isArchetypeTest ? "" : ` (${score}%)`}\n\n${ui.shareHint}`
+    : isArchetypeTest
       ? `Bu teste göre ben “${displayResultTitle}” çıktım. Sen ne çıkacaksın?`
       : isSpectrumTest
         ? `“${experienceTitle}” sonucum %${score} çıktı. Seninki kaç? 👀`
@@ -2344,12 +2373,12 @@ function ResultScreen({
     <article className="overflow-hidden rounded-[30px] border border-border bg-white pb-3 shadow-[0_24px_70px_rgba(35,16,55,0.13)]">{imageShareDialog}     <div className="bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 p-7 text-white">
         <p className="text-[12px] font-bold uppercase tracking-[0.15em] text-white/75">
           {experienceType === "compatibility"
-            ? "Uyum sonucun"
+            ? participant.result
             : isArchetypeTest
-              ? "Senin sonucun"
+              ? ui.result
               : isSpectrumTest
-                ? "Seviyen"
-                : "Test sonucun"}
+                ? ui.result
+                : ui.result}
         </p>
 
         <div className="mt-6 flex items-end justify-between gap-4">
@@ -2379,13 +2408,13 @@ function ResultScreen({
   <div className="flex items-start justify-between gap-4">
     <div>
       <p className="text-[14px] font-black">
-        Sonucunu paylaş
+        {t('share')}
       </p>
 
       <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
         {experienceType === "compatibility"
-          ? "Arkadaşlarını teste davet et ve sonuçlarınızı karşılaştırın."
-          : "Sonucunu paylaş ve arkadaşlarını bu Experience’a davet et."}
+          ? ui.shareHint
+          : "{t('share')} ve arkadaşlarını bu Experience’a davet et."}
       </p>
     </div>
 
@@ -2405,7 +2434,7 @@ function ResultScreen({
       onClick={() => void shareResult()}
       className="flex h-11 items-center justify-center rounded-full bg-primary px-3 text-[13px] font-bold text-white"
     >
-      Sonucumu paylaş
+      {t('share')}
     </button>
 
     <button
@@ -2414,7 +2443,7 @@ function ResultScreen({
       onClick={shareOnX}
       className="flex h-11 items-center justify-center rounded-full bg-black px-3 text-[13px] font-bold text-white"
     >
-      X’te paylaş
+      {ui.shareOnX}
     </button>
   </div>
 
@@ -2423,7 +2452,7 @@ function ResultScreen({
     onClick={copyResultLink}
     className="mt-2 flex h-10 w-full items-center justify-center rounded-full border border-border bg-white text-[12px] font-bold text-muted-foreground"
   >
-    Bağlantıyı kopyala
+    {ui.copyLink}
   </button>
 </div>
 
@@ -2432,7 +2461,7 @@ function ResultScreen({
           onClick={onComplete}
           className="mx-auto mt-5 flex h-12 w-[92%] items-center justify-center rounded-full bg-primary px-5 text-center text-[14px] font-black text-white transition hover:bg-primary/90"
         >
-          Sonucumu tamamla →
+          {participant.show}
         </button>
 
         <button
@@ -2440,7 +2469,7 @@ function ResultScreen({
           onClick={onRestart}
          className="mx-auto mt-3 flex h-10 w-[72%] items-center justify-center rounded-full border border-border bg-white text-[12px] font-bold text-muted-foreground transition hover:bg-muted"
           >
-          Baştan çöz
+          {participant.restart}
         </button>
       </article>
   );
@@ -4142,6 +4171,9 @@ function QuestionConfessionPublicExperience({
   experienceId: string;
   experience: PublishedExperience;
 }) {
+  const { locale, t } = useAqryoLocale();
+  const ui = ANONYMOUS_BUILDER_COPY[locale];
+  const common = getCompatibilityCopy(locale);
   const config = experience.questionConfession!;
   const [mode, setMode] = useState<"question" | "confession">(config.mode ?? "question");
   const [message, setMessage] = useState("");
@@ -4215,7 +4247,7 @@ function QuestionConfessionPublicExperience({
     <div className={`min-h-screen bg-gradient-to-br ${accent} px-4 py-8 text-foreground sm:py-14`}>
       <div className="mx-auto max-w-[520px]">
         <div className="mb-4 flex items-center justify-center">
-          <a href="/" aria-label="AQRYO ana sayfa" className="inline-flex">
+          <a href={localizedPath("/", locale)} aria-label={ui.backHome} className="inline-flex">
             <img src="/aqryo-logo.png" alt="AQRYO" className="h-12 w-auto brightness-0 invert" />
           </a>
         </div>
@@ -4238,19 +4270,19 @@ function QuestionConfessionPublicExperience({
 
           {sent ? (
             <div className="mt-6 rounded-[22px] bg-emerald-50 p-5 text-center">
-              <p className="text-[24px] font-black text-emerald-800">Gönderildi ✓</p>
+              <p className="text-[24px] font-black text-emerald-800">{PUBLISH_UI_COPY[locale].sent}</p>
               <p className="mt-3 text-[14px] leading-6 text-emerald-800/75">
-                Kimliğin creator ile paylaşılmadı.
+                {ui.identityHidden}
               </p>
 
               <a
-                href="/"
+                href={localizedPath("/", locale)}
                 className="mt-5 flex h-12 w-full items-center justify-center rounded-full bg-black px-5 text-[13px] font-black text-white"
               >
-                Sen de içerik üret →
+                {t('createContent')} →
               </a>
               <p className="mt-2 text-[11px] font-semibold text-emerald-900/60">
-                AQRYO ana sayfasına git ve kendi içeriğini oluşturmaya başla.
+                {ui.backHome}
               </p>
 
               <button
@@ -4258,7 +4290,7 @@ function QuestionConfessionPublicExperience({
                 onClick={() => setSent(false)}
                 className="mt-4 rounded-full bg-white px-5 py-3 text-[12px] font-black text-emerald-800"
               >
-                Bir tane daha bırak
+                {PARTICIPANT_UI_COPY[locale].restart}
               </button>
             </div>
           ) : (
@@ -4291,6 +4323,7 @@ function QuestionConfessionPublicExperience({
               </div> : <div className="mt-6 rounded-[20px] bg-violet-50 px-4 py-5 font-black text-violet-950">{config.mode === "question" ? config.questionLabel : config.confessionLabel}</div>}
 
               <textarea
+                aria-label={ui.textArea}
                 rows={6}
                 maxLength={500}
                 value={message}
@@ -4300,7 +4333,7 @@ function QuestionConfessionPublicExperience({
               />
 
               <div className="mt-2 flex justify-between text-[11px] font-bold text-muted-foreground">
-                <span>Anonim gönderim</span>
+                <span>{ui.sendAnonymous}</span>
                 <span>{message.length}/500</span>
               </div>
 
@@ -4310,13 +4343,13 @@ function QuestionConfessionPublicExperience({
                 onClick={() => void submit()}
                 className="mt-4 h-13 w-full rounded-full bg-black text-[14px] font-black text-white disabled:opacity-35"
               >
-                {sending ? "Gönderiliyor..." : "Anonim gönder →"}
+                {sending ? common.preparing : ui.sendAnonymous + " →"}
               </button>
             </>
           )}
 
           <p className="mt-5 text-center text-[11px] font-bold text-muted-foreground">
-            AQRYO · Kimliğin mesajla birlikte gönderilmez · aqryo.com
+            AQRYO · {ui.identityHidden} · aqryo.com
           </p>
         </div>
       </div>
