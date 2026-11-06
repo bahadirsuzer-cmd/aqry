@@ -1,14 +1,13 @@
+import { translate } from "@/lib/i18n";
 import { createFileRoute } from "@tanstack/react-router";
 import { HomePage } from "@/pages/HomePage";
 
-const title =
-  "AQRYO | Takipçilerinle Etkileşimli İçerikler Oluştur";
-
-const description =
-  "AQRYO ile Soru mu İtiraf mı, Uyum Metre, akış ve puzzle içerikleri oluştur. Linkini paylaş, takipçilerini etkileşime davet et.";
-
 export const Route = createFileRoute("/")({
-  head: () => ({
+  head: ({ match }) => {
+    const locale = match.search.lang ?? "en";
+    const title = "AQRYO | " + translate(locale, "studioTitle");
+    const description = translate(locale, "studioDescription");
+    return ({
     meta: [
       {
         title,
@@ -88,7 +87,7 @@ export const Route = createFileRoute("/")({
     ],
 
     links: [
-      { rel: "canonical", href: "https://www.aqryo.com/" },
+      { rel: "canonical", href: `https://www.aqryo.com/${match.search.lang ? `?lang=${locale}` : ""}` },
       { rel: "alternate", hrefLang: "x-default", href: "https://www.aqryo.com/" },
       { rel: "alternate", hrefLang: "tr", href: "https://www.aqryo.com/?lang=tr" },
       { rel: "alternate", hrefLang: "en", href: "https://www.aqryo.com/?lang=en" },
@@ -137,7 +136,7 @@ export const Route = createFileRoute("/")({
               url: "https://www.aqryo.com/",
               name: "AQRYO",
               description,
-              inLanguage: "tr-TR",
+              inLanguage: locale,
               publisher: {
                 "@id": "https://www.aqryo.com/#organization",
               },
@@ -149,7 +148,7 @@ export const Route = createFileRoute("/")({
               operatingSystem: "Web",
               url: "https://www.aqryo.com/",
               description:
-                "İçerik üreticilerinin takipçileriyle paylaşabilecekleri interaktif içerikler ve deneyimler oluşturmasına yardımcı olan web tabanlı creator aracı.",
+                description,
               offers: {
                 "@type": "Offer",
                 price: "0",
@@ -160,7 +159,7 @@ export const Route = createFileRoute("/")({
         }),
       },
     ],
-  }),
+  }); },
 
   component: HomePage,
 });

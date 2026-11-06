@@ -1,3 +1,6 @@
+import { AUTH_COPY } from "@/lib/authCopy";
+import { useAqryoLocale } from "@/lib/i18n";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { useEffect, useState } from "react";
 import {
   createFileRoute,
@@ -35,11 +38,20 @@ function getSafeNextRoute() {
 export const Route = createFileRoute(
   "/creator-auth",
 )({
+  validateSearch: (search: Record<string, unknown>): { next?: string } => ({ next: typeof search.next === "string" && allowedNextRoutes.has(search.next) ? search.next : undefined }),
   component: CreatorAuthPage,
 });
 
 function CreatorAuthPage() {
   const navigate = useNavigate();
+  const { locale, t } = useAqryoLocale();
+  const ui = AUTH_COPY[locale];
+  function localError(error: unknown) {
+    const message = error instanceof Error ? error.message.toLowerCase() : "";
+    if (message.includes("e-posta veya şifre hatalı") || message.includes("invalid login credentials")) return ui.invalid;
+    if (message.includes("henüz doğrulanmamış") || message.includes("email not confirmed")) return ui.unverified;
+    return ui.error;
+  }
 
   const [mode, setMode] =
     useState<AuthMode>("sign-in");
@@ -128,7 +140,7 @@ useEffect(() => {
 
       const nextRoute = getSafeNextRoute();
       const redirectTo =
-        `${window.location.origin}/creator-auth?next=${encodeURIComponent(nextRoute)}`;
+        `${window.location.origin}/creator-auth?next=${encodeURIComponent(nextRoute)}&lang=${locale}`;
 
       const { error } =
         await supabase.auth.signInWithOAuth({
@@ -143,9 +155,7 @@ useEffect(() => {
       }
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : "Sosyal giriş başlatılamadı.";
+        localError(error);
 
       setErrorMessage(message);
       setSocialLoading(null);
@@ -182,7 +192,7 @@ useEffect(() => {
         }
 
         setSuccessMessage(
-          "Hesabın oluşturuldu. E-posta adresine gelen doğrulama bağlantısını açıp giriş yap.",
+          ui.checkEmail,
         );
 
         return;
@@ -198,9 +208,7 @@ useEffect(() => {
       });
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : "İşlem tamamlanamadı.";
+        localError(error);
 
       setErrorMessage(message);
     } finally {
@@ -218,7 +226,7 @@ useEffect(() => {
 
     if (!normalizedEmail) {
       setErrorMessage(
-        "Şifreni sıfırlamak için önce e-posta adresini yaz.",
+        ui.enterEmail,
       );
       setSuccessMessage(null);
       return;
@@ -234,13 +242,11 @@ useEffect(() => {
       );
 
       setSuccessMessage(
-        "Şifre sıfırlama bağlantısını e-posta adresine gönderdik. Gelen kutunu kontrol et.",
+        ui.checkEmail,
       );
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Şifre sıfırlama bağlantısı gönderilemedi.",
+        localError(error),
       );
     } finally {
       setResetLoading(false);
@@ -257,7 +263,7 @@ useEffect(() => {
 
     if (!normalizedEmail) {
       setErrorMessage(
-        "Doğrulama mailini tekrar göndermek için e-posta adresini yaz.",
+        ui.enterEmail,
       );
       setSuccessMessage(null);
       return;
@@ -273,13 +279,11 @@ useEffect(() => {
       );
 
       setSuccessMessage(
-        "Doğrulama e-postasını tekrar gönderdik. Gelen kutunu ve spam klasörünü kontrol et.",
+        ui.checkEmail,
       );
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Doğrulama e-postası tekrar gönderilemedi.",
+        localError(error),
       );
     } finally {
       setVerificationLoading(false);
@@ -307,27 +311,20 @@ useEffect(() => {
 
         <div className="max-w-xl">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/75">
-            Creator monetization
+            AQRYO Studio
           </p>
 
           <h1 className="mt-5 text-6xl font-black leading-[0.96] tracking-[-0.065em]">
-            Trafiğini
-            <br />
-            Experience’a,
-            <br />
-            Experience’ı
-            <br />
-            gelire dönüştür.
+            {t("studioTitle")}
           </h1>
 
           <p className="mt-6 max-w-md text-base leading-7 text-white/80">
-            İçeriğini oluştur, bağlantını paylaş,
-            katılımları ve kazançlarını tek yerden yönet.
+            {t("studioDescription")}
           </p>
         </div>
 
         <p className="text-xs font-semibold text-white/65">
-          Sonuç her zaman ücretsiz. Teklif sonuçtan sonra gelir.
+          {t("footerTagline")}
         </p>
       </section>
 
@@ -335,6 +332,7 @@ useEffect(() => {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[280px] bg-gradient-to-br from-fuchsia-500/20 via-primary/10 to-rose-500/20 blur-3xl lg:hidden" />
 
         <div className="w-full max-w-md">
+          <div className="mb-4 flex justify-end"><LanguageSelector /></div>
           <Link
             to="/"
             className="text-[28px] font-black tracking-[-0.065em] text-primary lg:hidden"
@@ -351,14 +349,14 @@ useEffect(() => {
           <div className="mt-8 rounded-[30px] border border-border bg-white p-6 shadow-[0_24px_70px_rgba(35,16,55,0.1)] sm:p-8 lg:mt-0">
             <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">
               {mode === "sign-in"
-                ? "Tekrar hoş geldin"
-                : "AQRYO'ya katıl"}
+                ? ui.welcome
+                : ui.join}
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               {mode === "sign-in"
-                ? "Experience’larını yönetmek için giriş yap."
-                : "İlk Experience’ını oluşturmak için hesabını aç."}
+                ? ui.loginHint
+                : ui.signupHint}
             </p>
 
             <div className="mt-6 grid grid-cols-2 rounded-full bg-background p-1">
@@ -373,7 +371,7 @@ useEffect(() => {
                     : "text-muted-foreground"
                 }`}
               >
-                Giriş yap
+                {ui.login}
               </button>
 
               <button
@@ -387,7 +385,7 @@ useEffect(() => {
                     : "text-muted-foreground"
                 }`}
               >
-                Hesap oluştur
+                {ui.signup}
               </button>
             </div>
 
@@ -405,8 +403,8 @@ useEffect(() => {
                 </span>
 
                 {socialLoading === "google"
-                  ? "Google açılıyor..."
-                  : "Google ile devam et"}
+                  ? ui.opening.replace("{provider}", "Google")
+                  : ui.continueWith.replace("{provider}", "Google")}
               </button>
 
               {APPLE_AUTH_ENABLED ? (
@@ -423,8 +421,8 @@ useEffect(() => {
                   </span>
 
                   {socialLoading === "apple"
-                    ? "Apple açılıyor..."
-                    : "Apple ile devam et"}
+                    ? ui.opening.replace("{provider}", "Apple")
+                    : ui.continueWith.replace("{provider}", "Apple")}
                 </button>
               ) : null}
             </div>
@@ -432,7 +430,7 @@ useEffect(() => {
             <div className="my-5 flex items-center gap-3">
               <div className="h-px flex-1 bg-border" />
               <span className="shrink-0 text-[8px] font-bold uppercase tracking-[0.08em] text-muted-foreground">
-                veya e-posta ile devam et
+                {ui.or}
               </span>
               <div className="h-px flex-1 bg-border" />
             </div>
@@ -444,7 +442,7 @@ useEffect(() => {
               {mode === "sign-up" && (
                 <label className="block">
                   <span className="text-[10px] font-bold">
-                    Creator adı
+                    {ui.name}
                   </span>
 
                   <input
@@ -456,7 +454,7 @@ useEffect(() => {
                       )
                     }
                     autoComplete="name"
-                    placeholder="Örneğin: Aşk Testisi"
+                    placeholder={ui.nameExample} required
                     className="mt-2 h-12 w-full rounded-[15px] border border-border bg-background px-4 text-sm font-semibold outline-none transition placeholder:text-muted-foreground/60 focus:border-primary"
                   />
                 </label>
@@ -464,11 +462,11 @@ useEffect(() => {
 
               <label className="block">
                 <span className="text-[10px] font-bold">
-                  E-posta
+                  {ui.email}
                 </span>
 
                 <input
-                  type="email"
+                  type="email" required dir="ltr"
                   value={email}
                   onChange={(event) =>
                     setEmail(event.target.value)
@@ -482,7 +480,7 @@ useEffect(() => {
               <label className="block">
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-[10px] font-bold">
-                    Şifre
+                    {ui.password}
                   </span>
 
                   {mode === "sign-in" && (
@@ -495,8 +493,8 @@ useEffect(() => {
                       className="text-[9px] font-black text-primary transition hover:opacity-70 disabled:cursor-wait disabled:opacity-40"
                     >
                       {resetLoading
-                        ? "Gönderiliyor..."
-                        : "Şifremi unuttum"}
+                        ? ui.sending
+                        : ui.forgot}
                     </button>
                   )}
                 </div>
@@ -514,7 +512,7 @@ useEffect(() => {
                       ? "current-password"
                       : "new-password"
                   }
-                  placeholder="En az 8 karakter"
+                  placeholder={ui.minPassword} required minLength={mode === "sign-up" ? 8 : undefined}
                   className="mt-2 h-12 w-full rounded-[15px] border border-border bg-background px-4 text-sm font-semibold outline-none transition placeholder:text-muted-foreground/60 focus:border-primary"
                 />
               </label>
@@ -543,8 +541,8 @@ useEffect(() => {
                       className="mt-2 text-[9px] font-black text-emerald-800 underline underline-offset-2 transition hover:opacity-70 disabled:cursor-wait disabled:opacity-40"
                     >
                       {verificationLoading
-                        ? "Tekrar gönderiliyor..."
-                        : "Doğrulama mailini tekrar gönder"}
+                        ? ui.sending
+                        : ui.resend}
                     </button>
                   ) : null}
                 </div>
@@ -556,22 +554,22 @@ useEffect(() => {
                 className="mt-1 flex h-11 w-full items-center justify-center rounded-full bg-black text-xs font-bold text-white transition enabled:hover:bg-primary disabled:cursor-wait disabled:bg-black/30"
               >
                 {loading
-                  ? "İşlem yapılıyor..."
+                  ? ui.working
                   : mode === "sign-in"
-                    ? "Giriş yap"
-                    : "Hesap oluştur"}
+                    ? ui.login
+                    : ui.signup}
               </button>
             </form>
 
             <p className="mt-4 text-center text-[8px] leading-4 text-muted-foreground">
-              Devam ederek AQRYO hesabının giriş yöntemi olarak seçtiğin hesabı kullanmayı kabul edersin.
+              {ui.notice}
             </p>
 
             <Link
               to="/"
               className="mx-auto mt-3 flex h-9 w-fit items-center justify-center px-4 text-[10px] font-bold text-muted-foreground transition hover:text-primary"
             >
-              Ana sayfaya dön
+              {ui.home}
             </Link>
           </div>
         </div>

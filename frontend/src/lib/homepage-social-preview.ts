@@ -1,20 +1,25 @@
+import { normalizeLocale, translate } from "./i18n";
 const HOME_URL = "https://www.aqryo.com/";
 const COVER_URL = "https://www.aqryo.com/aqryo-social-cover-v2.jpg";
-const TITLE = "AQRYO — Create your content in 5 seconds";
-const DESCRIPTION = "Create puzzles, anonymous questions and interactive stories. Share with your audience. Try AQRYO free.";
+function escapeHtml(value: string) { return value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!); }
+function homeCardHtml(request: Request) {
+  const locale = normalizeLocale(new URL(request.url).searchParams.get("lang") ?? "en");
+  const TITLE = escapeHtml("AQRYO | " + translate(locale, "studioTitle"));
+  const DESCRIPTION = escapeHtml(translate(locale, "studioDescription"));
+  const homeUrl = HOME_URL + (new URL(request.url).searchParams.has("lang") ? `?lang=${locale}` : "");
 
 // Social crawlers do not need the React application or its streamed SSR response.
 // Keep this snapshot public, anonymous and restricted to the homepage.
-const HOME_CARD_HTML = `<!doctype html>
-<html lang="en"><head>
+return `<!doctype html>
+<html lang="${locale}" dir="${locale === "ar" || locale === "ur" ? "rtl" : "ltr"}"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${TITLE}</title>
 <meta name="description" content="${DESCRIPTION}">
-<link rel="canonical" href="${HOME_URL}">
+<link rel="canonical" href="${homeUrl}">
 <meta property="og:site_name" content="AQRYO">
 <meta property="og:type" content="website">
-<meta property="og:url" content="${HOME_URL}">
+<meta property="og:url" content="${homeUrl}">
 <meta property="og:title" content="${TITLE}">
 <meta property="og:description" content="${DESCRIPTION}">
 <meta property="og:image" content="${COVER_URL}">
@@ -29,23 +34,24 @@ const HOME_CARD_HTML = `<!doctype html>
 <meta name="twitter:image" content="${COVER_URL}">
 <meta name="twitter:image:alt" content="${TITLE}">
 </head><body>
-<h1>Create your content in 5 seconds</h1>
+<h1>${escapeHtml(translate(locale, "studioTitle"))}</h1>
 <img src="${COVER_URL}" width="1200" height="600" alt="${TITLE}">
 <p>${DESCRIPTION}</p>
 <nav>
-<a href="/question-confession-builder">Question or Confession?</a>
-<a href="/puzzle-builder">Puzzle</a>
-<a href="/compatibility-builder">Match Meter</a>
-<a href="/story-builder">Flow</a>
+<a href="/question-confession-builder?lang=${locale}">${escapeHtml(translate(locale, "questionConfession"))}</a>
+<a href="/puzzle-builder?lang=${locale}">${escapeHtml(translate(locale, "puzzle"))}</a>
+<a href="/compatibility-builder?lang=${locale}">${escapeHtml(translate(locale, "loveMeter"))}</a>
+<a href="/story-builder?lang=${locale}">${escapeHtml(translate(locale, "story"))}</a>
 </nav>
 </body></html>`;
+}
 
 export function homepageSocialPreview(request: Request): Response | null {
   if (request.method !== "GET" && request.method !== "HEAD") return null;
   if (new URL(request.url).pathname !== "/") return null;
   if (!/\bTwitterbot\b/i.test(request.headers.get("user-agent") ?? "")) return null;
 
-  return new Response(request.method === "HEAD" ? null : HOME_CARD_HTML, {
+  return new Response(request.method === "HEAD" ? null : homeCardHtml(request), {
     status: 200,
     headers: {
       "content-type": "text/html; charset=utf-8",

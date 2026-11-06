@@ -1,3 +1,4 @@
+import { AqryoLocaleProvider, AQRYO_LANGUAGES, normalizeLocale, translate, type AqryoLocale } from "@/lib/i18n";
 import {
   QueryClient,
   QueryClientProvider,
@@ -9,6 +10,7 @@ import {
   useRouterState,
   HeadContent,
   Scripts,
+  retainSearchParams,
 } from "@tanstack/react-router";
 import {
   useEffect,
@@ -83,7 +85,13 @@ export const Route =
   createRootRouteWithContext<{
     queryClient: QueryClient;
   }>()({
-    head: () => ({
+    validateSearch: (search: Record<string, unknown>): { lang?: AqryoLocale } => ({ lang: typeof search.lang === "string" && AQRYO_LANGUAGES.some(([code]) => code === search.lang) ? normalizeLocale(search.lang) : undefined }),
+    search: { middlewares: [retainSearchParams(["lang"])] },
+    head: ({ match }) => {
+      const locale = match.search.lang ?? "en";
+      const title = "AQRYO | " + translate(locale, "studioTitle");
+      const description = translate(locale, "studioDescription");
+      return ({
       meta: [
         {
           charSet: "utf-8",
@@ -95,12 +103,12 @@ export const Route =
         },
         {
           title:
-            "AQRYO | 5 Saniyede Viral İçerik Üret",
+            title,
         },
         {
           name: "description",
           content:
-            "Creator'lar için anonim etkileşim, Uyum Metre, akış ve sosyal puzzle içerikleri üretme aracı.",
+            description,
         },
         {
           name: "author",
@@ -118,12 +126,12 @@ export const Route =
         {
           property: "og:title",
           content:
-            "AQRYO | 5 Saniyede Viral İçerik Üret",
+            title,
         },
         {
           property: "og:description",
           content:
-            "5 saniyede paylaşılabilir içerik üret, kitlenle paylaş ve etkileşimi başlat.",
+            description,
         },
         {
           property: "og:type",
@@ -140,12 +148,12 @@ export const Route =
         {
           name: "twitter:title",
           content:
-            "AQRYO | 5 Saniyede Viral İçerik Üret",
+            title,
         },
         {
           name: "twitter:description",
           content:
-            "5 saniyede paylaşılabilir içerik üret, kitlenle paylaş ve etkileşimi başlat.",
+            description,
         },
       ],
 
@@ -189,7 +197,7 @@ export const Route =
           href: "/manifest.webmanifest",
         },
       ],
-    }),
+    }); },
 
     shellComponent: RootShell,
     component: RootComponent,
@@ -203,8 +211,9 @@ function RootShell({
 }: {
   children: ReactNode;
 }) {
+  const locale = useRouterState({ select: (state) => state.location.search.lang ?? "en" });
   return (
-    <html lang="tr">
+    <html lang={locale} dir={locale === "ar" || locale === "ur" ? "rtl" : "ltr"}>
       <head>
         <HeadContent />
       </head>
@@ -230,7 +239,7 @@ function RootComponent() {
     <QueryClientProvider
       client={queryClient}
     >
-      <Outlet />
+      <AqryoLocaleProvider initialLocale={location.search.lang}><Outlet /></AqryoLocaleProvider>
     </QueryClientProvider>
   );
 }

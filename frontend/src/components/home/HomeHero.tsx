@@ -47,7 +47,7 @@ export function HomeHero({
       <div className="mx-auto grid max-w-[1240px] gap-6 px-5 pb-8 pt-5 sm:px-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-16 lg:py-20">
         <div className="relative max-w-xl">
 
-          <h1 className="text-[clamp(2.65rem,5.4vw,5.5rem)] font-black leading-[0.88] tracking-[-0.07em] text-[#21163b] sm:pr-36">
+          <h1 className="text-[clamp(2.65rem,5.4vw,5.5rem)] font-black leading-[0.88] tracking-[-0.07em] text-[#21163b] sm:pe-10">
             {t("viralInFive")}
           </h1>
 
@@ -67,21 +67,21 @@ export function HomeHero({
                 key={card.titleKey}
                 to={isCreator ? card.to : "/creator-auth"}
                 search={isCreator ? undefined : { next: card.to }}
-                className="group relative aspect-[1/0.94] min-w-0 overflow-hidden rounded-[26px] border border-white/70 bg-white shadow-[0_18px_50px_rgba(48,31,75,.12)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(48,31,75,.18)] sm:rounded-[32px]"
+                className="group relative flex min-h-[280px] flex-col sm:min-h-[330px] min-w-0 overflow-hidden rounded-[26px] border border-white/70 bg-white shadow-[0_18px_50px_rgba(48,31,75,.12)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(48,31,75,.18)] sm:rounded-[32px]"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.visual}`} />
                 <div className="absolute -right-[12%] -top-[8%] h-[58%] w-[58%] rounded-full bg-white/20 blur-2xl" />
-                <div className="absolute inset-x-0 top-0 flex h-[56%] items-center justify-center">
-                  <div className="flex h-[45%] min-h-16 w-[45%] min-w-16 items-center justify-center rounded-[24px] border border-white/30 bg-white/20 text-[clamp(2rem,5vw,4.2rem)] font-black tracking-[-0.08em] text-white shadow-[0_18px_45px_rgba(25,15,50,.16)] backdrop-blur-sm">
+                <div className="relative flex h-32 shrink-0 items-center justify-center sm:h-40">
+                  <div dir="ltr" className="flex h-[65%] min-h-16 w-[45%] min-w-16 items-center justify-center rounded-[24px] border border-white/30 bg-white/20 text-[clamp(2rem,5vw,4.2rem)] font-black tracking-[-0.08em] text-white shadow-[0_18px_45px_rgba(25,15,50,.16)] backdrop-blur-sm">
                     {card.symbol}
                   </div>
                 </div>
 
-                <div className="absolute inset-x-0 bottom-0 min-h-[46%] bg-gradient-to-t from-[#17101f]/90 via-[#17101f]/72 to-transparent px-4 pb-4 pt-9 text-white sm:px-6 sm:pb-6 sm:pt-12">
+                <div className="relative mt-auto bg-gradient-to-t from-[#17101f]/90 via-[#17101f]/72 to-transparent px-4 pb-4 pt-9 text-white sm:px-6 sm:pb-6 sm:pt-12">
                   <h2 className="text-[clamp(1.15rem,2.4vw,1.75rem)] font-black tracking-[-0.045em]">
                     {card.titleKey === "questionConfession" && locale === "tr" ? "Anonim soru / itiraf" : t(card.titleKey)}
                   </h2>
-                  <p className="mt-1.5 line-clamp-2 text-[11px] font-semibold leading-4 text-white/80 sm:mt-2 sm:text-[13px] sm:leading-5">
+                  <p className="mt-1.5 text-[11px] font-semibold leading-4 text-white/80 sm:mt-2 sm:text-[13px] sm:leading-5">
                     {t(card.descriptionKey)}
                   </p>
                 </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { createContext, createElement, useContext, useEffect, useState, type ReactNode } from "react";
 
 export const AQRYO_LANGUAGES = [
   ["tr", "Türkçe"],
@@ -25,6 +25,7 @@ const STORAGE_SOURCE_KEY = "aqryo-locale-source";
 
 const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
   tr: {
+    free: "Ücretsiz", premiumLimited: "Premium · Sınırlı süre ücretsiz", menu: "Menü",
     product: "Ürün",
     howItWorks: "Nasıl çalışır?",
     playExample: "Örneği oyna",
@@ -91,6 +92,7 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     viralInFive: "5 saniyede viral içerik üret.",
   },
   en: {
+    free: "Free", premiumLimited: "Premium · Free for a limited time", menu: "Menu",
     product: "Product",
     howItWorks: "How it works",
     playExample: "Play an example",
@@ -121,9 +123,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math: "Order of operations", geometry: "Geometry", count: "How many?", algebra: "Mini algebra", area: "Area / length", clean: "Question only", debate: "Who is right?", language: "Language", viralInFive: "Create viral content in 5 seconds.",
   },
   es: {
+    free: "Gratis", premiumLimited: "Premium · Gratis por tiempo limitado", menu: "Menú",
     product: "Producto",
     howItWorks: "Cómo funciona",
-    playExample: "Play an example",
+    playExample: "Probar un ejemplo",
     createContent: "Crear contenido",
     pricing: "Precios",
     creator: "Creadores",
@@ -150,9 +153,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"Orden de operaciones", geometry:"Geometría", count:"¿Cuántos?", algebra:"Mini álgebra", area:"Área / longitud", clean:"Solo pregunta", debate:"¿Quién tiene razón?", language:"Idioma", viralInFive:"Crea contenido viral en 5 segundos.",
   },
   pt: {
+    free: "Grátis", premiumLimited: "Premium · Grátis por tempo limitado", menu: "Menu",
     product: "Produto",
     howItWorks: "Como funciona",
-    playExample: "Play an example",
+    playExample: "Experimentar um exemplo",
     createContent: "Criar conteúdo",
     pricing: "Preços",
     creator: "Criadores",
@@ -179,9 +183,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"Ordem das operações", geometry:"Geometria", count:"Quantos?", algebra:"Mini álgebra", area:"Área / comprimento", clean:"Só pergunta", debate:"Quem está certo?", language:"Idioma", viralInFive:"Crie conteúdo viral em 5 segundos.",
   },
   fr: {
+    free: "Gratuit", premiumLimited: "Premium · Gratuit pour une durée limitée", menu: "Menu",
     product: "Produit",
     howItWorks: "Comment ça marche",
-    playExample: "Play an example",
+    playExample: "Essayer un exemple",
     createContent: "Créer du contenu",
     pricing: "Tarifs",
     creator: "Créateurs",
@@ -208,6 +213,7 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"Priorité des opérations", geometry:"Géométrie", count:"Combien ?", algebra:"Mini algèbre", area:"Aire / longueur", clean:"Question seule", debate:"Qui a raison ?", language:"Langue", viralInFive:"Crée du contenu viral en 5 secondes.",
   },
   de: {
+    free: "Kostenlos", premiumLimited: "Premium · Für begrenzte Zeit kostenlos", menu: "Menü",
     product: "Produkt",
     howItWorks: "So funktioniert’s",
     playExample: "Beispiel ausprobieren",
@@ -237,9 +243,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"Punkt-vor-Strich", geometry:"Geometrie", count:"Wie viele?", algebra:"Mini-Algebra", area:"Fläche / Länge", clean:"Nur Frage", debate:"Wer hat recht?", language:"Sprache", viralInFive:"Erstelle virale Inhalte in 5 Sekunden.",
   },
   it: {
+    free: "Gratis", premiumLimited: "Premium · Gratis per un periodo limitato", menu: "Menu",
     product: "Prodotto",
     howItWorks: "Come funziona",
-    playExample: "Play an example",
+    playExample: "Prova un esempio",
     createContent: "Crea contenuto",
     pricing: "Prezzi",
     creator: "Creator",
@@ -266,9 +273,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"Ordine delle operazioni", geometry:"Geometria", count:"Quanti?", algebra:"Mini algebra", area:"Area / lunghezza", clean:"Solo domanda", debate:"Chi ha ragione?", language:"Lingua", viralInFive:"Crea contenuti virali in 5 secondi.",
   },
   ar: {
+    free: "مجاني", premiumLimited: "مميز · مجاني لفترة محدودة", menu: "القائمة",
     product: "المنتج",
     howItWorks: "كيف يعمل",
-    playExample: "Play an example",
+    playExample: "جرّب مثالًا",
     createContent: "إنشاء محتوى",
     pricing: "الأسعار",
     creator: "صنّاع المحتوى",
@@ -295,9 +303,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"ترتيب العمليات", geometry:"هندسة", count:"كم عددها؟", algebra:"جبر مصغر", area:"مساحة / طول", clean:"السؤال فقط", debate:"من الصحيح؟", language:"اللغة", viralInFive:"أنشئ محتوى قابلًا للانتشار خلال 5 ثوانٍ.",
   },
   hi: {
+    free: "मुफ़्त", premiumLimited: "प्रीमियम · सीमित समय के लिए मुफ़्त", menu: "मेन्यू",
     product: "उत्पाद",
     howItWorks: "यह कैसे काम करता है",
-    playExample: "Play an example",
+    playExample: "उदाहरण आज़माएँ",
     createContent: "कंटेंट बनाएं",
     pricing: "कीमतें",
     creator: "क्रिएटर",
@@ -324,9 +333,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"ऑपरेशन क्रम", geometry:"ज्यामिति", count:"कितने?", algebra:"मिनी बीजगणित", area:"क्षेत्रफल / लंबाई", clean:"सिर्फ सवाल", debate:"कौन सही है?", language:"भाषा", viralInFive:"5 सेकंड में वायरल कंटेंट बनाएं।",
   },
   id: {
+    free: "Gratis", premiumLimited: "Premium · Gratis untuk waktu terbatas", menu: "Menu",
     product: "Produk",
     howItWorks: "Cara kerja",
-    playExample: "Play an example",
+    playExample: "Coba contoh",
     createContent: "Buat konten",
     pricing: "Harga",
     creator: "Kreator",
@@ -353,9 +363,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"Urutan operasi", geometry:"Geometri", count:"Berapa banyak?", algebra:"Aljabar mini", area:"Luas / panjang", clean:"Hanya pertanyaan", debate:"Siapa yang benar?", language:"Bahasa", viralInFive:"Buat konten viral dalam 5 detik.",
   },
   ru: {
+    free: "Бесплатно", premiumLimited: "Премиум · Бесплатно ограниченное время", menu: "Меню",
     product: "Продукт",
     howItWorks: "Как это работает",
-    playExample: "Play an example",
+    playExample: "Попробовать пример",
     createContent: "Создать контент",
     pricing: "Цены",
     creator: "Авторы",
@@ -382,9 +393,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"Порядок действий", geometry:"Геометрия", count:"Сколько?", algebra:"Мини-алгебра", area:"Площадь / длина", clean:"Только вопрос", debate:"Кто прав?", language:"Язык", viralInFive:"Создай вирусный контент за 5 секунд.",
   },
   bn: {
+    free: "বিনামূল্যে", premiumLimited: "প্রিমিয়াম · সীমিত সময়ের জন্য বিনামূল্যে", menu: "মেনু",
     product: "পণ্য",
     howItWorks: "কীভাবে কাজ করে",
-    playExample: "Play an example",
+    playExample: "উদাহরণ খেলুন",
     createContent: "কনটেন্ট তৈরি করুন",
     pricing: "মূল্য",
     creator: "ক্রিয়েটর",
@@ -411,9 +423,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"অপারেশন অর্ডার", geometry:"জ্যামিতি", count:"কতগুলো?", algebra:"মিনি বীজগণিত", area:"ক্ষেত্রফল / দৈর্ঘ্য", clean:"শুধু প্রশ্ন", debate:"কে ঠিক?", language:"ভাষা", viralInFive:"৫ সেকেন্ডে ভাইরাল কনটেন্ট তৈরি করুন।",
   },
   ur: {
+    free: "مفت", premiumLimited: "پریمیم · محدود وقت کے لیے مفت", menu: "مینو",
     product: "پروڈکٹ",
     howItWorks: "یہ کیسے کام کرتا ہے",
-    playExample: "Play an example",
+    playExample: "مثال آزمائیں",
     createContent: "مواد بنائیں",
     pricing: "قیمتیں",
     creator: "کریئیٹر",
@@ -440,9 +453,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"آپریشن کی ترتیب", geometry:"جیومیٹری", count:"کتنے؟", algebra:"منی الجبرا", area:"رقبہ / لمبائی", clean:"صرف سوال", debate:"کون درست؟", language:"زبان", viralInFive:"5 سیکنڈ میں وائرل کنٹینٹ بنائیں۔",
   },
   vi: {
+    free: "Miễn phí", premiumLimited: "Premium · Miễn phí trong thời gian giới hạn", menu: "Trình đơn",
     product: "Sản phẩm",
     howItWorks: "Cách hoạt động",
-    playExample: "Play an example",
+    playExample: "Thử ví dụ",
     createContent: "Tạo nội dung",
     pricing: "Bảng giá",
     creator: "Nhà sáng tạo",
@@ -469,9 +483,10 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
     math:"Thứ tự phép tính", geometry:"Hình học", count:"Có bao nhiêu?", algebra:"Đại số mini", area:"Diện tích / độ dài", clean:"Chỉ câu hỏi", debate:"Ai đúng?", language:"Ngôn ngữ", viralInFive:"Tạo nội dung viral trong 5 giây.",
   },
   fil: {
+    free: "Libre", premiumLimited: "Premium · Libre sa limitadong panahon", menu: "Menu",
     product: "Produkto",
     howItWorks: "Paano ito gumagana",
-    playExample: "Play an example",
+    playExample: "Subukan ang halimbawa",
     createContent: "Gumawa ng content",
     pricing: "Presyo",
     creator: "Creator",
@@ -499,7 +514,7 @@ const TRANSLATIONS: Record<AqryoLocale, Record<string, string>> = {
   },
 };
 
-function normalizeLocale(input?: string | null): AqryoLocale {
+export function normalizeLocale(input?: string | null): AqryoLocale {
   const short = (input ?? "").toLowerCase().split("-")[0];
   return AQRYO_LANGUAGES.some(([code]) => code === short)
     ? (short as AqryoLocale)
@@ -507,7 +522,7 @@ function normalizeLocale(input?: string | null): AqryoLocale {
 }
 
 function detectDeviceLocale(): AqryoLocale {
-  if (typeof window === "undefined") return "tr";
+  if (typeof window === "undefined") return "en";
 
   const candidates = [
     ...(window.navigator.languages ?? []),
@@ -515,9 +530,9 @@ function detectDeviceLocale(): AqryoLocale {
   ].filter(Boolean);
 
   for (const candidate of candidates) {
-    const normalized = normalizeLocale(candidate);
-    if (AQRYO_LANGUAGES.some(([code]) => code === normalized)) {
-      return normalized;
+    const short = candidate.toLowerCase().split("-")[0];
+    if (AQRYO_LANGUAGES.some(([code]) => code === short)) {
+      return short as AqryoLocale;
     }
   }
 
@@ -525,7 +540,7 @@ function detectDeviceLocale(): AqryoLocale {
 }
 
 export function detectLocale(): AqryoLocale {
-  if (typeof window === "undefined") return "tr";
+  if (typeof window === "undefined") return "en";
 
   const source = window.localStorage.getItem(STORAGE_SOURCE_KEY);
   const stored = window.localStorage.getItem(STORAGE_KEY);
@@ -552,55 +567,43 @@ export function translate(locale: AqryoLocale, key: string) {
   return TRANSLATIONS[locale]?.[key] ?? TRANSLATIONS.en[key] ?? key;
 }
 
-export function useAqryoLocale() {
-  const [locale, setLocaleState] = useState<AqryoLocale>(() => detectLocale());
+type LocaleContextValue = { locale: AqryoLocale; setLocale: (locale: AqryoLocale) => void; t: (key: string) => string };
+const LocaleContext = createContext<LocaleContextValue | null>(null);
 
+// Server and first client render use the same URL-derived locale. Browser
+// preferences are applied only after hydration, once for the entire app.
+export function AqryoLocaleProvider({ initialLocale, children }: { initialLocale?: AqryoLocale; children: ReactNode }) {
+  const [locale, setLocaleState] = useState<AqryoLocale>(initialLocale ?? "en");
+  useEffect(() => { setLocaleState(detectLocale()); }, [initialLocale]);
   useEffect(() => {
-    if (typeof document !== "undefined") {
-      document.documentElement.lang = locale;
-      document.documentElement.dir = locale === "ar" || locale === "ur" ? "rtl" : "ltr";
-    }
+    document.documentElement.lang = locale;
+    document.documentElement.dir = locale === "ar" || locale === "ur" ? "rtl" : "ltr";
   }, [locale]);
-
+  useEffect(() => {
+    const handler = (event: Event) => setLocaleState(normalizeLocale((event as CustomEvent<string>).detail));
+    const deviceHandler = () => {
+      if (window.localStorage.getItem(STORAGE_SOURCE_KEY) !== "manual") setLocaleState(detectLocale());
+    };
+    window.addEventListener("aqryo:locale", handler);
+    window.addEventListener("languagechange", deviceHandler);
+    return () => { window.removeEventListener("aqryo:locale", handler); window.removeEventListener("languagechange", deviceHandler); };
+  }, []);
   function setLocale(next: AqryoLocale) {
     window.localStorage.setItem(STORAGE_KEY, next);
     window.localStorage.setItem(STORAGE_SOURCE_KEY, "manual");
-    setLocaleState(next);
-    window.dispatchEvent(new CustomEvent("aqryo:locale", { detail: next }));
+    // Preserve next/mode and other route parameters while making language
+    // shareable and available to server-rendered metadata.
+    const url = new URL(window.location.href);
+    url.searchParams.set("lang", next);
+    window.location.assign(url.toString());
   }
+  return createElement(LocaleContext.Provider, { value: { locale, setLocale, t: (key: string) => translate(locale, key) } }, children);
+}
 
-  useEffect(() => {
-    const handler = (event: Event) => {
-      const detail = (event as CustomEvent<string>).detail;
-      setLocaleState(normalizeLocale(detail));
-    };
-
-    const handleDeviceLanguageChange = () => {
-      if (window.localStorage.getItem(STORAGE_SOURCE_KEY) === "manual") {
-        return;
-      }
-
-      const next = detectDeviceLocale();
-      window.localStorage.setItem(STORAGE_KEY, next);
-      window.localStorage.setItem(STORAGE_SOURCE_KEY, "auto");
-      setLocaleState(next);
-      window.dispatchEvent(new CustomEvent("aqryo:locale", { detail: next }));
-    };
-
-    window.addEventListener("aqryo:locale", handler);
-    window.addEventListener("languagechange", handleDeviceLanguageChange);
-
-    return () => {
-      window.removeEventListener("aqryo:locale", handler);
-      window.removeEventListener("languagechange", handleDeviceLanguageChange);
-    };
-  }, []);
-
-  return {
-    locale,
-    setLocale,
-    t: (key: string) => translate(locale, key),
-  };
+export function useAqryoLocale() {
+  const value = useContext(LocaleContext);
+  if (!value) throw new Error("AQRYO locale provider is missing");
+  return value;
 }
 
 

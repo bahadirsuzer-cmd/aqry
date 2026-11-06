@@ -1,3 +1,5 @@
+import { useAqryoLocale } from "@/lib/i18n";
+import { PUBLIC_COPY } from "@/lib/publicCopy";
 import { useEffect, useState } from "react";
 
 import { CreatorNavigation } from "@/components/CreatorNavigation";
@@ -12,6 +14,8 @@ import {
 } from "@/services/auth";
 
 export function HomePage() {
+  const { locale, t } = useAqryoLocale();
+  const copy = PUBLIC_COPY[locale];
   const [authChecked, setAuthChecked] =
     useState(false);
 
@@ -73,7 +77,16 @@ export function HomePage() {
           isCreator={isCreator}
           authChecked={authChecked}
         />
-
+        <section id="how-it-works" className="scroll-mt-24 border-t bg-white px-5 py-12 sm:px-8">
+          <div className="mx-auto max-w-[1180px]">
+            <h2 className="text-3xl font-black">{t("howItWorks")}</h2>
+            <ol className="mt-6 grid gap-4 sm:grid-cols-3">
+              {[copy.step1, copy.step2, copy.step3].map((step, index) => <li key={step} className="rounded-2xl border bg-violet-50/50 p-5">
+                <span className="text-3xl font-black text-primary">{index + 1}</span><p className="mt-3 text-lg font-bold">{step}</p>
+              </li>)}
+            </ol>
+          </div>
+        </section>
       </main>
 
       <HomeFooter />

@@ -355,7 +355,7 @@ useEffect(() => {
     const creator = await getCurrentCreator();
 
     if (!creator && !cancelled) {
-      window.location.href = "/creator-auth";
+      window.location.href = `/creator-auth?next=%2Fcompatibility-builder&lang=${locale}`;
     }
   }
 
@@ -792,7 +792,7 @@ async function handlePublish() {
   setPublishing(true);
   try {
     const creator = await getCurrentCreator();
-    if (!creator) { window.location.href = "/creator-auth"; return; }
+    if (!creator) { window.location.href = `/creator-auth?next=%2Fcompatibility-builder&lang=${locale}`; return; }
     const experienceId = crypto.randomUUID();
     const normalized = getNormalizedExperienceData();
     const publishedExperience = {

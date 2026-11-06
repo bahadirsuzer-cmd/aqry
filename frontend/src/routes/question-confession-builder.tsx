@@ -1,3 +1,4 @@
+import { ANONYMOUS_BUILDER_COPY } from "@/lib/anonymousBuilderCopy";
 import { anonymousName } from "@/lib/anonymousFormats";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
@@ -65,15 +66,16 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
   const { locale } = useAqryoLocale();
   const formatName = anonymousName(locale, selectedMode);
   const defaults = { ...getQuestionConfessionDefaults(locale), title: formatName, questionLabel: anonymousName(locale, "question"), confessionLabel: anonymousName(locale, "confession"), placeholder: selectedMode === "question" ? (locale === "tr" ? "Sorunu buraya yaz…" : getQuestionConfessionDefaults(locale).placeholder) : (locale === "tr" ? "İtirafını buraya yaz…" : getQuestionConfessionDefaults(locale).placeholder) };
-  const ui = locale === "tr" ? qcCopy.tr : locale === "de" ? qcCopy.de : qcCopy.en;
+  const ui = ANONYMOUS_BUILDER_COPY[locale];
 
   useEffect(() => {
     let cancelled = false;
 
     async function init() {
       const creator = await getCurrentCreator();
+      if (cancelled) return;
       if (!creator) {
-        window.location.href = "/creator-auth";
+        window.location.href = `/creator-auth?next=%2Fquestion-confession-builder&lang=${locale}`;
         return;
       }
 
@@ -85,7 +87,7 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
       const stored = window.sessionStorage.getItem(storageKey);
       if (stored) {
         try {
-          setState({ ...DEFAULT_STATE, ...(JSON.parse(stored) as Partial<BuilderState>) });
+          setState({ ...defaults, accent: "violet", ...(JSON.parse(stored) as Partial<BuilderState>) });
         } catch {
           window.sessionStorage.removeItem(storageKey);
         }
@@ -98,7 +100,7 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
     return () => {
       cancelled = true;
     };
-  }, [selectedMode]);
+  }, [selectedMode, locale]);
 
   useEffect(() => {
     if (!loading) {
@@ -208,7 +210,7 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
         <section className="space-y-5">
           <div className="rounded-[28px] border border-border bg-white p-5 shadow-[0_16px_45px_rgba(33,21,53,0.04)] sm:p-7">
             <p className="text-[12px] font-black uppercase tracking-[0.15em] text-primary">
-              1 · Giriş
+              1 · {ui.title}
             </p>
             <h2 className="mt-2 text-[25px] font-black tracking-[-0.045em]">
               {ui.whatToSay}
@@ -237,7 +239,7 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
 
           <div className="rounded-[28px] border border-border bg-white p-5 shadow-[0_16px_45px_rgba(33,21,53,0.04)] sm:p-7">
             <p className="text-[12px] font-black uppercase tracking-[0.15em] text-primary">
-              2 · Seçim
+              2 · {ui.mainFormat}
             </p>
             <h2 className="mt-2 text-[25px] font-black tracking-[-0.045em]">
               {formatName}
@@ -271,7 +273,7 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
 
           <div className="rounded-[28px] border border-border bg-white p-5 sm:p-7">
             <p className="text-[12px] font-black uppercase tracking-[0.15em] text-primary">
-              3 · Görünüm
+              3 · {ui.livePreview}
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {([
@@ -387,5 +389,3 @@ const inputClass =
 
 const textareaClass =
   "mt-2 w-full resize-none rounded-[16px] border border-border bg-background px-4 py-3 text-[14px] font-semibold leading-6 outline-none focus:border-primary";
-
-const qcCopy={tr:{publishError:"Yayınlanamadı.",mainFormat:"Ana format",applyLanguage:"Seçili dile uygula",backHome:"Ana sayfaya dön",whatToSay:"Takipçine ne söyleyeceksin?",titleHint:"Başlık kısa kalsın. İnsan ne yapacağını ilk bakışta anlamalı.",title:"Başlık",shortDescription:"Kısa açıklama",twoDoors:"İki kapı. Fazlası yok.",questionButton:"Soru butonu",confessionButton:"İtiraf butonu",textArea:"Yazı alanı",ready:"Hazırsa yayınla ve paylaş.",afterPublish:"Yayınlandıktan sonra paylaşılabilir AQRYO linkini alacaksın. Takipçilerin anonim soru veya itiraf bırakabilecek.",publishing:"Yayınlanıyor...",publishShare:"Yayınla ve paylaş",livePreview:"Canlı önizleme",sendAnonymous:"Anonim gönder",identityHidden:"Kimliğin creator ile paylaşılmaz."},en:{publishError:"Could not publish.",mainFormat:"Main format",applyLanguage:"Apply selected language",backHome:"Back to home",whatToSay:"What do you want to ask your followers?",titleHint:"Keep the title short so people understand what to do at a glance.",title:"Title",shortDescription:"Short description",twoDoors:"Two choices. Nothing more.",questionButton:"Question button",confessionButton:"Confession button",textArea:"Message field",ready:"Ready? Publish and share.",afterPublish:"After publishing, you’ll get a shareable AQRYO link where followers can leave anonymous questions or confessions.",publishing:"Publishing...",publishShare:"Publish and share",livePreview:"Live preview",sendAnonymous:"Send anonymously",identityHidden:"Your identity is not shown to the creator."},de:{publishError:"Veröffentlichung fehlgeschlagen.",mainFormat:"Hauptformat",applyLanguage:"Ausgewählte Sprache anwenden",backHome:"Zur Startseite",whatToSay:"Was möchtest du deine Follower fragen?",titleHint:"Halte den Titel kurz, damit sofort klar ist, was zu tun ist.",title:"Titel",shortDescription:"Kurzbeschreibung",twoDoors:"Zwei Möglichkeiten. Mehr braucht es nicht.",questionButton:"Frage-Button",confessionButton:"Geständnis-Button",textArea:"Nachrichtenfeld",ready:"Fertig? Veröffentlichen und teilen.",afterPublish:"Nach dem Veröffentlichen erhältst du einen teilbaren AQRYO-Link, über den Follower anonyme Fragen oder Geständnisse senden können.",publishing:"Wird veröffentlicht...",publishShare:"Veröffentlichen und teilen",livePreview:"Live-Vorschau",sendAnonymous:"Anonym senden",identityHidden:"Deine Identität wird dem Creator nicht angezeigt."}} as const;

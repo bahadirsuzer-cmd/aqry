@@ -1,3 +1,7 @@
+import { RESET_PASSWORD_COPY } from "@/lib/resetPasswordCopy";
+import { AUTH_COPY } from "@/lib/authCopy";
+import { useAqryoLocale } from "@/lib/i18n";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { useEffect, useState } from "react";
 import {
   createFileRoute,
@@ -17,6 +21,9 @@ export const Route = createFileRoute(
 
 function CreatorResetPasswordPage() {
   const navigate = useNavigate();
+  const { locale } = useAqryoLocale();
+  const ui = RESET_PASSWORD_COPY[locale];
+  const auth = AUTH_COPY[locale];
 
   const [password, setPassword] =
     useState("");
@@ -40,23 +47,12 @@ function CreatorResetPasswordPage() {
   const [errorMessage, setErrorMessage] =
     useState<string | null>(null);
 
-  const [hasRecoveryMarker] = useState(() => {
-    const searchParams = new URLSearchParams(
-      window.location.search,
-    );
-
-    const hashParams = new URLSearchParams(
-      window.location.hash.replace(/^#/, ""),
-    );
-
-    return (
-      searchParams.get("type") === "recovery" ||
-      hashParams.get("type") === "recovery"
-    );
-  });
 
   useEffect(() => {
     let active = true;
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const hasRecoveryMarker = searchParams.get("type") === "recovery" || hashParams.get("type") === "recovery";
     let recoveryEventDetected = false;
 
     const {
@@ -133,7 +129,7 @@ function CreatorResetPasswordPage() {
       active = false;
       subscription.unsubscribe();
     };
-  }, [hasRecoveryMarker]);
+  }, []);
 
   async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
@@ -146,21 +142,21 @@ function CreatorResetPasswordPage() {
 
     if (!hasRecoverySession) {
       setErrorMessage(
-        "Şifre yenileme bağlantısı geçersiz veya süresi dolmuş.",
+        ui.invalidLink,
       );
       return;
     }
 
     if (password.length < 8) {
       setErrorMessage(
-        "Yeni şifre en az 8 karakter olmalı.",
+        auth.minPassword,
       );
       return;
     }
 
     if (password !== passwordAgain) {
       setErrorMessage(
-        "Şifreler birbiriyle eşleşmiyor.",
+        ui.mismatch,
       );
       return;
     }
@@ -178,9 +174,7 @@ function CreatorResetPasswordPage() {
       });
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Yeni şifre kaydedilemedi.",
+        auth.error,
       );
     } finally {
       setLoading(false);
@@ -199,35 +193,36 @@ function CreatorResetPasswordPage() {
           AQRYO.
         </Link>
 
+        <div className="mt-4 flex justify-end"><LanguageSelector /></div>
         <p className="mt-8 text-[9px] font-black uppercase tracking-[0.13em] text-primary">
-          Şifre yenileme
+          {ui.reset}
         </p>
 
         <h1 className="mt-2 text-3xl font-black tracking-[-0.05em]">
-          Yeni şifreni belirle.
+          {ui.reset}
         </h1>
 
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          AQRYO hesabın için en az 8 karakterli yeni bir şifre oluştur.
+          {auth.minPassword}
         </p>
 
         {checkingRecoverySession ? (
           <div className="mt-6 rounded-[15px] border border-border bg-background px-4 py-4">
             <p className="text-xs font-bold text-muted-foreground">
-              Şifre yenileme bağlantısı kontrol ediliyor...
+              {auth.working}
             </p>
           </div>
         ) : !hasRecoverySession ? (
           <div className="mt-6 rounded-[15px] border border-red-200 bg-red-50 px-4 py-4">
             <p className="text-xs font-bold leading-5 text-red-700">
-              Şifre yenileme bağlantısı geçersiz veya süresi dolmuş.
+              {ui.invalidLink}
             </p>
 
             <Link
               to="/creator-auth"
               className="mt-3 inline-flex text-[10px] font-black text-red-700 underline underline-offset-2"
             >
-              Yeni bağlantı iste
+              {ui.requestLink}
             </Link>
           </div>
         ) : (
@@ -237,7 +232,7 @@ function CreatorResetPasswordPage() {
           >
             <label className="block">
               <span className="text-[10px] font-bold">
-                Yeni şifre
+                {ui.newPassword}
               </span>
 
               <input
@@ -249,14 +244,14 @@ function CreatorResetPasswordPage() {
                   )
                 }
                 autoComplete="new-password"
-                placeholder="En az 8 karakter"
+                placeholder={auth.minPassword} required minLength={8}
                 className="mt-2 h-12 w-full rounded-[15px] border border-border bg-background px-4 text-sm font-semibold outline-none transition placeholder:text-muted-foreground/60 focus:border-primary"
               />
             </label>
 
             <label className="block">
               <span className="text-[10px] font-bold">
-                Yeni şifre tekrar
+                {ui.repeatPassword}
               </span>
 
               <input
@@ -268,7 +263,7 @@ function CreatorResetPasswordPage() {
                   )
                 }
                 autoComplete="new-password"
-                placeholder="Şifreni tekrar yaz"
+                placeholder={ui.repeatPassword} required minLength={8}
                 className="mt-2 h-12 w-full rounded-[15px] border border-border bg-background px-4 text-sm font-semibold outline-none transition placeholder:text-muted-foreground/60 focus:border-primary"
               />
             </label>
@@ -287,8 +282,8 @@ function CreatorResetPasswordPage() {
               className="flex h-11 w-full items-center justify-center rounded-full bg-black text-xs font-bold text-white transition enabled:hover:bg-primary disabled:cursor-wait disabled:bg-black/30"
             >
               {loading
-                ? "Şifre kaydediliyor..."
-                : "Yeni şifreyi kaydet"}
+                ? auth.working
+                : ui.save}
             </button>
           </form>
         )}
@@ -297,7 +292,7 @@ function CreatorResetPasswordPage() {
           to="/creator-auth"
           className="mx-auto mt-4 flex h-9 w-fit items-center justify-center px-4 text-[10px] font-bold text-muted-foreground transition hover:text-primary"
         >
-          Giriş ekranına dön
+          {ui.backLogin}
         </Link>
       </section>
     </main>

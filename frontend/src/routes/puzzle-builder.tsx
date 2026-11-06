@@ -1,6 +1,6 @@
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
-import { useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
+import { useAqryoLocale, translate, type AqryoLocale } from "@/lib/i18n";
 import { makeViralPuzzle, VIRAL_FAMILIES, type ViralKind, type ViralPuzzle } from "@/lib/viralPuzzleBank";
 import { localizedPuzzleSteps } from "@/lib/puzzleSolutionI18n";
 import { ANIME_SINGLE_TEMPLATES, supportsAnimeSingle, type VisualPack, type PuzzleSafeArea } from "@/lib/animeSingleTemplates";
@@ -340,8 +340,8 @@ const FREE_MATCHSTICK_SCENE_COUNT = 3;
 const FREE_DEBATE_SET_MAX_TEMPLATE = 10;
 
 function visualAccessLabel(locale: AqryoLocale, kind: PuzzleKind, presentation: Presentation, sceneTemplate: number, debateTemplate: number) {
-  const free = locale === "tr" ? "Ücretsiz" : "Free";
-  const premium = locale === "tr" ? "Premium · Sınırlı süre ücretsiz" : "Premium · Free for a limited time";
+  const free = translate(locale, "free");
+  const premium = translate(locale, "premiumLimited");
   if (kind === "algebra") return free;
   if (kind === "math" && presentation === "debate") return debateTemplate <= FREE_DEBATE_SET_MAX_TEMPLATE ? free : premium;
   if (kind === "matchstick") return sceneTemplate < FREE_MATCHSTICK_SCENE_COUNT ? free : premium;
@@ -905,7 +905,7 @@ function PuzzleBuilderPage() {
     let cancelled=false;
     void getCurrentCreator()
       .then((creator)=>{
-        if(!creator){ window.location.href="/creator-auth"; return; }
+        if(!creator){ window.location.href=`/creator-auth?next=%2Fpuzzle-builder&lang=${locale}`; return; }
         if(!cancelled) setLoading(false);
       })
       .catch((error)=>{

@@ -1,3 +1,4 @@
+import { PUBLIC_COPY } from "@/lib/publicCopy";
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { PublicNavigation } from "@/components/home/PublicNavigation";
@@ -20,8 +21,8 @@ export function LegalPageLayout({
   description,
   sections,
 }: LegalPageLayoutProps) {
-  const { locale } = useAqryoLocale();
-  const ui = locale === "tr" ? { onPage:"Bu sayfada", contact:"İletişim", contactText:"Yasal, ödeme, iade veya hesapla ilgili talepleriniz için", or:"adresinden veya", via:"numarasından bize ulaşabilirsiniz.", home:"AQRYO ana sayfasına dön" } : locale === "de" ? { onPage:"Auf dieser Seite", contact:"Kontakt", contactText:"Bei Fragen zu Rechtlichem, Zahlung, Erstattung oder deinem Konto erreichst du uns unter", or:"oder unter", via:".", home:"Zur AQRYO-Startseite" } : { onPage:"On this page", contact:"Contact", contactText:"For legal, payment, refund or account requests, contact us at", or:"or", via:".", home:"Back to AQRYO home" };
+  const { locale, t } = useAqryoLocale();
+  const ui = { ...PUBLIC_COPY[locale], contact: t("contact") };
   return (
     <div className="min-h-screen bg-white text-foreground">
       <PublicNavigation />
@@ -92,7 +93,7 @@ export function LegalPageLayout({
                     hey@buum-e.com
                   </a>
                   {" "}
-                  {ui.or}{" "}
+                  {" · "}{" "}
                   <a
                     href="tel:+905412914935"
                     className="font-semibold text-primary"
@@ -100,7 +101,6 @@ export function LegalPageLayout({
                     0541 291 49 35
                   </a>
                   {" "}
-                  {ui.via}
                 </p>
 
                 <Link

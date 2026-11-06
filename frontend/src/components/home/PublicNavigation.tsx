@@ -1,3 +1,4 @@
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useAqryoLocale } from "@/lib/i18n";
@@ -31,7 +32,7 @@ export function PublicNavigation() {
           <img
             src="/aqryo-logo.png"
             alt="AQRYO"
-            className="h-[35px] w-auto object-contain sm:h-[39px]"
+            className="h-[25px] w-auto object-contain sm:h-[39px]"
           />
         </Link>
 
@@ -47,20 +48,21 @@ export function PublicNavigation() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+          <div className="hidden sm:block"><LanguageSelector compact /></div>
           <Link
             to="/creator-auth"
-            className="inline-flex h-11 items-center justify-center rounded-full border border-primary/25 bg-white px-5 text-[12px] font-black text-primary transition hover:border-primary hover:bg-primary/[0.04]"
+            className="inline-flex h-11 max-w-[100px] items-center justify-center rounded-full border border-primary/25 bg-white px-2 text-[10px] sm:max-w-none sm:px-5 sm:text-[12px] font-black text-primary transition hover:border-primary hover:bg-primary/[0.04]"
           >
             {t("creatorLogin")}
-            <span className="ml-2">
+            <span className="ms-2 hidden sm:inline">
               →
             </span>
           </Link>
 
           <button
             type="button"
-            aria-label="Menu"
+            aria-label={t("menu")}
             aria-expanded={
               mobileOpen
             }
@@ -80,6 +82,7 @@ export function PublicNavigation() {
 
       {mobileOpen ? (
         <div className="absolute inset-x-0 top-full z-[110] border-b border-border bg-white px-5 py-4 shadow-[0_18px_45px_rgba(32,18,54,0.08)] lg:hidden">
+          <div className="pb-3 sm:hidden"><LanguageSelector /></div>
           <nav className="mx-auto flex max-w-[720px] flex-col">
             {navItems.map(
               (item) => (

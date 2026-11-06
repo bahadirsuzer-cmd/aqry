@@ -1,3 +1,6 @@
+import { FLOW_EDITOR_COPY } from "@/lib/flowEditorCopy";
+import { ANONYMOUS_BUILDER_COPY } from "@/lib/anonymousBuilderCopy";
+import { getCompatibilityCopy } from "@/lib/compatibilityCopy";
 import { getFlowCopy } from "@/lib/flowCopy";
 import { QuickStoryComposer } from "@/components/story/QuickStoryComposer";
 import { StoryPage } from "@/components/story/StoryPage";
@@ -131,7 +134,10 @@ const STORY_TEXT_EXAMPLES = [
 function StoryBuilderPage() {
   const { locale } = useAqryoLocale();
   const flow = getFlowCopy(locale);
-  const ui = { ...(locale === "tr" ? storyCopy.tr : locale === "de" ? storyCopy.de : storyCopy.en), newStory: flow.newFlow, createStory: flow.create, freeFinal: flow.ending, previewHint: flow.review };
+  const editor = FLOW_EDITOR_COPY[locale];
+  const shared = ANONYMOUS_BUILDER_COPY[locale];
+  const common = getCompatibilityCopy(locale);
+  const ui = { newStory: flow.newFlow, createStory: flow.create, createHint: flow.description, changeCover: flow.images, uploadCover: flow.images, arrange: flow.position, arrangeHint: editor.imagesHint, freeFinal: flow.ending, freeFinalHint: flow.review, previewTitle: editor.readerPreview, previewHint: flow.review, publishing: shared.publishing, publishNew: editor.publishNew, publish: common.publish, realExperience: flow.name, livePreview: shared.livePreview };
   const [quickMode, setQuickMode] = useState(true);
   const quickUploadRef = useRef(false);
   const [quickUploadError, setQuickUploadError] = useState("");
@@ -184,8 +190,7 @@ function StoryBuilderPage() {
         await getCurrentCreator();
 
       if (!creator) {
-        window.location.href =
-          "/creator-auth";
+        window.location.href = `/creator-auth?next=%2Fstory-builder&lang=${locale}`;
         return;
       }
 
@@ -1676,8 +1681,3 @@ function SmallButton({
     </button>
   );
 }
-const storyCopy={
-tr:{newStory:"Yeni Akış",createStory:"Akışını oluştur",createHint:"Başlığı, kapağı ve ziyaretçinin sırayla göreceği metin ve görselleri hazırla.",changeCover:"Kapak görselini değiştir",uploadCover:"Kapak görseli yükle",arrange:"Metin ve görselleri sırala",arrangeHint:"Her öğe ziyaretçide ayrı bir ekran olur.",freeFinal:"Akışın ücretsiz finali",freeFinalHint:"Kullanıcı ana içeriği tamamladığında karşılığını burada almalı.",previewTitle:"Yayınlamadan önce bir kez yaşa",previewHint:"Akışı ziyaretçi gibi baştan sona kontrol et. Hazırsa tek dokunuşla yayınla.",publishing:"Yayınlanıyor...",publishNew:"Yeni sürümü yayınla",publish:"Yayınla",realExperience:"Gerçek deneyim",livePreview:"Canlı önizleme"},
-en:{newStory:"New flow",createStory:"Create your flow",createHint:"Prepare the title, cover, text and images visitors will see in sequence.",changeCover:"Change cover image",uploadCover:"Upload cover image",arrange:"Arrange text and images",arrangeHint:"Each item becomes a separate screen for the visitor.",freeFinal:"Flow ending",freeFinalHint:"Give visitors a meaningful ending when they finish the main content.",previewTitle:"Experience it before publishing",previewHint:"Go through the flow from start to finish like a visitor. Publish when it feels right.",publishing:"Publishing...",publishNew:"Publish new version",publish:"Publish",realExperience:"Real experience",livePreview:"Live preview"},
-de:{newStory:"Neuer Fluss",createStory:"Erstelle deinen Fluss",createHint:"Bereite Titel, Cover, Texte und Bilder in der Reihenfolge vor, in der Besucher sie sehen.",changeCover:"Coverbild ändern",uploadCover:"Coverbild hochladen",arrange:"Texte und Bilder anordnen",arrangeHint:"Jedes Element wird für Besucher zu einem eigenen Bildschirm.",freeFinal:"Kostenloses Finale",freeFinalHint:"Gib Besuchern nach dem Hauptinhalt einen stimmigen Abschluss.",previewTitle:"Vor dem Veröffentlichen selbst erleben",previewHint:"Gehe den Fluss wie ein Besucher von Anfang bis Ende durch und veröffentliche sie anschließend.",publishing:"Wird veröffentlicht...",publishNew:"Neue Version veröffentlichen",publish:"Veröffentlichen",realExperience:"Echtes Erlebnis",livePreview:"Live-Vorschau"}
-} as const;
