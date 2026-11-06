@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { createContext, createElement, useContext, useEffect, useState, type ReactNode } from "react";
 
 export const AQRYO_LANGUAGES = [
@@ -574,6 +575,7 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 // preferences are applied only after hydration, once for the entire app.
 export function AqryoLocaleProvider({ initialLocale, children }: { initialLocale?: AqryoLocale; children: ReactNode }) {
   const [locale, setLocaleState] = useState<AqryoLocale>(initialLocale ?? "en");
+  const navigate = useNavigate();
   useEffect(() => { setLocaleState(detectLocale()); }, [initialLocale]);
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -591,11 +593,10 @@ export function AqryoLocaleProvider({ initialLocale, children }: { initialLocale
   function setLocale(next: AqryoLocale) {
     window.localStorage.setItem(STORAGE_KEY, next);
     window.localStorage.setItem(STORAGE_SOURCE_KEY, "manual");
-    // Preserve next/mode and other route parameters while making language
-    // shareable and available to server-rendered metadata.
-    const url = new URL(window.location.href);
-    url.searchParams.set("lang", next);
-    window.location.assign(url.toString());
+    // Keep in-progress editor state while updating the shareable URL and head.
+    setLocaleState(next);
+    window.dispatchEvent(new CustomEvent("aqryo:locale", { detail: next }));
+    void navigate({ to: ".", search: (previous) => ({ ...previous, lang: next }), replace: true, resetScroll: false });
   }
   return createElement(LocaleContext.Provider, { value: { locale, setLocale, t: (key: string) => translate(locale, key) } }, children);
 }

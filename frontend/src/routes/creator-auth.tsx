@@ -477,11 +477,11 @@ useEffect(() => {
                 />
               </label>
 
-              <label className="block">
+              <div className="block">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-[10px] font-bold">
+                  <label htmlFor="creator-password" className="text-[10px] font-bold">
                     {ui.password}
-                  </span>
+                  </label>
 
                   {mode === "sign-in" && (
                     <button
@@ -500,6 +500,7 @@ useEffect(() => {
                 </div>
 
                 <input
+                  id="creator-password"
                   type="password"
                   value={password}
                   onChange={(event) =>
@@ -515,7 +516,7 @@ useEffect(() => {
                   placeholder={ui.minPassword} required minLength={mode === "sign-up" ? 8 : undefined}
                   className="mt-2 h-12 w-full rounded-[15px] border border-border bg-background px-4 text-sm font-semibold outline-none transition placeholder:text-muted-foreground/60 focus:border-primary"
                 />
-              </label>
+              </div>
 
               {errorMessage && (
                 <div className="rounded-[15px] border border-red-200 bg-red-50 px-4 py-3">
