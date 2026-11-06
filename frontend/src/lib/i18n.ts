@@ -576,7 +576,15 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 export function AqryoLocaleProvider({ initialLocale, children }: { initialLocale?: AqryoLocale; children: ReactNode }) {
   const [locale, setLocaleState] = useState<AqryoLocale>(initialLocale ?? "en");
   const navigate = useNavigate();
-  useEffect(() => { setLocaleState(detectLocale()); }, [initialLocale]);
+  useEffect(() => {
+    // Router state can update before window.location during client navigation.
+    // The validated route locale is authoritative whenever it is present.
+    if (initialLocale) {
+      window.localStorage.setItem(STORAGE_KEY, initialLocale);
+      window.localStorage.setItem(STORAGE_SOURCE_KEY, "manual");
+    }
+    setLocaleState(initialLocale ?? detectLocale());
+  }, [initialLocale]);
   useEffect(() => {
     document.documentElement.lang = locale;
     document.documentElement.dir = locale === "ar" || locale === "ur" ? "rtl" : "ltr";
