@@ -24,7 +24,7 @@ assert.equal(i18n.localizedPath('/#how-it-works','tr'),'/?lang=tr#how-it-works')
 assert.equal(i18n.localizedPath('/creator-auth?next=%2Fpuzzle-builder','es'),'/creator-auth?next=%2Fpuzzle-builder&lang=es');
 assert.equal(i18n.localizedPath('mailto:hey@buum-e.com','ar'),'mailto:hey@buum-e.com');
 assert.equal(i18n.normalizeLocale('pt-BR'),'pt');assert.equal(i18n.normalizeLocale('unsupported'),'en');
-const dictionaries = ['authCopy:AUTH_COPY','publicCopy:PUBLIC_COPY','anonymousBuilderCopy:ANONYMOUS_BUILDER_COPY','flowEditorCopy:FLOW_EDITOR_COPY','resetPasswordCopy:RESET_PASSWORD_COPY'];
+const dictionaries = ['participantUiCopy:PARTICIPANT_UI_COPY','puzzleUiCopy:PUZZLE_UI_COPY','authCopy:AUTH_COPY','publicCopy:PUBLIC_COPY','anonymousBuilderCopy:ANONYMOUS_BUILDER_COPY','flowEditorCopy:FLOW_EDITOR_COPY','resetPasswordCopy:RESET_PASSWORD_COPY'];
 for(const item of dictionaries){const [file,key]=item.split(':');const dict=load('src/lib/'+file+'.ts')[key];const keys=Object.keys(dict.en).sort();for(const [lang] of i18n.AQRYO_LANGUAGES){assert.deepEqual(Object.keys(dict[lang]).sort(),keys,`${file}: missing ${lang} keys`);for(const value of Object.values(dict[lang]))assert.ok(typeof value==='string'&&value.trim(),`${file}: blank ${lang} copy`);}}
 const packs=load('src/lib/visualPackCopy.ts');
 const social=load('src/lib/homepage-social-preview.ts');

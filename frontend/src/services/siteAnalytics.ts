@@ -17,7 +17,7 @@ export async function trackPageView(path: string) {
     const width = window.innerWidth;
     const deviceType = width < 768 ? "mobile" : width < 1100 ? "tablet" : "desktop";
     const { data } = await supabase.auth.getSession();
-    void fetch(ENDPOINT, {
+    await fetch(ENDPOINT, {
       method: "POST",
       keepalive: true,
       headers: {

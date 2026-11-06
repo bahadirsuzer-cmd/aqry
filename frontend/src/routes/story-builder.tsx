@@ -1,3 +1,4 @@
+import { PARTICIPANT_UI_COPY } from "@/lib/participantUiCopy";
 import { FLOW_EDITOR_COPY } from "@/lib/flowEditorCopy";
 import { ANONYMOUS_BUILDER_COPY } from "@/lib/anonymousBuilderCopy";
 import { getCompatibilityCopy } from "@/lib/compatibilityCopy";
@@ -134,6 +135,7 @@ const STORY_TEXT_EXAMPLES = [
 function StoryBuilderPage() {
   const { locale } = useAqryoLocale();
   const flow = getFlowCopy(locale);
+  const participant = PARTICIPANT_UI_COPY[locale];
   const editor = FLOW_EDITOR_COPY[locale];
   const shared = ANONYMOUS_BUILDER_COPY[locale];
   const common = getCompatibilityCopy(locale);
@@ -161,7 +163,7 @@ function StoryBuilderPage() {
 
   const [state, setState] =
     useState<StoryBuilderState>(
-      DEFAULT_STATE,
+      () => ({ ...DEFAULT_STATE, resultTitle: participant.completed, resultDescription: participant.completionDesc }),
     );
 
   const [activePanel, setActivePanel] =
@@ -627,10 +629,10 @@ function StoryBuilderPage() {
             id: "completed",
             title:
               state.resultTitle.trim() ||
-              "Sonuna geldin.",
+              participant.completed,
             description:
               state.resultDescription.trim() ||
-              "İçeriği tamamladın.",
+              participant.completionDesc,
           },
         ],
         offer: {
@@ -644,10 +646,10 @@ function StoryBuilderPage() {
           templateId,
           resultTitle:
             state.resultTitle.trim() ||
-            "Sonuna geldin.",
+            participant.completed,
           resultDescription:
             state.resultDescription.trim() ||
-            "İçeriği tamamladın.",
+            participant.completionDesc,
         },
       });
 
@@ -1194,7 +1196,7 @@ function StoryBuilderPage() {
         <div className="mx-auto max-w-[1180px] px-4 py-10 sm:px-6">
           <div className="rounded-[26px] border border-border bg-white p-10 text-center">
             <p className="text-sm font-bold text-muted-foreground">
-              Builder hazırlanıyor...
+              {common.preparing}
             </p>
           </div>
         </div>

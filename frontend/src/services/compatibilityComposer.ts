@@ -4,5 +4,5 @@ import { compatibilityGenerationPrompt, prepareCompatibilityBlueprint, type Comp
 export async function generateCompatibility(title: string, inputs: CompatibilityInput[], locale: string) {
   const { blueprint } = await runAiAction("generate_experience", compatibilityGenerationPrompt(title, inputs, locale));
   if (!blueprint) throw new Error("INVALID_GENERATION");
-  return prepareCompatibilityBlueprint(blueprint, inputs);
+  return prepareCompatibilityBlueprint(blueprint, inputs, Math.random, locale);
 }

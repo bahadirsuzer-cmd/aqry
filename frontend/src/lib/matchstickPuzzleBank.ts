@@ -45,7 +45,7 @@ function makePuzzle(r:()=>number, goal:"largest"|"smallest"){
       `${start} → ${answer}`,
     ],
     matchstickGoal:goal,
-    matchstickMoves:1,
+    matchstickMoves:1 as const,
   };
 }
 function matchstickDiagram(value:string){

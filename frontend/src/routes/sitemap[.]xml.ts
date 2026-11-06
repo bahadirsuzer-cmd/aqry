@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import { AQRYO_LANGUAGES } from "@/lib/i18n";
 import { tests } from "@/data/testData";
 
-// TODO: replace with your project URL once a project name or custom domain is set.
-const BASE_URL = "";
+const BASE_URL = "https://www.aqryo.com";
 
 interface SitemapEntry {
   path: string;
@@ -17,6 +17,7 @@ export const Route = createFileRoute("/sitemap.xml")({
       GET: async () => {
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
+          ...AQRYO_LANGUAGES.map(([lang]) => ({ path: `/?lang=${lang}`, changefreq: "weekly" as const, priority: "0.9" })),
           ...tests
             .filter((test) => test.status === "active")
             .map((test) => ({

@@ -305,6 +305,7 @@ useEffect(() => {
 
       if (!cancelled) {
         setStats({
+  totalResponses: 0,
   totalViews: 0,
   totalStarts: 0,
   totalCompletions: 0,

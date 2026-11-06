@@ -48,3 +48,25 @@ assert.equal(scoreContext.calculateCompatibilityScore(output.questions, output.c
 const mixed = {...different, 1: output.creatorAnswers[1], 2: output.creatorAnswers[2]};
 assert.equal(scoreContext.calculateCompatibilityScore(output.questions, output.creatorAnswers, mixed), 40);
 console.log('PASS: input bounds, exact references after shuffling, complete result bands, invalid generations, participant scores 0/40/100.');
+
+// Model prose must not reverse the meaning of numeric similarity bands.
+const inverted = blueprint();
+inverted.resultModel.profiles[0].title = 'Very similar';
+inverted.resultModel.profiles[4].title = 'Distant match';
+for (const locale of ['tr','en','de','es','fr','pt','it','ru','ar','hi','id','bn','ur','vi','fil']) {
+ const prepared = prepareCompatibilityBlueprint(inverted, inputs, () => 0, locale);
+ assert.equal(prepared.results.length,5);
+ for (let i=0;i<5;i++) {
+  assert.ok(prepared.results[i].description.includes(String(bands[i][0])));
+  assert.ok(prepared.results[i].description.includes(String(bands[i][1])));
+ }
+ if(locale==='en'){assert.equal(prepared.results[0].title,'Very different choices');assert.equal(prepared.results[4].title,'Very similar choices');}
+}
+console.log('PASS: misleading AI result labels replaced with accurate localized bands in 15 languages.');
+
+const previewSource = fs.readFileSync(path.join(root,'routes/compatibility-preview.tsx'),'utf8');
+const previewFile=ts.createSourceFile('preview.tsx',previewSource,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+const findResult=previewFile.statements.find(n=>ts.isFunctionDeclaration(n)&&n.name?.text==='findResult');
+const previewContext={};vm.runInNewContext(ts.transpileModule(findResult.getText(previewFile),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,previewContext);
+for(let score=0;score<=100;score++){const expected=output.results.find(r=>{const [min,max]=r.range.match(/\d+/g).map(Number);return score>=min&&score<=max});assert.equal(previewContext.findResult(score,output.results).id,expected.id);}
+console.log('PASS: preview selects the same numeric result band at every score 0–100.');

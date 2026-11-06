@@ -438,7 +438,7 @@ function FilterButton({
   );
 }
 
-function EmptyState({ hasExperiences, copy }: { hasExperiences: boolean; copy: typeof inboxCopy.en }) {
+function EmptyState({ hasExperiences, copy }: { hasExperiences: boolean; copy: { [Key in keyof typeof inboxCopy.en]: string } }) {
   return (
     <div className="mt-5 rounded-[30px] border border-dashed border-violet-200 bg-white px-5 py-14 text-center">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-violet-100 text-[24px]">

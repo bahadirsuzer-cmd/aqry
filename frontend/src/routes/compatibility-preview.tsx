@@ -1,3 +1,5 @@
+import { useAqryoLocale } from "@/lib/i18n";
+import { PARTICIPANT_UI_COPY } from "@/lib/participantUiCopy";
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
@@ -47,6 +49,9 @@ type PreviewScreen =
   | "offer";
 
 function CompatibilityPreviewPage() {
+  const { locale } = useAqryoLocale();
+  const ui = PARTICIPANT_UI_COPY[locale];
+
   const navigate = useNavigate();
 
   const previewData = useMemo<PreviewData | null>(() => {
@@ -59,7 +64,9 @@ function CompatibilityPreviewPage() {
     }
 
     try {
-      return JSON.parse(storedData) as PreviewData;
+      const data = JSON.parse(storedData) as PreviewData;
+      if (!Array.isArray(data.questions) || !data.questions.length || !Array.isArray(data.results) || !data.results.length || !data.cover || !data.offer || !data.creatorAnswers) return null;
+      return data;
     } catch {
       return null;
     }
@@ -79,11 +86,11 @@ function CompatibilityPreviewPage() {
       <div className="flex min-h-screen items-center justify-center bg-[#faf8fb] px-5">
         <div className="w-full max-w-md rounded-[28px] border border-border bg-white p-7 text-center shadow-soft">
           <p className="text-sm font-black">
-            Ön izleme verisi bulunamadı
+            {ui.empty}
           </p>
 
           <p className="mt-2 text-xs leading-5 text-muted-foreground">
-            Editöre dönüp Ön izle butonuna yeniden bas.
+            {ui.emptyHint}
           </p>
 
           <button
@@ -95,7 +102,7 @@ function CompatibilityPreviewPage() {
             }
             className="mt-5 inline-flex h-11 items-center justify-center rounded-full bg-black px-6 text-[10px] font-bold text-white"
           >
-            Editöre dön
+            {ui.back}
           </button>
         </div>
       </div>
@@ -202,7 +209,7 @@ function CompatibilityPreviewPage() {
 
           <div className="flex items-center gap-2">
             <span className="hidden rounded-full bg-primary/[0.08] px-3 py-1.5 text-[8px] font-bold text-primary sm:inline">
-              Katılımcı ön izlemesi
+              {ui.preview}
             </span>
 
             <button
@@ -214,7 +221,7 @@ function CompatibilityPreviewPage() {
               }
               className="inline-flex h-9 items-center justify-center rounded-full border border-border bg-white px-4 text-[9px] font-bold"
             >
-              Ön izlemeden çık
+              {ui.exit}
             </button>
           </div>
         </div>
@@ -271,7 +278,7 @@ function CompatibilityPreviewPage() {
 
           {screen === "questions" && (
             <p className="mt-4 text-center text-[9px] text-muted-foreground">
-              {answeredCount}/{previewData.questions.length} cevaplandı
+              {answeredCount}/{previewData.questions.length} {ui.answered}
             </p>
           )}
         </div>
@@ -287,6 +294,9 @@ function EntryScreen({
   data: PreviewData;
   onStart: () => void;
 }) {
+  const { locale } = useAqryoLocale();
+  const ui = PARTICIPANT_UI_COPY[locale];
+
   const coverClass = getCoverClass(data.cover.style);
 
   return (
@@ -341,11 +351,11 @@ function EntryScreen({
         <div className="mt-5 flex items-center justify-between rounded-[17px] border border-border bg-background px-4 py-3">
           <div>
             <p className="text-[8px] font-bold uppercase tracking-[0.12em] text-primary">
-              Deneyim
+              {ui.preview}
             </p>
 
             <p className="mt-1 text-[10px] font-black">
-              {data.questions.length} soru
+              {data.questions.length} {ui.question}
             </p>
           </div>
 
@@ -357,7 +367,7 @@ function EntryScreen({
           onClick={onStart}
           className="mt-5 flex h-12 w-full items-center justify-center rounded-full bg-black text-[10px] font-bold text-white transition hover:bg-primary"
         >
-          Başla →
+          {ui.start}
         </button>
       </div>
     </article>
@@ -383,6 +393,9 @@ function QuestionScreen({
   onPrevious: () => void;
   onNext: () => void;
 }) {
+  const { locale } = useAqryoLocale();
+  const ui = PARTICIPANT_UI_COPY[locale];
+
   return (
     <article className="rounded-[30px] border border-border bg-white p-5 shadow-[0_24px_70px_rgba(35,16,55,0.12)] sm:p-6">
       <div className="flex items-center justify-between">
@@ -391,7 +404,7 @@ function QuestionScreen({
         </span>
 
         <span className="text-[8px] font-semibold text-muted-foreground">
-          Uyum deneyimi
+          {ui.preview}
         </span>
       </div>
 
@@ -448,7 +461,7 @@ function QuestionScreen({
           onClick={onPrevious}
           className="inline-flex h-11 items-center justify-center rounded-full border border-border bg-white px-5 text-[9px] font-bold"
         >
-          ← Geri
+          {ui.back}
         </button>
 
         <button
@@ -458,8 +471,8 @@ function QuestionScreen({
           className="inline-flex h-11 flex-1 items-center justify-center rounded-full bg-black px-6 text-[9px] font-bold text-white transition enabled:hover:bg-primary disabled:cursor-not-allowed disabled:bg-black/15 disabled:text-muted-foreground"
         >
           {questionIndex === questionCount - 1
-            ? "Sonucumu gör →"
-            : "Devam et →"}
+            ? ui.show
+            : ui.next}
         </button>
       </div>
     </article>
@@ -479,11 +492,14 @@ function ResultScreen({
   onContinue: () => void;
   onRestart: () => void;
 }) {
+  const { locale } = useAqryoLocale();
+  const ui = PARTICIPANT_UI_COPY[locale];
+
   return (
     <article className="overflow-hidden rounded-[30px] border border-border bg-white shadow-[0_24px_70px_rgba(35,16,55,0.13)]">
       <div className="bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 p-7 text-white">
         <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-white/70">
-          Uyum sonucun
+          {ui.result}
         </p>
 
         <div className="mt-6 flex items-end justify-between gap-4">
@@ -508,11 +524,11 @@ function ResultScreen({
       <div className="p-6">
         <div className="rounded-[17px] border border-emerald-200 bg-emerald-50 p-4">
           <p className="text-[10px] font-black text-emerald-900">
-            Ücretsiz sonucun tamamlandı
+            {ui.completed}
           </p>
 
           <p className="mt-1 text-[9px] leading-4 text-emerald-700">
-            Bu sonuç için ödeme yapman gerekmez.
+            {ui.completionDesc}
           </p>
         </div>
 
@@ -531,7 +547,7 @@ function ResultScreen({
           onClick={onRestart}
           className="mt-2 flex h-11 w-full items-center justify-center rounded-full border border-border bg-white text-[9px] font-bold text-muted-foreground"
         >
-          Baştan çöz
+          {ui.restart}
         </button>
       </div>
     </article>
@@ -640,19 +656,10 @@ function findResult(
   score: number,
   results: ResultDefinition[],
 ) {
-  if (score >= 80) {
-    return results[0];
-  }
-
-  if (score >= 60) {
-    return results[1];
-  }
-
-  if (score >= 40) {
-    return results[2];
-  }
-
-  return results[3];
+  return results.find(result => {
+    const values = result.range.match(/\d+/g)?.map(Number);
+    return values && values.length >= 2 && score >= values[0] && score <= values[1];
+  }) ?? results[results.length - 1];
 }
 
 function getCoverClass(style: CoverStyle) {

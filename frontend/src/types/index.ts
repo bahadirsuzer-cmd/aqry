@@ -42,6 +42,7 @@ export interface ResultProfile {
 export type TestStatus = "active" | "published" | "draft" | "archived";
 
 export type TestCategory =
+  | "kisilik" | "iliskiler" | "dizi-film" | "arkadaslik" | "eglence" | "bilgi" | "bulmaca"
   | "UYUM TESTİ"
   | "KİŞİLİK TESTİ"
   | "QUIZ"

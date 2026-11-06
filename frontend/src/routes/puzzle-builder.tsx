@@ -1,3 +1,4 @@
+import { PUZZLE_UI_COPY } from "@/lib/puzzleUiCopy";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
 import { useAqryoLocale, translate, type AqryoLocale } from "@/lib/i18n";
@@ -708,14 +709,7 @@ const AREA_TITLES: Record<AqryoLocale, {area:string;perimeter:string;length:stri
 };
 
 
-const PATTERN_COPY: Partial<Record<AqryoLocale, {label:string;description:string;title:string;mappingTitle:string;subtitle:string}>> = {
-  tr: { label:"Örüntü", description:"Sayı dizileri, girdi-çıktı ilişkileri ve gizli kurallar", title:"Sıradaki sayı kaç?", mappingTitle:"Kuralı bul", subtitle:"Gizli kuralı yakala 👀" },
-  en: { label:"Pattern", description:"Number sequences, input-output relations and hidden rules", title:"What comes next?", mappingTitle:"Find the rule", subtitle:"Spot the hidden rule 👀" },
-};
-
-function patternCopy(locale:AqryoLocale) {
-  return PATTERN_COPY[locale] ?? PATTERN_COPY.en!;
-}
+function patternCopy(locale: AqryoLocale) { return PUZZLE_UI_COPY[locale]; }
 
 const MATCHSTICK_COPY: Record<AqryoLocale,{label:string;title:string;description:string;largest:string;smallest:string;subtitle:string}> = {
   tr:{label:"Kibrit",title:"Kibrit Bulmacası",description:"Kibritleri taşı, en büyük veya en küçük sayıyı oluştur",largest:"En büyük sayıyı yap",smallest:"En küçük sayıyı yap",subtitle:"Sadece 1 kibritin yerini değiştir"},
@@ -994,7 +988,7 @@ function PuzzleBuilderPage() {
       } else if (result.orderId) {
         setPendingOrder(result.orderId); setPaymentWaiting(false);
       }
-    } catch { setPurchasePack(pack); setPackError(true); } finally { setPurchaseBusy(false); }
+    } catch { setPurchasePack(selectedPack); setPackError(true); } finally { setPurchaseBusy(false); }
   }
 
   useEffect(()=>{
@@ -1219,7 +1213,7 @@ function PuzzleBuilderPage() {
               </button>
             </div>
             {(supportsAnimeSingle(kind) || kind === "math" || kind === "matchstick") && (
-              <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label={locale === "tr" ? "Görsel paketi" : "Visual pack"}>
+              <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label={PUZZLE_UI_COPY[locale].visualPack}>
                 {(["classic", "anime", "magic", "arena"] as const).map((pack) => (
                   <button key={pack} type="button" aria-pressed={activePack === pack} disabled={purchaseBusy || (pack !== "classic" && !packAccess)}
                     onClick={() => chooseVisualPack(pack)}
@@ -1271,7 +1265,7 @@ function PuzzleBuilderPage() {
 
             {kind==="math" ? (
               <div className="mt-7 rounded-[18px] border border-violet-200 bg-violet-50 px-4 py-3 text-[12px] font-black text-violet-800">
-                {locale==="tr" ? "Bu kategoride görsel formatı: Kim Haklı" : "Visual format: Who is right"}
+                {PUZZLE_UI_COPY[locale].format}
               </div>
             ) : kind==="algebra" ? (
               <div className="mt-7 rounded-[18px] border border-cyan-200 bg-cyan-50 px-4 py-3 text-[12px] font-black text-cyan-900">
@@ -1286,7 +1280,7 @@ function PuzzleBuilderPage() {
 
           <div className="rounded-[30px] border border-border bg-white p-5 sm:p-8">
             <p className="text-[12px] font-black uppercase tracking-[0.15em] text-violet-600">2 · {t("cta")}</p>
-            <h3 className="mt-2 text-[24px] font-black tracking-[-0.04em]">{locale === "tr" ? "Paylaşım metni" : t("cta")}</h3>
+            <h3 className="mt-2 text-[24px] font-black tracking-[-0.04em]">{PUZZLE_UI_COPY[locale].shareText}</h3>
             <textarea
               rows={4}
               value={socialText}

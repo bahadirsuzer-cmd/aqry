@@ -23,8 +23,133 @@ export function compatibilityGenerationPrompt(title: string, inputs: Compatibili
   return prompt;
 }
 
+// The score increases with matching answers. AI prose must never invert that
+// meaning; creators can still edit the prepared result copy explicitly.
+const COMPATIBILITY_BANDS: Record<string, readonly string[]> = {
+  "tr": [
+    "Çok farklı tercihler",
+    "Az sayıda ortak tercih",
+    "Kısmen benzer tercihler",
+    "Birçok ortak tercih",
+    "Çok benzer tercihler",
+    "Cevaplarının %{min}–{max} kadarı creator’ın cevaplarıyla eşleşiyor."
+  ],
+  "en": [
+    "Very different choices",
+    "Few choices in common",
+    "Partly similar choices",
+    "Many choices in common",
+    "Very similar choices",
+    "{min}–{max}% of your answers match the creator’s answers."
+  ],
+  "es": [
+    "Preferencias muy distintas",
+    "Pocas preferencias en común",
+    "Preferencias parcialmente similares",
+    "Muchas preferencias en común",
+    "Preferencias muy similares",
+    "El {min}–{max}% de tus respuestas coincide con las del creador."
+  ],
+  "pt": [
+    "Preferências muito diferentes",
+    "Poucas preferências em comum",
+    "Preferências parcialmente semelhantes",
+    "Muitas preferências em comum",
+    "Preferências muito semelhantes",
+    "{min}–{max}% das suas respostas coincidem com as do criador."
+  ],
+  "fr": [
+    "Choix très différents",
+    "Peu de choix en commun",
+    "Choix partiellement similaires",
+    "Beaucoup de choix en commun",
+    "Choix très similaires",
+    "{min}–{max} % de vos réponses correspondent à celles du créateur."
+  ],
+  "de": [
+    "Sehr unterschiedliche Vorlieben",
+    "Wenige gemeinsame Vorlieben",
+    "Teilweise ähnliche Vorlieben",
+    "Viele gemeinsame Vorlieben",
+    "Sehr ähnliche Vorlieben",
+    "{min}–{max} % deiner Antworten stimmen mit denen des Creators überein."
+  ],
+  "it": [
+    "Preferenze molto diverse",
+    "Poche preferenze in comune",
+    "Preferenze in parte simili",
+    "Molte preferenze in comune",
+    "Preferenze molto simili",
+    "Il {min}–{max}% delle tue risposte coincide con quelle del creator."
+  ],
+  "ar": [
+    "اختيارات مختلفة جدًا",
+    "اختيارات مشتركة قليلة",
+    "اختيارات متشابهة جزئيًا",
+    "اختيارات مشتركة كثيرة",
+    "اختيارات متشابهة جدًا",
+    "تتطابق {min}–{max}% من إجاباتك مع إجابات صانع المحتوى."
+  ],
+  "hi": [
+    "बहुत अलग पसंद",
+    "कुछ पसंद मिलती हैं",
+    "आंशिक रूप से समान पसंद",
+    "कई पसंद एक जैसी",
+    "बहुत समान पसंद",
+    "आपके {min}–{max}% जवाब क्रिएटर के जवाबों से मेल खाते हैं।"
+  ],
+  "id": [
+    "Pilihan sangat berbeda",
+    "Sedikit pilihan yang sama",
+    "Pilihan sebagian mirip",
+    "Banyak pilihan yang sama",
+    "Pilihan sangat mirip",
+    "{min}–{max}% jawabanmu cocok dengan jawaban kreator."
+  ],
+  "ru": [
+    "Очень разные предпочтения",
+    "Мало общих предпочтений",
+    "Частично схожие предпочтения",
+    "Много общих предпочтений",
+    "Очень схожие предпочтения",
+    "{min}–{max}% ваших ответов совпадают с ответами автора."
+  ],
+  "bn": [
+    "খুব আলাদা পছন্দ",
+    "কয়েকটি পছন্দ মিলেছে",
+    "আংশিকভাবে একই পছন্দ",
+    "অনেক পছন্দ মিলেছে",
+    "খুব মিল রয়েছে",
+    "আপনার {min}–{max}% উত্তর ক্রিয়েটরের উত্তরের সঙ্গে মিলে যায়।"
+  ],
+  "ur": [
+    "بہت مختلف پسند",
+    "چند مشترکہ پسند",
+    "جزوی طور پر یکساں پسند",
+    "بہت سی مشترکہ پسند",
+    "بہت یکساں پسند",
+    "آپ کے {min}–{max}% جواب کریئیٹر کے جوابوں سے ملتے ہیں۔"
+  ],
+  "vi": [
+    "Lựa chọn rất khác nhau",
+    "Ít lựa chọn chung",
+    "Lựa chọn giống nhau một phần",
+    "Nhiều lựa chọn chung",
+    "Lựa chọn rất giống nhau",
+    "{min}–{max}% câu trả lời của bạn khớp với nhà sáng tạo."
+  ],
+  "fil": [
+    "Napakakaibang mga pagpili",
+    "Kaunting magkaparehong pagpili",
+    "Bahagyang magkaparehong pagpili",
+    "Maraming magkaparehong pagpili",
+    "Halos magkaparehong mga pagpili",
+    "{min}–{max}% ng iyong mga sagot ay tumutugma sa sagot ng creator."
+  ]
+};
+
 const normalized = (text: string) => text.trim().replace(/\s+/g, " ");
-export function prepareCompatibilityBlueprint(blueprint: ExperienceBlueprint, inputs: CompatibilityInput[], random: () => number = Math.random): PreparedCompatibility {
+export function prepareCompatibilityBlueprint(blueprint: ExperienceBlueprint, inputs: CompatibilityInput[], random: () => number = Math.random, locale: string = "en"): PreparedCompatibility {
   if (blueprint.type !== "compatibility" || blueprint.resultModel.mode !== "similarity" || blueprint.questions.length !== inputs.length) throw new Error("INVALID_GENERATION");
   const creatorAnswers: Record<number, number> = {};
   const questions = inputs.map((input, index) => {
@@ -43,10 +168,11 @@ export function prepareCompatibilityBlueprint(blueprint: ExperienceBlueprint, in
   });
   const bands = [[0,19],[20,39],[40,59],[60,79],[80,100]];
   if (blueprint.resultModel.profiles.length !== bands.length) throw new Error("INVALID_GENERATION");
-  const results = bands.map(([min,max]) => {
+  const bandCopy = COMPATIBILITY_BANDS[locale] ?? COMPATIBILITY_BANDS.en;
+  const results = bands.map(([min,max], index) => {
     const profile = blueprint.resultModel.profiles.find(item => item.minScore === min && item.maxScore === max);
     if (!profile?.title.trim() || !profile.description.trim()) throw new Error("INVALID_GENERATION");
-    return { id: profile.id, range: `%${min}–${max}`, title: profile.title.trim(), description: profile.description.trim() };
+    return { id: profile.id, range: `%${min}–${max}`, title: bandCopy[index], description: bandCopy[5].replace("{min}", String(min)).replace("{max}", String(max)) };
   });
   if (!blueprint.description.trim()) throw new Error("INVALID_GENERATION");
   return { description: blueprint.description.trim(), questions, creatorAnswers, results };
