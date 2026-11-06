@@ -94,7 +94,7 @@ export function CreatorNavigation(_props: CreatorNavigationProps) {
       if (timer !== null) window.clearInterval(timer);
       window.removeEventListener("aqryo:inbox-read", handleRead);
     };
-  }, []);
+  }, [locale]);
 
   const navigationItems = [
     { label: t("inbox"), to: "/creator-inbox", badge: unreadCount },
