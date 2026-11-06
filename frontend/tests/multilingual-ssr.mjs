@@ -22,5 +22,13 @@ try {
    count++;
   }
  }
+ const sitemapResponse=await fetch('http://127.0.0.1:5187/sitemap.xml');
+ assert.equal(sitemapResponse.status,200);
+ const sitemap=await sitemapResponse.text();
+ const sitemapUrls=[...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(match=>match[1]);
+ assert.ok(sitemapUrls.length>=16, 'Static sitemap must not shadow the route');
+ for(const url of sitemapUrls) assert.equal(new URL(url).origin,'https://www.aqryo.com');
+ for(const lang of locales) assert.ok(sitemapUrls.includes('https://www.aqryo.com/?lang='+lang), 'Missing sitemap locale '+lang);
+ console.log('PASS: production sitemap URLs and all 15 language entries.');
  console.log(`PASS: ${count} public SSR responses across all 15 languages, including auth, password recovery, metadata direction and navigation.`);
 } finally { await vite.close(); }

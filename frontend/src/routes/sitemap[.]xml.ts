@@ -17,6 +17,7 @@ export const Route = createFileRoute("/sitemap.xml")({
       GET: async () => {
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
+          ...["/pricing", "/how-it-works", "/about", "/contact", "/privacy", "/terms", "/delivery-refund", "/distance-sales", "/payment-terms", "/cookies", "/creator-terms"].map(path => ({ path, changefreq: "monthly" as const, priority: "0.6" })),
           ...AQRYO_LANGUAGES.map(([lang]) => ({ path: `/?lang=${lang}`, changefreq: "weekly" as const, priority: "0.9" })),
           ...tests
             .filter((test) => test.status === "active")
