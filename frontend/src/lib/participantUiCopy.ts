@@ -14,7 +14,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "You reached the end.",
     "completionDesc": "You completed the experience.",
     "empty": "Preview unavailable",
-    "emptyHint": "Return to the editor and open the preview again."
+    "emptyHint": "Return to the editor and open the preview again.",
+    "autoAdvance": "Selecting an answer moves to the next question automatically.",
+    "saving": "Saving completion…",
+    "saveError": "Could not save completion. Check your connection and try again.",
+    "returnResult": "Back to my result",
+    "complete": "Complete →",
+    "seeOffer": "View extra content",
+    "offerOptional": "Optional offer · Your result is free"
   },
   "tr": {
     "preview": "Katılımcı önizlemesi",
@@ -30,7 +37,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "Sonuna geldin.",
     "completionDesc": "İçeriği tamamladın.",
     "empty": "Önizleme bulunamadı",
-    "emptyHint": "Editöre dönüp önizlemeyi yeniden aç."
+    "emptyHint": "Editöre dönüp önizlemeyi yeniden aç.",
+    "autoAdvance": "Bir cevap seçtiğinde otomatik ilerler.",
+    "saving": "Tamamlanma kaydediliyor…",
+    "saveError": "Tamamlanma kaydedilemedi. Bağlantını kontrol edip tekrar dene.",
+    "returnResult": "Sonucuma dön",
+    "complete": "Tamamla →",
+    "seeOffer": "Ek içeriği gör",
+    "offerOptional": "İsteğe bağlı teklif · Sonucun ücretsiz"
   },
   "es": {
     "preview": "Vista previa del participante",
@@ -46,7 +60,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "Has llegado al final.",
     "completionDesc": "Has completado la experiencia.",
     "empty": "Vista previa no disponible",
-    "emptyHint": "Vuelve al editor y abre la vista previa otra vez."
+    "emptyHint": "Vuelve al editor y abre la vista previa otra vez.",
+    "autoAdvance": "Al elegir una respuesta avanzas automáticamente.",
+    "saving": "Guardando finalización…",
+    "saveError": "No se pudo guardar. Comprueba tu conexión e inténtalo de nuevo.",
+    "returnResult": "Volver a mi resultado",
+    "complete": "Completar →",
+    "seeOffer": "Ver contenido adicional",
+    "offerOptional": "Oferta opcional · Tu resultado es gratis"
   },
   "pt": {
     "preview": "Prévia do participante",
@@ -62,7 +83,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "Você chegou ao fim.",
     "completionDesc": "Você concluiu a experiência.",
     "empty": "Prévia indisponível",
-    "emptyHint": "Volte ao editor e abra a prévia novamente."
+    "emptyHint": "Volte ao editor e abra a prévia novamente.",
+    "autoAdvance": "Ao escolher uma resposta, você avança automaticamente.",
+    "saving": "Salvando conclusão…",
+    "saveError": "Não foi possível salvar. Verifique sua conexão e tente novamente.",
+    "returnResult": "Voltar ao meu resultado",
+    "complete": "Concluir →",
+    "seeOffer": "Ver conteúdo extra",
+    "offerOptional": "Oferta opcional · Seu resultado é grátis"
   },
   "fr": {
     "preview": "Aperçu participant",
@@ -78,7 +106,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "Vous avez atteint la fin.",
     "completionDesc": "Vous avez terminé l’expérience.",
     "empty": "Aperçu indisponible",
-    "emptyHint": "Retournez à l’éditeur et ouvrez à nouveau l’aperçu."
+    "emptyHint": "Retournez à l’éditeur et ouvrez à nouveau l’aperçu.",
+    "autoAdvance": "Choisir une réponse passe automatiquement à la suite.",
+    "saving": "Enregistrement…",
+    "saveError": "Impossible d’enregistrer. Vérifiez votre connexion et réessayez.",
+    "returnResult": "Retour à mon résultat",
+    "complete": "Terminer →",
+    "seeOffer": "Voir le contenu supplémentaire",
+    "offerOptional": "Offre facultative · Votre résultat est gratuit"
   },
   "de": {
     "preview": "Teilnehmervorschau",
@@ -94,7 +129,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "Du bist am Ende angekommen.",
     "completionDesc": "Du hast das Erlebnis abgeschlossen.",
     "empty": "Vorschau nicht verfügbar",
-    "emptyHint": "Kehre zum Editor zurück und öffne die Vorschau erneut."
+    "emptyHint": "Kehre zum Editor zurück und öffne die Vorschau erneut.",
+    "autoAdvance": "Nach der Antwort geht es automatisch weiter.",
+    "saving": "Abschluss wird gespeichert…",
+    "saveError": "Speichern fehlgeschlagen. Prüfe deine Verbindung und versuche es erneut.",
+    "returnResult": "Zurück zu meinem Ergebnis",
+    "complete": "Abschließen →",
+    "seeOffer": "Zusätzliche Inhalte ansehen",
+    "offerOptional": "Optionales Angebot · Dein Ergebnis ist kostenlos"
   },
   "it": {
     "preview": "Anteprima partecipante",
@@ -110,7 +152,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "Sei arrivato alla fine.",
     "completionDesc": "Hai completato l’esperienza.",
     "empty": "Anteprima non disponibile",
-    "emptyHint": "Torna all’editor e apri di nuovo l’anteprima."
+    "emptyHint": "Torna all’editor e apri di nuovo l’anteprima.",
+    "autoAdvance": "Scegliendo una risposta si avanza automaticamente.",
+    "saving": "Salvataggio completamento…",
+    "saveError": "Impossibile salvare. Controlla la connessione e riprova.",
+    "returnResult": "Torna al mio risultato",
+    "complete": "Completa →",
+    "seeOffer": "Vedi contenuti extra",
+    "offerOptional": "Offerta facoltativa · Il risultato è gratuito"
   },
   "ar": {
     "preview": "معاينة المشارك",
@@ -126,7 +175,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "وصلت إلى النهاية.",
     "completionDesc": "أكملت التجربة.",
     "empty": "المعاينة غير متاحة",
-    "emptyHint": "عُد إلى المحرر وافتح المعاينة مجددًا."
+    "emptyHint": "عُد إلى المحرر وافتح المعاينة مجددًا.",
+    "autoAdvance": "اختيار إجابة ينقلك تلقائيًا إلى السؤال التالي.",
+    "saving": "جارٍ حفظ الإكمال…",
+    "saveError": "تعذر الحفظ. تحقق من اتصالك وحاول مجددًا.",
+    "returnResult": "العودة إلى نتيجتي",
+    "complete": "إكمال →",
+    "seeOffer": "عرض محتوى إضافي",
+    "offerOptional": "عرض اختياري · نتيجتك مجانية"
   },
   "hi": {
     "preview": "प्रतिभागी पूर्वावलोकन",
@@ -142,7 +198,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "आप अंत तक पहुँच गए।",
     "completionDesc": "आपने अनुभव पूरा कर लिया।",
     "empty": "पूर्वावलोकन उपलब्ध नहीं",
-    "emptyHint": "संपादक में वापस जाएँ और पूर्वावलोकन फिर से खोलें।"
+    "emptyHint": "संपादक में वापस जाएँ और पूर्वावलोकन फिर से खोलें।",
+    "autoAdvance": "जवाब चुनने पर अगला प्रश्न अपने आप खुलता है।",
+    "saving": "पूर्णता सहेजी जा रही है…",
+    "saveError": "सहेज नहीं सके। कनेक्शन जाँचें और फिर कोशिश करें।",
+    "returnResult": "मेरे परिणाम पर वापस",
+    "complete": "पूरा करें →",
+    "seeOffer": "अतिरिक्त सामग्री देखें",
+    "offerOptional": "वैकल्पिक ऑफ़र · आपका परिणाम मुफ़्त है"
   },
   "id": {
     "preview": "Pratinjau peserta",
@@ -158,7 +221,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "Kamu mencapai akhir.",
     "completionDesc": "Kamu menyelesaikan pengalaman.",
     "empty": "Pratinjau tidak tersedia",
-    "emptyHint": "Kembali ke editor dan buka pratinjau lagi."
+    "emptyHint": "Kembali ke editor dan buka pratinjau lagi.",
+    "autoAdvance": "Memilih jawaban otomatis membuka pertanyaan berikutnya.",
+    "saving": "Menyimpan penyelesaian…",
+    "saveError": "Gagal menyimpan. Periksa koneksi dan coba lagi.",
+    "returnResult": "Kembali ke hasil saya",
+    "complete": "Selesaikan →",
+    "seeOffer": "Lihat konten tambahan",
+    "offerOptional": "Penawaran opsional · Hasilmu gratis"
   },
   "ru": {
     "preview": "Предпросмотр участника",
@@ -174,7 +244,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "Вы дошли до конца.",
     "completionDesc": "Вы завершили опыт.",
     "empty": "Предпросмотр недоступен",
-    "emptyHint": "Вернитесь в редактор и откройте предпросмотр снова."
+    "emptyHint": "Вернитесь в редактор и откройте предпросмотр снова.",
+    "autoAdvance": "После выбора ответа следующий вопрос откроется автоматически.",
+    "saving": "Сохраняем завершение…",
+    "saveError": "Не удалось сохранить. Проверьте соединение и попробуйте снова.",
+    "returnResult": "К моему результату",
+    "complete": "Завершить →",
+    "seeOffer": "Смотреть дополнительный контент",
+    "offerOptional": "Необязательное предложение · Результат бесплатный"
   },
   "bn": {
     "preview": "অংশগ্রহণকারীর প্রিভিউ",
@@ -190,7 +267,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "আপনি শেষ পর্যন্ত পৌঁছেছেন।",
     "completionDesc": "আপনি অভিজ্ঞতাটি সম্পন্ন করেছেন।",
     "empty": "প্রিভিউ পাওয়া যাচ্ছে না",
-    "emptyHint": "এডিটরে ফিরে গিয়ে আবার প্রিভিউ খুলুন।"
+    "emptyHint": "এডিটরে ফিরে গিয়ে আবার প্রিভিউ খুলুন।",
+    "autoAdvance": "উত্তর বেছে নিলে পরের প্রশ্নে স্বয়ংক্রিয়ভাবে এগিয়ে যাবে।",
+    "saving": "সমাপ্তি সংরক্ষণ করা হচ্ছে…",
+    "saveError": "সংরক্ষণ করা যায়নি। সংযোগ যাচাই করে আবার চেষ্টা করুন।",
+    "returnResult": "আমার ফলাফলে ফিরুন",
+    "complete": "সম্পন্ন করুন →",
+    "seeOffer": "অতিরিক্ত কনটেন্ট দেখুন",
+    "offerOptional": "ঐচ্ছিক অফার · আপনার ফলাফল বিনামূল্যে"
   },
   "ur": {
     "preview": "شرکت کنندہ کا پیش منظر",
@@ -206,7 +290,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "آپ اختتام تک پہنچ گئے۔",
     "completionDesc": "آپ نے تجربہ مکمل کر لیا۔",
     "empty": "پیش منظر دستیاب نہیں",
-    "emptyHint": "ایڈیٹر میں واپس جائیں اور پیش منظر دوبارہ کھولیں۔"
+    "emptyHint": "ایڈیٹر میں واپس جائیں اور پیش منظر دوبارہ کھولیں۔",
+    "autoAdvance": "جواب منتخب کرنے پر اگلا سوال خود کھلتا ہے۔",
+    "saving": "تکمیل محفوظ ہو رہی ہے…",
+    "saveError": "محفوظ نہیں ہو سکا۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔",
+    "returnResult": "میرے نتیجے پر واپس",
+    "complete": "مکمل کریں →",
+    "seeOffer": "اضافی مواد دیکھیں",
+    "offerOptional": "اختیاری پیشکش · آپ کا نتیجہ مفت ہے"
   },
   "vi": {
     "preview": "Xem trước người tham gia",
@@ -222,7 +313,14 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "Bạn đã đến cuối.",
     "completionDesc": "Bạn đã hoàn thành trải nghiệm.",
     "empty": "Không có bản xem trước",
-    "emptyHint": "Quay lại trình chỉnh sửa và mở lại bản xem trước."
+    "emptyHint": "Quay lại trình chỉnh sửa và mở lại bản xem trước.",
+    "autoAdvance": "Chọn câu trả lời sẽ tự động chuyển sang câu hỏi tiếp theo.",
+    "saving": "Đang lưu hoàn thành…",
+    "saveError": "Không thể lưu. Kiểm tra kết nối và thử lại.",
+    "returnResult": "Quay lại kết quả",
+    "complete": "Hoàn thành →",
+    "seeOffer": "Xem nội dung bổ sung",
+    "offerOptional": "Ưu đãi tùy chọn · Kết quả miễn phí"
   },
   "fil": {
     "preview": "Preview ng kalahok",
@@ -238,6 +336,13 @@ export const PARTICIPANT_UI_COPY = {
     "completed": "Nakarating ka sa dulo.",
     "completionDesc": "Natapos mo ang karanasan.",
     "empty": "Walang preview",
-    "emptyHint": "Bumalik sa editor at buksan muli ang preview."
+    "emptyHint": "Bumalik sa editor at buksan muli ang preview.",
+    "autoAdvance": "Awtomatikong lilipat sa susunod na tanong kapag pumili ka ng sagot.",
+    "saving": "Sine-save ang pagkumpleto…",
+    "saveError": "Hindi ma-save. Suriin ang koneksyon at subukan muli.",
+    "returnResult": "Bumalik sa resulta ko",
+    "complete": "Tapusin →",
+    "seeOffer": "Tingnan ang dagdag na nilalaman",
+    "offerOptional": "Opsyonal na alok · Libre ang resulta mo"
   }
 } satisfies Record<AqryoLocale, Record<string, string>>;

@@ -261,6 +261,7 @@ type ExperienceScreen =
   | "offer";
 
 function PublishedExperiencePage() {
+  const { locale, t } = useAqryoLocale();
   const { experienceId } = Route.useParams();
 
     const [experience, setExperience] =
@@ -1065,10 +1066,10 @@ useEffect(() => {
           {screen === "result" ? (
             <>
               <a
-                href="/"
+                href={localizedPath("/", locale)}
                 className="mt-4 flex h-12 w-full items-center justify-center rounded-full bg-black px-5 text-[13px] font-black text-white shadow-[0_10px_28px_rgba(0,0,0,0.10)]"
               >
-                Sen de içerik üret →
+                {t('createContent')} →
               </a>
             </>
           ) : null}
@@ -1742,13 +1743,13 @@ function StoryContentScreen({
           <div className="pointer-events-none mt-4 flex items-center justify-between">
             <p className="text-[9px] font-bold text-muted-foreground">
               {isLast
-                ? "Sonucu görmek için dokun"
-                : "Devam etmek için dokun"}
+                ? participant.show
+                : participant.next}
             </p>
 
             <span className="text-[13px] font-black">
               {isLast
-                ? "Sonuç →"
+                ? ui.result + " →"
                 : "→"}
             </span>
           </div>
@@ -2116,7 +2117,7 @@ function QuestionScreen({
         </button>
 
         <span className="text-right text-[10px] font-semibold leading-4 text-muted-foreground">
-          Bir cevap seçtiğinde otomatik ilerler.
+          {participant.autoAdvance}
         </span>
       </div>
     </article>
@@ -2221,27 +2222,30 @@ function CompletionScreen({
   onGift: () => void;
   onBack: () => void;
 }) {
+  const { locale } = useAqryoLocale();
+  const participant = PARTICIPANT_UI_COPY[locale];
+
   return (
     <section className="rounded-[30px] border border-border bg-white p-7 text-center shadow-[0_24px_70px_rgba(35,16,55,0.12)] sm:p-9">
       <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-3xl text-emerald-700" aria-hidden="true">✓</span>
-      <p className="mt-5 text-xs font-black uppercase tracking-[0.14em] text-emerald-700">Deneyim tamamlandı</p>
-      <h2 className="mt-3 text-[30px] font-black tracking-[-0.05em]">Sonucun senin.</h2>
+      <p className="mt-5 text-xs font-black uppercase tracking-[0.14em] text-emerald-700">{participant.completed}</p>
+      <h2 className="mt-3 text-[30px] font-black tracking-[-0.05em]">{participant.result}</h2>
       <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
         {experience.offer.enabled
-          ? "Sonucunu gördün. İstersen creator’ın sunduğu ek içeriğe göz atabilirsin."
-          : "Deneyimi tamamladın. Sonucuna geri dönebilir veya paylaşmaya devam edebilirsin."}
+          ? participant.offerOptional
+          : participant.completionDesc}
       </p>
-      {completionState === "saving" ? <p role="status" className="mt-5 text-sm font-semibold text-muted-foreground">Tamamlanma kaydediliyor…</p> : null}
-      {completionState === "failed" ? <div role="alert" className="mt-5 rounded-2xl bg-red-50 p-4 text-sm text-red-800">Bağlantı nedeniyle tamamlanma kaydedilemedi. <button type="button" onClick={onRetry} className="font-black underline">Yeniden dene</button></div> : null}
+      {completionState === "saving" ? <p role="status" className="mt-5 text-sm font-semibold text-muted-foreground">{participant.saving}</p> : null}
+      {completionState === "failed" ? <div role="alert" className="mt-5 rounded-2xl bg-red-50 p-4 text-sm text-red-800">{participant.saveError} <button type="button" onClick={onRetry} className="font-black underline">{participant.restart}</button></div> : null}
       {experience.offer.enabled ? (
         <button type="button" onClick={onOffer} className="mt-8 flex min-h-14 w-full items-center justify-between rounded-2xl bg-[#26183c] px-5 text-left text-sm font-bold text-white transition hover:bg-primary">
-          <span>{experience.offer.title || "Ek içeriği gör"}<span className="mt-1 block text-xs font-medium text-white/70">İsteğe bağlı teklif · Sonucun ücretsiz kaldı</span></span>
+          <span>{experience.offer.title || participant.seeOffer}<span className="mt-1 block text-xs font-medium text-white/70">{participant.offerOptional}</span></span>
           <span aria-hidden="true">↗</span>
         </button>
       ) : null}
       
       <button type="button" onClick={onBack} className="mt-5 text-sm font-semibold text-muted-foreground underline underline-offset-4">
-        {experience.offer.enabled ? "Ücretsiz sonucuma dön" : "Sonucuma dön"}
+        {participant.returnResult}
       </button>
     </section>
   );
@@ -2461,7 +2465,7 @@ function ResultScreen({
           onClick={onComplete}
           className="mx-auto mt-5 flex h-12 w-[92%] items-center justify-center rounded-full bg-primary px-5 text-center text-[14px] font-black text-white transition hover:bg-primary/90"
         >
-          {participant.show}
+          {participant.complete}
         </button>
 
         <button
