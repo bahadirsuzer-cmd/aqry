@@ -583,8 +583,12 @@ export function AqryoLocaleProvider({ initialLocale, children }: { initialLocale
       window.localStorage.setItem(STORAGE_KEY, initialLocale);
       window.localStorage.setItem(STORAGE_SOURCE_KEY, "manual");
     }
-    setLocaleState(initialLocale ?? detectLocale());
-  }, [initialLocale]);
+    const selected = initialLocale ?? detectLocale();
+    setLocaleState(selected);
+    if (!initialLocale) {
+      void navigate({ to: ".", search: (previous) => ({ ...previous, lang: selected }), replace: true, resetScroll: false });
+    }
+  }, [initialLocale, navigate]);
   useEffect(() => {
     document.documentElement.lang = locale;
     document.documentElement.dir = locale === "ar" || locale === "ur" ? "rtl" : "ltr";
@@ -734,4 +738,12 @@ const QUESTION_CONFESSION_DEFAULTS: Record<AqryoLocale, QuestionConfessionDefaul
 
 export function getQuestionConfessionDefaults(locale: AqryoLocale) {
   return QUESTION_CONFESSION_DEFAULTS[locale] ?? QUESTION_CONFESSION_DEFAULTS.en;
+}
+
+/** Preserve the locale on ordinary anchors as well as router links. */
+export function localizedPath(path: string, locale: AqryoLocale) {
+  if (!path.startsWith("/") || path.startsWith("//")) return path;
+  const url = new URL(path, "https://www.aqryo.com");
+  url.searchParams.set("lang", locale);
+  return url.pathname + url.search + url.hash;
 }

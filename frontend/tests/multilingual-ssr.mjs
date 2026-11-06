@@ -17,7 +17,7 @@ try {
    assert.match(html,new RegExp(`<html[^>]*dir="${['ar','ur'].includes(lang)?'rtl':'ltr'}"`),`${lang} ${path}: wrong direction`);
    assert.ok(!html.includes('Bu sayfa yüklenemedi'),`${lang} ${path}: error boundary`);
    if(lang!=='tr' && path==='/creator-auth') assert.ok(!html.includes('Tekrar hoş geldin'),`${lang}: Turkish login`);
-   if(path==='/') assert.ok(html.includes('id="how-it-works"'),`${lang}: missing navigation target`);
+   if(path==='/') { assert.ok(html.includes('id="how-it-works"'),`${lang}: missing navigation target`); assert.ok(html.includes(`href="/?lang=${lang}#how-it-works"`),`${lang}: anchor loses language`); }
    if(path==='/pricing') assert.ok(!html.includes('10 Single'),`${lang}: English pack labels`);
    count++;
   }

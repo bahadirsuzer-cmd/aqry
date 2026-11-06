@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { useAqryoLocale } from "@/lib/i18n";
+import { useAqryoLocale, localizedPath } from "@/lib/i18n";
 
 export function HomeFooter() {
-  const { t } = useAqryoLocale();
+  const { t, locale } = useAqryoLocale();
   const groups = [
     { title: t("product"), items: [[t("howItWorks"), "/#how-it-works"], [t("createContent"), "/#aqryo-formats"], [t("pricing"), "/pricing"]] },
     { title: t("creator"), items: [[t("creatorLogin"), "/creator-auth"]] },
@@ -30,7 +30,7 @@ export function HomeFooter() {
             <div className="mt-3 flex flex-col gap-2.5">
               {group.items.map(([label, href]) => href.startsWith("/") && !href.includes("#")
                 ? <Link key={href} to={href} className="text-[10px] text-muted-foreground transition hover:text-primary">{label}</Link>
-                : <a key={href} href={href} className="text-[10px] text-muted-foreground transition hover:text-primary">{label}</a>)}
+                : <a key={href} href={localizedPath(href, locale)} className="text-[10px] text-muted-foreground transition hover:text-primary">{label}</a>)}
             </div>
           </div>)}
         </div>

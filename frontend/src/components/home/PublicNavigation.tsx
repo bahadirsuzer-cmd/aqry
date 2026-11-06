@@ -1,7 +1,7 @@
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useAqryoLocale } from "@/lib/i18n";
+import { useAqryoLocale, localizedPath } from "@/lib/i18n";
 
 const navItems = [
   {
@@ -15,7 +15,7 @@ const navItems = [
 ];
 
 export function PublicNavigation() {
-  const { t } = useAqryoLocale();
+  const { t, locale } = useAqryoLocale();
   const [
     mobileOpen,
     setMobileOpen,
@@ -40,7 +40,7 @@ export function PublicNavigation() {
           {navItems.map((item) => (
             <a
               key={item.href}
-              href={item.href}
+              href={localizedPath(item.href, locale)}
               className="text-[13px] font-bold text-foreground/75 transition hover:text-primary"
             >
               {t(item.labelKey)}
@@ -88,7 +88,7 @@ export function PublicNavigation() {
               (item) => (
                 <a
                   key={item.href}
-                  href={item.href}
+                  href={localizedPath(item.href, locale)}
                   onClick={() =>
                     setMobileOpen(
                       false,
