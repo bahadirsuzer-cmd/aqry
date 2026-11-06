@@ -1,21 +1,15 @@
+import { localizedPath } from "@/lib/i18n";
+import { useSettingsCopy } from "@/lib/useSettingsCopy";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { CreatorAvatar } from "@/components/creator/CreatorAvatar";
-import type {
-  CreatorAvatarBackground,
-  CreatorAvatarStyle,
-} from "@/services/creatorAvatar";
-import {
-  getCurrentCreator,
-  signOutCreator,
-} from "@/services/auth";
+import type { CreatorAvatarBackground, CreatorAvatarStyle } from "@/services/creatorAvatar";
+import { getCurrentCreator, signOutCreator } from "@/services/auth";
 import { supabase } from "@/services/supabase";
 import { createFileRoute } from "@tanstack/react-router";
-import { useAqryoLocale } from "@/lib/i18n";
+
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute(
-  "/creator-account",
-)({
+export const Route = createFileRoute("/creator-account")({
   component: CreatorAccountHubPage,
 });
 
@@ -45,41 +39,44 @@ const accountItems = [
   {
     href: "/creator-profile",
     title: "Profili düzenle",
-    description:
-      "Fotoğrafını, adını, kullanıcı adını ve bio bilgini güncelle.",
+    description: "Fotoğrafını, adını, kullanıcı adını ve bio bilgini güncelle.",
     icon: "profile",
   },
   {
     href: "/creator-privacy",
     title: "Gizlilik ve izinler",
-    description:
-      "Bildirim, e-posta, veri ve çerez tercihlerini düzenle.",
+    description: "Bildirim, e-posta, veri ve çerez tercihlerini düzenle.",
     icon: "privacy",
   },
   {
     href: "/creator-security",
     title: "Güvenlik",
-    description:
-      "Şifre, oturumlar ve hesap güvenliğini yönet.",
+    description: "Şifre, oturumlar ve hesap güvenliğini yönet.",
     icon: "security",
   },
   {
     href: "/creator-legal",
     title: "Yasal",
-    description:
-      "Kullanım koşulları, gizlilik politikası ve diğer belgeler.",
+    description: "Kullanım koşulları, gizlilik politikası ve diğer belgeler.",
     icon: "legal",
   },
 ] as const;
 
 function CreatorAccountHubPage() {
-  const { locale } = useAqryoLocale();
-  const ui = locale === "tr" ? { account:"Hesabım", intro:"Profilin, gizlilik tercihlerin ve hesap ayarların burada.", loading:"Hesabın hazırlanıyor...", logout:"Çıkış yap", logoutDesc:"AQRYO hesabından güvenli şekilde çık.", delete:"Hesabı sil", deleteDesc:"Hesap silme talebi oluştur ve verilerini yönet." } : locale === "de" ? { account:"Konto", intro:"Hier verwaltest du dein Profil, deine Datenschutzeinstellungen und dein Konto.", loading:"Dein Konto wird vorbereitet...", logout:"Abmelden", logoutDesc:"Sicher von deinem AQRYO-Konto abmelden.", delete:"Konto löschen", deleteDesc:"Löschung deines Kontos beantragen und deine Daten verwalten." } : { account:"Account", intro:"Manage your profile, privacy preferences and account settings here.", loading:"Preparing your account...", logout:"Sign out", logoutDesc:"Sign out of your AQRYO account securely.", delete:"Delete account", deleteDesc:"Request account deletion and manage your data." };
+  const { locale, sc } = useSettingsCopy();
+
+  const ui = {
+    account: sc("Hesabım"),
+    intro: sc("Profilin, gizlilik tercihlerin ve hesap ayarların burada."),
+    loading: sc("Hesabın hazırlanıyor..."),
+    logout: sc("Çıkış yap"),
+    logoutDesc: sc("AQRYO hesabından güvenli şekilde çık."),
+    delete: sc("Hesabı sil"),
+    deleteDesc: sc("Hesap silme talebi oluştur ve verilerini yönet."),
+  };
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] =
-    useState<AccountProfile | null>(null);
-  const [activities, setActivities] =
-    useState<ActivityItem[]>([]);
+  const [profile, setProfile] = useState<AccountProfile | null>(null);
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -88,25 +85,19 @@ function CreatorAccountHubPage() {
       try {
         setLoading(true);
 
-        const creator =
-          await getCurrentCreator();
+        const creator = await getCurrentCreator();
 
         if (!creator) {
-          window.location.href =
-            "/creator-auth";
+          window.location.href = "/creator-auth";
           return;
         }
 
         const displayName =
-          typeof creator.user_metadata
-            ?.display_name === "string"
+          typeof creator.user_metadata?.display_name === "string"
             ? creator.user_metadata.display_name.trim()
             : "";
 
-        const {
-          data: profileData,
-          error: profileError,
-        } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from("creator_profiles")
           .select(
             `
@@ -126,9 +117,7 @@ function CreatorAccountHubPage() {
           .maybeSingle();
 
         if (profileError) {
-          throw new Error(
-            profileError.message,
-          );
+          throw new Error(profileError.message);
         }
 
         if (cancelled) {
@@ -136,64 +125,34 @@ function CreatorAccountHubPage() {
         }
 
         setProfile({
-          displayName:
-            displayName || "AQRYO kullanıcısı",
-          username:
-            profileData?.username ?? "",
-          avatarUrl:
-            profileData?.avatar_url ?? "",
-          avatarStyle:
-            (profileData?.avatar_style ??
-              "classic") as CreatorAvatarStyle,
-          avatarBg:
-            (profileData?.avatar_bg ??
-              "violet") as CreatorAvatarBackground,
-          avatarZoom:
-            Number(
-              profileData?.avatar_zoom ??
-                1,
-            ),
-          avatarX:
-            Number(
-              profileData?.avatar_x ??
-                50,
-            ),
-          avatarY:
-            Number(
-              profileData?.avatar_y ??
-                50,
-            ),
-          avatarFrame:
-            profileData?.avatar_frame ??
-            true,
-          bio:
-            profileData?.bio ?? "",
+          displayName: displayName,
+          username: profileData?.username ?? "",
+          avatarUrl: profileData?.avatar_url ?? "",
+          avatarStyle: (profileData?.avatar_style ?? "classic") as CreatorAvatarStyle,
+          avatarBg: (profileData?.avatar_bg ?? "violet") as CreatorAvatarBackground,
+          avatarZoom: Number(profileData?.avatar_zoom ?? 1),
+          avatarX: Number(profileData?.avatar_x ?? 50),
+          avatarY: Number(profileData?.avatar_y ?? 50),
+          avatarFrame: profileData?.avatar_frame ?? true,
+          bio: profileData?.bio ?? "",
           email: creator.email ?? "",
         });
 
-        const nextActivities: ActivityItem[] =
-          [];
+        const nextActivities: ActivityItem[] = [];
 
         if (profileData?.updated_at) {
           nextActivities.push({
             id: "profile-update",
             title: "Profil güncellendi",
-            detail:
-              "Profil bilgilerin güncellendi.",
-            createdAt:
-              profileData.updated_at,
+            detail: "Profil bilgilerin güncellendi.",
+            createdAt: profileData.updated_at,
             kind: "profile",
           });
         }
 
         setActivities(nextActivities);
-
-
       } catch (error) {
-        console.error(
-          "Hesap merkezi yüklenemedi:",
-          error,
-        );
+        console.error("Hesap merkezi yüklenemedi:", error);
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -213,8 +172,7 @@ function CreatorAccountHubPage() {
       <CreatorNavigation
         onSignOut={async () => {
           await signOutCreator();
-          window.location.href =
-            "/creator-auth";
+          window.location.href = "/creator-auth";
         }}
       />
 
@@ -235,44 +193,34 @@ function CreatorAccountHubPage() {
 
         {loading ? (
           <section className="mt-7 rounded-[26px] border border-border bg-white p-12 text-center">
-            <p className="text-[14px] font-bold text-muted-foreground">
-              {ui.loading}
-            </p>
+            <p className="text-[14px] font-bold text-muted-foreground">{ui.loading}</p>
           </section>
         ) : (
           <div className="mt-7 grid gap-6 xl:grid-cols-[minmax(0,1fr)_390px]">
             <section className="overflow-hidden rounded-[26px] border border-border bg-white shadow-[0_18px_50px_rgba(18,10,40,0.04)]">
-              {accountItems.map(
-                (item, index) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    className={`group flex min-h-[102px] items-center gap-4 px-5 py-4 transition hover:bg-primary/[0.025] sm:px-6 ${
-                      index > 0
-                        ? "border-t border-border"
-                        : ""
-                    }`}
-                  >
-                    <AccountIcon
-                      type={item.icon}
-                    />
+              {accountItems.map((item, index) => (
+                <a
+                  key={item.href}
+                  href={localizedPath(item.href, locale)}
+                  className={`group flex min-h-[102px] items-center gap-4 px-5 py-4 transition hover:bg-primary/[0.025] sm:px-6 ${
+                    index > 0 ? "border-t border-border" : ""
+                  }`}
+                >
+                  <AccountIcon type={item.icon} />
 
-                    <div className="min-w-0 flex-1">
-                      <h2 className="text-[18px] font-black tracking-[-0.015em]">
-                        {item.title}
-                      </h2>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-[18px] font-black tracking-[-0.015em]">{sc(item.title)}</h2>
 
-                      <p className="mt-1 text-[15px] leading-6 text-muted-foreground">
-                        {item.description}
-                      </p>
-                    </div>
+                    <p className="mt-1 text-[15px] leading-6 text-muted-foreground">
+                      {sc(item.description)}
+                    </p>
+                  </div>
 
-                    <span className="shrink-0 text-[25px] font-light text-muted-foreground transition group-hover:translate-x-1 group-hover:text-primary">
-                      ›
-                    </span>
-                  </a>
-                ),
-              )}
+                  <span className="shrink-0 text-[25px] font-light text-muted-foreground transition group-hover:translate-x-1 group-hover:text-primary">
+                    ›
+                  </span>
+                </a>
+              ))}
 
               <button
                 type="button"
@@ -287,12 +235,14 @@ function CreatorAccountHubPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h2 className="text-[18px] font-black tracking-[-0.015em]">{ui.logout}</h2>
-                  <p className="mt-1 text-[15px] leading-6 text-muted-foreground">{ui.logoutDesc}</p>
+                  <p className="mt-1 text-[15px] leading-6 text-muted-foreground">
+                    {ui.logoutDesc}
+                  </p>
                 </div>
               </button>
 
               <a
-                href="/creator-delete-account"
+                href={localizedPath("/creator-delete-account", locale)}
                 className="group flex min-h-[102px] items-center gap-4 border-t border-border px-5 py-4 transition hover:bg-red-50/50 sm:px-6"
               >
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] border border-red-100 bg-red-50 text-red-600">
@@ -319,40 +269,21 @@ function CreatorAccountHubPage() {
               <section className="rounded-[26px] border border-border bg-white p-6 shadow-[0_18px_50px_rgba(18,10,40,0.04)]">
                 <div className="flex items-start gap-4">
                   <CreatorAvatar
-                    avatarUrl={
-                      profile?.avatarUrl
-                    }
-                    displayName={
-                      profile?.displayName
-                    }
-                    username={
-                      profile?.username
-                    }
-                    avatarStyle={
-                      profile?.avatarStyle
-                    }
-                    avatarBg={
-                      profile?.avatarBg
-                    }
-                    avatarZoom={
-                      profile?.avatarZoom
-                    }
-                    avatarX={
-                      profile?.avatarX
-                    }
-                    avatarY={
-                      profile?.avatarY
-                    }
-                    avatarFrame={
-                      profile?.avatarFrame
-                    }
+                    avatarUrl={profile?.avatarUrl}
+                    displayName={profile?.displayName}
+                    username={profile?.username}
+                    avatarStyle={profile?.avatarStyle}
+                    avatarBg={profile?.avatarBg}
+                    avatarZoom={profile?.avatarZoom}
+                    avatarX={profile?.avatarX}
+                    avatarY={profile?.avatarY}
+                    avatarFrame={profile?.avatarFrame}
                     size={88}
                   />
 
                   <div className="min-w-0 pt-1">
                     <h2 className="truncate text-[20px] font-black tracking-[-0.03em]">
-                      {profile?.displayName ??
-                        "AQRYO kullanıcısı"}
+                      {profile?.displayName || sc("AQRYO kullanıcısı")}
                     </h2>
 
                     {profile?.username ? (
@@ -363,79 +294,60 @@ function CreatorAccountHubPage() {
 
                     <p className="mt-3 text-[15px] leading-6 text-muted-foreground">
                       {profile?.bio ||
-                        "Profilini tamamlayarak AQRYO'daki görünümünü kişiselleştirebilirsin."}
+                        sc("Profilini tamamlayarak AQRYO'daki görünümünü kişiselleştirebilirsin.")}
                     </p>
                   </div>
                 </div>
 
                 <a
-                  href="/creator-profile"
+                  href={localizedPath("/creator-profile", locale)}
                   className="mt-5 inline-flex h-11 w-full items-center justify-center rounded-full border border-primary/15 bg-primary/[0.045] px-4 text-[15px] font-black text-primary transition hover:bg-primary/[0.08]"
                 >
-                  Profili düzenle
+                  {sc("Profili düzenle")}
                 </a>
               </section>
 
               <section className="rounded-[26px] border border-border bg-white p-6 shadow-[0_18px_50px_rgba(18,10,40,0.04)]">
                 <div className="flex items-center justify-between gap-4">
                   <h2 className="text-[17px] font-black tracking-[-0.02em]">
-                    Son hareketler
+                    {sc("Son hareketler")}
                   </h2>
 
-                  <span className="text-[14px] font-bold text-primary">
-                    Hesap özeti
-                  </span>
+                  <span className="text-[14px] font-bold text-primary">{sc("Hesap özeti")}</span>
                 </div>
 
                 {activities.length === 0 ? (
                   <div className="mt-5 rounded-[18px] bg-background p-5">
-                    <p className="text-[13px] font-bold">
-                      Henüz hareket yok.
-                    </p>
+                    <p className="text-[13px] font-bold">{sc("Henüz hareket yok.")}</p>
 
                     <p className="mt-1 text-[14px] leading-6 text-muted-foreground">
-                      Gerçek hesap hareketlerin
-                      oldukça burada görünecek.
+                      {sc("Gerçek hesap hareketlerin oldukça burada görünecek.")}
                     </p>
                   </div>
                 ) : (
                   <div className="mt-4 space-y-3">
-                    {activities.map(
-                      (activity) => (
-                        <div
-                          key={activity.id}
-                          className="flex gap-3 rounded-[18px] bg-background p-4"
-                        >
-                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-primary/[0.07] text-primary">
-                            <ActivityIcon
-                              kind={
-                                activity.kind
-                              }
-                            />
-                          </div>
-
-                          <div className="min-w-0 flex-1">
-                            <p className="text-[15px] font-black">
-                              {
-                                activity.title
-                              }
-                            </p>
-
-                            <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
-                              {
-                                activity.detail
-                              }
-                            </p>
-
-                            <p className="mt-2 text-[12px] font-semibold text-muted-foreground/80">
-                              {formatDate(
-                                activity.createdAt,
-                              )}
-                            </p>
-                          </div>
+                    {activities.map((activity) => (
+                      <div
+                        key={activity.id}
+                        className="flex gap-3 rounded-[18px] bg-background p-4"
+                      >
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-primary/[0.07] text-primary">
+                          <ActivityIcon kind={activity.kind} />
                         </div>
-                      ),
-                    )}
+
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[15px] font-black">{sc(activity.title)}</p>
+
+                          <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
+                            {sc(activity.detail)}
+                          </p>
+
+                          <p className="mt-2 text-[12px] font-semibold text-muted-foreground/80">
+                            {formatDate(activity.createdAt, locale)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </section>
@@ -450,18 +362,13 @@ function CreatorAccountHubPage() {
 function AccountIcon({
   type,
 }: {
-  type:
-    | "profile"
-    | "purchase"
-    | "gift"
-    | "heart"
-    | "privacy"
-    | "security"
-    | "legal";
+  type: "profile" | "purchase" | "gift" | "heart" | "privacy" | "security" | "legal";
 }) {
+  const { sc } = useSettingsCopy();
+
   return (
     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] border border-primary/10 bg-primary/[0.055] text-primary">
-      {type === "profile" ? (
+      {type === sc("profile") ? (
         <UserIcon />
       ) : type === "purchase" ? (
         <BagIcon />
@@ -471,7 +378,7 @@ function AccountIcon({
         <HeartIcon />
       ) : type === "privacy" ? (
         <ShieldIcon />
-      ) : type === "security" ? (
+      ) : type === sc("security") ? (
         <LockIcon />
       ) : (
         <DocumentIcon />
@@ -480,11 +387,7 @@ function AccountIcon({
   );
 }
 
-function ActivityIcon({
-  kind,
-}: {
-  kind: ActivityItem["kind"];
-}) {
+function ActivityIcon({ kind }: { kind: ActivityItem["kind"] }) {
   if (kind === "gift") {
     return <GiftIcon />;
   }
@@ -617,23 +520,18 @@ function TrashIcon() {
   );
 }
 
-function formatDate(
-  value: string,
-) {
+function formatDate(value: string, locale: string) {
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) {
     return "";
   }
 
-  return new Intl.DateTimeFormat(
-    "tr-TR",
-    {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    },
-  ).format(date);
+  return new Intl.DateTimeFormat(locale, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
 }

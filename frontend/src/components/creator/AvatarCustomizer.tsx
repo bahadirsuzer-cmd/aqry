@@ -1,3 +1,4 @@
+import { useSettingsCopy } from "@/lib/useSettingsCopy";
 import { useMemo, useRef, useState } from "react";
 import {
   defaultCreatorAvatarSettings,
@@ -122,17 +123,12 @@ function getFrameClass(style: CreatorAvatarStyle) {
 }
 
 function getInitials(displayName: string, username: string) {
-  const source =
-    displayName.trim() ||
-    username.trim() ||
-    "AQ";
+  const source = displayName.trim() || username.trim() || "AQ";
 
   return source
     .split(/\s+/)
     .slice(0, 2)
-    .map((part) =>
-      part.slice(0, 1).toLocaleUpperCase("tr-TR"),
-    )
+    .map((part) => part.slice(0, 1).toLocaleUpperCase("tr-TR"))
     .join("");
 }
 
@@ -140,10 +136,12 @@ export function AvatarCustomizer({
   value,
   onChange,
   disabled = false,
-  displayName = "AQRYO kullanıcısı",
+  displayName = "",
   username = "",
   bio = "",
 }: AvatarCustomizerProps) {
+  const { sc, feedback } = useSettingsCopy();
+
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -156,31 +154,23 @@ export function AvatarCustomizer({
       transform: `scale(${safeValue.avatarZoom})`,
       transformOrigin: "center center",
     }),
-    [
-      safeValue.avatarX,
-      safeValue.avatarY,
-      safeValue.avatarZoom,
-    ],
+    [safeValue.avatarX, safeValue.avatarY, safeValue.avatarZoom],
   );
 
-  const initials = useMemo(
-    () => getInitials(displayName, username),
-    [displayName, username],
-  );
+  const initials = useMemo(() => getInitials(displayName, username), [displayName, username]);
 
-  const cropWarning =
-    !safeValue.avatarUrl
-      ? null
-      : safeValue.avatarZoom < 0.85
-        ? "Fotoğraf biraz uzak. Profil kartında yüz küçük kalabilir."
-        : safeValue.avatarZoom > 2.4
-          ? "Fotoğraf çok yakın. Küçük avatar alanlarında yüz kesilebilir."
-          : safeValue.avatarX < 10 ||
-              safeValue.avatarX > 90 ||
-              safeValue.avatarY < 10 ||
-              safeValue.avatarY > 90
-            ? "Konum kenara çok yakın. Profil kartında önemli bölüm kesilebilir."
-            : null;
+  const cropWarning = !safeValue.avatarUrl
+    ? null
+    : safeValue.avatarZoom < 0.85
+      ? sc("Fotoğraf biraz uzak. Profil kartında yüz küçük kalabilir.")
+      : safeValue.avatarZoom > 2.4
+        ? sc("Fotoğraf çok yakın. Küçük avatar alanlarında yüz kesilebilir.")
+        : safeValue.avatarX < 10 ||
+            safeValue.avatarX > 90 ||
+            safeValue.avatarY < 10 ||
+            safeValue.avatarY > 90
+          ? sc("Konum kenara çok yakın. Profil kartında önemli bölüm kesilebilir.")
+          : null;
 
   async function handleFile(file: File | null) {
     if (!file || disabled || uploading) {
@@ -201,11 +191,7 @@ export function AvatarCustomizer({
         avatarY: 50,
       });
     } catch (error) {
-      setUploadError(
-        error instanceof Error
-          ? error.message
-          : "Avatar yüklenemedi.",
-      );
+      setUploadError(error instanceof Error ? error.message : sc("Avatar yüklenemedi."));
     } finally {
       setUploading(false);
 
@@ -218,17 +204,16 @@ export function AvatarCustomizer({
   return (
     <section className="rounded-[28px] border border-border bg-card p-5 sm:p-6">
       <div>
-        <p className="text-[12px] font-black uppercase tracking-[0.12em] text-primary">
-          Avatar
-        </p>
+        <p className="text-[12px] font-black uppercase tracking-[0.12em] text-primary">Avatar</p>
 
         <h3 className="mt-2 text-[22px] font-black tracking-[-0.04em] text-foreground">
-          Profil görselini düzenle
+          {sc("Profil görselini düzenle")}
         </h3>
 
         <p className="mt-2 max-w-[760px] text-[14px] leading-6 text-muted-foreground">
-          Fotoğrafını yükle, konumlandır ve stilini seç. Profil kartı önizlemesi
-          sayesinde kaydetmeden önce nasıl görüneceğini kontrol edebilirsin.
+          {sc(
+            "Fotoğrafını yükle, konumlandır ve stilini seç. Profil kartı önizlemesi sayesinde kaydetmeden önce nasıl görüneceğini kontrol edebilirsin.",
+          )}
         </p>
       </div>
 
@@ -256,7 +241,7 @@ export function AvatarCustomizer({
               </span>
 
               <span className="mt-4 text-[16px] font-black text-foreground">
-                {uploading ? "Yükleniyor..." : "Fotoğraf yükle"}
+                {uploading ? sc("Yükleniyor...") : sc("Fotoğraf yükle")}
               </span>
 
               <span className="mt-1 text-[13px] leading-5 text-muted-foreground">
@@ -276,14 +261,12 @@ export function AvatarCustomizer({
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div
                     className={`relative h-[190px] w-[190px] overflow-hidden rounded-full bg-white/90 ${
-                      safeValue.avatarFrame
-                        ? getFrameClass(safeValue.avatarStyle)
-                        : ""
+                      safeValue.avatarFrame ? getFrameClass(safeValue.avatarStyle) : ""
                     }`}
                   >
                     <img
                       src={safeValue.avatarUrl}
-                      alt="Avatar önizleme"
+                      alt={sc("Profil kartı önizlemesi")}
                       className="absolute inset-0 h-full w-full object-cover"
                       style={previewStyle}
                     />
@@ -298,7 +281,7 @@ export function AvatarCustomizer({
                   onClick={() => inputRef.current?.click()}
                   className="inline-flex h-11 items-center justify-center rounded-full border border-border bg-white px-4 text-[13px] font-black text-foreground transition hover:border-primary hover:text-primary disabled:opacity-50"
                 >
-                  {uploading ? "Yükleniyor..." : "Fotoğrafı değiştir"}
+                  {uploading ? sc("Yükleniyor...") : sc("Fotoğrafı değiştir")}
                 </button>
 
                 <button
@@ -314,7 +297,7 @@ export function AvatarCustomizer({
                   }
                   className="inline-flex h-11 items-center justify-center rounded-full border border-border bg-white px-4 text-[13px] font-black text-muted-foreground transition hover:border-primary/30 hover:text-primary disabled:opacity-50"
                 >
-                  Konumu sıfırla
+                  {sc("Konumu sıfırla")}
                 </button>
               </div>
             </div>
@@ -322,7 +305,7 @@ export function AvatarCustomizer({
 
           {uploadError ? (
             <p className="rounded-[14px] border border-red-200 bg-red-50 px-4 py-3 text-[13px] font-semibold leading-5 text-red-700">
-              {uploadError}
+              {feedback(uploadError)}
             </p>
           ) : null}
 
@@ -334,19 +317,18 @@ export function AvatarCustomizer({
 
           <div className="rounded-[24px] border border-border p-4 sm:p-5">
             <h4 className="text-[16px] font-black text-foreground">
-              Fotoğrafı konumlandır
+              {sc("Fotoğrafı konumlandır")}
             </h4>
 
             <p className="mt-1 text-[13px] leading-5 text-muted-foreground">
-              Yüzü dairenin merkezinde tutman küçük profil kartlarında daha iyi
-              sonuç verir.
+              {sc("Yüzü dairenin merkezinde tutman küçük profil kartlarında daha iyi sonuç verir.")}
             </p>
 
             <div className="mt-5 space-y-5">
               <div>
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <label className="text-[14px] font-black text-foreground">
-                    Yakınlaştır
+                    {sc("Yakınlaştır")}
                   </label>
 
                   <span className="text-[13px] font-bold text-primary">
@@ -374,7 +356,7 @@ export function AvatarCustomizer({
               <div>
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <label className="text-[14px] font-black text-foreground">
-                    Sağa / sola
+                    {sc("Sağa / sola")}
                   </label>
 
                   <span className="text-[13px] font-bold text-primary">
@@ -402,7 +384,7 @@ export function AvatarCustomizer({
               <div>
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <label className="text-[14px] font-black text-foreground">
-                    Yukarı / aşağı
+                    {sc("Yukarı / aşağı")}
                   </label>
 
                   <span className="text-[13px] font-bold text-primary">
@@ -430,9 +412,7 @@ export function AvatarCustomizer({
           </div>
 
           <div className="rounded-[24px] border border-border p-4 sm:p-5">
-            <h4 className="text-[16px] font-black text-foreground">
-              Stil seç
-            </h4>
+            <h4 className="text-[16px] font-black text-foreground">{sc("Stil seç")}</h4>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {STYLE_OPTIONS.map((item) => {
@@ -455,12 +435,10 @@ export function AvatarCustomizer({
                         : "border-border hover:border-primary/40 hover:bg-background"
                     }`}
                   >
-                    <div className="text-[14px] font-black text-foreground">
-                      {item.label}
-                    </div>
+                    <div className="text-[14px] font-black text-foreground">{sc(item.label)}</div>
 
                     <div className="mt-1 text-[12px] leading-5 text-muted-foreground">
-                      {item.description}
+                      {sc(item.description)}
                     </div>
                   </button>
                 );
@@ -469,9 +447,7 @@ export function AvatarCustomizer({
           </div>
 
           <div className="rounded-[24px] border border-border p-4 sm:p-5">
-            <h4 className="text-[16px] font-black text-foreground">
-              Arka plan
-            </h4>
+            <h4 className="text-[16px] font-black text-foreground">{sc("Arka plan")}</h4>
 
             <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {BACKGROUND_OPTIONS.map((item) => {
@@ -494,12 +470,10 @@ export function AvatarCustomizer({
                         : "border-border hover:border-primary/40 hover:bg-background"
                     }`}
                   >
-                    <div
-                      className={`h-12 rounded-[14px] bg-gradient-to-br ${item.className}`}
-                    />
+                    <div className={`h-12 rounded-[14px] bg-gradient-to-br ${item.className}`} />
 
                     <div className="mt-2 text-[13px] font-black text-foreground">
-                      {item.label}
+                      {sc(item.label)}
                     </div>
                   </button>
                 );
@@ -521,7 +495,7 @@ export function AvatarCustomizer({
               />
 
               <span className="text-[13px] font-bold text-foreground">
-                Avatar çerçevesini göster
+                {sc("Avatar çerçevesini göster")}
               </span>
             </label>
           </div>
@@ -532,16 +506,16 @@ export function AvatarCustomizer({
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h4 className="text-[16px] font-black text-foreground">
-                  Profil kartı önizlemesi
+                  {sc("Profil kartı önizlemesi")}
                 </h4>
 
                 <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
-                  Kullanıcıların göreceği boyuta yakın.
+                  {sc("Kullanıcıların göreceği boyuta yakın.")}
                 </p>
               </div>
 
               <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-black text-emerald-700">
-                Canlı
+                {sc("Canlı")}
               </span>
             </div>
 
@@ -555,9 +529,7 @@ export function AvatarCustomizer({
                   {safeValue.avatarUrl ? (
                     <div
                       className={`absolute inset-[3px] overflow-hidden rounded-full ${
-                        safeValue.avatarFrame
-                          ? getFrameClass(safeValue.avatarStyle)
-                          : ""
+                        safeValue.avatarFrame ? getFrameClass(safeValue.avatarStyle) : ""
                       }`}
                     >
                       <img
@@ -576,7 +548,7 @@ export function AvatarCustomizer({
 
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[19px] font-black tracking-[-0.03em] text-foreground">
-                    {displayName.trim() || "AQRYO kullanıcısı"}
+                    {displayName.trim() || sc("AQRYO kullanıcısı")}
                   </p>
 
                   {username.trim() ? (
@@ -586,8 +558,7 @@ export function AvatarCustomizer({
                   ) : null}
 
                   <p className="mt-3 text-[14px] leading-6 text-muted-foreground">
-                    {bio.trim() ||
-                      "Profil açıklaman burada görünecek."}
+                    {bio.trim() || sc("Profil açıklaman burada görünecek.")}
                   </p>
                 </div>
               </div>
@@ -597,19 +568,17 @@ export function AvatarCustomizer({
                 tabIndex={-1}
                 className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-full border border-primary/20 bg-primary/[0.04] px-5 text-[14px] font-black text-primary"
               >
-                Profili düzenle
+                {sc("Profili düzenle")}
               </button>
             </div>
 
             <div className="mt-4 rounded-[18px] bg-white p-4">
-              <p className="text-[13px] font-black text-foreground">
-                Güvenli görünüm
-              </p>
+              <p className="text-[13px] font-black text-foreground">{sc("Güvenli görünüm")}</p>
 
               <p className="mt-1 text-[12px] leading-5 text-muted-foreground">
-                Yakınlaştırma ve konum sınırları, fotoğrafın profil kartında
-                tamamen kaybolmasını veya aşırı kesilmesini azaltacak şekilde
-                sınırlandı.
+                {sc(
+                  "Yakınlaştırma ve konum sınırları, fotoğrafın profil kartında tamamen kaybolmasını veya aşırı kesilmesini azaltacak şekilde sınırlandı.",
+                )}
               </p>
             </div>
           </div>

@@ -1,7 +1,12 @@
+import { SETTINGS_COPY } from "@/lib/settingsCopy";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AQRYO_LANGUAGES, useAqryoLocale, type AqryoLocale } from "@/lib/i18n";
 import { getCurrentCreator } from "@/services/auth";
-import { getUnreadAnonymousCount, getUnreadAnonymousItems, loadAnonymousInbox } from "@/services/anonymousInbox";
+import {
+  getUnreadAnonymousCount,
+  getUnreadAnonymousItems,
+  loadAnonymousInbox,
+} from "@/services/anonymousInbox";
 import { useEffect, useRef, useState } from "react";
 import { updateCreatorNotificationPreferences } from "@/services/notificationPreferences";
 
@@ -13,19 +18,12 @@ export function CreatorNavigation(_props: CreatorNavigationProps) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const { locale, setLocale, t } = useAqryoLocale();
   const [unreadCount, setUnreadCount] = useState(0);
-  const notificationCopy = locale === "tr"
-    ? {
-        questionTitle: "AQRYO · Yeni soru geldi",
-        confessionTitle: "AQRYO · Yeni itiraf geldi",
-        questionBody: "Gelen kutunda yeni bir anonim soru var.",
-        confessionBody: "Gelen kutunda yeni bir anonim itiraf var.",
-      }
-    : {
-        questionTitle: "AQRYO · New question",
-        confessionTitle: "AQRYO · New confession",
-        questionBody: "You have a new anonymous question in your inbox.",
-        confessionBody: "You have a new anonymous confession in your inbox.",
-      };
+  const notificationCopy = {
+    questionTitle: "AQRYO · " + SETTINGS_COPY[locale].navQuestion,
+    confessionTitle: "AQRYO · " + SETTINGS_COPY[locale].navConfession,
+    questionBody: SETTINGS_COPY[locale].navMessage,
+    confessionBody: SETTINGS_COPY[locale].navMessage,
+  };
   const lastUnreadRef = useRef(0);
   const initializedInboxRef = useRef(false);
 
@@ -64,9 +62,10 @@ export function CreatorNavigation(_props: CreatorNavigationProps) {
               ? notificationCopy.questionTitle
               : notificationCopy.confessionTitle,
             {
-              body: newest.mode === "question"
-                ? notificationCopy.questionBody
-                : notificationCopy.confessionBody,
+              body:
+                newest.mode === "question"
+                  ? notificationCopy.questionBody
+                  : notificationCopy.confessionBody,
               icon: "/aqryo-logo.png",
             },
           );
@@ -149,7 +148,9 @@ export function CreatorNavigation(_props: CreatorNavigationProps) {
                 className="h-10 rounded-full border border-border bg-white px-3 text-[12px] font-extrabold text-foreground outline-none focus:border-primary"
               >
                 {AQRYO_LANGUAGES.map(([code, label]) => (
-                  <option key={code} value={code}>{label}</option>
+                  <option key={code} value={code}>
+                    {label}
+                  </option>
                 ))}
               </select>
             </label>
@@ -165,9 +166,7 @@ export function CreatorNavigation(_props: CreatorNavigationProps) {
                   key={item.to}
                   to={item.to}
                   className={`flex h-11 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-4 text-[13px] font-extrabold transition ${
-                    active
-                      ? "bg-primary text-white"
-                      : "bg-background text-muted-foreground"
+                    active ? "bg-primary text-white" : "bg-background text-muted-foreground"
                   }`}
                 >
                   {item.label}
@@ -179,7 +178,6 @@ export function CreatorNavigation(_props: CreatorNavigationProps) {
                 </Link>
               );
             })}
-
           </nav>
         </div>
       </div>

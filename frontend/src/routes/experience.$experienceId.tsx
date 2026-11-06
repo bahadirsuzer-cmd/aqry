@@ -2227,7 +2227,7 @@ function CompletionScreen({
     <section className="rounded-[30px] border border-border bg-white p-7 text-center shadow-[0_24px_70px_rgba(35,16,55,0.12)] sm:p-9">
       <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-3xl text-emerald-700" aria-hidden="true">✓</span>
       <p className="mt-5 text-xs font-black uppercase tracking-[0.14em] text-emerald-700">{participant.completed}</p>
-      <h2 className="mt-3 text-[30px] font-black tracking-[-0.05em]">{participant.result}</h2>
+      <h2 className="mt-3 text-[30px] font-black tracking-[-0.05em]">{getCreatorExperienceCopy(locale).result}</h2>
       <p className="mx-auto mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
         {experience.offer.enabled
           ? participant.offerOptional
