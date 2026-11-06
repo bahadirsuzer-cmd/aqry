@@ -799,9 +799,7 @@ useEffect(() => {
   function confirmCompletion() {
     if (!experience) return;
 
-    if (experience.type !== "story") {
-      setScreen("completion");
-    }
+    setScreen("completion");
 
     if (completionSavedRef.current) return;
     completionSavedRef.current = true;
@@ -1779,7 +1777,7 @@ function StoryResultScreen({
     return null;
   }
 
-  const shareText = `“${experience.title}” — devamını gör 👀 #AQRYO`;
+  const shareText = `“${experience.title}” — ${getFlowCopy(locale).open} 👀 #AQRYO`;
 
   async function shareStory() {
     openLinkShare(getPublicShareUrl(experience.id), shareText);
@@ -1793,7 +1791,7 @@ function StoryResultScreen({
       </div>
 
       <p className="mt-5 text-[10px] font-black uppercase tracking-[0.14em] text-teal-600">
-        Tamamlandı
+        {ui.completed}
       </p>
 
       <h2 className="mt-3 text-[31px] font-black leading-[1] tracking-[-0.05em]">
@@ -1809,7 +1807,7 @@ function StoryResultScreen({
                 onClick={() => void shareStory()}
         className="mt-6 flex h-12 w-full items-center justify-center rounded-full bg-black text-[14px] font-black text-white disabled:opacity-50"
       >
-        {"Bağlantıyı paylaş ↗"}
+        {ui.share} ↗
       </button>
 
       <button
@@ -1817,7 +1815,7 @@ function StoryResultScreen({
         onClick={onComplete}
         className="mt-3 flex h-12 w-full items-center justify-center rounded-full bg-primary text-[14px] font-black text-white"
       >
-        Tamamla →
+        {participant.complete}
       </button>
 
       <button
