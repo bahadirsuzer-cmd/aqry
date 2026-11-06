@@ -240,7 +240,7 @@ function CreatorPrivacyPage() {
                     key={item.key}
                     type="button"
                     onClick={() => togglePreference(item.key)}
-                    className="flex w-full items-center justify-between gap-5 py-4 text-left"
+                    className="flex w-full items-center justify-between gap-5 py-4 text-start"
                   >
                     <span className="min-w-0">
                       <span className="block text-[14px] font-black">{sc(item.title)}</span>

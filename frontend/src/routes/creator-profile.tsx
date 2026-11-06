@@ -705,7 +705,7 @@ function AccountRow({ label, value, status }: { label: string; value: string; st
           />
         )}
 
-        <span className="truncate text-right text-[9px] font-black">{value}</span>
+        <span className="truncate text-end text-[9px] font-black">{value}</span>
       </div>
     </div>
   );

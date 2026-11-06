@@ -429,7 +429,7 @@ export function AvatarCustomizer({
                         avatarStyle: item.value,
                       })
                     }
-                    className={`rounded-[18px] border p-4 text-left transition ${
+                    className={`rounded-[18px] border p-4 text-start transition ${
                       active
                         ? "border-primary bg-primary/[0.05]"
                         : "border-border hover:border-primary/40 hover:bg-background"
@@ -464,7 +464,7 @@ export function AvatarCustomizer({
                         avatarBg: item.value,
                       })
                     }
-                    className={`rounded-[18px] border p-3 text-left transition ${
+                    className={`rounded-[18px] border p-3 text-start transition ${
                       active
                         ? "border-primary bg-primary/[0.05]"
                         : "border-border hover:border-primary/40 hover:bg-background"

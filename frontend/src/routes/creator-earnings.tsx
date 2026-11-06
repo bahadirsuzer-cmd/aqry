@@ -386,11 +386,11 @@ function CreatorEarningsPage() {
                           </p>
                         </div>
 
-                        <p className="text-[8px] font-bold text-muted-foreground sm:text-right">
+                        <p className="text-[8px] font-bold text-muted-foreground sm:text-end">
                           {formatDate(order.paid_at ?? order.created_at, locale)}
                         </p>
 
-                        <p className="text-[13px] font-black sm:text-right">
+                        <p className="text-[13px] font-black sm:text-end">
                           {formatMoney(
                             normalizeMinorAmount(order.amount_minor),
                             order.currency,
@@ -448,7 +448,7 @@ function MoneyColumn({
   strong?: boolean;
 }) {
   return (
-    <div className="sm:text-right">
+    <div className="sm:text-end">
       <p className="text-[7px] font-black uppercase tracking-[0.08em] text-muted-foreground">
         {label}
       </p>

@@ -292,7 +292,7 @@ function CreatorPaymentsPage() {
 
                           <StatusBadge status={order.status} />
 
-                          <div className="sm:text-right">
+                          <div className="sm:text-end">
                             <p className="text-[12px] font-black">
                               {formatMoney(
                                 normalizeMinorAmount(order.amount_minor),

@@ -228,7 +228,7 @@ function CreatorAccountHubPage() {
                   await signOutCreator();
                   window.location.href = "/creator-auth";
                 }}
-                className="group flex min-h-[88px] w-full items-center gap-4 border-t border-border px-5 py-4 text-left transition hover:bg-background sm:px-6"
+                className="group flex min-h-[88px] w-full items-center gap-4 border-t border-border px-5 py-4 text-start transition hover:bg-background sm:px-6"
               >
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] border border-border bg-background text-foreground">
                   <span className="text-[20px] font-black">↗</span>
