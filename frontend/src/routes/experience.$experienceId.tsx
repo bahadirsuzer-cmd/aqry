@@ -1,3 +1,4 @@
+import { anonymousMessageLimit, characterCount } from "@/lib/anonymousMessageLimits";
 import { getCreatorExperienceCopy } from "@/lib/creatorExperienceCopy";
 import { getFlowCopy } from "@/lib/flowCopy";
 import { FLOW_EDITOR_COPY } from "@/lib/flowEditorCopy";
@@ -4179,6 +4180,8 @@ function QuestionConfessionPublicExperience({
   const config = experience.questionConfession!;
   const [mode, setMode] = useState<"question" | "confession">(config.mode ?? "question");
   const [message, setMessage] = useState("");
+  const messageLimit = anonymousMessageLimit(config.mode ?? mode);
+  const messageLength = characterCount(message);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -4191,7 +4194,7 @@ function QuestionConfessionPublicExperience({
 
   async function submit() {
     const clean = message.trim();
-    if (!clean || sending) return;
+    if (!clean || sending || messageLength > messageLimit) return;
 
     try {
       setSending(true);
@@ -4327,7 +4330,8 @@ function QuestionConfessionPublicExperience({
               <textarea
                 aria-label={ui.textArea}
                 rows={6}
-                maxLength={500}
+                aria-describedby="anonymous-character-count"
+                aria-invalid={messageLength > messageLimit}
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
                 placeholder={config.placeholder}
@@ -4336,12 +4340,12 @@ function QuestionConfessionPublicExperience({
 
               <div className="mt-2 flex justify-between text-[11px] font-bold text-muted-foreground">
                 <span>{ui.sendAnonymous}</span>
-                <span>{message.length}/500</span>
+                <span id="anonymous-character-count" aria-live="polite" className={messageLength > messageLimit ? "text-red-600" : undefined}>{messageLength}/{messageLimit}</span>
               </div>
 
               <button
                 type="button"
-                disabled={!message.trim() || sending}
+                disabled={!message.trim() || sending || messageLength > messageLimit}
                 onClick={() => void submit()}
                 className="mt-4 h-13 w-full rounded-full bg-black text-[14px] font-black text-white disabled:opacity-35"
               >

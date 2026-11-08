@@ -1,3 +1,4 @@
+import { createAnonymousMessageCard } from "@/lib/anonymousMessageCard";
 import { useImageShare } from "@/components/ImageShareDialog";
 import { CreatorNavigation } from "@/components/CreatorNavigation";
 import { getCurrentCreator, signOutCreator } from "@/services/auth";
@@ -88,147 +89,8 @@ function CreatorInboxPage() {
     window.setTimeout(() => setCopiedId(null), 1200);
   }
 
-  function wrapText(
-    context: CanvasRenderingContext2D,
-    text: string,
-    maxWidth: number,
-  ) {
-    const words = text.replace(/\s+/g, " ").trim().split(" ");
-    const lines: string[] = [];
-    let line = "";
-
-    for (const word of words) {
-      const test = line ? `${line} ${word}` : word;
-      if (context.measureText(test).width <= maxWidth) {
-        line = test;
-        continue;
-      }
-      if (line) lines.push(line);
-      line = word;
-    }
-
-    if (line) lines.push(line);
-    return lines;
-  }
-
   async function createAnswerCard(item: InboxItem) {
-    const canvas = document.createElement("canvas");
-    canvas.width = 1200;
-    canvas.height = 900;
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("Paylaşım kartı oluşturulamadı.");
-
-    const gradient = context.createLinearGradient(0, 0, 1200, 260);
-    if (item.mode === "question") {
-      gradient.addColorStop(0, "#6d28d9");
-      gradient.addColorStop(0.55, "#8b5cf6");
-      gradient.addColorStop(1, "#36d7c4");
-    } else {
-      gradient.addColorStop(0, "#7c3aed");
-      gradient.addColorStop(0.55, "#ec4899");
-      gradient.addColorStop(1, "#fb7185");
-    }
-
-    context.fillStyle = "#ffffff";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, canvas.width, 240);
-
-    context.fillStyle = "rgba(255,255,255,0.16)";
-    context.beginPath();
-    context.arc(1080, 35, 170, 0, Math.PI * 2);
-    context.fill();
-
-    context.fillStyle = "#ffffff";
-    context.font = "900 68px Arial, sans-serif";
-    context.textAlign = "center";
-    context.fillText(
-      item.mode === "question"
-        ? isTr
-          ? "Bana anonim bir soru sor"
-          : "Ask me anonymously"
-        : isTr
-          ? "Bana anonim bir itiraf bırak"
-          : "Leave an anonymous confession",
-      600,
-      112,
-    );
-
-    context.font = "800 34px Arial, sans-serif";
-    context.fillStyle = "rgba(255,255,255,0.9)";
-    context.fillText(
-      isTr ? "Soru mu İtiraf mı? · AQRYO" : "Question or Confession? · AQRYO",
-      600,
-      178,
-    );
-
-    const badgeText =
-      item.mode === "question"
-        ? isTr ? "SORU" : "QUESTION"
-        : isTr ? "İTİRAF" : "CONFESSION";
-
-    context.font = "900 30px Arial, sans-serif";
-    const badgeWidth = context.measureText(badgeText).width + 68;
-    roundedRect(context, 92, 300, badgeWidth, 62, 27);
-    context.fillStyle = item.mode === "question" ? "#ede9fe" : "#ffe4e6";
-    context.fill();
-
-    context.fillStyle = item.mode === "question" ? "#6d28d9" : "#e11d48";
-    context.textAlign = "left";
-    context.fillText(badgeText, 126, 342);
-
-    const cleanMessage = item.message.trim();
-    let fontSize = 66;
-    if (cleanMessage.length > 180) fontSize = 50;
-    else if (cleanMessage.length > 110) fontSize = 56;
-
-    context.fillStyle = "#17101f";
-    context.font = `900 ${fontSize}px Arial, sans-serif`;
-    const lines = wrapText(context, cleanMessage, 1016);
-    const lineHeight = fontSize * 1.22;
-    const visibleLines = lines.slice(0, 7);
-
-    if (lines.length > 7) {
-      const last = visibleLines[6];
-      visibleLines[6] = last.length > 3 ? `${last.slice(0, -3)}...` : `${last}...`;
-    }
-
-    visibleLines.forEach((line, index) => {
-      context.fillText(line, 92, 425 + index * lineHeight);
-    });
-
-    roundedRect(context, 82, 790, 1036, 74, 26);
-    context.fillStyle = "#f4f0fb";
-    context.fill();
-
-    context.fillStyle = "#6b6475";
-    context.font = "800 30px Arial, sans-serif";
-    context.textAlign = "left";
-    context.fillText(
-      isTr ? "Anonim mesajlar için aqryo.com" : "Anonymous messages at aqryo.com",
-      112,
-      838,
-    );
-
-    context.fillStyle = "#4f2a84";
-    context.font = "900 42px Arial, sans-serif";
-    context.textAlign = "right";
-    context.fillText("AQRYO", 1083, 841);
-
-    const blob = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob(
-        (result) =>
-          result
-            ? resolve(result)
-            : reject(new Error("PNG oluşturulamadı.")),
-        "image/png",
-        0.96,
-      );
-    });
-
-    return new File([blob], `aqryo-${item.mode}-${item.id}.png`, {
-      type: "image/png",
-    });
+    return createAnonymousMessageCard(item.message, item.mode, item.id, locale);
   }
 
   async function shareAnswer(item: InboxItem) {
@@ -458,28 +320,6 @@ function EmptyState({ hasExperiences, copy }: { hasExperiences: boolean; copy: {
       </Link>
     </div>
   );
-}
-
-function roundedRect(
-  context: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  radius: number,
-) {
-  const r = Math.min(radius, width / 2, height / 2);
-  context.beginPath();
-  context.moveTo(x + r, y);
-  context.lineTo(x + width - r, y);
-  context.quadraticCurveTo(x + width, y, x + width, y + r);
-  context.lineTo(x + width, y + height - r);
-  context.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
-  context.lineTo(x + r, y + height);
-  context.quadraticCurveTo(x, y + height, x, y + height - r);
-  context.lineTo(x, y + r);
-  context.quadraticCurveTo(x, y, x + r, y);
-  context.closePath();
 }
 
 function formatTime(value: string, locale: string) {
