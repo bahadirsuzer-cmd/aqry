@@ -1,3 +1,5 @@
+import { loadAnonymousExperienceForEdit, updateAnonymousExperience } from "@/services/anonymousExperienceEditor";
+import { settingsText, settingsFeedback } from "@/lib/settingsCopy";
 import { PUBLISH_UI_COPY } from "@/lib/publishUiCopy";
 import { ANONYMOUS_BUILDER_COPY } from "@/lib/anonymousBuilderCopy";
 import { anonymousName } from "@/lib/anonymousFormats";
@@ -9,7 +11,7 @@ import { detectLocale, getQuestionConfessionDefaults, useAqryoLocale } from "@/l
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/question-confession-builder")({
-  validateSearch: (search: Record<string, unknown>): { mode?: "question" | "confession" } => ({ mode: search.mode === "confession" ? "confession" as const : search.mode === "question" ? "question" as const : undefined }),
+  validateSearch: (search: Record<string, unknown>): { mode?: "question" | "confession"; edit?: string } => ({ mode: search.mode === "confession" ? "confession" : search.mode === "question" ? "question" : undefined, edit: typeof search.edit === "string" && search.edit ? search.edit : undefined }),
   component: QuestionConfessionBuilderPage,
 });
 
@@ -33,8 +35,9 @@ const DEFAULT_STATE: BuilderState = {
 };
 
 function QuestionConfessionBuilderPage() {
-  const selectedMode = Route.useSearch().mode;
+  const { mode: selectedMode, edit } = Route.useSearch();
   const { locale } = useAqryoLocale();
+  if (edit) return <AnonymousEditLoader key={edit} id={edit} />;
   if (selectedMode) return <AnonymousBuilder key={selectedMode} selectedMode={selectedMode} />;
   return (
     <main className="min-h-screen bg-[#f7f5fb] text-foreground">
@@ -56,7 +59,32 @@ function QuestionConfessionBuilderPage() {
   );
 }
 
-function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confession" }) {
+type EditRecord = Awaited<ReturnType<typeof loadAnonymousExperienceForEdit>>;
+function AnonymousEditLoader({ id }: { id: string }) {
+  const { locale } = useAqryoLocale();
+  const [record, setRecord] = useState<EditRecord | null>(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const creator = await getCurrentCreator();
+        if (!creator) {
+          window.location.href = `/creator-auth?next=${encodeURIComponent(`/question-confession-builder?edit=${encodeURIComponent(id)}`)}&lang=${locale}`;
+          return;
+        }
+        const result = await loadAnonymousExperienceForEdit(id, creator.id);
+        if (!cancelled) setRecord(result);
+      } catch { if (!cancelled) setFailed(true); }
+    })();
+    return () => { cancelled = true; };
+  }, [id]);
+  if (failed) return <main className="p-8"><p role="alert">{settingsFeedback(locale, 'load failed')}</p><a href={`/creator-experiences?lang=${locale}`}>{settingsText(locale, 'Back')}</a></main>;
+  if (!record) return <LoadingScreen />;
+  return <AnonymousBuilder selectedMode={record.config.mode === 'confession' ? 'confession' : 'question'} editRecord={record} />;
+}
+
+function AnonymousBuilder({ selectedMode, editRecord }: { selectedMode: "question" | "confession"; editRecord?: EditRecord }) {
   const storageKey = `${STORAGE_KEY}-${selectedMode}`;
   const [loading, setLoading] = useState(true);
   const [state, setState] = useState<BuilderState>(DEFAULT_STATE);
@@ -84,6 +112,18 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
         setCreatorId(creator.id);
       }
 
+      if (editRecord) {
+        const config = editRecord.config;
+        setState({ ...defaults, title: editRecord.title,
+          intro: typeof config.intro === 'string' ? config.intro : defaults.intro,
+          questionLabel: typeof config.questionLabel === 'string' ? config.questionLabel : defaults.questionLabel,
+          confessionLabel: typeof config.confessionLabel === 'string' ? config.confessionLabel : defaults.confessionLabel,
+          placeholder: typeof config.placeholder === 'string' ? config.placeholder : defaults.placeholder,
+          accent: config.accent === 'rose' || config.accent === 'dark' ? config.accent : 'violet',
+        });
+        setLoading(false);
+        return;
+      }
       setState({ ...defaults, accent: "violet" });
       const stored = window.sessionStorage.getItem(storageKey);
       if (stored) {
@@ -104,7 +144,7 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
   }, [selectedMode, locale]);
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && !editRecord) {
       window.sessionStorage.setItem(storageKey, JSON.stringify(state));
     }
   }, [loading, state, storageKey]);
@@ -114,6 +154,11 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
 
     try {
       setPublishing(true);
+      if (editRecord) {
+        await updateAnonymousExperience(editRecord.id, creatorId, { ...state, title: state.title.trim() || formatName });
+        window.location.href = `/creator-experiences?lang=${locale}`;
+        return;
+      }
       const experienceId = crypto.randomUUID();
 
       await savePublishedExperience({
@@ -150,7 +195,7 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
       window.location.href = `/publish-success/${experienceId}`;
     } catch (error) {
       console.error(error);
-      window.alert(error instanceof Error ? error.message : ui.publishError);
+      window.alert(editRecord ? settingsFeedback(locale, "save failed") : error instanceof Error ? error.message : ui.publishError);
     } finally {
       setPublishing(false);
     }
@@ -247,14 +292,14 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
             </h2>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              {selectedMode === "question" && <Field label={ui.questionButton}>
+              {(selectedMode === "question" || (editRecord && !editRecord.config.mode)) && <Field label={ui.questionButton}>
                 <input
                   value={state.questionLabel}
                   onChange={(event) => setState((current) => ({ ...current, questionLabel: event.target.value }))}
                   className={inputClass}
                 />
               </Field>}
-              {selectedMode === "confession" && <Field label={ui.confessionButton}>
+              {(selectedMode === "confession" || (editRecord && !editRecord.config.mode)) && <Field label={ui.confessionButton}>
                 <input
                   value={state.confessionLabel}
                   onChange={(event) => setState((current) => ({ ...current, confessionLabel: event.target.value }))}
@@ -309,7 +354,7 @@ function AnonymousBuilder({ selectedMode }: { selectedMode: "question" | "confes
               onClick={() => void publishExperience()}
               className="mt-4 h-11 w-full rounded-full bg-violet-700 px-5 text-[14px] font-black text-white disabled:opacity-50 sm:w-auto"
             >
-              {publishing ? ui.publishing : `${ui.publishShare} →`}
+              {editRecord ? settingsText(locale, publishing ? "Saving" : "Save") : publishing ? ui.publishing : `${ui.publishShare} →`}
             </button>
           </div>
         </section>

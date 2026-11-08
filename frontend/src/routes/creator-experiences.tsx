@@ -903,6 +903,11 @@ const [linkCopied, setLinkCopied] =
       return;
     }
 
+    if (experience.type === "question_confession") {
+      window.location.href = `/question-confession-builder?edit=${encodeURIComponent(experience.id)}&lang=${locale}`;
+      return;
+    }
+
     if (
       experience.type !== "compatibility" &&
       experience.type !== "test" &&
